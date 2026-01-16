@@ -82,9 +82,9 @@
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="fs-6 edit_btn manipulate" href="{% url 'smart_blog:edit_item' item.slug %}" aria-label="Edit item" data-bs-title="Edit item" aria-label="Edit item"><i class="fa fa-pencil text-center"></i></a>
+            <a class="edit_btn manipulate" href="{% url 'smart_blog:edit_item' item.slug %}" aria-label="Edit item" data-bs-title="Edit item" aria-label="Edit item"><i class="fa fa-pencil text-center"></i></a>
 
-            <button type="button" class="fs-6 delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}" aria-label="Delete item" data-bs-title="Delete item" aria-label="Delete item"><i class="fa fa-trash"></i></button>
+            <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}" aria-label="Delete item" data-bs-title="Delete item" aria-label="Delete item"><i class="fa fa-trash"></i></button>
           {% elif user == item.author and not is_editable %}
             <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editing expired"><i class="fa fa-pencil"></i></span>
 
@@ -116,9 +116,9 @@
     {% include 'includes/comment_form.html' %}
     <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h5 class="pt-4 mb-3 success_">Comments</h5>
+        <h5 class="py-4 m-0 success_ text-decoration-underline">Comments</h5>
       {% else %}
-        <h5 class="pt-4 mb-3 text-muted text-decoration-underline">There are not comments yet.</h5>
+        <h5 class="py-4 m-0 text-muted">There are not comments yet.</h5>
       {% endif %}
     </div>
 

@@ -3,7 +3,7 @@
     <h5 class="text-muted m-0">Write a comment</h5>
   </div>
 
-  <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-3">
+  <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-4">
     {% csrf_token %}
 
     <div id="commentFormErrors" class="mb-2"></div>

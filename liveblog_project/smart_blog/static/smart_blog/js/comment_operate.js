@@ -83,8 +83,8 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-4 mb-3 success_">Comments</h5>`
-      : `<h5 class="pt-4 mb-3 text-muted text-decoration-underline">There are not comments yet.</h5>`;
+      ? `<h5 class="py-4 m-0 success_ text-decoration-underline">Comments</h5>`
+      : `<h5 class="py-4 m-0 text-muted">There are not comments yet.</h5>`;
   }
 
   function showFieldError(textarea, message) {
@@ -240,7 +240,7 @@
       clearFieldError(textarea);
       const text = textarea.value.trim();
       if (!text) {
-        showFieldError(textarea, 'Please write comment *');
+        showFieldError(textarea, 'Please write a text...');
         return;
       }
 
@@ -358,24 +358,27 @@
                 replies.remove(); // ← исчезнет линия + точка + ::before
               }
 
-              // update thread link visibility
-              const depth = parseInt(parentComment.dataset.depth || '0', 10);
-              const link = document.getElementById('replies-thread-link-' + data.parent_id);
-              if (depth >= 2) {
-                if (!replies || !replies.querySelector('.comment-block')) {
-                  if (link) link.remove();
-                } else if (!link) {
-                  const threadUrl =
-                    parentComment?.dataset?.threadUrl ||
-                    `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
-                  const wrap = document.createElement('div');
-                  wrap.className = 'mt-4';
-                  wrap.innerHTML = `
-                    <a id="replies-thread-link-${data.parent_id}" href="${threadUrl}" class="text-decoration-none success_ small">
-                      View all replies (thread)
-                    </a>
-                  `;
-                  parentComment.appendChild(wrap);
+              // update thread link visibility (only on item_detail)
+              const threadBtn = document.getElementById('threadBackBtn');
+              if (!threadBtn) {
+                const depth = parseInt(parentComment.dataset.depth || '0', 10);
+                const link = document.getElementById('replies-thread-link-' + data.parent_id);
+                if (depth >= 2) {
+                  if (!replies || !replies.querySelector('.comment-block')) {
+                    if (link) link.remove();
+                  } else if (!link) {
+                    const threadUrl =
+                      parentComment?.dataset?.threadUrl ||
+                      `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
+                    const wrap = document.createElement('div');
+                    wrap.className = 'mt-3';
+                    wrap.innerHTML = `
+                      <a id="replies-thread-link-${data.parent_id}" href="${threadUrl}" class="text-decoration-none success_ fw-semibold">
+                        View all replies<i class="ms-1">→</i>
+                      </a>
+                    `;
+                    parentComment.appendChild(wrap);
+                  }
                 }
               }
             }
@@ -393,26 +396,6 @@
             if (threadParentId) {
               const threadRoot = document.getElementById('comment-' + threadParentId);
               const threadReplies = threadRoot?.querySelector('.replies');
-              // refresh thread link existence on item_detail (remove when empty)
-              try {
-                const link = document.getElementById('replies-thread-link-' + threadParentId);
-                if (!threadReplies || !threadReplies.querySelector('.comment-block')) {
-                  sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
-                  if (link) link.remove();
-                } else if (!link) {
-                  const threadUrl =
-                    threadRoot?.dataset?.threadUrl ||
-                    `${window.location.origin}/blog/comment/${threadParentId}/thread/`;
-                  const wrap = document.createElement('div');
-                  wrap.className = 'mt-4';
-                  wrap.innerHTML = `
-                    <a id="replies-thread-link-${threadParentId}" href="${threadUrl}" class="text-decoration-none success_ small">
-                      View all replies (thread)
-                    </a>
-                  `;
-                  threadRoot?.appendChild(wrap);
-                }
-              } catch { }
               const threadEmpty = document.getElementById('threadEmpty');
               if (!threadReplies || !threadReplies.querySelector('.comment-block')) {
                 try {
@@ -697,7 +680,7 @@
 
       let text = textarea.value.trim();
       if (!text) {
-        showFieldError(textarea, 'Please write a comment *');
+        showFieldError(textarea, 'Please write a text...');
         return;
       }
 
@@ -1116,7 +1099,7 @@
 
     let text = textarea.value.trim();
     if (!text) {
-      errors.textContent = 'Please write a reply *';
+      errors.textContent = 'Please write a reply...';
       textarea.focus();
       return;
     }
@@ -1171,10 +1154,10 @@
           let link = document.getElementById('replies-thread-link-' + parentId);
           if (!link) {
             const wrap = document.createElement('div');
-            wrap.className = 'mt-4';
+            wrap.className = 'mt-3';
             wrap.innerHTML = `
-              <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small">
-                View all replies (thread)
+              <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold">
+                View all replies<i class="ms-1">→</i>
               </a>
             `;
             parentComment.appendChild(wrap);
@@ -1192,6 +1175,20 @@
 
         replies.insertAdjacentHTML('afterbegin', data.comment_html);
         window.initCommentToggles?.(replies);
+
+        // if we're on thread page, ensure empty state cleared and link removal flag reset
+        const threadBtn = document.getElementById('threadBackBtn');
+        if (threadBtn) {
+          const threadParentId = threadBtn.dataset.parentId;
+          if (threadParentId) {
+            const threadEmpty = document.getElementById('threadEmpty');
+            if (threadEmpty) threadEmpty.classList.add('d-none');
+            try {
+              sessionStorage.removeItem('thread_remove_link_' + threadParentId);
+            } catch { }
+          }
+        }
+
         closeAllReplyForms();
       } catch (renderErr) {
         console.error('Reply render error:', renderErr);

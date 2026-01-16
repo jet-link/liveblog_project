@@ -12,9 +12,9 @@ html {
     flex-grow: 1;
 }
 
-/* .container {
+.container {
     max-width: 1200px;
-} */
+}
 
 .header {
     position: fixed;
@@ -683,10 +683,10 @@ textarea {
 }
 
 .round {
-    width: 40px;
-    height: 40px;
+    width: 37px;
+    height: 37px;
     border-radius: 50%;
-    line-height: 40px;
+    line-height: 37px;
     background-color: #fff;
     padding: 0;
 }
@@ -729,7 +729,7 @@ textarea {
     top: 0;
     left: -20px;
     width: 2px;
-    height: calc(100% - 13px);
+    height: calc(100% - 10px);
     background: #dadce0;
     border-radius: 2px;
 }
@@ -750,7 +750,7 @@ textarea {
     content: "";
     position: absolute;
     left: -20px;
-    top: 33px;
+    top: 27px;
     width: 16px;
     height: 2px;
     background: #dadce0;
@@ -815,7 +815,7 @@ textarea {
     font-weight: 500;
 }
 
-.show-more-btn-toggle {
+.show-more-btn-toggle{
     padding: 8px 14px;
     border-radius: 5px;
     border: 1px solid #ddd;
@@ -823,9 +823,11 @@ textarea {
     cursor: pointer;
     font-size: .9rem;
     font-weight: 500;
+    text-decoration: none;
+    color: #424242;
 }
 
-.show-more-btn-toggle:hover {
+.show-more-btn-toggle:hover{
     background: #f6f6f6;
 }
 
@@ -873,14 +875,14 @@ textarea {
     justify-content: center;
     align-items: center;
     /* чтобы можно было задать ширину/высоту */
-    width: 35px;
+    width: 30px;
     /* одинаковые значения → круг */
-    height: 35px;
+    height: 30px;
     /* чтобы текст был по центру */
     border-radius: 50%;
     /* делает кругом */
     text-decoration: none;
-    font-size: .9rem;
+    font-size: .8rem;
     background-color: #ffffff;
 }
 
@@ -1638,9 +1640,9 @@ textarea {
     border: 2px solid #bdc3c7;
 }
 
-.expired_edit_delete i {
+/* .expired_edit_delete i {
     font-size: 1rem;
-}
+} */
 
 .expired_edit_delete::before {
     content: "";

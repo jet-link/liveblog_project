@@ -20,14 +20,13 @@
   {% if thread_view %}
     <div class="replies" data-parent-id="{{ comment.pk }}">
       {% for reply in comment.replies.all %}
-        {% include 'includes/_comments.html' with comment=reply depth=depth|add:1 thread_view=thread_view %}
+        {% include 'includes/_comments.html' with comment=reply depth=depth|add:1 thread_view=thread_view no_mentions=true %}
       {% endfor %}
     </div>
   {% elif depth >= 2 %}
-    <div class="mt-4">
+    <div class="mt-3">
       <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none success_ small fw-semibold">
-        View all replies
-        {% comment %} View all replies (thread) {% endcomment %}
+        View all replies<i class="ms-2">→</i>
       </a>
     </div>
   {% else %}
