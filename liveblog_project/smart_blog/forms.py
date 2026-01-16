@@ -1,0 +1,226 @@
+# forms.py (вставь/замени соответствующие части в своём файле)
+import re
+import bleach
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from .models import Item, Tag, Comment
+from .widgets import MultiFileInput
+
+# try import CSSSanitizer (bleach >= 6)
+try:
+    from bleach.css_sanitizer import CSSSanitizer
+except Exception:
+    CSSSanitizer = None
+
+# optional markdown conversion (pip install markdown)
+try:
+    import markdown as markdown_lib
+except Exception:
+    markdown_lib = None
+
+
+
+# ---------- sanitize/linkify config ----------
+LINKIFY_SKIP_TAGS = ['pre', 'code', 'a']
+
+ALLOWED_TAGS = [
+    'a', 'b', 'strong', 'i', 'em', 'u', 'mark',
+    'ul', 'ol', 'li', 'p', 'br', 'span', 'div',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'pre', 'code', 'blockquote', 'img',
+    'figure', 'figcaption',
+    'table', 'caption', 'thead', 'tbody', 'tr', 'td', 'th'
+]
+
+# разрешённые CSS-свойства
+ALLOWED_STYLES = [
+    'color', 'background-color', 'text-align', 'font-weight',
+    'font-style', 'text-decoration', 'margin', 'margin-left', 'margin-right',
+    'padding', 'width', 'height', 'white-space', 'overflow', 'max-width'
+]
+
+# стартуем с базовых атрибутов bleach и расширяем
+FINAL_ALLOWED_ATTRIBUTES = {}
+FINAL_ALLOWED_ATTRIBUTES.update(getattr(bleach.sanitizer, 'ALLOWED_ATTRIBUTES', {}))
+
+FINAL_ALLOWED_ATTRIBUTES.update({
+    'a': ['href', 'title', 'target', 'rel', 'name'],
+    'img': ['src', 'alt', 'title', 'width', 'height', 'style', 'class'],
+    'p': ['style', 'class'],
+    'span': ['style', 'class'],
+    'div': ['style', 'class'],
+    'blockquote': ['style', 'class'],
+    'table': ['class', 'style'],
+    'caption': ['class', 'style'],
+    'thead': ['class', 'style'],
+    'tbody': ['class', 'style'],
+    'tr': ['class', 'style'],
+    'td': ['colspan', 'rowspan', 'style', 'class', 'data-language'],
+    'th': ['colspan', 'rowspan', 'style', 'class', 'data-language'],
+    'pre': ['class', 'style', 'data-language'],
+    'code': ['class', 'style', 'data-language'],
+    'mark': ['class', 'style'],
+    'h1': ['style'], 'h2': ['style'], 'h3': ['style'],
+    'h4': ['style'], 'h5': ['style'], 'h6': ['style'],
+    'figure': ['class', 'style'],
+    'figcaption': ['class', 'style'],
+})
+
+# разрешаем любые data-* атрибуты через regex-ключ
+FINAL_ALLOWED_ATTRIBUTES.update({
+    re.compile(r'^data-'): True
+})
+
+# ---------- форма ----------
+class ItemCreateForm(forms.ModelForm):
+    images = forms.FileField(
+        required=False,
+        widget=MultiFileInput(),
+        help_text="(You can upload 10 images)",
+        label='Upload images (optional)',
+    )
+
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        required=False,
+        label="Existing tags",
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "form-select auto-size-select",
+                "data-auto-size": "1",
+                "data-max-size": "12",  
+            }
+        ),
+    )
+
+    new_tags = forms.CharField(
+        required=False,
+        label="Enter tag (optional)",
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Tag name..."}),
+    )
+
+    class Meta:
+        model = Item
+        fields = ["title", "text", "tags", "new_tags"]
+        labels = {"title": "Enter title", "text": "Item text"}
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title...", "required": True}),
+            "text": forms.Textarea(attrs={
+                "class": "form-control editor-container__editor ckeditor",
+                # "id": "editor",
+                "placeholder": "Fill the text",
+                "rows": 15,
+            }),
+        }
+
+    def clean_title(self):
+        title = self.cleaned_data.get("title", "")
+        if len(title) > 40:
+            raise forms.ValidationError("Length of title should not exceed 40 symbols.")
+        return title
+
+    def clean_text(self):
+        """
+        1) Optionally convert fenced-code markdown -> HTML (if markdown lib present)
+        2) Sanitize HTML via bleach (allow code, pre, table, mark, underline, data-*)
+        3) Linkify (skipping pre/code/a)
+        """
+        raw = self.cleaned_data.get('text', '') or ''
+
+        # basic validation
+        if not raw or not raw.strip():
+            raise ValidationError(_('Please write the item text *'))
+
+        # normalize
+        raw = raw.replace('\x00', '')
+
+        # 1) Markdown fenced-code conversion (best-effort)
+        converted = raw
+        try:
+            # only try convert when there are fenced code markers or markdown headings
+            if markdown_lib and (re.search(r'(^```)|(^#{1,6}\s)', raw, flags=re.M) or re.search(r'\n```', raw)):
+                exts = ['fenced_code']
+                # try to include codehilite if available (not required)
+                try:
+                    exts.append('codehilite')
+                except Exception:
+                    pass
+                converted = markdown_lib.markdown(raw, extensions=exts)
+                # преобразуем class="language-xxx" -> data-language="xxx" для <pre> и <code>
+                try:
+                    converted = re.sub(
+                        r'(<pre[^>]*>)\s*<code[^>]*class="([^"]*language-([a-z0-9_+-]+)[^"]*)"([^>]*)>',
+                        lambda m: f'{m.group(1)}<code data-language="{m.group(3)}"{m.group(4)}>',
+                        converted,
+                        flags=re.I
+                    )
+                    # также поддержка случая когда markdown уже поместил language в <code class="language-..."> но не в pre
+                    converted = re.sub(
+                        r'<code[^>]*class="([^"]*language-([a-z0-9_+-]+)[^"]*)"([^>]*)>',
+                        lambda m: f'<code data-language="{m.group(2)}"{m.group(3)}>',
+                        converted, flags=re.I
+                    )
+                except Exception:
+                    pass
+        except Exception:
+            converted = raw
+
+        # 2) Sanitize with bleach
+        try:
+            if CSSSanitizer is not None:
+                css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
+                cleaner = bleach.Cleaner(
+                    tags=ALLOWED_TAGS,
+                    attributes=FINAL_ALLOWED_ATTRIBUTES,
+                    strip=True,
+                    css_sanitizer=css_sanitizer
+                )
+            else:
+                cleaner = bleach.Cleaner(
+                    tags=ALLOWED_TAGS,
+                    attributes=FINAL_ALLOWED_ATTRIBUTES,
+                    strip=True
+                )
+            cleaned = cleaner.clean(converted)
+        except Exception:
+            # ultimate fallback
+            cleaned = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=FINAL_ALLOWED_ATTRIBUTES, strip=True)
+
+        # 3) linkify but skip pre/code/a so we don't break code blocks or existing anchors
+        try:
+            cleaned = bleach.linkify(cleaned, skip_tags=LINKIFY_SKIP_TAGS, parse_email=False)
+        except Exception:
+            pass
+
+        # 4) ensure there is visible text
+        plain = re.sub(r'<[^>]+>', '', cleaned).strip()
+        if not plain:
+            raise ValidationError(_('Please write the item text *'))
+
+        return cleaned
+
+
+# simple CommentForm (оставил как есть; при необходимости можно расширить)
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text"]
+        widgets = {
+            "text": forms.Textarea(attrs={
+                "class": "form-control auto-grow",
+                "id": "id_comment_text",
+                "placeholder": "Comment text",
+                "rows": 1,          # стартовая высота
+                "required": True,
+            })
+        }
+        error_messages = {
+            "text": {
+                "required": _("Please write a comment *")
+            }
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["text"].error_messages = {"required": _("Please write a comment *")}

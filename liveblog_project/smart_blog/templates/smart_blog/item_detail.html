@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load counters %}
+{% block title %}
+  {{ item.title }}
+{% endblock %} {% block content %}
+  <div class="container content_block">
+    <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
+    <div class="d-inline-flex gap-3 align-items-center fs-6">
+      <button type="button" class="text-muted back_btn p-0" id="backBreadcrumb"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</button>
+      <span>/</span>
+      <span class="text-muted fw-bolder">{{ item.title }}</span>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+      <h2 class="text-muted m-0">{{ item.title }}</h2>
+      <button type="button" class="share_btn text-decoration-none"><i class="fa fa-bullhorn me-2"></i>Share</button>
+    </div>
+    <hr />
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex gap-1">
+        <small>{{ item.human_published }}</small>
+      </div>
+      {% if item.author %}
+        {% if user == item.author %}
+          <small class="custom_badge_success fw-bolder">It's your item</small>
+        {% else %}
+          <div>
+            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
+              <small class="custom_badge_success">{{ item.author }}</small>
+              <div class="little-avatar">
+                {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
+                  <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                {% else %}
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" />
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="d-flex gap-2 success_ fw-bolder align-items-center">
+          <i class="fa fa-frown-o" aria-hidden="true"></i>
+          <small>Deleted account</small>
+        </div>
+      {% endif %}
+    </div>
+    <div class="d-inline-flex VLB gap-3">
+      <div class="d-flex gap-2 align-items-center">
+        <span id="viewsCount">{{ item.views_count|human }}</span>
+        <i class="fa fa-eye" style="color:#0984e3;"></i>
+      </div>
+    </div>
+    <!-- ===== Текст ===== -->
+    <div class="item-text ck-content my-5">{{ item.text|safe }}</div>
+    {% if item.images.all %}
+      {% include 'includes/image_gallery.html' %}
+    {% endif %}
+    <!-- === Likes, bookmarks, comments count === -->
+    <div class="d-flex justify-content-between align-items-center published_block my-4">
+      <div class="item-stats text-muted d-inline-flex align-items-center">
+        <div class="stat">
+          <span id="likesCount">{{ item.likes_count|human }}</span>
+          <i class="fa fa-heart danger_"></i>
+        </div>
+
+        <div class="stat">
+          <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
+          <i class="fa fa-bookmark success_"></i>
+        </div>
+
+        <div class="stat">
+          <span id="commentsCount">{{ item.comments_count }}</span>
+          <i class="fa fa-comment stat-comment"></i>
+        </div>
+      </div>
+
+      <div class="d-flex gap-1 action-block">
+        {% if user.is_authenticated %}
+          {% if user != item.author %}
+            <button class="like-btn fs-6 round" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like item"><i class="fa fa-{{ user_liked|yesno:'heart,heart-o' }}"></i></button>
+
+            <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
+          {% endif %}
+          {% if user == item.author and is_editable %}
+            <a class="fs-6 edit_btn manipulate" href="{% url 'smart_blog:edit_item' item.slug %}" aria-label="Edit item" data-bs-title="Edit item" aria-label="Edit item"><i class="fa fa-pencil text-center"></i></a>
+
+            <button type="button" class="fs-6 delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}" aria-label="Delete item" data-bs-title="Delete item" aria-label="Delete item"><i class="fa fa-trash"></i></button>
+          {% elif user == item.author and not is_editable %}
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editing expired"><i class="fa fa-pencil"></i></span>
+
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Deleting expired"><i class="fa fa-trash-o"></i></span>
+          {% endif %}
+        {% else %}
+          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none">Login</a></small>
+        {% endif %}
+      </div>
+    </div>
+    <!-- ===== Теги ===== -->
+    <div class="mb-4 tags_block d-flex align-items-center">
+      <!-- левая часть: теги — растёт и переносит элементы -->
+      <div class="flex-grow-1 tag-list">
+        {% if item.tags.all %}
+          <small class="text-muted">Tags</small>
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for tag in item.tags.all %}
+              <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="badge bg-secondary text-decoration-none">Without tags</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ===== Форма комментариев ===== -->
+    {% include 'includes/comment_form.html' %}
+    <div id="commentsHeader" class="d-inline-flex text-decoration-underline">
+      {% if comments %}
+        <h5 class="pt-4 mb-3 text-muted">Comments</h5>
+      {% else %}
+        <h5 class="pt-4 mb-3 text-muted">There are not comments yet.</h5>
+      {% endif %}
+    </div>
+
+    <!-- ===== Список комментариев ===== -->
+    <div id="commentsList">
+      {% for comment in comments %}
+        {% include 'includes/_comments.html' with comment=comment depth=0 %}
+      {% endfor %}
+    </div>
+
+    {% if comments|length > 10 %}
+      <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center mt-2">
+        <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
+      </div>
+    {% endif %}
+
+    <button id="commentsBackToTop" type="button" aria-label="Back to comments top" title="Back to comments top"><span>↑</span></button>
+  </div>
+
+  {% include 'includes/comment_modal.html' %}
+  {% include 'includes/item_modal.html' %}
+  {% include 'includes/share_modal.html' %}
+{% endblock %}

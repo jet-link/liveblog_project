@@ -1,0 +1,28 @@
+<!-- overlay menu -->
+<div id="bottomMenuOverlay" class="bottom-menu-overlay hidden"></div>
+<aside id="bottomSideMenu" class="bottom-side-menu hidden" aria-hidden="true" inert>
+  <div class="bottom-menu-header d-flex align-items-center">
+    <a class="nav-link text-muted fs-5" href="/">BrainStorm</a>
+    <button id="bottomMenuClose" aria-label="Close menu">&times;</button>
+  </div>
+
+  <nav class="bottom-menu-nav">
+    {% comment %} <a href="{% url 'pages:home' %}">Home</a> {% endcomment %}
+    <a href="{% url 'smart_blog:items_list' %}">BraiNews</a>
+    <a href="#">Culture</a>
+    <a href="#">Business</a>
+    <a href="#">Opinion</a>
+  </nav>
+
+  <nav class="social-block">
+    <span class="text-muted fw-bolder">Subscribe us:</span>
+    <hr />
+    <div class="social-nav">
+      <a href="#"><i class="fa fa-twitter"></i></a>
+      <a href="#"><i class="fa fa-instagram"></i></a>
+      <a href="#"><i class="fa fa-facebook"></i></a>
+      <a href="#"><i class="fa fa-youtube-play"></i></a>
+      <a href="#"><i class="fa fa-envelope-o"></i></a>
+    </div>
+  </nav>
+</aside>

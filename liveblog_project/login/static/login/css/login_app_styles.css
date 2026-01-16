@@ -1,0 +1,495 @@
+.another_login_block a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    border-radius: 50%;
+    transition: .3s;
+    background-color: #ffffff;
+}
+
+.google_btn {
+    color: #0984e3;
+    border: 2px solid #0984e3;
+}
+
+.google_btn:hover {
+    background-color: #0984e3;
+    color: #FFFFFF;
+}
+
+.apple_btn {
+    color: #2d3436;
+    border: 2px solid #2d3436;
+}
+
+.apple_btn:hover {
+    background-color: #2d3436;
+    color: #FFFFFF;
+}
+
+.twitter_btn_login {
+    color: #0abde3;
+    border: 2px solid #0abde3;
+}
+
+.twitter_btn_login:hover {
+    background-color: #0abde3;
+    color: #FFFFFF;
+}
+
+.edit-profile-field {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* лучше — точечный селектор только для текстовых/почтовых/парольных полей */
+.form-wrapper input[type="text"],
+.form-wrapper input[type="email"],
+.form-wrapper input[type="password"],
+.form-wrapper input[type="search"],
+.form-wrapper textarea,
+.form-wrapper select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.personal_block {
+    /* padding: 10px; */
+    /* background-color: #ffffff; */
+    /* box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); */
+    /* border-radius: 8px; */
+    /* margin: 0 auto; */
+    border-top: 2px solid #eceded;
+    border-bottom: 2px solid #eceded;
+    /* border-right: 2px solid #eceded; */
+    /* border-top-right-radius: 30%; */
+    /* border-bottom-right-radius: 30%; */
+    padding: 20px 0;
+}
+
+.personal_info {
+    flex-basis: 70%;
+    flex-grow: 1;
+}
+
+.personal_avatar {
+    flex-basis: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 250px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
+}
+
+/* аватар */
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    pointer-events: none;
+    object-position: 50% 50%;
+}
+
+/* 🔻 нижний сегмент */
+.avatar-remove-overlay {
+    position: absolute;
+    left: 0;
+    bottom: -45%;
+    width: 100%;
+    height: 20%;
+
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    transition: bottom 0.3s ease-in-out;
+}
+
+/* иконка */
+.avatar-remove-overlay i {
+    font-size: 22px;
+}
+
+/* hover — сегмент выезжает */
+.avatar-wrapper:hover .avatar-remove-overlay {
+    bottom: 0;
+}
+
+.no_avatar {
+    height: 110% !important;
+    object-fit: contain;
+}
+
+.personal-field span {
+    font-weight: 500;
+}
+
+.preview {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .6rem;
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+#avatarUrlPreview,
+#avatarFilePreview {
+    position: relative;
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+
+#avatarUrlPreview img,
+#avatarFilePreview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+
+.avatar-clear-url,
+.avatar-clear-file {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    border-radius: 5px;
+}
+
+.avatar-url-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.avatar-url-row .form-floating {
+    flex: 1;
+}
+
+.avatar-file-trigger {
+    width: 46px;
+    min-width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-file-trigger i {
+    font-size: 22px;
+}
+
+/* ===== AVATAR LIGHTBOX OVERLAY ===== */
+.avatar-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.8);
+    z-index: 9999;
+    display: none;
+    /* hidden by default */
+    align-items: center;
+    justify-content: center;
+    /* backdrop-filter: blur(3px); */
+    animation: fadeIn .25s ease-out;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ===== IMAGE CONTAINER ===== */
+.avatar-lightbox-container {
+    position: relative;
+    max-width: min(90vw, 900px);
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* IMAGE */
+.avatar-lightbox-img {
+    max-width: 100%;
+    max-height: 700px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.avatar-lightbox-close {
+    position: absolute;
+    border: none;
+    background: var(--btn-bg);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    /* backdrop-filter: blur(6px); */
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.avatar-lightbox-close:hover {
+    transform: scale(1.1);
+}
+
+
+.avatar-lightbox-overlay[style*="display: flex"] {
+    pointer-events: auto;
+}
+
+
+.little-avatar {
+    width: 100%;
+    max-width: 35px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.little-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+}
+
+.thumb-sm {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+.personal_info li {
+    padding: 15px 25px;
+}
+
+
+#passwordCard {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 23%;
+}
+
+.password-toggle {
+    display: none;
+    /* hidden by default */
+    color: inherit;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    transition: opacity .12s ease, transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #ffffff;
+    border: none;
+    padding: 0;
+}
+
+.password-toggle.visible {
+    display: inline-block;
+}
+
+.password-toggle:focus {
+    outline: none;
+    /* transform: translateY(-1px); */
+}
+
+.card-switcher {
+    position: relative;
+    overflow: visible;
+    min-height: 1px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+/* базовые карточки */
+.card-panel {
+    width: 100%;
+    transition: transform 420ms cubic-bezier(.2, .9, .2, 1), opacity 320ms;
+    transform-origin: center top;
+    will-change: transform, opacity;
+    position: relative;
+    border-radius: .5rem;
+}
+
+/* Слой, который виден */
+.card-panel.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    z-index: 2;
+}
+
+/* Скрытый (ежды) по умолчанию — уезжает вверх */
+.card-panel.is-hidden {
+    opacity: 0;
+    transform: translateY(-30px) scale(.98);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* карта, которая подъезжает сверху (стартовая позиция выше) */
+.card-panel.from-top {
+    transform: translateY(-120%) scale(.98);
+    opacity: 0;
+}
+
+/* при показе — опускается на место */
+.card-panel.from-top.is-visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 3;
+}
+
+/* небольшой helpful spacing для кнопки Change password */
+.btn-change {
+    min-width: 140px;
+}
+
+/* ===== плавное удаление карточки ===== */
+.item-card {
+    transition: height 0.28s ease, opacity 0.28s ease;
+}
+
+.item-card.fade-collapse {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border: 0 !important;
+}
+
+
+
+/* контейнер аватар + меню */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+/* аватар */
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* tooltip */
+.user-tooltip {
+    position: absolute;
+    top: calc(100% + 13px);
+    right: -30px;
+    min-width: 170px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 3px 12px 25px rgba(0, 0, 0, .2);
+    padding: 8px 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    z-index: 2000;
+}
+
+/* стрелка */
+.user-tooltip::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    right: 41px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.user-menu .user-tooltip {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.user-menu.open .user-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ссылки */
+.user-tooltip a {
+    display: block;
+    padding: 10px 16px;
+    font-size: .85rem;
+    color: #111;
+    text-decoration: none;
+    transition: background .15s ease;
+}
+
+.user-tooltip a:hover {
+    background: #f1f2f6;
+}
+
+.user-tooltip .danger {
+    color: #e74c3c;
+}
+
+/* разделитель */
+.user-tooltip .divider {
+    height: 1px;
+    margin: 6px 0;
+    background: #eee;
+}
+
+
+@media (max-width: 768px) {
+    .user-tooltip {
+        display: none !important;
+    }
+}
+
+.tabs_block{
+    padding-top: 100px;
+}

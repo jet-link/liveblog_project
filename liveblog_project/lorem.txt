@@ -1,0 +1,1865 @@
+   под input file появится миниатюра аватарки! при это когда я нажму save с файлом и снова перейду edit_profile.html аватарка которая уже есть у профиля она будет как бы в форме edit_profile, будь это url аватарки или file загруженный с компьютера/телефона! добавить так сказать js обработку если нужно!
+   
+   
+    /* === HERO OVERLAY — slide-up variant with delayed start === */
+.hero-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2200;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* keep fully opaque while visible — movement will carry it away */
+    opacity: 1;
+    visibility: visible;
+
+    /* we'll animate transform only (slide) */
+    transform: translateY(0);
+
+    /* transition only on transform — duration controlled in .closing */
+    transition: none;
+    will-change: transform;
+}
+
+/* class added to start the CLOSE sequence after a tiny delay */
+.hero-overlay.preparing {
+    /* still static; using this class allows visual cue/tiny pause if needed */
+    transition: none;
+}
+
+/* when we actually close, this class defines the animation duration and easing */
+.hero-overlay.closing {
+    /* slide up above viewport; -120% guarantees full exit even on tall devices */
+    transform: translateY(-100vh);
+    transition: transform 900ms cubic-bezier(.2, .85, .25, 1);
+    /* long, smooth curve */
+}
+
+/* once fully hidden we can mark it hidden (keeps it out of flow) */
+.hero-overlay.hidden {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* gradient overlay (visual) */
+.hero-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%);
+}
+
+.hero-sub {
+    max-width: 500px;
+    /* ограничиваем ширину как CKEditor */
+    margin: 0 auto;
+    /* центрируем блок */
+    text-align: center;
+    /* центрируем текст */
+    line-height: 1.7;
+    /* красивый интерлиньяж */
+    color: white;
+    /* твой цвет */
+    font-size: 18px;
+    /* можешь подобрать свой */
+    font-weight: 300;
+    /* padding: 20px; */
+    /* background-color: rgba(0, 0, 0, 0.4); */
+    border-radius: 8px;
+}
+
+/* content */
+.hero-overlay-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    padding: 2rem;
+    max-width: 980px;
+    pointer-events: none;
+}
+
+/* scroll hint fixed bottom */
+.hero-scroll-hint {
+    position: fixed;
+    z-index: 2300;
+    left: 50%;
+    bottom: 36px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+    user-select: none;
+    pointer-events: auto;
+    color: #ffffff;
+}
+
+/* scroll dot animation unchanged */
+.hero-scroll-hint .scroll-line {
+    width: 34px;
+    height: 46px;
+    border-radius: 28px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.hero-scroll-hint .scroll-line::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    animation: scrollDotUp 1.2s linear infinite;
+}
+
+@keyframes scrollDotUp {
+    0% {
+        transform: translate(-50%, 22px);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, 6px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 0;
+    }
+}
+
+/* block body scrolling while overlay present */
+body.no-scroll {
+    overflow: hidden;
+    touch-action: none;
+}
+        
+        
+        
+        {% comment %} <div class="container">
+      <div class="row g-5">
+        <h1 class="h3 mb-3">Homepage</h1>
+
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-6 col-sm-12 col-12">
+              <h5>Subtitle</h5>
+              <hr />
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus ea amet, laudantium quasi dolor doloremque aliquid odio laborum quae, perspiciatis alias consectetur autem fuga maiores dolores quod natus facilis. Pariatur. Doloremque sunt minus perferendis, natus reprehenderit dolor maxime hic consequuntur nostrum cum fugit illum. Fuga, ex amet nihil asperiores sunt, tempore reiciendis aspernatur quos sit debitis, dolore assumenda modi. Laudantium. Nisi error ipsum repudiandae numquam amet porro, nam, voluptas rerum quisquam ducimus hic sed eum voluptates alias architecto repellendus harum, recusandae inventore ipsam at aliquid ab delectus sapiente fugit! Consequatur! Eveniet deleniti voluptatem magni a fuga neque tempora blanditiis molestiae. Ullam consequuntur dolorum fuga! Quod consequuntur consectetur ratione officiis cumque eligendi, quos earum qui debitis fugit quasi, obcaecati, architecto eos? Dolorem mollitia, explicabo ad autem beatae corrupti labore atque quam, quas non consectetur quis, natus consequatur maxime iste placeat velit! Omnis rem minus veniam ipsum ipsa, accusantium recusandae quia quo!</p>
+            </div>
+            <div class="col-md-6 col-sm-12 col-12">
+              <h5>Subtitle</h5>
+              <hr />
+              <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloremque illum accusamus sunt, repudiandae laboriosam quod nobis perspiciatis, hic sit, dicta explicabo obcaecati voluptatibus! Ex qui maiores fugit quae expedita. Consequatur? Sed, nisi aperiam. Expedita quo, distinctio deleniti sit excepturi fuga modi tempora, voluptates eos velit, optio quod quibusdam. Magnam molestias, similique porro aspernatur alias architecto quas itaque facilis nisi dicta. Accusantium laborum quia eos odit necessitatibus, tenetur nulla voluptas fugiat voluptatum, sequi itaque quam. Aperiam ipsum iusto neque facere, rem molestias, est labore necessitatibus ipsa distinctio, magnam eveniet ab fugiat. Dignissimos repellat facere, explicabo voluptas molestias voluptates, sapiente libero labore nemo ea consequatur cum aperiam ut? At quibusdam dolorem id sed, non consequuntur, illum earum deleniti dignissimos voluptates in ipsa. Molestiae nostrum neque eos quo in quia vitae odit commodi officiis eligendi facere alias amet, sed dolorem voluptate architecto iusto. Voluptas in ducimus totam nobis, exercitationem omnis commodi consequuntur nulla.</p>
+            </div>
+            <div class="col-md-12">
+              <h1>Hello</h1>
+              <hr />
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem fuga accusamus saepe dignissimos aliquam dolor eius voluptatum quas qui tenetur. Accusantium deserunt maiores saepe maxime! Beatae sunt molestias nulla perferendis. Accusantium tempore sit a! Pariatur nesciunt unde excepturi laudantium quasi veniam quis cupiditate nobis, delectus rerum cumque aliquam doloremque tempore repellendus minus, quisquam eius vel reprehenderit, dolor voluptas esse deleniti! At minus possimus molestias aspernatur, nesciunt illo nobis necessitatibus nulla itaque nam neque dolorum natus accusantium sapiente, vel, dignissimos harum perspiciatis reprehenderit eaque deserunt fugiat ut excepturi velit dolor? Ullam. Sit porro enim, mollitia placeat magnam est in tempora veniam esse eaque excepturi unde accusamus atque voluptatibus debitis inventore quae blanditiis repudiandae ipsa molestiae reiciendis odio ut? Unde, voluptatum enim? Alias, iusto voluptatum? Laudantium fuga, facilis repudiandae enim tempore quo sunt debitis. Vero ex culpa sint necessitatibus facere, quam consequatur ab saepe obcaecati, impedit velit quibusdam ullam placeat esse provident? In ipsam veritatis, porro mollitia, accusamus labore neque fuga quam aut enim, dolorum nulla sequi nemo nam eveniet eos deserunt beatae laudantium. Odit, impedit vero. In modi quasi vero odio. Natus qui ad voluptate cum odio alias, reiciendis doloribus nesciunt quod eius molestiae maiores quidem beatae inventore laboriosam labore dolorum pariatur. Aperiam rem expedita cupiditate impedit atque, voluptatum animi nisi.</p>
+            </div>
+
+            <div class="col-md-12">
+              <h1>Hello</h1>
+              <hr />
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem fuga accusamus saepe dignissimos aliquam dolor eius voluptatum quas qui tenetur. Accusantium deserunt maiores saepe maxime! Beatae sunt molestias nulla perferendis. Accusantium tempore sit a! Pariatur nesciunt unde excepturi laudantium quasi veniam quis cupiditate nobis, delectus rerum cumque aliquam doloremque tempore repellendus minus, quisquam eius vel reprehenderit, dolor voluptas esse deleniti! At minus possimus molestias aspernatur, nesciunt illo nobis necessitatibus nulla itaque nam neque dolorum natus accusantium sapiente, vel, dignissimos harum perspiciatis reprehenderit eaque deserunt fugiat ut excepturi velit dolor? Ullam. Sit porro enim, mollitia placeat magnam est in tempora veniam esse eaque excepturi unde accusamus atque voluptatibus debitis inventore quae blanditiis repudiandae ipsa molestiae reiciendis odio ut? Unde, voluptatum enim? Alias, iusto voluptatum? Laudantium fuga, facilis repudiandae enim tempore quo sunt debitis. Vero ex culpa sint necessitatibus facere, quam consequatur ab saepe obcaecati, impedit velit quibusdam ullam placeat esse provident? In ipsam veritatis, porro mollitia, accusamus labore neque fuga quam aut enim, dolorum nulla sequi nemo nam eveniet eos deserunt beatae laudantium. Odit, impedit vero. In modi quasi vero odio. Natus qui ad voluptate cum odio alias, reiciendis doloribus nesciunt quod eius molestiae maiores quidem beatae inventore laboriosam labore dolorum pariatur. Aperiam rem expedita cupiditate impedit atque, voluptatum animi nisi.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-12 sidebar">
+          {% include 'includes/sidebar.html' %}
+        </div>
+
+        <div class="col-md-7">
+          <h5>Subtitle</h5>
+          <hr />
+          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam magni voluptates tempora placeat non distinctio! Nisi dolorem reprehenderit perferendis itaque voluptas ratione ea quo. Blanditiis, odio. Harum facilis ea eos. Beatae autem quas id fugit et, voluptates hic magni tempora recusandae possimus dolores. Nobis accusamus excepturi, non consequuntur quaerat delectus autem fuga magni eaque illum pariatur cumque eveniet ratione in. Perferendis totam voluptatum amet reprehenderit quibusdam vitae, quisquam ipsam, soluta quis odio error porro maxime dolore molestiae quod corporis facere minus harum fugit omnis, nesciunt voluptate recusandae atque ut? Amet. Commodi unde architecto mollitia, in fugiat accusamus maxime pariatur aut ut nobis alias nostrum fuga itaque. Quis quidem cum commodi fugiat molestias, ratione eligendi suscipit, quia eaque, in quae omnis. Quam libero nostrum minima, officia, aperiam nisi reprehenderit facere consequatur dolorum totam nesciunt natus aliquam illo, ratione velit! Asperiores iste voluptas facilis dicta voluptatibus labore necessitatibus? Similique, libero. Ullam, quas!</p>
+        </div>
+        <div class="col-md-5">
+          <h5>Subtitle</h5>
+          <hr />
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit nemo necessitatibus cum beatae temporibus quo, repellendus architecto asperiores, ipsa soluta suscipit consectetur nam ipsam eaque expedita cupiditate similique laudantium eligendi. Quasi rerum quae voluptates, sequi tempora officiis commodi nemo praesentium sed. Magni porro quibusdam et dolorum sed! Similique consectetur hic, earum atque sequi dolorum corrupti nihil nesciunt debitis in? Obcaecati. Molestias repellendus ut alias quibusdam inventore porro similique cupiditate distinctio dignissimos repellat ipsum tempore consectetur error beatae, earum unde obcaecati et doloremque autem eius excepturi consequuntur? Nobis sed voluptatum minima? Eaque nulla asperiores consequatur, facere, possimus ad corrupti cumque corporis, at unde earum iusto officiis. Suscipit neque ducimus amet eius maxime voluptatum dolore fuga dolor! Consequatur nulla aperiam libero autem. Nemo, nostrum dolores laboriosam minus quos pariatur distinctio provident ipsa dignissimos? Alias, commodi! Iusto nulla veritatis quaerat omnis numquam inventore ea quibusdam consequuntur. Obcaecati quaerat doloremque blanditiis aspernatur, aperiam corporis?</p>
+        </div>
+
+        <div class="col-md-12">
+          <h1>Hello</h1>
+          <hr />
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem fuga accusamus saepe dignissimos aliquam dolor eius voluptatum quas qui tenetur. Accusantium deserunt maiores saepe maxime! Beatae sunt molestias nulla perferendis. Accusantium tempore sit a! Pariatur nesciunt unde excepturi laudantium quasi veniam quis cupiditate nobis, delectus rerum cumque aliquam doloremque tempore repellendus minus, quisquam eius vel reprehenderit, dolor voluptas esse deleniti! At minus possimus molestias aspernatur, nesciunt illo nobis necessitatibus nulla itaque nam neque dolorum natus accusantium sapiente, vel, dignissimos harum perspiciatis reprehenderit eaque deserunt fugiat ut excepturi velit dolor? Ullam. Sit porro enim, mollitia placeat magnam est in tempora veniam esse eaque excepturi unde accusamus atque voluptatibus debitis inventore quae blanditiis repudiandae ipsa molestiae reiciendis odio ut? Unde, voluptatum enim? Alias, iusto voluptatum? Laudantium fuga, facilis repudiandae enim tempore quo sunt debitis. Vero ex culpa sint necessitatibus facere, quam consequatur ab saepe obcaecati, impedit velit quibusdam ullam placeat esse provident? In ipsam veritatis, porro mollitia, accusamus labore neque fuga quam aut enim, dolorum nulla sequi nemo nam eveniet eos deserunt beatae laudantium. Odit, impedit vero. In modi quasi vero odio. Natus qui ad voluptate cum odio alias, reiciendis doloribus nesciunt quod eius molestiae maiores quidem beatae inventore laboriosam labore dolorum pariatur. Aperiam rem expedita cupiditate impedit atque, voluptatum animi nisi.</p>
+        </div>
+      </div>
+    </div> {% endcomment %}
+    
+
+        {% comment %} <section class="primary_section">
+      <div class="container">
+        
+        <div class="row">
+          <div class="col-md-6">
+
+          </div>
+          <div class="col-md-6">
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="secondary_section">
+
+    </section> {% endcomment %}
+    
+    
+    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae aperiam unde, explicabo excepturi, est suscipit ut nisi tempore quaerat qui, voluptas aliquid exercitationem? Enim laudantium ducimus eius id ab? Perspiciatis.
+    Praesentium, magnam dolorem alias quisquam illum, veniam ipsam eum deleniti repellendus repudiandae libero totam soluta corporis ad! Repudiandae saepe modi impedit debitis expedita esse consequuntur quo quidem! Suscipit, accusamus esse.
+    Similique repellat ducimus delectus. Corporis recusandae cum sint odio fuga quis reiciendis atque beatae ex itaque sequi modi, nam debitis, assumenda ea similique fugiat pariatur ducimus, ad nostrum. Blanditiis, consequatur.
+    Unde mollitia temporibus est rem velit, architecto repellendus eligendi exercitationem modi eos quis corrupti repudiandae ullam molestias! Atque vero temporibus nam facilis asperiores assumenda delectus dicta alias ducimus! Rerum, nobis.
+    Totam alias excepturi id iure culpa consequuntur, architecto quam! Necessitatibus deserunt quisquam saepe quidem, perferendis culpa voluptate officia nihil, dolor aspernatur consequatur repudiandae quas? Eius ullam aliquam beatae quia a?
+    Unde quibusdam nemo voluptates accusantium eius, fuga, quidem id quam omnis, eaque cum. Ex tempora labore provident, enim tempore optio, non obcaecati velit adipisci natus quae eaque earum ipsum soluta.
+    Sapiente provident, quos neque modi dolore eligendi eveniet deserunt nisi reprehenderit assumenda cum voluptatibus non. Pariatur fuga eaque architecto repudiandae, nostrum asperiores eum amet sit dignissimos ullam labore! Cupiditate, voluptate?
+    Recusandae ab iusto, sequi illum itaque possimus modi eius, optio deserunt quis consectetur dolores. Asperiores, sit quas exercitationem saepe provident aut impedit excepturi. Voluptas laudantium quos quam fugit dolor vel?
+    Quia, vitae suscipit. Blanditiis asperiores dolorem sequi accusamus obcaecati illo. Dolor eius, est, sapiente necessitatibus veritatis cupiditate ipsam quia, beatae id cumque quaerat. Dolores fugit magni culpa, accusantium ut magnam.
+    Accusantium pariatur amet neque molestiae quae facere quam ratione laborum delectus blanditiis ut dolor, enim aliquid reiciendis, reprehenderit voluptatibus magni adipisci quos porro quis. Obcaecati dicta facilis itaque aspernatur ducimus?
+    Nulla cupiditate veniam possimus consequatur deleniti neque nesciunt ipsam qui dolore amet earum, laboriosam maiores omnis quasi est fugiat reprehenderit eligendi dolor odit iste error. Eum vel distinctio aperiam veritatis.
+    Doloremque ut sit voluptas consectetur voluptatibus expedita laboriosam ad non! In iure veritatis facere soluta ipsam consequuntur quod sint doloribus possimus, reprehenderit dolores dolore incidunt deleniti dolor laudantium nesciunt quos!
+    Illo nemo dolor, nulla aliquid facilis quaerat ducimus fugiat odit autem, tempora minima. Harum, quam animi praesentium fugit veniam et quo cupiditate hic nostrum ipsum, nihil cum ex ut repellendus.
+    Quod odio optio distinctio qui, eaque molestias ipsum corporis est animi tempore maiores eum facere nisi id nam enim necessitatibus porro repellat, labore, nulla mollitia eligendi. Sunt, voluptate. Nobis, voluptas.
+    Quasi excepturi cum est saepe tenetur minima! Consectetur, quia! Minus dolorum labore maiores aliquam minima, tempora dolor error laboriosam dolores consequuntur explicabo. In fugiat nostrum sit, tenetur adipisci eos quo!
+    Numquam, libero rem eveniet laborum suscipit at tenetur delectus beatae distinctio aliquid nemo enim molestias exercitationem officia quaerat aspernatur aliquam et eum eos. Fuga magnam voluptates perspiciatis iure natus eius!
+    Ab nisi atque in eaque est! Natus, excepturi? Quod recusandae voluptas laudantium, ipsa veniam ducimus labore temporibus necessitatibus repellat nostrum asperiores atque fuga, fugit dolores reprehenderit totam odit! Reiciendis, facere.
+    Adipisci illo veniam ipsum maxime consequatur nisi tempore sapiente! Id nesciunt adipisci sapiente perspiciatis aliquam animi eaque commodi aut at cumque veniam, repellendus distinctio veritatis voluptas beatae ipsum sint dolore.
+    Odit, id repellat! Enim itaque mollitia nesciunt expedita fuga minima dolores laudantium eaque commodi quasi id, beatae fugiat numquam maiores ducimus, nam quibusdam sit voluptatem quas consequuntur sequi. Illum, maiores?
+    Minima quisquam consequatur dolores consequuntur animi, id laboriosam? Corporis, est inventore. Corrupti sed facilis asperiores, vitae quis repellat? Voluptate tempora fugiat cupiditate ipsum quibusdam suscipit accusamus neque vel quae iure.
+
+
+
+
+# ckeditor_fields.js
+document.addEventListener('DOMContentLoaded', () => {
+    const ta = document.querySelector('#id_text_for_ckeditor'); // твой id
+    if (!ta) return;
+
+    ClassicEditor
+        .create(ta, {
+            toolbar: {
+                 items: [
+                    'heading', '|',
+                    'bold', 'italic', 'underline', 'blockQuote', 'alignment', '|',
+                    'link', 'bulletedList', 'numberedList', '|',
+                    'insertTable', 'undo', 'redo'
+                ]
+            },
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2' }
+                ]
+            }
+        })
+        .then(editor => {
+            // задаём высоту редактора
+            editor.ui.view.editable.element.style.minHeight = '420px';
+            window.__itemEditor = editor;
+            // при сабмите формы записываем данные в textarea (если нужно)
+            const form = ta.closest('form');
+            if (form) form.addEventListener('submit', () => editor.updateSourceElement && editor.updateSourceElement());
+        })
+        .catch(err => console.error('CKEditor init error', err));
+});
+
+
+
+
+
+
+
+      <div class="album py-5 bg-body-tertiary">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg aria-label="Placeholder: Thumbnail" class="bd-placeholder-img card-img-top" height="225" preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg">
+              <title>LOL</title>
+              <rect width="100%" height="100%" fill="#55595c"></rect>
+              <text x="50%" y="50%" fill="#eceeef" dy=".3em">Image</text>
+            </svg>
+            <div class="card-body">
+              <p class="card-text">{{ item.text }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-body-secondary">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+      {% comment %} <footer class="py-5 footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-md">
+            <h5>BrainBlog</h5>
+            <small class="d-block mb-3 text-body-secondary">&copy; 2017–2025</small>
+          </div>
+          <div class="col-6 col-md">
+            <h5>Features</h5>
+            <ul class="list-unstyled text-small">
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Cool stuff</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Random feature</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Team feature</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Stuff for developers</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Another one</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Last time</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-6 col-md">
+            <h5>Resources</h5>
+            <ul class="list-unstyled text-small">
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Resource name</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Resource</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Another resource</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Final resource</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-6 col-md">
+            <h5>Resources</h5>
+            <ul class="list-unstyled text-small">
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Business</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Education</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Government</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Gaming</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-6 col-md">
+            <h5>About</h5>
+            <ul class="list-unstyled text-small">
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Team</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Locations</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Privacy</a>
+              </li>
+              <li>
+                <a class="link-secondary text-decoration-none" href="#">Terms</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer> {% endcomment %}
+
+
+
+
+        <header class="header shadow-sm p-3 mb-5 bg-body-tertiary">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+          <a class="navbar-brand" href="/">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% comment %} <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="#">Action</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">Another action</a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">Link</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link" aria-disabled="true">Link</a>
+              </li> {% endcomment %}
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+              {% comment %} <button class="btn btn-outline-success" type="submit">Search</button> {% endcomment %}
+            </form>
+            <div class="login-block">
+              {% if user.is_authenticated %}
+                <a href="{% url 'smart_blog:profile' user.username %}" class="btn btn-outline-primary">{{ user.username }}</a>
+              {% else %}
+                <a href="{% url 'smart_blog:login' %}" class="btn btn-outline-primary">Login</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+
+
+    <h4 class="mb-3">Comments</h4>
+    {% for comment in comments %}
+      <div id="comment-{{ comment.pk }}" class="border rounded p-3 mb-3">
+        <p class="mb-2">{{ comment.text }}</p>
+        <hr />
+        <div class="d-flex justify-content-between small text-muted">
+          <div>
+            <strong>{{ comment.author.username }}</strong>
+            <span class="ms-2">Likes: {{ 0 }}</span>
+          </div>
+
+          <div>
+            {% if user == comment.author %}
+              <!-- кнопка открывает modal и передаёт URL в data-delete-url -->
+              <button type="button" class="btn btn-sm btn-outline-danger btn-delete-comment" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}"><i class="fa fa-trash"></i></button>
+            {% endif %}
+            <span class="pl-3">{{ comment.created|date:'d.m.Y H:i' }}</span>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">There are not comments yet.</p>
+    {% endfor %}
+  </div>
+
+  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Подтвердите удаление</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">Вы действительно хотите удалить этот комментарий?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Удалить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="border rounded p-3 mb-3">
+        <div class="badge bg-primary btn-sm mb-3">
+          {% if comment.author %}
+            <span><strong>{{ comment.author }}</strong></span>
+          {% else %}
+            <span><strong>Deleted account</strong></span>
+          {% endif %}
+        </div>
+        <p class="mb-2 comment-text">{{ comment.text }}</p>
+        <hr />
+
+        <div class="d-flex justify-content-between small text-muted align-items-center">
+          <div>
+            <span><strong>Published:</strong> {{ comment.created|date:'d.m.Y H:i' }}</span>
+            {% comment %} <span class="ms-2">Likes: {{ 0 }}</span> {% endcomment %}
+          </div>
+          <div>
+          
+            {% comment %} {% if user.is_authenticated %}
+              <a href="#" class="text-primary"><i class="fa fa-thumbs-o-up"></i></a>
+            {% endif %} {% endcomment %}
+
+            {% if user == comment.author %}
+              <button class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete comment"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">There are not comments yet.</p>
+    {% endfor %}
+  </div>
+
+
+
+   <header class="header border-bottom lh-1 py-3">
+        <div class="row flex-nowrap justify-content-between align-items-center">
+          <div class="col-4 pt-1">
+            <a class="link-secondary" href="#">Subscribe</a>
+          </div>
+          <div class="col-4 text-center">
+            <a class="main-logo blog-header-logo text-decoration-none text-muted" href="/">BrainBlog</a>
+          </div>
+          <div class="col-4 d-flex justify-content-end align-items-center">
+            <a class="link-secondary" href="#" aria-label="Search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="mx-3" role="img" viewBox="0 0 24 24">
+                <circle cx="10.5" cy="10.5" r="7.5"></circle>
+                <path d="M21 21l-5.2-5.2"></path>
+              </svg>
+            </a>
+            {% if user.is_authenticated %}
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'smart_blog:profile' user.username %}" class="btn btn-outline-primary">{{ user.username }}</a>
+            {% else %}
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'smart_blog:login' %}">Sign in</a>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+
+в base.html у меня есть ссылка на search и мне нужно реализовать такую функцию - при нажатии на кнопку появится input на всю длину контенера этой секции! поиск будет работать так - пользователь вводит запрос на поиск и искать будет в режиме live, то есть во время набора уже будут приходить похожие варианты на страницу. при этом поиск будет по заголовкам, тегам, тексту публикации
+
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h3 class="pb-3">Edit profile</h3>
+
+    <!-- Форма профиля -->
+    <form method="post" class="mt-4" novalidate>
+      {% csrf_token %}
+
+      {# non-field errors формы профиля #}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% for err in form.non_field_errors %}
+            <div>{{ err }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        {# метка берём из формы, привязываем по id #}
+        <label for="{{ form.username.id_for_label }}" class="form-label text-muted">{{ form.username.label }}</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-danger small">
+            {% for e in form.username.errors %}
+              {{ e }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.first_name.id_for_label }}" class="form-label text-muted">{{ form.first_name.label }}</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}
+          <div class="text-danger small">
+            {% for e in form.first_name.errors %}
+              {{ e }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.last_name.id_for_label }}" class="form-label text-muted">{{ form.last_name.label }}</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}
+          <div class="text-danger small">
+            {% for e in form.last_name.errors %}
+              {{ e }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.email.id_for_label }}" class="form-label text-muted">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="text-danger small">
+            {% for e in form.email.errors %}
+              {{ e }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="d-flex gap-2">
+        <button name="profile_submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'login_app:profile' user.username %}" class="btn btn-secondary">Back</a>
+      </div>
+    </form>
+
+    <div class="mt-5">
+      {# Форма смены пароля — отдельный POST #}
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if password_form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for err in password_form.non_field_errors %}
+              <div>{{ err }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <label for="{{ password_form.new_password1.id_for_label }}" class="form-label text-muted">{{ password_form.new_password1.label }}</label>
+          {{ password_form.new_password1 }}
+          {% if password_form.new_password1.errors %}
+            <div class="text-danger small">
+              {% for e in password_form.new_password1.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ password_form.new_password2.id_for_label }}" class="form-label text-muted">{{ password_form.new_password2.label }}</label>
+          {{ password_form.new_password2 }}
+          {% if password_form.new_password2.errors %}
+            <div class="text-danger small">
+              {% for e in password_form.new_password2.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <button name="password_submit" class="btn btn-danger">Change</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h3 class="pb-3">Edit profile</h3>
+
+    <!-- Форма профиля -->
+    <form method="post" class="mt-4">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label class="form-label text-muted">New username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-danger small">{{ form.username.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-muted">New firstname</label>
+        {{ form.first_name }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-muted">New surname</label>
+        {{ form.last_name }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-muted">New E-mail</label>
+        {{ form.email }}
+      </div>
+
+      <button name="profile_submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'login_app:profile' user.username %}" class="btn btn-secondary">Back</a>
+    </form>
+    <!-- Форма смены пароля -->
+    <h4 class="text-muted mt-4">...or change password</h4>
+    <div class="mt-2">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label text-muted">New password</label>
+          {{ password_form.new_password1 }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted">New password again</label>
+          {{ password_form.new_password2 }}
+        </div>
+        <button name="password_submit" class="btn btn-danger">Change</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+// static/js/clear_btn.js
+document.addEventListener('DOMContentLoaded', function () {
+    'use strict';
+
+    const wrapper = document.querySelector('.search-wrapper');
+    // Если нет ни одного search-wrapper на странице — выходим
+    if (!wrapper) return;
+
+    const input = wrapper.querySelector('.search-input');
+    const clearBtn = wrapper.querySelector('.search-clear');
+
+    if (!input || !clearBtn) return;
+
+    // Инициализация: показать/скрыть в зависимости от содержимого (на случай restore/cached pages)
+    clearBtn.style.opacity = input.value.trim() ? '1' : '0';
+
+    input.addEventListener('input', function () {
+        clearBtn.style.opacity = input.value.trim() ? '1' : '0';
+    });
+
+    clearBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        input.value = '';
+        clearBtn.style.opacity = '0';
+        input.focus();
+        // если используешь форму — можно дополнительно триггернуть input событие:
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+});
+
+
+
+
+# Создание публикации
+# @login_required
+# def create_item(request):
+#     if request.method == "POST":
+#         form = ItemCreateForm(request.POST)
+#         if form.is_valid():
+#             # Получаем instance, чтобы иметь возможность добавлять author и сохранить slug
+#             item = form.save(commit=False)
+#             item.author = request.user
+#             item.save()                 # slug должен генерироваться в Item.save()
+#             try:
+#                 form.save_m2m()         # для ManyToMany (tags) если есть
+#             except Exception:
+#                 pass
+#             new_tags_raw = form.cleaned_data.get("new_tags", "")
+#             if new_tags_raw:
+#                 for name in [t.strip() for t in new_tags_raw.split(",") if t.strip()]:
+#                     tag_obj, _ = Tag.objects.get_or_create(tag_name=name)
+#                     item.tags.add(tag_obj)
+#             item.save()  # ещё раз на всякий случай
+#             return redirect("/")
+#         else:
+#             messages.error(request, "Please fill the form correctly.")
+#     else:
+#         form = ItemCreateForm()
+#     return render(request, "smart_blog/create_item.html", {"form": form})
+
+
+# @require_POST
+# @login_required
+# def create_item_ajax(request):
+#     form = ItemCreateForm(request.POST)
+#     files = request.FILES.getlist('images')
+
+#     if not form.is_valid():
+#         errors = {k: v for k, v in form.errors.items()}
+#         return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+#     item = form.save(commit=False)
+#     item.author = request.user
+#     item.save()
+#     form.save_m2m()
+
+#     # save files
+#     for f in files[:10]:
+#         ItemImage.objects.create(item=item, image=f)
+
+#     return JsonResponse({'success': True, 'redirect': "/"})
+
+
+
+
+<div class="row mb-2 g-3 align-items-stretch">
+  {% for item in items %}
+    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+      <!-- d-flex важно, чтобы колонка растягивалась -->
+      <article class="card w-100 h-100 shadow-sm border rounded overflow-hidden d-flex flex-column" data-item-id="{{ item.pk }}" id="item-{{ item.pk }}">
+        <div class="card-body d-flex flex-column" data-item-id="{{ item.pk }}">
+          <!-- Верх: автор и просмотры -->
+          <div class="d-flex justify-content-between align-items-start my-3 pe-3 ps-3">
+            <div class="d-flex align-items-center gap-2">
+              {% if item.author %}
+                <i class="fa fa-user-circle-o text-primary-emphasis" aria-hidden="true"></i>
+                <strong class="d-inline-block text-primary-emphasis ms-1">{{ item.author }}</strong>
+              {% else %}
+                <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i>
+                <strong class="d-inline-block text-primary-emphasis ms-1">Deleted account</strong>
+              {% endif %}
+            </div>
+
+            <div class="d-flex align-items-center gap-2 text-muted small">
+              <span aria-hidden="true"><i class="fa fa-eye"></i></span>
+              <strong id="views-count-{{ item.pk }}">{{ item.views.count }}</strong>
+            </div>
+          </div>
+
+          <hr/>
+
+          <!-- Заголовок -->
+          <div class="mt-2">
+            <h3 class="mb-5">{{ item.title }}</h3>
+
+            <!-- Published -->
+            <div class="text-body-secondary small d-flex gap-2">
+              <span>Published:</span>
+              <strong>{{ item.human_published }}</strong>
+            </div>
+          </div>
+
+          <hr/>
+
+          <!-- Обрезанный текст, занимают доступное пространство -->
+          <p class="card-text flex-grow-1 py-3 px-1">{{ item.text|truncatechars:500 }}</p>
+
+          <hr/>
+
+          <!-- Нижняя панель — ссылку влево, лайки/закладки вправо -->
+          <div class="d-flex justify-content-between align-items-center my-3 pe-3 ps-3">
+            <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none" data-item-id="{{ item.pk }}">Continue reading</a>
+
+            <div class="d-flex gap-3 align-items-center">
+              <div class="d-flex gap-2 align-items-center small">
+                <i class="fa fa-heart danger_" aria-hidden="true"></i>
+                <span id="likes-count-{{ item.pk }}">{{ item.total_likes }}</span>
+              </div>
+
+              <div class="d-flex gap-2 align-items-center small">
+                <i class="fa fa-bookmark success_" aria-hidden="true"></i>
+                <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarked_by.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /.card-body -->
+      </article>
+    </div>
+  {% endfor %}
+</div>
+
+
+
+// // static/js/image_manage.js
+// // Unified image client: preview, "add more", client removal, AJAX delete for saved images.
+// (function () {
+//     'use strict';
+
+//     function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
+//     function qsa(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
+
+//     function getCookie(name) {
+//         const v = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith(name + '='));
+//         return v ? decodeURIComponent(v.split('=')[1]) : null;
+//     }
+
+//     function humanFileSize(size) {
+//         if (size < 1024) return size + ' B';
+//         if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+//         return (size / (1024 * 1024)).toFixed(1) + ' MB';
+//     }
+
+//     document.addEventListener('DOMContentLoaded', function () {
+//         const mainInput = qs('#id_images') || qs('input[name="images"]');
+//         const preview = qs('#preview');
+//         const infoNode = qs('#imagesHelp');
+//         const addMoreBtn = qs('#btnAddMoreImages');
+
+//         const MAX = 10;
+//         const ALLOWED = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+
+//         if (!mainInput || !preview) return;
+
+//         // helper
+//         function setInfo(text, isWarning) {
+//             if (!infoNode) return;
+//             infoNode.textContent = text;
+//             if (isWarning) {
+//                 infoNode.classList.add('text-danger');
+//             } else {
+//                 infoNode.classList.remove('text-danger');
+//             }
+//         }
+
+//         // count thumbnails: client previews + existing server images (container #existingImages .existing-image)
+//         function countThumbnails() {
+//             const previewCount = preview ? preview.querySelectorAll('.image-preview-item').length : 0;
+//             const existingContainer = document.getElementById('existingImages');
+//             const existingCount = existingContainer ? existingContainer.querySelectorAll('.existing-image').length : 0;
+//             const filesCount = (mainInput.files && mainInput.files.length) ? mainInput.files.length : 0;
+//             return { previewCount, existingCount, filesCount, total: previewCount + existingCount + filesCount };
+//         }
+
+//         // show/hide addMoreBtn depending on whether there are any files or previews existing
+//         function refreshAddMoreVisibility() {
+//             if (!addMoreBtn) return;
+//             const cnt = countThumbnails();
+//             // show button only if there is at least one thumbnail or selected file
+//             if (cnt.total > 0) addMoreBtn.style.display = 'inline-flex';
+//             else addMoreBtn.style.display = 'none';
+//         }
+
+//         // Create preview block (shared style)
+//         function makePreviewBlock(srcOrFileName, sizeText, isExisting, idOrTempId) {
+//             const wrap = document.createElement('div');
+//             wrap.className = 'image-preview-item existing-image position-relative text-center';
+//             wrap.style.width = '120px';
+
+//             const img = document.createElement('img');
+//             img.style.width = '120px';
+//             img.style.height = '100px';
+//             img.style.objectFit = 'cover';
+//             img.style.borderRadius = '4px';
+//             img.style.display = 'block';
+//             if (srcOrFileName) img.src = srcOrFileName;
+
+//             const meta = document.createElement('div');
+//             meta.style.marginTop = '6px';
+//             const nameNode = document.createElement('small');
+//             nameNode.textContent = (typeof idOrTempId === 'string') ? idOrTempId : (srcOrFileName && srcOrFileName.name ? srcOrFileName.name : srcOrFileName);
+//             nameNode.style.display = 'block';
+//             const sizeNode = document.createElement('small');
+//             sizeNode.className = 'text-muted d-block';
+//             sizeNode.textContent = sizeText || '';
+
+//             // delete button (same for new and existing)
+//             const btn = document.createElement('button');
+//             btn.type = 'button';
+//             btn.className = 'btn btn-sm btn-danger btn-delete-image position-absolute';
+//             btn.style.right = '6px';
+//             btn.style.top = '6px';
+//             btn.style.fontSize = '10px';
+//             btn.innerHTML = '<i class="fa fa-times"></i>';
+
+//             wrap.appendChild(img);
+//             meta.appendChild(nameNode);
+//             meta.appendChild(sizeNode);
+//             wrap.appendChild(meta);
+//             wrap.appendChild(btn);
+
+//             return wrap;
+//         }
+
+//         // render input.files -> preview
+//         function renderFilesFromInput() {
+//             preview.innerHTML = '';
+//             const files = Array.from(mainInput.files || []);
+//             files.forEach((f) => {
+//                 const node = makePreviewBlock('', humanFileSize(f.size), false, f.name);
+//                 const img = node.querySelector('img');
+//                 const reader = new FileReader();
+//                 reader.onload = function (e) { img.src = e.target.result; };
+//                 reader.readAsDataURL(f);
+
+//                 // mark remove action for this node (client-only)
+//                 const btn = node.querySelector('.btn-delete-image');
+//                 btn.dataset.action = 'remove-temp';
+//                 preview.appendChild(node);
+//             });
+//             updateInfo();
+//             refreshAddMoreVisibility();
+//         }
+
+//         function updateInfo() {
+//             const count = (mainInput.files && mainInput.files.length) || 0;
+//             const cntObj = countThumbnails();
+//             // show number of currently selected on input, but also warn if overall > MAX (defence)
+//             setInfo(`Selected ${count} / ${MAX} files (JPEG/PNG/WebP).`, (cntObj.total > MAX));
+//         }
+
+//         // merge array of File objects into mainInput.files (via DataTransfer)
+//         function mergeFilesToMainInput(newFiles) {
+//             const current = Array.from(mainInput.files || []);
+//             const filteredNew = newFiles.filter(f => ALLOWED.includes(f.type));
+//             const merged = current.concat(filteredNew);
+
+//             if (merged.length > MAX) {
+//                 // keep only MAX and warn user
+//                 const kept = merged.slice(0, MAX);
+//                 const dt = new DataTransfer();
+//                 kept.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 renderFilesFromInput();
+//                 setInfo(`You reached maximum ${MAX} files. Extra files were not added.`, true);
+//                 refreshAddMoreVisibility();
+//                 return;
+//             }
+
+//             const dt = new DataTransfer();
+//             merged.forEach(f => dt.items.add(f));
+//             mainInput.files = dt.files;
+//             renderFilesFromInput();
+//             refreshAddMoreVisibility();
+//         }
+
+//         // transient input used by "Add more"
+//         let tmpInput = null;
+//         if (addMoreBtn) {
+//             // ensure button initially hidden if no files/previews
+//             try { addMoreBtn.style.display = 'none'; } catch (e) { }
+
+//             addMoreBtn.addEventListener('click', function (e) {
+//                 e.preventDefault();
+//                 if (!tmpInput) {
+//                     tmpInput = document.createElement('input');
+//                     tmpInput.type = 'file';
+//                     tmpInput.accept = 'image/*';
+//                     tmpInput.multiple = true;
+//                     tmpInput.style.display = 'none';
+//                     document.body.appendChild(tmpInput);
+
+//                     tmpInput.addEventListener('change', function () {
+//                         const files = Array.from(tmpInput.files || []);
+//                         if (!files.length) return;
+
+//                         const currentCount = (mainInput.files && mainInput.files.length) || 0;
+//                         if (currentCount + files.length > MAX) {
+//                             const allowedCount = Math.max(0, MAX - currentCount);
+//                             if (allowedCount === 0) {
+//                                 setInfo(`Maximum ${MAX} images allowed. Remove some first to add more.`, true);
+//                                 tmpInput.value = '';
+//                                 return;
+//                             }
+//                             const toAdd = files.slice(0, allowedCount);
+//                             mergeFilesToMainInput(toAdd);
+//                             setInfo(`Only ${allowedCount} files were added to reach the maximum ${MAX}.`, true);
+//                         } else {
+//                             mergeFilesToMainInput(files);
+//                         }
+
+//                         // reset tmp input to allow re-selection of same files next time
+//                         try { tmpInput.value = ''; } catch (e) { }
+//                     });
+//                 }
+//                 tmpInput.click();
+//             });
+//         }
+
+//         // main input change
+//         mainInput.addEventListener('change', function () {
+//             let files = Array.from(mainInput.files || []);
+//             // trim if too many
+//             if (files.length > MAX) {
+//                 files = files.slice(0, MAX);
+//                 const dt = new DataTransfer();
+//                 files.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 setInfo(`Maximum ${MAX} images allowed. Extra were removed.`, true);
+//             }
+
+//             // filter not allowed
+//             const bad = files.filter(f => !ALLOWED.includes(f.type));
+//             if (bad.length) {
+//                 files = files.filter(f => ALLOWED.includes(f.type));
+//                 const dt = new DataTransfer();
+//                 files.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 setInfo(`Removed unsupported types (${bad.map(b => b.name).join(', ')})`, true);
+//             }
+
+//             renderFilesFromInput();
+//         });
+
+//         // click handlers for preview (remove-temp or AJAX delete existing)
+//         preview.addEventListener('click', function (e) {
+//             const btn = e.target.closest && e.target.closest('button.btn-delete-image');
+//             if (!btn) return;
+
+//             const deleteUrl = btn.dataset.deleteUrl;
+//             const imageId = btn.dataset.imageId;
+//             if (deleteUrl) {
+//                 // AJAX delete existing
+//                 btn.disabled = true;
+//                 btn.classList.add('opacity-75');
+//                 (async function () {
+//                     try {
+//                         const resp = await fetch(deleteUrl, {
+//                             method: 'POST',
+//                             headers: {
+//                                 'X-CSRFToken': getCookie('csrftoken'),
+//                                 'X-Requested-With': 'XMLHttpRequest',
+//                                 Accept: 'application/json'
+//                             },
+//                             credentials: 'same-origin'
+//                         });
+//                         const data = await resp.json().catch(() => null);
+//                         if (resp.ok && data && data.success) {
+//                             const node = document.getElementById('image-' + data.image_id) || btn.closest('.existing-image');
+//                             if (node) {
+//                                 node.style.transition = 'opacity .15s ease, transform .15s ease';
+//                                 node.style.opacity = '0';
+//                                 node.style.transform = 'scale(.98)';
+//                                 setTimeout(() => {
+//                                     node.remove();
+//                                     updateInfo();
+//                                     refreshAddMoreVisibility();
+//                                 }, 160);
+//                             } else {
+//                                 // nothing to remove visually
+//                                 updateInfo();
+//                                 refreshAddMoreVisibility();
+//                             }
+//                         } else {
+//                             console.warn('Delete failed', data && data.error);
+//                             btn.disabled = false;
+//                             btn.classList.remove('opacity-75');
+//                         }
+//                     } catch (err) {
+//                         console.error('Image delete error', err);
+//                         btn.disabled = false;
+//                         btn.classList.remove('opacity-75');
+//                     }
+//                 })();
+//                 return;
+//             }
+
+//             // Otherwise client-side removal of a chosen-but-not-uploaded file
+//             const item = btn.closest('.image-preview-item');
+//             if (!item) return;
+
+//             const filenameNode = item.querySelector('small');
+//             const filename = filenameNode ? filenameNode.textContent : null;
+//             const cur = Array.from(mainInput.files || []);
+//             const dt = new DataTransfer();
+//             let removed = false;
+//             for (let f of cur) {
+//                 if (!removed && filename && f.name === filename) {
+//                     removed = true;
+//                     continue;
+//                 }
+//                 dt.items.add(f);
+//             }
+
+//             if (!removed) {
+//                 // fallback remove by index
+//                 const previews = qsa('.image-preview-item', preview);
+//                 const idx = previews.indexOf(item);
+//                 Array.from(mainInput.files || []).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+//             }
+
+//             mainInput.files = dt.files;
+
+//             // animate removal
+//             item.style.transition = 'opacity .15s ease, transform .15s ease';
+//             item.style.opacity = '0';
+//             item.style.transform = 'scale(.98)';
+//             setTimeout(() => {
+//                 item.remove();
+//                 updateInfo();
+//                 refreshAddMoreVisibility();
+//             }, 160);
+//         });
+
+//         // initial render (bfcache or page load)
+//         renderFilesFromInput();
+//         refreshAddMoreVisibility();
+//     });
+// })();
+
+
+// // static/js/image_manage.js
+// // Unified image client: preview, "add more", client removal, AJAX delete for saved images.
+// // Works for create and edit pages.
+// (function () {
+//     'use strict';
+
+//     function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
+//     function qsa(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
+
+//     function getCookie(name) {
+//         const cookie = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith(name + '='));
+//         return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+//     }
+
+//     function humanFileSize(size) {
+//         if (size < 1024) return size + ' B';
+//         if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+//         return (size / (1024 * 1024)).toFixed(1) + ' MB';
+//     }
+
+//     document.addEventListener('DOMContentLoaded', function () {
+//         const mainInput = qs('#id_images') || qs('input[name="images"]');
+//         const preview = qs('#preview');
+//         const infoNode = qs('#imagesHelp');
+//         const addMoreBtn = qs('#btnAddMoreImages'); // button "+"
+
+//         const MAX = 10;
+//         const ALLOWED = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+
+//         if (!mainInput || !preview) {
+//             return;
+//         }
+
+//         // helpers
+//         function setInfo(text, isWarning) {
+//             if (!infoNode) return;
+//             infoNode.textContent = text;
+//             if (isWarning) infoNode.classList.add('text-danger');
+//             else infoNode.classList.remove('text-danger');
+//         }
+
+//         // Count thumbnails: preview (new), existingImages (server-rendered), and filesCount (input.files)
+//         function countThumbnails() {
+//             const previewCount = preview ? preview.querySelectorAll('.image-preview-item').length : 0;
+//             const existingContainer = document.getElementById('existingImages');
+//             const existingCount = existingContainer ? existingContainer.querySelectorAll('.existing-image').length : 0;
+//             const filesCount = (mainInput.files && mainInput.files.length) ? mainInput.files.length : 0;
+//             // note: preview items and filesCount correlate, but we sum to be safe for logic
+//             return { previewCount, existingCount, filesCount, total: previewCount + existingCount };
+//         }
+
+//         // Show/hide Add-more button: visible only when there is at least one thumbnail or existing image
+//         function refreshAddMoreVisibility() {
+//             if (!addMoreBtn) return;
+//             const cnt = countThumbnails();
+//             if (cnt.total > 0) addMoreBtn.style.display = 'inline-flex';
+//             else addMoreBtn.style.display = 'none';
+//         }
+
+//         // Create preview block (reused for new files)
+//         function makePreviewBlock(srcOrFileName, sizeText, isExisting, idOrTempId) {
+//             const wrap = document.createElement('div');
+//             wrap.className = 'image-preview-item existing-image position-relative text-center';
+//             wrap.style.width = '120px';
+
+//             const img = document.createElement('img');
+//             img.style.width = '120px';
+//             img.style.height = '100px';
+//             img.style.objectFit = 'cover';
+//             img.style.borderRadius = '4px';
+//             img.style.display = 'block';
+//             if (srcOrFileName) img.src = srcOrFileName;
+
+//             const meta = document.createElement('div');
+//             meta.style.marginTop = '6px';
+//             const nameNode = document.createElement('small');
+//             nameNode.textContent = (typeof idOrTempId === 'string') ? idOrTempId : (srcOrFileName && srcOrFileName.name ? srcOrFileName.name : srcOrFileName);
+//             nameNode.style.display = 'block';
+//             const sizeNode = document.createElement('small');
+//             sizeNode.className = 'text-muted d-block';
+//             sizeNode.textContent = sizeText || '';
+
+//             // delete button (same visual for new and existing)
+//             const btn = document.createElement('button');
+//             btn.type = 'button';
+//             btn.className = 'btn btn-sm btn-danger btn-delete-image position-absolute';
+//             btn.style.right = '6px';
+//             btn.style.top = '6px';
+//             btn.style.fontSize = '10px';
+//             btn.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+
+//             wrap.appendChild(img);
+//             meta.appendChild(nameNode);
+//             meta.appendChild(sizeNode);
+//             wrap.appendChild(meta);
+//             wrap.appendChild(btn);
+
+//             return wrap;
+//         }
+
+//         // Render files from mainInput into preview
+//         function renderFilesFromInput() {
+//             // keep existingImages container untouched (server-rendered)
+//             // preview holds only client-selected files
+//             preview.innerHTML = '';
+//             const files = Array.from(mainInput.files || []);
+//             files.forEach((f) => {
+//                 const node = makePreviewBlock('', humanFileSize(f.size), false, f.name);
+//                 const img = node.querySelector('img');
+//                 const reader = new FileReader();
+//                 reader.onload = function (e) { img.src = e.target.result; };
+//                 reader.readAsDataURL(f);
+
+//                 // mark remove action for this node (client-only)
+//                 const btn = node.querySelector('.btn-delete-image');
+//                 btn.dataset.action = 'remove-temp';
+//                 preview.appendChild(node);
+//             });
+
+//             updateInfo();
+//             refreshAddMoreVisibility();
+//         }
+
+//         function updateInfo() {
+//             const filesCount = (mainInput.files && mainInput.files.length) || 0;
+//             const cnt = countThumbnails();
+//             // show client-selected count, and warn if total (existing + client) > MAX
+//             const totalPotential = cnt.existingCount + filesCount;
+//             setInfo(`Selected ${filesCount} / ${MAX} files (JPEG/PNG/WebP).`, totalPotential > MAX);
+//         }
+
+//         // Merge new files array into main input (via DataTransfer)
+//         function mergeFilesToMainInput(newFiles) {
+//             const current = Array.from(mainInput.files || []);
+//             const filteredNew = newFiles.filter(f => ALLOWED.includes(f.type));
+//             const merged = current.concat(filteredNew);
+//             if (merged.length > MAX) {
+//                 const allowedCount = Math.max(0, MAX - current.length);
+//                 if (allowedCount <= 0) {
+//                     setInfo(`Maximum ${MAX} images allowed. Remove some first.`, true);
+//                     return;
+//                 }
+//                 const kept = current.concat(filteredNew.slice(0, allowedCount));
+//                 const dt = new DataTransfer();
+//                 kept.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 renderFilesFromInput();
+//                 setInfo(`Only ${allowedCount} files were added to reach the maximum ${MAX}.`, true);
+//                 refreshAddMoreVisibility();
+//                 return;
+//             }
+//             const dt = new DataTransfer();
+//             merged.forEach(f => dt.items.add(f));
+//             mainInput.files = dt.files;
+//             renderFilesFromInput();
+//             refreshAddMoreVisibility();
+//         }
+
+//         // transient input used by Add-more button
+//         let tmpInput = null;
+//         if (addMoreBtn) {
+//             try { addMoreBtn.style.display = 'none'; } catch (e) { }
+//             addMoreBtn.addEventListener('click', function (e) {
+//                 e.preventDefault();
+//                 if (!tmpInput) {
+//                     tmpInput = document.createElement('input');
+//                     tmpInput.type = 'file';
+//                     tmpInput.accept = 'image/*';
+//                     tmpInput.multiple = true;
+//                     tmpInput.style.display = 'none';
+//                     document.body.appendChild(tmpInput);
+
+//                     tmpInput.addEventListener('change', function () {
+//                         const files = Array.from(tmpInput.files || []);
+//                         if (!files.length) return;
+//                         // filter allowed immediately
+//                         const bad = files.filter(f => !ALLOWED.includes(f.type));
+//                         const good = files.filter(f => ALLOWED.includes(f.type));
+//                         if (bad.length) {
+//                             setInfo(`Removed unsupported types (${bad.map(b => b.name).join(', ')})`, true);
+//                         }
+//                         mergeFilesToMainInput(good);
+//                         try { tmpInput.value = ''; } catch (e) { }
+//                     });
+//                 }
+//                 tmpInput.click();
+//             });
+//         }
+
+//         // main input change handler
+//         mainInput.addEventListener('change', function () {
+//             let files = Array.from(mainInput.files || []);
+//             // trim to MAX if needed
+//             if (files.length > MAX) {
+//                 files = files.slice(0, MAX);
+//                 const dt = new DataTransfer();
+//                 files.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 setInfo(`Maximum ${MAX} images allowed. Extra were removed.`, true);
+//             }
+//             // remove unsupported types
+//             const bad = files.filter(f => !ALLOWED.includes(f.type));
+//             if (bad.length) {
+//                 files = files.filter(f => ALLOWED.includes(f.type));
+//                 const dt = new DataTransfer();
+//                 files.forEach(f => dt.items.add(f));
+//                 mainInput.files = dt.files;
+//                 setInfo(`Removed unsupported types (${bad.map(b => b.name).join(', ')})`, true);
+//             }
+//             renderFilesFromInput();
+//         });
+
+//         // Click handlers in preview: remove-temp or AJAX delete existing
+//         preview.addEventListener('click', function (e) {
+//             const btn = e.target.closest && e.target.closest('button.btn-delete-image');
+//             if (!btn) return;
+//             // If button carries data-delete-url => it is for an existing image rendered by server
+//             const deleteUrl = btn.dataset.deleteUrl;
+//             const imageId = btn.dataset.imageId;
+//             if (deleteUrl) {
+//                 // AJAX delete
+//                 btn.disabled = true;
+//                 btn.classList.add('opacity-75');
+//                 (async function () {
+//                     try {
+//                         const resp = await fetch(deleteUrl, {
+//                             method: 'POST',
+//                             headers: {
+//                                 'X-CSRFToken': getCookie('csrftoken'),
+//                                 'X-Requested-With': 'XMLHttpRequest',
+//                                 Accept: 'application/json'
+//                             },
+//                             credentials: 'same-origin'
+//                         });
+//                         const data = await resp.json().catch(() => null);
+//                         if (resp.ok && data && data.success) {
+//                             const node = document.getElementById('image-' + data.image_id) || btn.closest('.existing-image');
+//                             if (node) {
+//                                 node.style.transition = 'opacity .15s ease, transform .15s ease';
+//                                 node.style.opacity = '0';
+//                                 node.style.transform = 'scale(.98)';
+//                                 setTimeout(() => {
+//                                     node.remove();
+//                                     updateInfo();
+//                                     refreshAddMoreVisibility();
+//                                 }, 160);
+//                             } else {
+//                                 updateInfo();
+//                                 refreshAddMoreVisibility();
+//                             }
+//                         } else {
+//                             console.warn('Delete failed', data && data.error);
+//                             btn.disabled = false;
+//                             btn.classList.remove('opacity-75');
+//                         }
+//                     } catch (err) {
+//                         console.error('Image delete error', err);
+//                         btn.disabled = false;
+//                         btn.classList.remove('opacity-75');
+//                     }
+//                 })();
+//                 return;
+//             }
+
+//             // Else remove from mainInput.files (client-only)
+//             const item = btn.closest('.image-preview-item');
+//             if (!item) return;
+//             const filenameNode = item.querySelector('small');
+//             const filename = filenameNode ? filenameNode.textContent : null;
+//             const cur = Array.from(mainInput.files || []);
+//             const dt = new DataTransfer();
+//             let removed = false;
+//             for (let f of cur) {
+//                 if (!removed && filename && f.name === filename) {
+//                     removed = true;
+//                     continue;
+//                 }
+//                 dt.items.add(f);
+//             }
+//             if (!removed) {
+//                 // fallback remove by index
+//                 const previews = qsa('.image-preview-item', preview);
+//                 const idx = previews.indexOf(item);
+//                 Array.from(mainInput.files || []).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+//             }
+//             mainInput.files = dt.files;
+
+//             // animate removal
+//             item.style.transition = 'opacity .15s ease, transform .15s ease';
+//             item.style.opacity = '0';
+//             item.style.transform = 'scale(.98)';
+//             setTimeout(() => {
+//                 item.remove();
+//                 updateInfo();
+//                 refreshAddMoreVisibility();
+//             }, 160);
+//         });
+
+//         // initial render (bfcache or page load)
+//         renderFilesFromInput();
+//         refreshAddMoreVisibility();
+//     });
+// })();
+
+
+
+// static/js/image_manage.js
+// Unified image client: preview, "add more", client removal, AJAX delete for saved images.
+// Works for create and edit pages.
+
+
+
+{# templates/includes/breadcrumbs.html #}
+<nav aria-label="breadcrumb" class="py-3" style="--bs-breadcrumb-divider: '>';">
+  <ol class="breadcrumb">
+
+    {% for name, url in crumbs %}
+      {# Последняя — активная (не ссылка) #}
+      {% if forloop.last %}
+        <li class="breadcrumb-item active" aria-current="page">{{ name }}</li>
+      {% else %}
+        <li class="breadcrumb-item"><a href="{{ url }}">{{ name }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+</nav>
+
+
+
+<div id="headerSearchOverlay" class="header-search-overlay" aria-hidden="true">
+
+
+
+/* OVERLAY: шторочный эффект (используем max-height + transform for crispness) */
+.header-search-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 2000;
+    pointer-events: none;
+    overflow: hidden;
+
+    /* закрытое состояние:
+       max-height 0 — скрыто; transition на max-height -> плавно "раскрывется" */
+    max-height: 0;
+    background: #fff;
+    box-shadow: none;
+    display: none;
+}
+
+/* активное состояние — раскрываем (подстраивай max-height под контент; 220px безопасно) */
+.header-search-overlay.active {
+    pointer-events: auto;
+    max-height: 300px;
+    /* высота шторки */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: center;
+}
+
+/* внутренняя обёртка */
+.header-search-inner {
+    width: 100%;
+    max-width: 1296px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ряд: input + кнопка clear (позиционируем относительным контейнером) */
+.header-search-row {
+    position: relative;
+    width: 100%;
+}
+
+/* сам input */
+.header-search-input {
+    width: 100%;
+    height: 55px;
+    padding: 10px 44px 10px 20px;
+    /* правый паддинг — место под крестик */
+    border-radius: 10px;
+    font-size: 16px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+
+/* фокус */
+.header-search-input:focus {
+    outline: none;
+    border-color: #2b6ef6;
+    box-shadow: 0 6px 18px rgba(43, 110, 246, 0.08);
+}
+
+/* кнопка очистки — внутри input, справа */
+.header-search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    color: #6b7280;
+    /* neutral */
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* We'll hide with display: none when empty (via JS class 'hidden') */
+}
+
+/* hidden класс управляет display -> полностью убирает из flow */
+.header-search-clear.hidden {
+    display: none;
+}
+
+/* фильтры (чекбоксы) под input */
+.header-search-filters {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* В узкое устройство: уместим кнопки в несколько строк */
+@media (max-width: 640px) {
+    .header-search-inner {
+        padding: 10px;
+    }
+
+    .header-search-filters {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
+/* мобильная адаптация */
+@media (max-width: 576px) {
+    .header-search-inner {
+        padding: 8px;
+    }
+
+    .header-search-overlay.active {
+        max-height: 220px;
+    }
+
+    .header-search-input {
+        font-size: 15px;
+    }
+}
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+  {% comment %} {% include 'includes/messages.html' %} {% endcomment %}
+  <div class="container mt-5">
+    <div class="edit-profile-field form-wrapper mx-auto">
+      <div class="d-flex justify-content-between mb-3">
+        <h4 class="text-muted">Edit profile</h4>
+        <a href="{% url 'login_app:profile' user.username %}" class="btn btn-secondary">Back</a>
+      </div>
+      <hr />
+      <!-- Форма профиля -->
+      <form method="post" class="mt-4" novalidate>
+        {% csrf_token %}
+
+        {# non-field errors формы профиля #}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for err in form.non_field_errors %}
+              <div>{{ err }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="mb-3">
+          {# метка берём из формы, привязываем по id #}
+          <label for="{{ form.username.id_for_label }}" class="form-label text-muted">{{ form.username.label }}</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-danger small">
+              {% for e in form.username.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.first_name.id_for_label }}" class="form-label text-muted">{{ form.first_name.label }}</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}
+            <div class="text-danger small">
+              {% for e in form.first_name.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.last_name.id_for_label }}" class="form-label text-muted">{{ form.last_name.label }}</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}
+            <div class="text-danger small">
+              {% for e in form.last_name.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.email.id_for_label }}" class="form-label text-muted">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-danger small">
+              {% for e in form.email.errors %}
+                {{ e }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <button name="profile_submit" class="btn btn-primary">Edit profile</button>
+      </form>
+
+      <div class="d-flex justify-content-between align-items-center mt-5">
+        <h4 class="text-muted m-0">Edit password</h4>
+        <a href="#" class="btn btn-primary">Gen password</a>
+      </div>
+      <hr />
+      <div class="mt-4">
+        {# Форма смены пароля — отдельный POST #}
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if password_form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for err in password_form.non_field_errors %}
+                <div>{{ err }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label for="{{ password_form.new_password1.id_for_label }}" class="form-label text-muted">{{ password_form.new_password1.label }}</label>
+            {{ password_form.new_password1 }}
+            {% if password_form.new_password1.errors %}
+              <div class="text-danger small">
+                {% for e in password_form.new_password1.errors %}
+                  {{ e }}{% if not forloop.last %}
+                    <br />
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ password_form.new_password2.id_for_label }}" class="form-label text-muted">{{ password_form.new_password2.label }}</label>
+            {{ password_form.new_password2 }}
+            {% if password_form.new_password2.errors %}
+              <div class="text-danger small">
+                {% for e in password_form.new_password2.errors %}
+                  {{ e }}{% if not forloop.last %}
+                    <br />
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <button name="password_submit" class="btn btn-danger">Change pass</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+        {% comment %} <br />
+        {% for v in viewers %}
+          <span>{{ v.username }}</span>
+        {% endfor %} {% endcomment %}
+
+        {% comment %} <p>
+          <strong>{{ total_likes }}</strong> likes –
+          <a href="#" data-bs-toggle="collapse" data-bs-target="#likersList">show</a>
+        </p>
+
+        <div class="collapse" id="likersList">
+          {% for u in likers %}
+            <div>{{ u.username }}</div>
+          {% empty %}
+            <div class="text-muted">Nobody liked yet.</div>
+          {% endfor %}
+        </div> {% endcomment %}
+
+
+      {% comment %} <div class="container">
+      {% if not request.headers.x_requested_with == 'XMLHttpRequest' %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert" data-autodismiss="true">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+    </div> {% endcomment %}

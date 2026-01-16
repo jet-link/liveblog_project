@@ -1,0 +1,232 @@
+.position-sticky {
+    top: 3rem;
+}
+
+/* h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+} */
+
+.site-main {
+    position: relative;
+}
+
+/* .pages_content_block{
+    margin-top: 50px;
+    margin-bottom: 50px;
+} */
+
+.accordion-button {
+    padding: 1.3rem !important;
+}
+
+.title-block {
+    background: rgba(0, 0, 0, .7);
+    z-index: 500;
+    color: #ffffff;
+    padding: 15px 30px;
+    border-radius: 8px;
+}
+
+
+.primary_section,
+.cosmo_section,
+.faq-section {
+    min-height: 100vh;
+    /* занимает минимум экран */
+    /* по горизонтали */
+    /* важно — внутренние отступы */
+    box-sizing: border-box;
+    overflow: hidden;
+    /* padding-top: 80px; */
+    /* padding-bottom: 80px; */
+    /* содержимое НЕ выйдет за пределы */
+    border-bottom: 1px solid #F1F2F3;
+    /* box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08); */
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+
+.centered {
+    display: flex;
+    /* центровка */
+    flex-direction: column;
+    justify-content: center;
+    /* по вертикали */
+    align-items: center;
+}
+
+.faq_answer {
+    white-space: pre-wrap;
+    /* КЛЮЧЕВО */
+    line-height: 1.5;
+}
+
+
+/* ====================== SECONDARY SECTION (updated) ====================== */
+/* секция вторичная — фон чуть затемнить (overlay) */
+.cosmo_section {
+    position: relative;
+    /* min-height: 100vh; */
+    color: #fff;
+    background: url("../img/earth_hero.webp") center / cover fixed;
+    overflow: hidden;
+}
+
+.cosmo_section a {
+    z-index: 200;
+}
+
+/* затемнение фона (над фоном, под астро/текстом) */
+.cosmo_section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cosmo_section::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 15vh;
+    pointer-events: none;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.6) 35%,
+            rgba(0, 0, 0, 0.9) 70%,
+            #000 100%);
+    z-index: 100;
+}
+
+/* текст внутри */
+.sec-inner {
+    position: relative;
+    z-index: 6;
+    /* выше астро */
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.sec-title,
+.sec-sub {
+    transition: transform 0.12s linear;
+    will-change: transform;
+}
+
+.sec-sub {
+    font-size: 1.1rem;
+    line-height: 2rem;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    max-width: 550px;
+}
+
+/* общий стиль для всех астронавтов */
+.sec-astro {
+    position: absolute;
+    transform: translateX(-50%) translateY(0) scale(1);
+    width: 220px;
+    max-width: 24vw;
+    z-index: 3;
+    /* будет переопределяться per-element */
+    pointer-events: none;
+    transition: none;
+    /* управление анимацией в JS */
+    will-change: transform, filter;
+    mix-blend-mode: normal;
+    filter: saturate(1) contrast(1);
+    backface-visibility: hidden;
+}
+
+.flip-h {
+    scale: -1 1;
+    /* отражаем по X */
+}
+
+.hero-snap {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    z-index: 50;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+    padding: 0 8vw;
+}
+
+.hero-snap::-webkit-scrollbar {
+    display: none;
+}
+
+.hero-card {
+    flex: 0 0 calc((100vw - 10vw - 64px) / 3);
+    height: 560px;
+    scroll-snap-align: center;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, .3);
+    backdrop-filter: blur(6px);
+    transition: transform .3s ease;
+    z-index: 200;
+}
+
+.hero-card-body a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.hero-card img {
+    width: 100%;
+    height: 75%;
+    object-fit: cover;
+    transition: .3s ease;
+}
+
+.hero-card a:hover img {
+    transform: scale(1.03);
+}
+
+
+.hero-card-body {
+    padding: 16px;
+    color: #fff;
+}
+
+/* планшет — 2 карточки */
+@media (max-width: 1024px) {
+    .hero-card {
+        flex: 0 0 calc((100vw - 16vw - 32px) / 2);
+        height: 520px;
+    }
+}
+
+/* мобильный — 1 карточка */
+@media (max-width: 640px) {
+    .hero-card {
+        flex: 0 0 88vw;
+        height: 480px;
+    }
+}
+
+.sec-title {
+    color: #c8d6e5;
+    text-decoration: underline;
+}
+
+
+.accordion-button {
+    font-weight: 500 !important;
+}

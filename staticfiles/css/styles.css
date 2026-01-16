@@ -1,0 +1,399 @@
+body,
+html {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* scroll-behavior: auto !important;  */
+}
+
+
+.main {
+    flex-grow: 1;
+    padding: 70px 0;
+}
+
+
+.footer {
+    flex-shrink: 0;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+
+p {
+    overflow-wrap: break-word;
+    /* современный вариант */
+    word-wrap: break-word;
+    line-height: 2.2rem;
+}
+
+
+.alert.fade {
+    transition: opacity 0.6s linear, transform 0.3s ease;
+}
+
+
+/* OVERLAY: шторочный эффект (используем max-height + transform for crispness) */
+.header-search-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 2000;
+    pointer-events: none;
+    overflow: hidden;
+
+    /* закрытое состояние:
+       max-height 0 — скрыто; transition на max-height -> плавно "раскрывется" */
+    max-height: 0;
+    background: #fff;
+    box-shadow: none;
+    display: none;
+}
+
+/* активное состояние — раскрываем (подстраивай max-height под контент; 220px безопасно) */
+.header-search-overlay.active {
+    pointer-events: auto;
+    max-height: 300px;
+    /* высота шторки */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: center;
+}
+
+/* внутренняя обёртка */
+.header-search-inner {
+    width: 100%;
+    max-width: 1296px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ряд: input + кнопка clear (позиционируем относительным контейнером) */
+.header-search-row {
+    position: relative;
+    width: 100%;
+}
+
+/* сам input */
+.header-search-input {
+    width: 100%;
+    height: 55px;
+    padding: 10px 44px 10px 20px;
+    /* правый паддинг — место под крестик */
+    border-radius: 10px;
+    font-size: 16px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+
+/* фокус */
+.header-search-input:focus {
+    outline: none;
+    border-color: #2b6ef6;
+    box-shadow: 0 6px 18px rgba(43, 110, 246, 0.08);
+}
+
+/* кнопка очистки — внутри input, справа */
+.header-search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    color: #6b7280;
+    /* neutral */
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* We'll hide with display: none when empty (via JS class 'hidden') */
+}
+
+/* hidden класс управляет display -> полностью убирает из flow */
+.header-search-clear.hidden {
+    display: none;
+}
+
+/* фильтры (чекбоксы) под input */
+.header-search-filters {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* В узкое устройство: уместим кнопки в несколько строк */
+@media (max-width: 640px) {
+    .header-search-inner {
+        padding: 10px;
+    }
+
+    .header-search-filters {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
+/* мобильная адаптация */
+@media (max-width: 576px) {
+    .header-search-inner {
+        padding: 8px;
+    }
+
+    .header-search-overlay.active {
+        max-height: 220px;
+    }
+
+    .header-search-input {
+        font-size: 15px;
+    }
+}
+
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem
+    }
+}
+
+.b-example-divider {
+    width: 100%;
+    height: 3rem;
+    background-color: #0000001a;
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em #0000001a, inset 0 .125em .5em #00000026
+}
+
+.b-example-vr {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh
+}
+
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor
+}
+
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch
+}
+
+.btn-bd-primary {
+    --bd-violet-bg: #712cf9;
+    --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+    --bs-btn-font-weight: 600;
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bd-violet-bg);
+    --bs-btn-border-color: var(--bd-violet-bg);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: #6528e0;
+    --bs-btn-hover-border-color: #6528e0;
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: #5a23c8;
+    --bs-btn-active-border-color: #5a23c8
+}
+
+.bd-mode-toggle {
+    z-index: 1500
+}
+
+.bd-mode-toggle .bi {
+    width: 1em;
+    height: 1em
+}
+
+.bd-mode-toggle .dropdown-menu .active .bi {
+    display: block !important
+}
+
+.comment-text {
+    font-size: 1rem;
+}
+
+.btn-bounce {
+    animation: btnBounce 0.3s ease;
+}
+
+@keyframes btnBounce {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.4);
+    }
+
+    60% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.file-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+    /* скрываем настоящий input */
+}
+
+.file-btn {
+    background: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.file-placeholder {
+    color: #555;
+}
+
+.round {
+    display: block;
+    /* чтобы можно было задать ширину/высоту */
+    width: 50px;
+    /* одинаковые значения → круг */
+    height: 50px;
+    line-height: 50px;
+    /* чтобы текст был по центру */
+    border-radius: 50%;
+    /* делает кругом */
+    text-align: center;
+    text-decoration: none;
+}
+
+
+.heart_btn {
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.bookmark_btn {
+    border: 2px solid #2980b9;
+    color: #2980b9;
+}
+
+.success_ {
+    color: #2980b9;
+}
+
+.danger_ {
+    color: #e74c3c;
+}
+
+/* #clearTextIcon {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+} */
+
+.main-logo {
+    font-size: 1.4rem;
+    /* border: 2px solid #95a5a6;
+    padding: 5px 15px;
+    border-radius: 5px; */
+}
+
+.comment_author {
+    font-size: .8rem;
+}
+
+textarea {
+    resize: none;
+    line-height: 2rem !important;
+}
+
+.search-toggle-btn {
+    font-size: 1.2rem;
+    padding: 7px;
+}
+
+
+.thumbnail {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}
+
+.thumb-btn {
+    right: 6px;
+    top: 6px;
+    font-size: 10px;
+}
+
+
+/* Одно место для размеров превью — одинаково для новых и существующих */
+.image-preview-item {
+    width: 120px;
+    position: relative;
+    text-align: center;
+    display: inline-block;
+    margin: 6px;
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}
+
+.image-preview-item small {
+    display: block;
+    line-height: 1.2;
+}
+
+/* кнопка удаления */
+.image-remove-btn {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    font-size: 12px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

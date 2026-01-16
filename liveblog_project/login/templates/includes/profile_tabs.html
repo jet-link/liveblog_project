@@ -1,0 +1,27 @@
+<div class="tabs_block">
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item small" role="presentation">
+      <a class="nav-link {% if active_tab == 'all' %}active{% endif %}" href="?tab=all" role="tab" data-tab="all">
+        Created
+        (<span class="tab-count-badge" data-tab-count="all">{{ all_count }}</span>)
+        {% comment %} <i class="fa fa-plus ms-2" style="color: #0984e3;" aria-hidden="true"></i> {% endcomment %}
+      </a>
+    </li>
+    {% if user.is_authenticated and user.username == user_obj.username %}
+      <li class="nav-item small" role="presentation">
+        <a class="nav-link {% if active_tab == 'liked' %}active{% endif %}" href="?tab=liked" role="tab" data-tab="liked">
+          Liked
+          (<span class="tab-count-badge" data-tab-count="liked">{{ liked_count }}</span>)
+          {% comment %} <i class="fa fa-heart danger_ ms-2"></i> {% endcomment %}
+        </a>
+      </li>
+      <li class="nav-item small" role="presentation">
+        <a class="nav-link {% if active_tab == 'bookmarked' %}active{% endif %}" href="?tab=bookmarked" role="tab" data-tab="bookmarked">
+          Bookmarked 
+          (<span class="tab-count-badge" data-tab-count="bookmarked">{{ bookmarked_count }}</span>)
+          {% comment %} <i class="fa fa-bookmark success_ ms-2"></i> {% endcomment %}
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</div>

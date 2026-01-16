@@ -1,0 +1,48 @@
+<!-- templates/accounts/profile.html -->
+{% extends 'base.html' %}
+{% block title %}
+  {{ user_obj.username }} - profile room
+{% endblock %}
+{% block content %}
+  <div class="container content_block">
+    <div class="d-flex justify-content-between align-items-center pb-4">
+      <h5 class="m-0 text-muted"><span class="success_">{{ user_obj.username }}'s</span> - personal room</h5>
+      {% if user_obj.is_staff and user.username == user_obj.username %}
+        <a href="/admin" class="text-decoration-none text-muted">Administration</a>
+      {% endif %}
+    </div>
+    {% include 'includes/personal_info.html' %}
+    {% include 'includes/profile_tabs.html' %}
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active">
+        {# header with small meta (page info etc) #}
+        <div class="d-flex justify-content-between align-items-center pb-3">
+          <div class="d-flex gap-2 align-items-center">
+            {% if items %}
+             <span class="custom_badge_success">
+                {% with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
+                  {{ start }}–{{ end }} of {{ total }}
+                {% endwith %}
+              </span>
+            {% else %}
+              <h6 class="m-0 text-muted">There are no items yet!</h6>
+            {% endif %}
+          </div>
+
+          {% if items|length > 10  %}
+            <div class="d-flex gap-2 text-muted fw-bolder">
+              <small>Page</small>
+              <small>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</small>
+            </div>
+          {% endif %}
+        </div>
+        {# включаем универсальный шаблон списка (он использует переменную items и page_obj) #}
+        {% if items %}
+          {% include 'includes/all_cards.html' %}
+          {% include 'includes/pagination.html' %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

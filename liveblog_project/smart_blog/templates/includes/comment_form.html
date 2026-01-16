@@ -1,0 +1,25 @@
+{% if user.is_authenticated %}
+  <div class="d-flex gap-4 align-items-center justify-content-between pt-4 mb-4">
+    <h5 class="text-muted m-0">Write a comment</h5>
+  </div>
+
+  <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-3">
+    {% csrf_token %}
+
+    <div id="commentFormErrors" class="mb-2"></div>
+
+    <div class="form-floating mb-2">
+      {{ form.text }}
+      <label for="id_comment_text">Comment here</label>
+    </div>
+
+    <button id="submitCommentBtn" type="submit" class="btn btn-primary btn-sm">Comment</button>
+    <!-- в comment_form.html — рядом с кнопкой Comment -->
+    <button id="clearComment" type="button" class="btn btn-link text-decoration-none btn-sm hidden" aria-label="Clear comment">Clear</button>
+  </form>
+{% comment %} {% else %}
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <span>You cannot add comments, please <a href="{% url 'login_app:login' %}" class="text-decoration-none">Login</a></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div> {% endcomment %}
+{% endif %}

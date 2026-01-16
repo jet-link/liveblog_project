@@ -1,0 +1,243 @@
+/* responsive columns */
+@media (max-width: 992px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+    }
+
+    .gallery-cell {
+        height: auto;
+    }
+
+    .gallery-img {
+        height: auto;
+        object-fit: cover;
+        transform: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width:1100px) {
+    .gallery-slideshow {
+        height: 420px;
+    }
+}
+
+@media (max-width:576px) {
+    .gallery-slideshow {
+        height: 320px;
+    }
+}
+
+
+/* overlay responsive tweaks */
+@media (min-width:1500px) {
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 20px);
+    }
+}
+
+@media (max-width:1100px) {
+    .gallery-overlay-img {
+        max-width: calc(100% - 80px);
+        max-height: calc(100% - 80px);
+    }
+}
+
+@media (max-width:900px) {
+    .gallery-overlay-inner {
+        padding: 28px;
+        height: 150%;
+    }
+
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 30px);
+    }
+}
+
+@media (max-width:700px) {
+    .gallery-overlay-inner {
+        padding: 16px;
+    }
+
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 30px);
+    }
+}
+
+/* ========== Mobile behaviour (stacked, full-width images) ==========
+   On small screens we prefer stacked grid and full-width images
+*/
+@media (max-width:900px) {
+
+    .gallery-grid,
+    .gallery-grid.flex {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: var(--gap);
+        align-items: stretch;
+    }
+
+    .gallery-cell {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-shadow: var(--card-shadow);
+        border-radius: var(--card-radius);
+        overflow: hidden;
+    }
+
+    .gallery-img,
+    .gallery-slide-img {
+        width: 100% !important;
+        height: auto !important;
+        object-fit: cover;
+        object-position: 50% 40%;
+        border-radius: 0;
+        transform: none !important;
+    }
+
+    /* optional: hide slideshow on mobile to avoid layout conflicts */
+    .gallery-slideshow {
+        display: none !important;
+    }
+
+    /* small layout tweaks for the container */
+    .item-gallery {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding-left: .5rem;
+        padding-right: .5rem;
+    }
+}
+
+
+/* Мобильная адаптация */
+@media (max-width: 576px) {
+    .floating-search-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 14px;
+        font-size: 18px;
+    }
+
+    .floating-search-btn .floating-search-label {
+        display: none;
+    }
+}
+
+
+/* mobile tweaks */
+@media (max-width: 576px) {
+    .overlay-panel {
+        top: 6%;
+        width: calc(100% - 24px);
+        padding: 14px;
+    }
+
+    .floating-search-btn {
+        bottom: 18px;
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem
+    }
+
+}
+
+/* --- 📱 адаптивность: до 767px скрываем аватар --- */
+@media (max-width: 991px) {
+
+    .personal_info {
+        flex-basis: 100%;
+    }
+
+    .personal_avatar {
+        display: none !important;
+    }
+}
+
+/* =========================
+   MOBILE = FULLSCREEN
+========================= */
+@media (max-width: 576px) {
+    .bottom-side-menu {
+        width: 100vw;
+    }
+
+    .bottom-menu-overlay {
+        display: none;
+    }
+
+    /* .action-block {
+        display: none !important;
+    } */
+}
+
+
+@media (max-width: 480px) {
+    .hero-subtitle {
+        font-size: 16px;
+        max-width: 90%;
+    }
+}
+
+
+/* responsive sizes */
+@media (max-width: 900px) {
+    .sec-astro {
+        width: 180px;
+    }
+}
+
+@media (max-width: 520px) {
+    .sec-astro {
+        width: 120px;
+    }
+}
+
+@media (max-width: 508px) {
+
+    /* контейнер табов */
+    .tabs_block {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* ul.nav-tabs */
+    .tabs_block .nav-tabs {
+        display: flex;
+        width: 100%;
+        margin: 0;
+    }
+
+    /* li */
+    .tabs_block .nav-item {
+        flex: 1 1 0;
+        text-align: center;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    /* a.nav-link */
+    .tabs_block .nav-link {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 8px;
+        margin: 0;
+        white-space: nowrap;
+    }
+}

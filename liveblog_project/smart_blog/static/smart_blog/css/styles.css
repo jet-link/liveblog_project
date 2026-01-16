@@ -1,0 +1,1912 @@
+body,
+html {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* scroll-behavior: auto !important; */
+}
+
+
+.main {
+    flex-grow: 1;
+}
+
+/* .container {
+    max-width: 1200px;
+} */
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050;
+    background: #fff;
+    padding: 20px 0;
+    transform: translateY(0);
+    transition: transform .4s ease;
+    will-change: transform;
+    border-bottom: 1px solid #eceded;
+    /* box-shadow: 0 3px 12px rgba(0, 0, 0, .04); */
+
+}
+
+/* скрытие */
+.header--hidden {
+    transform: translateY(-100%);
+}
+
+.header-spacer {
+    height: 0;
+    pointer-events: none;
+}
+
+.content_block {
+    margin-top: 90px;
+    margin-bottom: 90px;
+}
+
+.footer {
+    flex-shrink: 0;
+    /* box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4); */
+    /* border-top: 1px solid #F1F2F3; */
+}
+
+.tooltip .bs-tooltip-top {
+    --bs-tooltip-padding-y: 20px;
+}
+
+.sign_in_btn {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: #2980b9;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    white-space: normal;
+    /* разрешаем перенос строк */
+    overflow-wrap: anywhere;
+    /* перенос в удобном месте (поддержка современных браузеров) */
+    /* fallbacks: */
+    overflow-wrap: break-word;
+    /* старый, но полезный fallback */
+    word-break: break-word;
+    /* дополнительная защита (не везде стандартизовано) */
+    hyphens: auto;
+    /* если нужно — ставит переносы для поддерживаемых языков */
+    max-width: 100%;
+    /* не даст шире своего контейнера */
+    box-sizing: border-box;
+}
+
+/* Убираем крестик очистки */
+input::-webkit-search-cancel-button {
+    display: none !important;
+}
+
+/* Убираем встроенную иконку поиска */
+input::-webkit-search-decoration {
+    display: none !important;
+}
+
+
+/* Если внутри есть blockquote — делаем его аккуратнее */
+.excerpt-html blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1rem;
+    color: #374151;
+    background: rgba(0, 0, 0, 0.02);
+    margin: 0 0 0.75rem;
+}
+
+p,
+.item-text {
+    line-height: 2.2rem !important;
+}
+
+.ck-editor__editable_inline {
+    min-height: 420px;
+    /* поставь нужное значение */
+    max-height: 420px !important;
+    overflow: auto !important;
+}
+
+
+.alert.fade {
+    transition: opacity 0.6s linear, transform 0.3s ease;
+}
+
+textarea {
+    resize: none;
+    /* убираем ручку */
+    overflow: hidden;
+    /* для auto-grow */
+    line-height: 1.5;
+    /* как у input */
+    padding: 0.5rem 0.75rem;
+    /* Bootstrap input */
+    min-height: calc(1.5em + 1rem + 2px);
+}
+
+/* Контейнер топ-хедера */
+.top_header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #FFFFFF;
+    /* или твой цвет */
+    transition: transform 0.2s ease-in;
+    will-change: transform;
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Когда скрыт */
+.top_header--hidden {
+    transform: translateY(-100%);
+}
+
+/* Чтобы контент не прыгал */
+.header-spacer {
+    height: var(--top-header-height, 120px);
+}
+
+.header-search-overlay {
+    position: relative !important;
+    pointer-events: auto;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Slightly change inner wrapper to sit nicely in container */
+.header-search-inner {
+    width: 100%;
+    /* align with your content width */
+    padding: 20px;
+    /* we will add spacing by wrapper in page if needed */
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+.back_btn {
+    background: none;
+    border: none;
+}
+
+/* Make search row look like a single horizontal control */
+.header-search-row {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+/* Keep the input styling */
+.header-search-input {
+    width: 100%;
+    height: 60px;
+    padding: 13px 50px 13px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    border: 1px solid #e6e6e6;
+}
+
+.field-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: #6b7280;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    padding: 0;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* скрытие (JS будет переключать) */
+.hidden {
+    display: none !important;
+}
+
+.field-clear:hover {
+    background: rgba(0, 0, 0, 0.045);
+    color: #6b7280;
+}
+
+/* если у тебя есть класс .btn-reset, можно подстроить вид */
+.field-clear.btn-reset {
+    border: 0;
+}
+
+/* FLOATING BUTTON */
+.floating-search-btn {
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+    transform: translateX(-50%) translateY(22px);
+    z-index: 1200;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    background: #2980b9;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 420ms cubic-bezier(.15, .85, .25, 1),
+        transform 520ms cubic-bezier(.15, .85, .25, 1),
+        width 600ms cubic-bezier(.2, .9, .3, 1),
+        box-shadow 550ms cubic-bezier(.22, .85, .32, 1);
+    will-change: opacity, transform, width;
+    font-size: 17px;
+}
+
+/* видимость кнопки (через JS) */
+.floating-search-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+/* LABEL по умолчанию скрыт */
+.floating-search-label {
+    display: none;
+    opacity: 0;
+    white-space: nowrap;
+    transform: translateX(10px) scale(0.98);
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition:
+        opacity 300ms cubic-bezier(.2, .9, .3, 1),
+        transform 340ms cubic-bezier(.2, .9, .3, 1);
+    pointer-events: none;
+}
+
+/* Кнопка расширяется */
+.floating-search-btn.expand {
+    width: auto;
+    padding: 0 14px;
+    border-radius: 30px;
+}
+
+/* Показываем label */
+.floating-search-btn.expand .floating-search-label {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+
+
+/* Hover расширение */
+.floating-search-btn:hover {
+    width: auto;
+    padding: 0 15px;
+    border-radius: 30px;
+}
+
+.floating-search-btn:hover .floating-search-label {
+    display: block;
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* отступ для иконки */
+.floating-search-btn:hover .floating-search-icon {
+    padding-left: 12px;
+}
+
+/* Touch mode (ручное раскрытие) */
+.floating-search-btn.show-label {
+    width: auto;
+    padding: 0 14px;
+    border-radius: 30px;
+}
+
+.floating-search-btn.show-label .floating-search-label {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* OVERLAY */
+.overlay-search-root.hidden {
+    display: none;
+}
+
+.overlay-search-root {
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    overflow: hidden;
+}
+
+.overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.8);
+    /* backdrop-filter: blur(3px); */
+}
+
+/* Center panel */
+.overlay-panel {
+    position: relative;
+    /* ❗ НЕ absolute */
+    margin-top: 15vh;
+    /* вместо top */
+
+    width: min(980px, calc(100% - 48px));
+    max-height: 82vh;
+    overflow: auto;
+
+    background: #fff;
+    border-radius: 8px;
+    padding: 22px;
+}
+
+/* close button top-right */
+.overlay-close {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    border: none;
+    background: #2980b9;
+    color: #fff;
+    cursor: pointer;
+    z-index: 10000;
+    transition: transform .15s ease;
+    border-radius: 30px;
+    /* backdrop-filter: blur(6px); */
+    font-size: 16px;
+    padding: 18px 30px;
+}
+
+.overlay-close span {
+    font-size: 17px;
+}
+
+.overlay-close i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+/* inside cloned header: make it fit nicely */
+.overlay-search-content .header-search-inner {
+    box-shadow: none;
+    margin: 0;
+    border-radius: 6px;
+}
+
+/* small close near input in cloned header */
+.header-search-row .header-search-local-close {
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    z-index: 3;
+}
+
+/* ensure clear button style and hidden by default */
+.field-clear.hidden {
+    display: none !important;
+}
+
+.header-search-local-close {
+    display: none !important;
+}
+
+/* Filters (checkboxes) appear as a small toolbar under the input */
+.header-search-filters {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.b-example-divider {
+    width: 100%;
+    height: 3rem;
+    background-color: #0000001a;
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em #0000001a, inset 0 .125em .5em #00000026
+}
+
+.b-example-vr {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh
+}
+
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor
+}
+
+/* =========================
+   BURGER BUTTON
+========================= */
+.bottom-burger {
+    background: none;
+    border: none;
+    width: 20px;
+    height: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 0;
+}
+
+.bottom-burger span {
+    height: 2px;
+    background: #111;
+}
+
+/* =========================
+   OVERLAY
+========================= */
+.bottom-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    background: rgba(15, 15, 15, 0.8);
+    /* backdrop-filter: blur(3px); */
+}
+
+.bottom-menu-overlay.hidden {
+    display: none;
+}
+
+/* =========================
+   SIDE MENU
+========================= */
+.bottom-left-nav .nav-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.bottom-side-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 500px;
+    max-width: 100%;
+    height: 100vh;
+
+    background: #fff;
+    z-index: 1600;
+
+    display: flex;
+    /* ✅ ВАЖНО */
+    flex-direction: column;
+    /* ✅ ВАЖНО */
+
+    transform: translateX(100%);
+    transition: transform .3s ease;
+}
+
+.bottom-side-menu.open {
+    transform: translateX(0);
+}
+
+.bottom-side-menu.hidden {
+    display: none;
+}
+
+/* header */
+.bottom-menu-header {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    border-bottom: 1px solid #F1F2F3;
+}
+
+.bottom-menu-header button {
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* nav */
+.bottom-menu-nav {
+    /* padding: 16px; */
+    /* 🔥 scroll */
+    flex: 1;
+    overflow-y: auto;
+    /* ✅ теперь работает */
+    overscroll-behavior: contain;
+}
+
+.bottom-menu-nav a {
+    display: block;
+    padding: 13px 20px;
+    text-decoration: none;
+    color: #111;
+    transition: .3s ease;
+}
+
+.bottom-menu-nav a:hover {
+    padding-left: 24px;
+    background-color: #F1F2F3;
+}
+
+.social-block {
+    padding: 15px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f1f2f3;
+}
+
+.social-block span {
+    border-bottom: 1px solid #F1F2F3;
+}
+
+.social-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+.social-nav a {
+    color: #2980b9;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .3s ease;
+    border-radius: 50%;
+    text-decoration: none;
+}
+
+.social-block a:hover {
+    color: #ffffff;
+    background-color: #2980b9;
+}
+
+.btn-bd-primary {
+    --bd-violet-bg: #712cf9;
+    --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+    --bs-btn-font-weight: 600;
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bd-violet-bg);
+    --bs-btn-border-color: var(--bd-violet-bg);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: #6528e0;
+    --bs-btn-hover-border-color: #6528e0;
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: #5a23c8;
+    --bs-btn-active-border-color: #5a23c8
+}
+
+.bd-mode-toggle {
+    z-index: 1500
+}
+
+.bd-mode-toggle .bi {
+    width: 1em;
+    height: 1em
+}
+
+.bd-mode-toggle .dropdown-menu .active .bi {
+    display: block !important
+}
+
+.btn-bounce {
+    animation: btnBounce 0.3s ease;
+}
+
+@keyframes btnBounce {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.4);
+    }
+
+    60% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn-bounce {
+    animation: btnBounce 0.36s ease;
+}
+
+/* небольшой визуальный отклик для активной иконки */
+.fa-thumbs-up {
+    color: #8395a7;
+}
+
+.file-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+    /* скрываем настоящий input */
+}
+
+.file-btn {
+    background: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.file-placeholder {
+    color: #555;
+}
+
+.round {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    line-height: 40px;
+    background-color: #fff;
+    padding: 0;
+}
+
+.thumb_btn {
+    color: #8395a7;
+    /* border: 2px solid #273c75; */
+    background-color: #ffffff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border-radius: 50%; */
+    font-size: 1.5rem;
+    padding: 0;
+    border: none;
+}
+
+.reply-form-errors,
+.field-error {
+    color: #dc3545;
+    font-size: .8rem;
+    margin-bottom: .5rem;
+    font-weight: 500;
+}
+
+.replies {
+    position: relative;
+    margin-left: 30px;
+    /* отступ от родителя */
+    padding-left: 0;
+    margin-top: 8px;
+}
+
+/* вертикальная линия - идет вниз от родителя */
+.replies::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 2px;
+    height: calc(100% - 13px);
+    background: #dadce0;
+    border-radius: 2px;
+}
+
+.replies>.comment-block {
+    position: relative;
+    border: none;
+    border-radius: 0;
+    padding: 8px 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    background: transparent;
+    padding-left: 0;
+}
+
+/* горизонтальная линия от каждого reply к вертикальной линии */
+.replies>.comment-block::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 33px;
+    width: 16px;
+    height: 2px;
+    background: #dadce0;
+    border-radius: 2px;
+    z-index: 1;
+}
+
+/* поддержка вложенных replies - увеличиваем отступ */
+.replies .replies {
+    margin-left: 20px;
+}
+
+/* для вложенных replies вертикальная линия должна быть смещена */
+.replies .replies::before {
+    left: -20px;
+}
+
+/* тело comment */
+.comment-body>.comment-text {
+    border-left: 3px solid rgba(41, 128, 185, 0.25);
+    border-left-color: #2980b9;
+}
+
+
+/* ===============================
+   ROOT COMMENT HIGHLIGHT (MENTION)
+=============================== */
+.comment-text.root-mention-highlight {
+    animation: mentionFillFade 1.2s ease-in;
+}
+
+@keyframes mentionFillFade {
+    0% {
+        background-color: rgba(31, 79, 216, 0.1);
+    }
+
+    50% {
+        background-color: rgba(31, 79, 216, 0.1);
+    }
+
+    70% {
+        background-color: rgba(31, 79, 216, 0.1);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.btn-reply {
+    font-weight: 500;
+}
+
+.comment-toggle-btn {
+    background: none;
+    border: none;
+    color: #2980b9;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.show-more-btn-toggle {
+    padding: 8px 14px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 500;
+}
+
+.show-more-btn-toggle:hover {
+    background: #f6f6f6;
+}
+
+/* Ссылка @mention */
+.mention-link {
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Якорь для точного скролла */
+.comment-anchor {
+    display: block;
+    position: relative;
+    top: -90px;
+    /* 🔥 ключевой момент */
+    height: 1px;
+}
+
+.item-anchor {
+    display: block;
+    position: relative;
+    top: -150px;
+    height: 0;
+}
+
+.comment-anchor {
+    display: block;
+    position: relative;
+    top: -150px;
+    height: 0;
+}
+
+
+.thumbs_block {
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: #ffffff;
+    background-color: #2980b9;
+}
+
+
+.manipulate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* чтобы можно было задать ширину/высоту */
+    width: 35px;
+    /* одинаковые значения → круг */
+    height: 35px;
+    /* чтобы текст был по центру */
+    border-radius: 50%;
+    /* делает кругом */
+    text-decoration: none;
+    font-size: .9rem;
+    background-color: #ffffff;
+}
+
+
+.like-btn,
+.delete_btn {
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.bookmark-btn,
+.edit_btn {
+    border: 2px solid #2980b9;
+    color: #2980b9;
+}
+
+.edit_btn {
+    background-color: #ffffff;
+    padding: 0;
+}
+
+.delete_btn {
+    padding: 0;
+    background-color: #ffffff;
+}
+
+.published-badge {
+    padding: 10px;
+    border: 1px solid #2980b9;
+    border-radius: 7px;
+}
+
+.share_btn {
+    padding: 10px 15px;
+    border: 2px solid #2980b9;
+    border-radius: 8px;
+    color: #2980b9;
+    transition: .2s ease-in-out;
+    background-color: #FFFFFF;
+    font-size: .9rem;
+}
+
+.share_btn:hover {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+.success_ {
+    color: #2980b9;
+}
+
+.danger_ {
+    color: #e74c3c;
+}
+
+.delete_btn:active,
+.delete_btn:focus {
+    border-color: #e74c3c;
+}
+
+.card-text {
+    min-height: 2.6rem;
+    font-size: .9rem;
+}
+
+
+.main-logo {
+    font-size: 1.2rem;
+}
+
+.comment_author {
+    font-size: .8rem;
+}
+
+.search-toggle-btn {
+    font-size: 1.2rem;
+    padding: 7px;
+}
+
+
+.create-field {
+    max-width: 940px;
+    margin: 0 auto;
+}
+
+
+
+.custom_link_danger {
+    text-decoration: none;
+    color: #2980b9;
+    transition: .3s ease;
+    position: relative;
+}
+
+.custom_link_danger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    /* чтобы было видно */
+    width: 0;
+    height: 3px;
+    background: #ff6b6b;
+    transition: width .4s ease;
+}
+
+.custom_link_danger:hover::after {
+    width: 100%;
+}
+
+.form-wrapper {
+    padding: 25px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+
+/* кнопка плюсика (скрывается по умолчанию, JS управляет display) */
+#btnAddMoreImages {
+    min-width: 38px;
+    height: 38px;
+    padding: 0;
+    display: none;
+    /* скрыта до появления файлов */
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+/* превью блоки и кнопки удаления — чтобы соответствовали стилю */
+.image-preview-item {
+    width: 120px;
+    text-align: center;
+    position: relative;
+}
+
+.image-preview-item img {
+    width: 125px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}
+
+.btn-delete-image {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    font-size: 10px;
+}
+
+.existing-image {
+    width: 120px;
+}
+
+.existing-image img {
+    width: 120px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+
+/* Убедимся, что карточка и body корректно растягиваются */
+
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 8px !important;
+}
+
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
+    /* можно подстроить */
+}
+
+/* Стили для иконок/счётчиков (опционально) */
+.card .fa {
+    line-height: 1;
+}
+
+/* Сделаем ссылку Continue reading видимой и без смещения */
+.stretched-link {
+    color: var(--bs-primary);
+    font-weight: 500;
+}
+
+.reading-angle {
+    margin-left: 10px;
+    transition: .2s ease;
+}
+
+.card:hover .reading-angle {
+    padding-left: 10px
+}
+
+#backBreadcrumb {
+    text-decoration: none;
+}
+
+.comment-block {
+    border-radius: 8px;
+}
+
+.comment_like_block {
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.comment-text {
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    color: #000000;
+    /* легкий фон для читаемости */
+    border-radius: 5px;
+    /* сохраняет переводы строк */
+    line-height: 1.9rem;
+    /* современный вариант */
+    word-wrap: break-word;
+    font-size: .8rem;
+}
+
+.existing-image.marked-for-delete {
+    outline: 2px dashed #dc3545;
+    border-radius: 6px;
+    transform: scale(.995);
+}
+
+
+/* .item_block {
+    transition: background-color 0.3s ease;
+}
+
+@keyframes itemPulse {
+    0% {
+        background-color: #f1f2f6;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.item_block.back-highlight {
+    animation: itemPulse 1s ease-out;
+} */
+
+
+/* Общие */
+/* ========== Variables ========== */
+:root {
+    --gap: 13px;
+    --card-radius: 0.5rem;
+    --card-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    --overlay-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    --overlay-bg: rgba(15, 15, 15, 0.8);
+    --btn-bg: rgba(8, 8, 8, 0.52);
+    --btn-bg-hover: rgba(8, 8, 8, 0.70);
+    --btn-radius: 8px;
+}
+
+/* blockquote {
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+} */
+
+/* ========== Container ========== */
+.item-gallery {
+    position: relative;
+    margin-top: 2rem;
+}
+
+.published_block,
+.tags_block {
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    background: #fff;
+    border-radius: 8px;
+}
+
+
+/* Views Comments Likes Bookmart */
+.VLB {
+    padding: 10px 15px;
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.comment-count,
+.comment-like-count {
+    padding: 10px;
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+.comment-like-count i {
+    color: #8395a7;
+}
+
+/* ========== Grid (default) ========== */
+.gallery-grid {
+    display: grid;
+    gap: var(--gap, 18px);
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+    box-sizing: border-box;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+
+
+/* ========== Cells ========== */
+.gallery-cell {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--card-radius);
+    transition: flex 360ms cubic-bezier(.2, .9, .2, 1), transform 280ms ease, opacity 220ms ease;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    /* убрал will-change здесь — ставим только на активных элементах при необходимости */
+}
+
+.gallery-cell:hover {
+    transform: translateY(-5px);
+}
+
+/* Default heights: grid vs flex */
+.gallery-grid:not(.flex) .gallery-cell {
+    height: 450px;
+}
+
+.gallery-grid .flex .gallery-cell {
+    flex: 1 1 0%;
+    min-width: 6%;
+    height: 450px;
+    /* desktop accordion height */
+}
+
+/* ========== Images ========== */
+.gallery-slide-img,
+.gallery-grid img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: 50% 40%;
+    border-radius: 8px;
+    transition: transform .6s cubic-bezier(.2, .9, .2, 1), filter .25s ease;
+    cursor: pointer;
+}
+
+/* переключатель: если всего 2 изображения — делаем grid из 2 колонок */
+.gallery-grid.gallery-two-cols {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* маленькая страховка: если grid-template-columns всё-таки трёхколоночный,
+   и мы сделали lastItem span, то картинка займёт корректное количество колонок.
+   Ничего дополнительно не нужно, но можно добавить переход для аккуратности */
+.gallery-cell {
+    transition: transform .28s cubic-bezier(.2, .9, .2), opacity .22s ease, grid-row-end .18s ease, grid-column .18s ease;
+}
+
+
+/* ========== Slideshow (curtain) ========== */
+.gallery-slideshow {
+    position: relative;
+    overflow: hidden;
+    height: 520px;
+}
+
+
+.gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(0);
+    transition: opacity .6s ease, transform .7s cubic-bezier(.2, .9, .2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.gallery-slide.is-active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.gallery-slide.enter-from-left {
+    transform: translateX(-8%);
+}
+
+.gallery-slide.enter-from-right {
+    transform: translateX(8%);
+}
+
+/* slide image specifics */
+.gallery-slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--card-radius);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ========== Lightbox / Overlay ========== */
+.gallery-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--overlay-bg);
+    z-index: 2000;
+    padding: 18px;
+    /* backdrop-filter: blur(3px); */
+}
+
+.gallery-overlay.is-visible {
+    display: flex;
+}
+
+.gallery-overlay-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 40px;
+    pointer-events: auto;
+}
+
+.gallery-overlay-img {
+    display: block;
+    max-width: calc(100% - 70px);
+    max-height: calc(100% - 70px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: var(--overlay-shadow);
+    transition: transform .25s ease, opacity .2s ease;
+    transform-origin: center;
+}
+
+
+
+/* ========== Buttons (arrows / close) ========== */
+.gbtn,
+.gclose {
+    position: absolute;
+    border: none;
+    background: var(--btn-bg);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    /* backdrop-filter: blur(6px); */
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.gbtn.left {
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.gbtn.right {
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.gclose,
+.avatar-lightbox-close {
+    right: 30px;
+    top: 30px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 10000;
+}
+
+.gbtn:hover {
+    background: var(--btn-bg-hover);
+}
+
+.gclose:hover {
+    transform: scale(1.1);
+}
+
+.gbtn:focus,
+.gclose:focus {
+    outline: none;
+}
+
+
+/* ========== Small polish: prevent overly strong scale / dramatic jumps ==========
+   Make accordion more gentle — reduce scale and increase transition length where needed
+*/
+.gallery-img {
+    will-change: transform, filter;
+}
+
+.gallery-cell {
+    will-change: flex, transform, opacity;
+}
+
+.ck-powered-by {
+    display: none !important;
+}
+
+/* ========== CKEditor content — корректное наследование Bootstrap ========== */
+/* 1) Не трогаем все элементы (*) — только контейнер, параграфы и блок-элементы. */
+.item-text.ck-content,
+.ck-content {
+    /* наследуем базовые переменные Bootstrap (в большинстве шаблонов они доступны) */
+    font-family: var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
+    font-size: var(--bs-body-font-size, 1rem);
+    line-height: var(--bs-body-line-height, 1.6);
+    color: inherit;
+    /* не применять !important глобально — мешает наследованию и таблицам */
+}
+
+/* обычные текстовые блоки */
+.ck-content p,
+.item-text.ck-content p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* заголовки — немного более явные отступы */
+.ck-content h1,
+.ck-content h2,
+.ck-content h3,
+.ck-content h4,
+.ck-content h5,
+.ck-content h6 {
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+    font-weight: 600;
+}
+
+/* таблицы: делаем аккуратные границы и padding, но не трогаем layout слишком радикально */
+.ck-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    table-layout: auto;
+    /* пусть таблица сама решает ширину колонок */
+}
+
+.ck-content th,
+.ck-content td {
+    border: 1px solid #dee2e6;
+    padding: .6rem .75rem;
+    vertical-align: top;
+    text-align: left;
+    background-clip: padding-box;
+}
+
+/* переопределяем слишком «высокую» межстрочность в код-блоках */
+.ck-content pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 1rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    /* чтобы длинные строки переносились, если нужно */
+    line-height: 1.4;
+    /* чуть более плотный */
+    margin-bottom: 1rem;
+}
+
+/* inline code */
+.ck-content code {
+    background-color: #f1f3f5;
+    padding: .15rem .35rem;
+    border-radius: .2rem;
+    font-size: .95em;
+}
+
+/* blockquote — вид, похожий на Bootstrap */
+.ck-content blockquote {
+    margin: 0 0 1rem;
+    padding: .5rem 1rem;
+    border-left: .25rem solid #dee2e6;
+    color: #6c757d;
+    background: transparent;
+}
+
+/* Ограничение ширины текста для удобочитаемости (опционально) */
+.item-text.ck-content {
+    max-width: 100%;
+}
+
+.ck-editor__editable_inline {
+    min-height: 500px !important;
+    /* можешь поставить любое значение */
+}
+
+
+/* Make sure .btn-link default focus doesn't color this button */
+.header-search-row .field-clear.btn,
+.header-search-row .field-clear.btn-link {
+    color: #6c757d;
+}
+
+/* If browser applies -webkit-text-fill-color or default focus style - override */
+.header-search-row .field-clear::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+.header-search-row .field-clear::-webkit-focus-ring-color {
+    outline: none;
+}
+
+
+.custom_badge_danger,
+.custom_badge_success,
+.replied-badge {
+    padding: 3px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: .7rem;
+    border: 1px solid transparent;
+    box-shadow: var(--card-shadow);
+
+}
+
+.custom_badge_danger {
+    background-color: #ff6b6b;
+    color: #ffffff;
+}
+
+.custom_badge_success {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+.replied-badge {
+    color: #2980b9;
+    background-color: #ffffff;
+    border: 1px solid #2980b9;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+/* Немного уменьшенный input, чтобы красиво смотрелось внутри modal */
+#shareLinkInput {
+    background-color: #f8f9fa;
+    border: 1px solid #e6e6e6;
+}
+
+/* Скрываем outline при клике, но оставляем для клавиатуры */
+#shareLinkInput:focus {
+    box-shadow: 0 0 0 0.15rem rgba(95, 39, 205, 0.08);
+    outline: none;
+}
+
+/* Подсказка "скопировано" — чуть плавнее */
+#shareCopyFeedback .alert {
+    transition: opacity 220ms ease;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 8px;
+    /* расстояние между кнопками */
+    width: 100%;
+}
+
+.share-buttons .social_btn {
+    flex: 1;
+    /* каждая кнопка занимает одинаковую ширину */
+    text-align: center;
+}
+
+.social_btn {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: .2s ease-in-out;
+    border: none;
+}
+
+.social_btn i {
+    margin-right: 8px;
+}
+
+.twitter_btn {
+    color: #34495e;
+    border: 2px solid #34495e;
+}
+
+.telegram_btn {
+    color: #3498db;
+    border: 2px solid #3498db;
+}
+
+.whatsup_btn {
+    color: #27ae60;
+    border: 2px solid #27ae60;
+}
+
+.twitter_btn:hover {
+    color: #ffffff;
+    background-color: #34495e;
+}
+
+.telegram_btn:hover {
+    color: #ffffff;
+    background-color: #3498db;
+}
+
+.whatsup_btn:hover {
+    color: #ffffff;
+    background-color: #27ae60;
+}
+
+.modal-content {
+    border: none;
+}
+
+
+.expired_edit_delete {
+    position: relative;
+    border: 2px solid #bdc3c7;
+}
+
+.expired_edit_delete i {
+    font-size: 1rem;
+}
+
+.expired_edit_delete::before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 3px;
+    top: 45%;
+    right: 0;
+    background-color: #bdc3c7;
+    width: 100%;
+    transform: rotate(45deg);
+}
+
+
+/* бейдж языка (маленький прямоугольник в правом верхнем углу блока pre) */
+pre.has-code-lang {
+    position: relative;
+    padding-top: 1.6rem;
+    /* чтобы бейдж не накрывал код */
+}
+
+pre .code-lang-badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 12px;
+    line-height: 1;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 6;
+    pointer-events: none;
+    text-transform: lowercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+}
+
+/* если хочешь отличать (например для python — синий) — можно дать класс .lang-python */
+pre .code-lang-badge {
+    background: #192a56;
+}
+
+/* базовые стили для <pre> чтобы не ломать вид */
+pre {
+    position: relative;
+    overflow: auto;
+    background: #0b0b0b;
+    color: #e6e6e6;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+}
+
+
+#commentsBackToTop {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    border: none;
+    background: #2980b9;
+    color: #fff;
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 1000;
+}
+
+/* показ */
+#commentsBackToTop.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+#commentsBackToTop:hover {
+    transform: translateX(-50%) translateY(-2px);
+}
+
+
+@keyframes backPulse {
+    0% {
+        background-color: #ecf0f1;
+    }
+
+    20% {
+        background-color: #ecf0f1;
+    }
+
+    60% {
+        background-color: #ecf0f1;
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.item_block.back-highlight {
+    animation: backPulse 1.1s ease-in;
+}
+
+
+/* скрытые элементы */
+.listing-hidden {
+    display: none;
+}
+
+/* анимация появления */
+.listing-animate {
+    animation: listingFadeUp 0.45s ease forwards;
+}
+
+@keyframes listingFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===============================
+   ERROR PAGES (404, 403)
+=============================== */
+.error-page-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.error-code h1 {
+    font-size: 8rem;
+    line-height: 1;
+    color: #6c757d;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.error-icon {
+    animation: errorIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes errorIconBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.error-message h2 {
+    font-weight: 500;
+    color: #495057;
+}
+
+.error-message p {
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.error-actions {
+    margin-top: 2rem;
+}
+
+.error-actions .btn {
+    /* min-width: 150px; */
+    font-weight: 500;
+    /* transition: all 0.3s ease; */
+}
+
+.error-actions .btn:hover {
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.error-suggestions {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.error-suggestions ul li {
+    transition: all 0.2s ease;
+}
+
+.error-suggestions ul li:hover {
+    transform: translateX(5px);
+}
+
+.error-suggestions a {
+    transition: color 0.2s ease;
+}
+
+.error-suggestions a:hover {
+    color: #2980b9 !important;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .error-code h1 {
+        font-size: 5rem;
+    }
+
+    .error-icon i {
+        font-size: 3rem !important;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+
+
+.item-stats {
+    gap: 0;
+    font-size: 14px;
+}
+
+.item-stats .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    position: relative;
+}
+
+/* вертикальная линия между элементами */
+.item-stats .stat:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 1px;
+    border-radius: 8px;
+    background-color: #afa9a9;
+}
+
+/* цвет иконки комментариев */
+.stat-comment {
+    color: #b2bec3;
+}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{ tag.tag_name }} items
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    {% include 'includes/search_form.html' %}
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <div class="d-flex gap-2 align-items-center">
+        <h5 class="m-0 text-muted">All items for tag -</h5>
+        <span class="badge bg-secondary text-decoration-none fs-6">{{ tag.tag_name }}</span>
+      </div>
+      <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+    </div>
+    <div class="d-flex justify-content-between align-items-center pb-3">
+      <div class="d-flex gap-2 text-muted text-small align-items-center">
+        <span>Total</span>
+        <span>found</span>
+        <span class="custom_badge_success fw-bolder">{{ tag.items.count }}</span>
+        {% if tag.items.count != 1 %}
+          <span>items</span>
+        {% else %}
+          <span>item</span>
+        {% endif %}
+      </div>
+      {% comment %} <span class="text-muted">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span> {% endcomment %}
+    </div>
+    {% if items %}
+      {% include 'includes/all_cards.html' %}
+      {% comment %} {% include 'includes/pagination.html' %} {% endcomment %}
+
+      {% if items.count > 10 %}
+        <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5" data-total="{{ items|length }}">
+          <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
+          <span id="shownCounter" class="text-muted small fw-bolder">0 / {{ items|length }}</span>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <span>No results found.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endif %}
+    {% include 'includes/overlay_search.html' %}
+  </div>
+{% endblock %}

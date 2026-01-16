@@ -1,0 +1,25 @@
+<div class="modal fade" id="confirmItemDeleteModal-{{ item.pk }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ item.pk }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Форма внутри модалки: запасной вариант для no-JS (и основной — так как мы не используем кастомный JS) -->
+      <form method="post" action="{% url 'smart_blog:delete_item' item.slug %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel-{{ item.pk }}">Deleting confirmed</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          Are you sure you want to delete item <strong class="text-danger">({{ item.title }})</strong> ?
+          {% comment %} <p class="small text-muted mb-0">This action cannot be undone.</p> {% endcomment %}
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <!-- Обычный submit: при нажатии выполнится POST на delete_item -->
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

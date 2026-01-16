@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+  Registration
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <main class="edit-profile-field form-wrapper mx-auto">
+      <form method="post" action="{% url 'login_app:register' %}" novalidate data-validate="true">
+        {% csrf_token %}
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="m-0 fw-normal text-uppercase success_">Sign up</h5>
+          <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I already have account</a></small>
+        </div>
+
+        {# Общие ошибки формы (например password_mismatch) #}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2">
+            {% for err in form.non_field_errors %}
+              {{ err }}<br />
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# USERNAME (required) #}
+        <div class="form-floating mb-2">
+          {{ form.username }}
+          <label for="floatingUsername">Username <span class="danger_">*</span></label>
+          {% if form.username.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.username.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# FIRST NAME (optional) #}
+        <div class="form-floating mb-2">
+          {{ form.first_name }}
+          <label for="floatingFirst">First name (optional)</label>
+          {% if form.first_name.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.first_name.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# SURNAME (optional) #}
+        <div class="form-floating mb-2">
+          {{ form.last_name }}
+          <label for="floatingLast">Surname (optional)</label>
+          {% if form.last_name.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.last_name.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# EMAIL (optional) #}
+        <div class="form-floating mb-2">
+          {{ form.email }}
+          <label for="floatingEmail">E-mail (optional)</label>
+          {% if form.email.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.email.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-floating mb-2">
+          {{ form.avatar_url }}
+          <label for="floatingAvatar">Avatar URL (optional)</label>
+          {% if form.avatar_url.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.avatar_url.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# PASSWORD #}
+        <div class="form-floating mb-2">
+          {{ form.password1 }}
+          <label for="floatingPass1">Password <span class="danger_">*</span></label>
+          {% if form.password1.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.password1.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# PASSWORD CONFIRMATION #}
+        <div class="form-floating mb-3">
+          {{ form.password2 }}
+          <label for="floatingPass2">Password again <span class="danger_">*</span></label>
+          {% if form.password2.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.password2.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div>
+            <button type="submit" class="btn btn-primary btn-sm">Sign up</button>
+            <button id="genPassBtn" class="btn btn-outline-secondary btn-sm">Gen.Pass</button>
+          </div>
+          <small><button type="button" class="text-decoration-none text-muted password-toggle" data-password-toggle="1"></button></small>
+        </div>
+      </form>
+      {% include 'includes/password_generator.html' %}
+    </main>
+  </div>
+{% endblock %}

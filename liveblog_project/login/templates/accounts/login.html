@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}
+  Login
+{% endblock %}
+{% block content %}
+  <div class="container content_block">
+    <main class="edit-profile-field form-wrapper mx-auto">
+      <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
+        {% csrf_token %}
+        <h5 class="mb-3 fw-normal success_ text-uppercase">Login</h5>
+        {# GLOBAL / NON-FIELD ERRORS (например: Invalid username or password) #}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2">
+            {% for err in form.non_field_errors %}
+              {{ err }}<br />
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# USERNAME #}
+        <div class="form-floating mb-2">
+          {{ form.username }}
+          <label for="floatingInput">Username <span class="danger_">*</span></label>
+
+          {% if form.username.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.username.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# PASSWORD #}
+        <div class="form-floating mb-3">
+          {{ form.password }}
+          <label for="floatingPassword">Password <span class="danger_">*</span></label>
+
+          {% if form.password.errors %}
+            <div class="text-danger small mt-1">
+              {% for err in form.password.errors %}
+                {{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# REMEMBER ME #}
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="form-check text-start my-3">
+            {{ form.remember }}
+            <label class="form-check-label ms-1" for="checkDefault">Remember me</label>
+          </div>
+          <small><button type="button" class="text-muted text-decoration-none password-toggle" data-password-toggle="1"></button></small>
+        </div>
+
+        {# BUTTONS #}
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div class="d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm">Login</button>
+            <a href="{% url 'login_app:register' %}" class="btn btn-outline-primary btn-sm">Sign up</a>
+          </div>
+
+          <div class="another_login_block d-flex gap-1">
+            <a href="#" class="google_btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by Google"><i class="fa fa-google" aria-hidden="true"></i></a>
+            <a href="#" class="apple_btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by Apple"><i class="fa fa-apple" aria-hidden="true"></i></a>
+            <a href="#" class="twitter_btn_login" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+{% endblock %}

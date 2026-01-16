@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+  Replies thread
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <div class="d-inline-flex gap-3 align-items-center fs-6 mb-4">
+      <button id="threadBackBtn" type="button" data-parent-id="{{ comment.pk }}" data-back-url="{{ item.get_absolute_url }}" class="text-muted back_btn p-0">
+        <i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back
+      </button>
+      <span>/</span>
+      <span class="text-muted fw-bolder">{{ item.title }}</span>
+    </div>
+
+    <div class="mb-3">
+      {% include 'includes/_comments.html' with comment=comment depth=0 thread_view=true hide_reply=true no_mentions=true %}
+    </div>
+
+    <div id="threadEmpty" class="text-muted{% if comment.replies.all %} d-none{% endif %}">There are no replies yet!</div>
+  </div>
+  {% include 'includes/comment_modal.html' %}
+  <script>
+    (function () {
+      const btn = document.getElementById('threadBackBtn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        try {
+          const parentId = btn.dataset.parentId;
+          if (parentId) {
+            sessionStorage.setItem('thread_back_anchor', 'replies-thread-link-' + parentId);
+            sessionStorage.setItem('thread_back_url', btn.dataset.backUrl || window.location.origin);
+          }
+        } catch (e) { /* ignore */ }
+        if (history.length > 1) {
+          history.back();
+        } else {
+          const backUrl = btn.dataset.backUrl || '/';
+          window.location.href = backUrl;
+        }
+      });
+    })();
+  </script>
+{% endblock %}

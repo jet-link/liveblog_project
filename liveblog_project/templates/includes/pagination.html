@@ -1,0 +1,44 @@
+{% if page_obj.has_other_pages %}
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-start">
+      {# Previous #}
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Prev</span>
+        </li>
+      {% endif %}
+
+      {# Page numbers #}
+      {% for p in page_range %}
+        {% if p == '…' %}
+          <li class="page-item disabled">
+            <span class="page-link">…</span>
+          </li>
+        {% elif p == page_obj.number %}
+          <li class="page-item active">
+            <span class="page-link">{{ p }}</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {# Next #}
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}

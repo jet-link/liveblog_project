@@ -1,0 +1,32 @@
+<div class="d-flex align-items-center personal_block">
+  <div class="personal_info">
+    <ul class="list-group">
+      {% for label, field in fields.items %}
+        <li class="list-group-item d-flex gap-2 align-items-center justify-content-between personal-field">
+          <span class="text-muted">{{ label }}</span>
+          <span>
+            {% if field.type == 'email' %}
+              {% if field.is_owner %}
+                <span id="emailValue">{{ field.value }}</span>
+              {% else %}
+                <a href="mailto:{{ field.value }}" class="custom_link_danger">{{ field.value }}</a>
+              {% endif %}
+            {% else %}
+              <span>{{ field.value }}</span>
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% include 'includes/profile_avatar_viewer.html' %}
+</div>
+{% if user.is_authenticated and user.username == user_obj.username %}
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+      <a class="btn btn-primary btn-sm" href="{% url 'smart_blog:create_item' %}">Create item</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'login_app:profile-edit' request.user.username %}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Edit profile"><i class="fa fa-cog" aria-hidden="true"></i></a>
+    </div>
+    <a class="btn btn-danger btn-sm" href="{% url 'login_app:logout' %}">Logout<i class="fa fa-sign-out ms-2"></i></a>
+  </div>
+{% endif %}

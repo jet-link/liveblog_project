@@ -1,0 +1,27 @@
+<!-- templates/includes/search_form.html -->
+<div id="headerSearchOverlay" class="mb-5 header-search-overlay">
+  <div class="header-search-inner header-search-sticky" id="headerSearchSticky">
+    {% comment %} <h6 class="text-muted mb-3">Search by BraiNews</h6> {% endcomment %}
+    <div class="header-search-row position-relative">
+      <input id="headerSearchInput" class="header-search-input form-control" type="search" placeholder="What are you looking for?" aria-label="Search" />
+
+      <!-- clear button: указывает data-target на input -->
+      <button id="headerSearchClear" type="button" class="header-search-clear field-clear btn btn-link p-0 ms-2 hidden" data-target="#headerSearchInput" aria-label="Clear search"><i class="fa fa-times" aria-hidden="true"></i></button>
+    </div>
+
+    <!-- чекбоксы под input -->
+    <div class="header-search-filters d-flex gap-2 pt-3 align-items-center" role="group" aria-label="Search filters">
+      <span class="text-muted me-2">Search</span>
+      <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+        <input type="checkbox" class="btn-check" id="searchByTitle" autocomplete="off" name="by_title" />
+        <label class="btn btn-outline-primary" for="searchByTitle">By title</label>
+
+        <input type="checkbox" class="btn-check" id="searchByText" autocomplete="off" name="by_text" />
+        <label class="btn btn-outline-primary" for="searchByText">By text</label>
+
+        <input type="checkbox" class="btn-check" id="searchByTags" autocomplete="off" name="by_tags" />
+        <label class="btn btn-outline-primary" for="searchByTags">By tag</label>
+      </div>
+    </div>
+  </div>
+</div>

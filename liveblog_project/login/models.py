@@ -1,0 +1,82 @@
+from django.db import models
+from django.conf import settings
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+import os
+from django.core.files.storage import default_storage
+
+
+DEFAULT_AVATAR = 'img/no_image.svg'
+
+
+def avatar_upload_path(instance, filename):
+    """
+    avatars/user_5/avatar.jpg
+    """
+    return f'avatars/user_{instance.user_id}/{filename}'
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
+
+    # 🔗 URL аватар
+    avatar_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="Optional URL to avatar image"
+    )
+
+    # 📁 Загруженный файл
+    avatar_file = models.ImageField(
+        upload_to='profile_avatars/',
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return f'Profile: {self.user.username}'
+
+    # ⭐ ЕДИНАЯ точка доступа
+    def get_avatar(self):
+        """
+        Priority:
+        1. Uploaded file
+        2. URL
+        3. Default static avatar
+        """
+        if self.avatar_file:
+            return self.avatar_file.url
+
+        elif self.avatar_url:
+            return self.avatar_url
+
+        return DEFAULT_AVATAR
+    
+    def set_avatar_file(self, new_file):
+        if not new_file:
+            return
+
+        filename = os.path.basename(new_file.name)
+        path = f'profile_avatars/{filename}'
+
+        # если файл уже существует — используем его
+        if default_storage.exists(path):
+            self.avatar_file.name = path
+        else:
+            self.avatar_file = new_file
+    
+    
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    else:
+        try:
+            instance.profile.save()
+        except Exception:
+            Profile.objects.get_or_create(user=instance)

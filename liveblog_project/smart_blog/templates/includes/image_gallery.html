@@ -1,0 +1,19 @@
+{# templates/includes/gallery.html #}
+{% load static %}
+<div class="item-gallery js-gallery" data-count="{{ item.images.all|length }}">
+  <div class="gallery-grid js-gallery-grid">
+    {% for img in item.images.all %}
+      <div class="gallery-cell">
+        <img class="gallery-img" src="{{ img.image.url }}" data-src="{{ img.image.url }}" loading="lazy" alt="{{ img.alt_text|default:item.title }}" width="600" height="400" data-index="{{ forloop.counter0 }}" />
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="gallery-slideshow js-gallery-slideshow" aria-hidden="true" style="display: none;">
+    {% for img in item.images.all %}
+      <div class="gallery-slide" data-index="{{ forloop.counter0 }}">
+        <img src="{{ img.image.url }}" loading="lazy" alt="{{ img.alt_text|default:item.title }}" class="gallery-slide-img" />
+      </div>
+    {% endfor %}
+  </div>
+</div>

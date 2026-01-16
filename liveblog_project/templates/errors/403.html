@@ -1,0 +1,55 @@
+{% extends 'errors/base_errors.html' %}
+{% load static %}
+
+{% block title %}
+  Access Denied - 403
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <div class="error-page-wrapper text-center">
+      <div class="error-code">
+        <h1 class="display-1 fw-bold text-muted mb-0">403</h1>
+      </div>
+      <div class="error-icon mb-4">
+        <i class="fa fa-lock text-danger" style="font-size: 4rem;"></i>
+      </div>
+      <div class="error-message">
+        <h2 class="h3 mb-3 text-muted">Access Denied</h2>
+        <p class="text-muted fs-5 mb-4">You don't have permission to access this page.</p>
+        {% if not user.is_authenticated %}
+          <p class="text-muted mb-4">You may need to <a href="{% url 'login_app:login' %}" class="text-decoration-none">sign in</a> to access this content.</p>
+        {% endif %}
+      </div>
+      <div class="error-actions d-flex gap-3 justify-content-center flex-wrap">
+        <a href="{% url 'pages:home' %}" class="btn btn-primary px-4 py-2">
+          Go Home
+        </a>
+        {% if not user.is_authenticated %}
+          <a href="{% url 'login_app:login' %}" class="btn btn-outline-primary px-4 py-2">
+            Sign In
+          </a>
+        {% else %}
+          <button onclick="window.history.back()" class="btn btn-outline-secondary px-4 py-2">
+            Go Back
+          </button>
+        {% endif %}
+      </div>
+      {% comment %} <div class="error-suggestions mt-5">
+        <p class="text-muted small mb-2">If you believe this is an error:</p>
+        <ul class="list-unstyled text-muted">
+          <li class="mb-2">
+            <a href="{% url 'pages:page' 'contacts' %}" class="text-decoration-none text-muted">
+              <i class="fa fa-envelope me-2"></i>Contact support
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'smart_blog:items_list' %}" class="text-decoration-none text-muted">
+              <i class="fa fa-newspaper-o me-2"></i>Browse available content
+            </a>
+          </li>
+        </ul>
+      </div> {% endcomment %}
+    </div>
+  </div>
+{% endblock %}

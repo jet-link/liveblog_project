@@ -1,0 +1,47 @@
+{% extends 'errors/base_errors.html' %}
+{% load static %}
+
+{% block title %}
+  Page not found - 404
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <div class="error-page-wrapper text-center">
+      <div class="error-code">
+        <h1 class="display-1 fw-bold text-muted mb-0">404</h1>
+      </div>
+      <div class="error-icon my-4">
+        <i class="fa fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+      </div>
+      <div class="error-message">
+        <h2 class="h3 mb-3 text-muted">Page Not Found</h2>
+        <p class="text-muted fs-5 mb-4">The page you are looking for does not exist or has been moved.</p>
+      </div>
+      <div class="error-actions d-flex justify-content-center align-items-center">
+        <a href="{% url 'pages:home' %}" class="btn btn-primary">
+            {% comment %} <i class="fa fa-home fs-5 me-2"></i> {% endcomment %}
+            Go home</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+      {% comment %} <button onclick="window.history.back()" class="btn btn-outline-secondary px-4 py-2">
+        {% endcomment %}
+        {% comment %} <i class="fa fa-arrow-left me-2"></i> {% endcomment %}
+        {% comment %}Go Back
+      </button> {% endcomment %}
+      {% comment %} <div class="error-suggestions mt-5">
+        <p class="text-muted small mb-2">You might want to:</p>
+        <ul class="list-unstyled text-muted">
+          <li class="mb-2">
+            <a href="{% url 'smart_blog:items_list' %}" class="text-decoration-none text-muted"><i class="fa fa-newspaper-o me-2"></i>Browse our blog posts</a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'pages:home' %}" class="text-decoration-none text-muted"><i class="fa fa-search me-2"></i>Search for content</a>
+          </li>
+        </ul>
+      </div> {% endcomment %}

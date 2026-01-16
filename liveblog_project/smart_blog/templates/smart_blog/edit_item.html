@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}
+  Edit {{ item.title }}
+{% endblock %}
+
+{% block extra_head %}
+  {# если у тебя base.html поддерживает блок extra_head, хорошо сюда положить form.media #}
+  {{ form.media }}
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <main class="create-field form-wrapper mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0 text-uppercase text-muted">Edit</h5>
+
+        <a href="{{ item.get_absolute_url }}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</button>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" data-replace-history="{{ item.get_absolute_url }}" novalidate data-validate="true">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for err in form.non_field_errors %}
+              <div>{{ err }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- TITLE -->
+        <div class="form-floating mb-3">
+          {{ form.title }}
+          <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        </div>
+        {% for err in form.title.errors %}
+          <div class="text-danger small mb-2">{{ err }}</div>
+        {% endfor %}
+
+        <!-- TEXT -->
+        <div class="py-3">
+          {{ form.text }}
+          {% comment %} <label for="{{ form.text.id_for_label }}">{{ form.text.label }}</label> {% endcomment %}
+        </div>
+        {% for err in form.text.errors %}
+          <div class="text-danger small mb-2">{{ err }}</div>
+        {% endfor %}
+        <!-- EXISTING TAGS -->
+        {% if form.tags.field.queryset.exists %}
+          <div class="mb-3">
+            <label for="{{ form.tags.id_for_label }}" class="form-label text-muted">{{ form.tags.label }}</label>
+            {{ form.tags }}
+            {% if form.tags.help_text %}
+              <div class="form-text">{{ form.tags.help_text }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {# existing images (server side) #}
+        {% if existing_images %}
+          <div id="existingImages" class="d-flex gap-2 flex-wrap mb-3">
+            {% for img in item.images.all %}
+              <div id="image-{{ img.pk }}" class="existing-image position-relative">
+                <img src="{{ img.image.url }}" alt="{{ img.alt_text }}" />
+                <!-- NOTE: removed data-delete-url to avoid immediate AJAX deletion -->
+                <button type="button" class="btn btn-sm btn-danger btn-mark-delete position-absolute" style="right:6px;top:6px;font-size:10px" data-image-id="{{ img.pk }}" aria-pressed="false" title="Mark for deletion"><i class="fa fa-times"></i></button>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- hidden inputs for marked-to-delete images will be inserted here by JS -->
+          <div id="deleteInputs"></div>
+        {% endif %}
+
+        <!-- add new images -->
+        <div class="mb-3">
+          <label for="{{ form.images.id_for_label }}" class="form-label text-muted mb-2">{{ form.images.label }}</label>
+          <div class="d-flex align-items-center gap-2">
+            <input id="id_images" name="images" type="file" accept="image/*" multiple class="form-control" />
+            <button id="btnAddMoreImages" type="button" class="btn btn-outline-primary" style="display:none;" aria-label="Add more images"><i class="fa fa-plus" aria-hidden="true"></i></button>
+          </div>
+          <div id="imagesHelp" class="form-text">JPEG/PNG/JPG/WebP. Max 10 files.</div>
+          <div id="preview" class="mt-3 d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="d-flex gap-1 mt-3">
+          <small class="danger_ text-small">Minimum 2 images.</small>
+          <small class="success_ text-small">First image will be thumbnail.</small>
+        </div>
+        <div class="d-flex gap-1 mt-2">
+          <button class="btn btn-primary btn-sm" type="submit">Edit item</button>
+          {% comment %} <a href="{{ item.get_absolute_url }}" class="btn btn-secondary btn-sm">Go back</a> {% endcomment %}
+        </div>
+      </form>
+    </main>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    (function () {
+      // После редактирования хотим вести пользователя на листинг
+      try {
+        sessionStorage.setItem('listing_url', '{% url "smart_blog:items_list" %}');
+        sessionStorage.setItem('listing_scroll', '0');
+        sessionStorage.setItem('listing_anchor', 'item-{{ item.pk }}');
+        sessionStorage.setItem('from_detail', '1');
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+{% endblock %}
