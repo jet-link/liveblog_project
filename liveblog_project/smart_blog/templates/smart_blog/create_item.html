@@ -80,4 +80,23 @@
       </form>
     </main>
   </div>
+  <script>
+    (function () {
+      function clearListing() {
+        try {
+          sessionStorage.removeItem('listing_url');
+          sessionStorage.removeItem('listing_scroll');
+          sessionStorage.removeItem('listing_anchor');
+          sessionStorage.removeItem('listing_changes');
+        } catch (e) { /* ignore */ }
+      }
+
+      clearListing();
+
+      const form = document.getElementById('itemForm');
+      if (form) {
+        form.addEventListener('submit', clearListing);
+      }
+    })();
+  </script>
 {% endblock %}

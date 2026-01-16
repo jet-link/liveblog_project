@@ -41,8 +41,8 @@ def login_view(request):
                     request.session.set_expiry(0)  # until browser close
 
                 messages.success(request, f'Welcome back, {user.username}!')
-                return redirect('/', username=user.username)
-                # return redirect('login_app:profile', username=user.username)
+                # return redirect('/', username=user.username)
+                return redirect('login_app:profile', username=user.username)
             else:
                 # неверный логин/пароль — добавим ошибку не к конкретному полю, а к форме
                 form.add_error(None, "Username or password incorrect")

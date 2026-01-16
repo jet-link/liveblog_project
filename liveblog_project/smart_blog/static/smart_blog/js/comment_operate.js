@@ -1259,7 +1259,7 @@
     setTimeout(() => {
       highlightComment(comment);
       scrolling = false;
-    }, 400);
+    }, 550);
   });
 
   function highlightComment(comment) {
@@ -1360,7 +1360,6 @@ function buildShortHTML(fullHTML, maxLen = 400) {
 
   window.initCommentToggles = initCommentToggles;
 })();
-
 
 
 

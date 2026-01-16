@@ -13,7 +13,7 @@ html {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1250px;
 }
 
 .header {
@@ -779,20 +779,20 @@ textarea {
    ROOT COMMENT HIGHLIGHT (MENTION)
 =============================== */
 .comment-text.root-mention-highlight {
-    animation: mentionFillFade 1.2s ease-in;
+    animation: mentionFillFade 1.6s ease-in-out;
 }
 
 @keyframes mentionFillFade {
     0% {
-        background-color: rgba(31, 79, 216, 0.1);
+        background-color: rgba(255, 232, 180, 0.65);
     }
 
-    50% {
-        background-color: rgba(31, 79, 216, 0.1);
+    45% {
+        background-color: rgba(255, 232, 180, 0.45);
     }
 
     70% {
-        background-color: rgba(31, 79, 216, 0.1);
+        background-color: rgba(255, 232, 180, 0.25);
     }
 
     100% {
@@ -1903,7 +1903,7 @@ pre {
     top: 50%;
     transform: translateY(-50%);
     height: 20px;
-    width: 1px;
+    width: 2px;
     border-radius: 8px;
     background-color: #afa9a9;
 }

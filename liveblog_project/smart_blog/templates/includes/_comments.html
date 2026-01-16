@@ -21,7 +21,7 @@
 
       {% if comment.parent is None %}
         <div class="d-flex gap-2 align-items-center comment-like-count">
-          <span id="comment-likes-count-{{ comment.pk }}" class="success_">{{ comment.likes_count|default:comment.likes.count }}</span>
+          <span id="comment-likes-count-{{ comment.pk }}" class="success_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
           <span class="text-muted text-uppercase">:Likes</span>
         </div>
       {% endif %}
@@ -34,8 +34,8 @@
       </div>
 
       <div class="d-flex gap-2 align-items-center comment-like-count">
-        <i class="fa fa-thumbs-up success_ fs-6"></i>
-        <span id="comment-likes-count-{{ comment.pk }}">{{ comment.likes_count|default:comment.likes.count }}</span>
+        <span id="comment-likes-count-{{ comment.pk }}" class="success_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
+        <span class="text-muted text-uppercase">:Likes</span>
       </div>
     </div>
   {% endif %}
