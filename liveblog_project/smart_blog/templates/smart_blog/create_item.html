@@ -14,7 +14,7 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="text-muted text-uppercase m-0">Create</h5>
 
-        <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</button>
+        <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</a>
       </div>
 
       <form method="post" enctype="multipart/form-data" id="itemForm" data-ajax="true" data-validate="true" novalidate>
@@ -76,7 +76,6 @@
         </div>
         <div class="d-flex gap-1 mt-2">
           <button class="btn btn-primary btn-sm" type="submit">Create item</button>
-          {% comment %} <a href="{% url 'login_app:profile' user.username %}" class="btn btn-secondary btn-sm">Go back</a> {% endcomment %}
         </div>
       </form>
     </main>

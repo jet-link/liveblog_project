@@ -83,8 +83,8 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-4 mb-3 text-muted">Comments</h5>`
-      : `<h5 class="pt-4 mb-3 text-muted">There are not comments yet.</h5>`;
+      ? `<h5 class="pt-4 mb-3 success_">Comments</h5>`
+      : `<h5 class="pt-4 mb-3 text-muted text-decoration-underline">There are not comments yet.</h5>`;
   }
 
   function showFieldError(textarea, message) {

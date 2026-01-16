@@ -114,11 +114,11 @@
 
     <!-- ===== Форма комментариев ===== -->
     {% include 'includes/comment_form.html' %}
-    <div id="commentsHeader" class="d-inline-flex text-decoration-underline">
+    <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h5 class="pt-4 mb-3 text-muted">Comments</h5>
+        <h5 class="pt-4 mb-3 success_">Comments</h5>
       {% else %}
-        <h5 class="pt-4 mb-3 text-muted">There are not comments yet.</h5>
+        <h5 class="pt-4 mb-3 text-muted text-decoration-underline">There are not comments yet.</h5>
       {% endif %}
     </div>
 
