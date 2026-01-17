@@ -2,12 +2,12 @@
 <div class="personal_avatar">
   <div class="avatar-wrapper">
     {% if user_obj.profile.avatar_file or user_obj.profile.avatar_url %}
-      <img src="{{ user_obj.profile.get_avatar }}" alt="{{ user_obj.username }}" class="clickable-avatar user-avatar" data-full="{{ user_obj.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+      <img src="{{ user_obj.profile.get_avatar }}" alt="{{ user_obj.username }}" class="clickable-avatar user-avatar" data-full="{{ user_obj.profile.get_avatar }}" data-username="{{ user_obj.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
       {% if user.is_authenticated and user.username == user_obj.username %}
-        <button type="button" class="avatar-remove-overlay" data-url="{% url 'login_app:remove_avatar' %}" title="Remove avatar"><i class="fa fa-trash"></i></button>
+        <button type="button" class="avatar-remove-overlay" data-url="{% url 'login_app:remove_avatar' %}" data-username="{{ user_obj.username }}" title="Remove avatar"><i class="fa fa-trash"></i></button>
       {% endif %}
     {% else %}
-      <img src="{% static 'img/no_avatar.svg' %}" class="no_avatar" alt="thumbnail" title="I am without avatar!"/>
+      <img src="{% static 'img/no_avatar.svg' %}" class="no_avatar user-avatar" data-username="{{ user_obj.username }}" alt="thumbnail" title="I am without avatar!"/>
     {% endif %}
   </div>
 </div>

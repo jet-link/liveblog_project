@@ -314,8 +314,17 @@
             .then(data => {
                 if (!data.success) return;
 
-                // 🔁 ОБНОВЛЯЕМ ВСЕ АВАТАРЫ НА СТРАНИЦЕ
-                document.querySelectorAll('.user-avatar').forEach(img => {
+                const username = overlay.dataset.username || '';
+                const safeUser = (window.CSS && CSS.escape)
+                    ? CSS.escape(username)
+                    : username.replace(/["\\]/g, '\\$&');
+
+                const selector = username
+                    ? '.user-avatar[data-username="' + safeUser + '"]'
+                    : '.user-avatar';
+
+                // 🔁 ОБНОВЛЯЕМ АВАТАРЫ ТОЛЬКО ЭТОГО ПОЛЬЗОВАТЕЛЯ
+                document.querySelectorAll(selector).forEach(img => {
                     img.src = data.default_avatar;
                     img.classList.add('no_avatar');
                     img.removeAttribute('data-full');

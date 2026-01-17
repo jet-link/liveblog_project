@@ -1,8 +1,8 @@
 {% load static %}
 <div class="little-avatar">
-  {% if user.profile.avatar_file or user.profile.avatar_url %}
-    <img src="{{ user.profile.get_avatar }}" alt="{{ user.username }}" class="user-avatar clickable-avatar" data-full="{{ user.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+{% if user.profile.avatar_file or user.profile.avatar_url %}
+    <img src="{{ user.profile.get_avatar }}" alt="{{ user.username }}" class="user-avatar clickable-avatar" data-full="{{ user.profile.get_avatar }}" data-username="{{ user.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
   {% else %}
-    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ user.username }}" class="user-avatar no_avatar" />
+    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ user.username }}" class="user-avatar no_avatar" data-username="{{ user.username }}" />
   {% endif %}
 </div>
