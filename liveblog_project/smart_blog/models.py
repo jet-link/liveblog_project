@@ -87,7 +87,7 @@ class Item(models.Model):
     def __str__(self):
         return self.title
     
-    def short_text(self, length=650):
+    def short_text(self, length=500):
         # 1. Удаляем HTML теги
         plain = strip_tags(self.text)
 

@@ -1469,6 +1469,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
 (function () {
   const STEP = 10;
   let paginationState = null; // Сохраняем состояние пагинации
+  let collapseMode = false;
 
   function initRootCommentsPagination(preserveState = false) {
     const container = document.getElementById('commentsList');
@@ -1487,7 +1488,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     // 👉 если комментариев <= STEP — скрываем кнопку (если она есть)
     if (total <= STEP) {
       if (wrapper) {
-        wrapper.style.display = 'none';
+        wrapper.classList.add('d-none');
       }
       rootComments.forEach(el => (el.style.display = ''));
       paginationState = null; // Сбрасываем состояние
@@ -1516,7 +1517,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     }
     
     // Показываем wrapper
-    wrapper.style.display = '';
+    wrapper.classList.remove('d-none');
     
     // Если кнопки нет, выходим
     if (!btn) return;
@@ -1527,13 +1528,16 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     // Если нужно сохранить состояние и оно есть - используем его
     // Иначе начинаем с первых 10
     let visibleCount = (preserveState && paginationState && !forceCollapse)
-      ? Math.min(paginationState.visibleCount, total) 
+      ? Math.min(paginationState.visibleCount, total)
       : STEP;
 
     // Если сохраненное состояние больше текущего total, корректируем
     if (visibleCount > total) {
       visibleCount = Math.max(STEP, total);
     }
+    collapseMode = (preserveState && paginationState && !forceCollapse)
+      ? Boolean(paginationState.collapseMode)
+      : false;
 
     function showRange(from, to, animate = false) {
       for (let i = from; i < to; i++) {
@@ -1549,42 +1553,22 @@ function buildShortHTML(fullHTML, maxLen = 400) {
       }
     }
 
-    function hideRange(from, to, animate = false) {
-      for (let i = from; i < to; i++) {
-        const el = rootComments[i];
-        if (!el) continue;
-
-        el.classList.remove('listing-animate');
-
-        if (animate) {
-          if (el._hideTimer) {
-            clearTimeout(el._hideTimer);
-            el._hideTimer = null;
-          }
-
-          el.classList.remove('listing-collapse');
-          void el.offsetWidth;
-          el.classList.add('listing-collapse');
-
-          el._hideTimer = setTimeout(() => {
-            el.style.display = 'none';
-            el.classList.remove('listing-collapse');
-            el._hideTimer = null;
-          }, 450);
-        } else {
-          el.style.display = 'none';
-          el.classList.remove('listing-collapse');
-        }
-      }
+    function getVisibleCount() {
+      return rootComments.reduce((acc, el) => acc + (el.style.display === 'none' ? 0 : 1), 0);
     }
 
     function updateUI() {
-      // Если показаны только первые 10 - показываем "Show more"
-      if (visibleCount >= total) {
-        btn.textContent = 'Show less';
-      } else {
-        btn.textContent = 'Show more';
+      if (!wrapper || !btn) return;
+      if (total <= STEP) {
+        wrapper.classList.add('d-none');
+        collapseMode = false;
+        return;
       }
+      if (collapseMode && visibleCount <= STEP) {
+        collapseMode = false;
+      }
+      wrapper.classList.remove('d-none');
+      btn.textContent = collapseMode ? 'Show less' : 'Show more';
     }
 
     // Применяем видимость: показываем комментарии до visibleCount
@@ -1592,27 +1576,34 @@ function buildShortHTML(fullHTML, maxLen = 400) {
       el.style.display = i < visibleCount ? '' : 'none';
     });
 
+    collapseMode = total > STEP && visibleCount >= total ? true : collapseMode;
     updateUI();
 
     btn.onclick = () => {
-      if (btn.textContent === 'Show more') {
-        // Показываем еще 10 комментариев
+      visibleCount = Math.max(getVisibleCount(), STEP);
+      if (!collapseMode) {
         const next = Math.min(visibleCount + STEP, total);
         showRange(visibleCount, next, true);
         visibleCount = next;
+        if (visibleCount >= total) {
+          collapseMode = true;
+        }
       } else {
-        // Скрываем последние 10 комментариев
         const next = Math.max(STEP, visibleCount - STEP);
-        hideRange(next, visibleCount, true);
+        for (let i = next; i < visibleCount; i++) {
+          const el = rootComments[i];
+          if (!el) continue;
+          el.classList.remove('listing-animate');
+          el.style.display = 'none';
+        }
         visibleCount = next;
       }
-      // Сохраняем состояние после каждого изменения
-      paginationState = { visibleCount, total };
+      paginationState = { visibleCount, total, collapseMode };
       updateUI();
     };
 
     // Сохраняем текущее состояние
-    paginationState = { visibleCount, total };
+    paginationState = { visibleCount, total, collapseMode };
   }
 
   // 🔥 ГЛОБАЛЬНЫЙ ХУК ДЛЯ AJAX - сохраняем состояние при обновлении
