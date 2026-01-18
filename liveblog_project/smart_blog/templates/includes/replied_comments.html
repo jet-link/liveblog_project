@@ -25,8 +25,8 @@
     </div>
   {% elif depth >= 2 %}
     <div class="mt-3">
-      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none success_ small fw-semibold">
-        View all replies<i class="ms-2">→</i>
+      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none success_ small fw-semibold" data-count="{{ comment.replies.count }}">
+        View all replies <span class="replies-count">({{ comment.replies.count }})</span><i class="ms-1">→</i>
       </a>
     </div>
   {% else %}

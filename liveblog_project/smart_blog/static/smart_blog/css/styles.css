@@ -1104,7 +1104,7 @@ textarea {
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
     color: #000000;
     /* легкий фон для читаемости */
-    border-radius: 5px;
+    border-radius: 7px;
     /* сохраняет переводы строк */
     line-height: 1.9rem;
     /* современный вариант */
@@ -1777,6 +1777,11 @@ pre {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* анимация схлопывания */
+.listing-collapse {
+    animation: listingFadeUp 0.45s ease reverse forwards;
 }
 
 /* ===============================

@@ -87,6 +87,47 @@
       : `<h5 class="py-4 m-0 text-muted">There are not comments yet.</h5>`;
   }
 
+  function getThreadLinkCount(link) {
+    if (!link) return 0;
+    const fromData = parseInt(link.dataset.count || '0', 10);
+    if (!Number.isNaN(fromData) && fromData > 0) return fromData;
+    const span = link.querySelector('.replies-count');
+    if (!span) return 0;
+    const num = parseInt(span.textContent.replace(/[()]/g, ''), 10);
+    return Number.isNaN(num) ? 0 : num;
+  }
+
+  function setThreadLinkCount(parentId, count) {
+    const link = document.getElementById('replies-thread-link-' + parentId);
+    if (!link) return;
+    const next = Math.max(0, count || 0);
+    if (next <= 0) {
+      const wrap = link.parentElement;
+      link.remove();
+      if (wrap && wrap.classList.contains('mt-3') && !wrap.children.length) {
+        wrap.remove();
+      }
+      return;
+    }
+    link.dataset.count = String(next);
+    let span = link.querySelector('.replies-count');
+    if (!span) {
+      span = document.createElement('span');
+      span.className = 'replies-count';
+      link.insertBefore(span, link.querySelector('i') || null);
+    }
+    span.textContent = `(${next})`;
+  }
+
+  function adjustThreadLinkCount(parentId, delta) {
+    const link = document.getElementById('replies-thread-link-' + parentId);
+    if (!link) return;
+    const next = getThreadLinkCount(link) + (delta || 0);
+    setThreadLinkCount(parentId, next);
+  }
+  window.setThreadLinkCount = setThreadLinkCount;
+  window.adjustThreadLinkCount = adjustThreadLinkCount;
+
   function showFieldError(textarea, message) {
     if (!textarea) return;
 
@@ -358,7 +399,7 @@
                 replies.remove(); // ← исчезнет линия + точка + ::before
               }
 
-              // update thread link visibility (only on item_detail)
+              // update thread link visibility/count (only on item_detail)
               const threadBtn = document.getElementById('threadBackBtn');
               if (!threadBtn) {
                 const depth = parseInt(parentComment.dataset.depth || '0', 10);
@@ -370,14 +411,19 @@
                     const threadUrl =
                       parentComment?.dataset?.threadUrl ||
                       `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
+                    const replyCount = replies
+                      ? replies.querySelectorAll('.comment-block').length
+                      : 1;
                     const wrap = document.createElement('div');
                     wrap.className = 'mt-3';
                     wrap.innerHTML = `
-                      <a id="replies-thread-link-${data.parent_id}" href="${threadUrl}" class="text-decoration-none success_ fw-semibold">
-                        View all replies<i class="ms-1">→</i>
+                      <a id="replies-thread-link-${data.parent_id}" href="${threadUrl}" class="text-decoration-none success_ fw-semibold" data-count="${replyCount}">
+                        View all replies <span class="replies-count">(${replyCount})</span><i class="ms-1">→</i>
                       </a>
                     `;
                     parentComment.appendChild(wrap);
+                  } else {
+                    window.adjustThreadLinkCount?.(data.parent_id, -1);
                   }
                 }
               }
@@ -397,6 +443,12 @@
               const threadRoot = document.getElementById('comment-' + threadParentId);
               const threadReplies = threadRoot?.querySelector('.replies');
               const threadEmpty = document.getElementById('threadEmpty');
+              const replyCount = threadReplies
+                ? threadReplies.querySelectorAll('.comment-block').length
+                : 0;
+              try {
+                sessionStorage.setItem('thread_replies_count_' + threadParentId, String(replyCount));
+              } catch { }
               if (!threadReplies || !threadReplies.querySelector('.comment-block')) {
                 try {
                   sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
@@ -470,6 +522,42 @@
         const parentId = key.replace('thread_deleted_parent_', '');
         const parentNode = document.getElementById('comment-' + parentId);
         if (parentNode) parentNode.remove();
+        sessionStorage.removeItem(key);
+      }
+
+      // sync replies count for thread links after returning from thread view
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (!key || !key.startsWith('thread_replies_count_')) continue;
+        const parentId = key.replace('thread_replies_count_', '');
+        const count = parseInt(sessionStorage.getItem(key) || '0', 10);
+        const parentComment = document.getElementById('comment-' + parentId);
+        if (parentComment) {
+          const depth = parseInt(parentComment.dataset.depth || '0', 10);
+          if (depth >= 2) {
+            if (count <= 0) {
+              const link = document.getElementById('replies-thread-link-' + parentId);
+              if (link) link.remove();
+            } else {
+              let link = document.getElementById('replies-thread-link-' + parentId);
+              if (!link) {
+                const threadUrl =
+                  parentComment?.dataset?.threadUrl ||
+                  `${window.location.origin}/blog/comment/${parentId}/thread/`;
+                const wrap = document.createElement('div');
+                wrap.className = 'mt-3';
+                wrap.innerHTML = `
+                  <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold" data-count="${count}">
+                    View all replies <span class="replies-count">(${count})</span><i class="ms-1">→</i>
+                  </a>
+                `;
+                parentComment.appendChild(wrap);
+              } else {
+                setThreadLinkCount(parentId, count);
+              }
+            }
+          }
+        }
         sessionStorage.removeItem(key);
       }
 
@@ -1156,11 +1244,13 @@
             const wrap = document.createElement('div');
             wrap.className = 'mt-3';
             wrap.innerHTML = `
-              <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold">
-                View all replies<i class="ms-1">→</i>
+              <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold" data-count="1">
+                View all replies <span class="replies-count">(1)</span><i class="ms-1">→</i>
               </a>
             `;
             parentComment.appendChild(wrap);
+          } else {
+            window.adjustThreadLinkCount?.(parentId, 1);
           }
           closeAllReplyForms();
           return;
@@ -1186,6 +1276,14 @@
             try {
               sessionStorage.removeItem('thread_remove_link_' + threadParentId);
             } catch { }
+            const threadRoot = document.getElementById('comment-' + threadParentId);
+            const threadReplies = threadRoot?.querySelector('.replies');
+            const replyCount = threadReplies
+              ? threadReplies.querySelectorAll('.comment-block').length
+              : 0;
+            try {
+              sessionStorage.setItem('thread_replies_count_' + threadParentId, String(replyCount));
+            } catch { }
           }
         }
 
@@ -1207,7 +1305,7 @@
 //@mention listing
 (function () {
   'use strict';
-  let scrolling = false;
+  let scrollTimer = null;
 
   document.addEventListener('click', (e) => {
     const link = e.target.closest('.mention-link');
@@ -1216,25 +1314,25 @@
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    if (scrolling) return;
-    scrolling = true;
-
     const commentId = link.dataset.parentId;
     const comment = document.getElementById(`comment-${commentId}`);
     if (!comment) {
-      scrolling = false;
       return;
     }
 
     const rect = comment.getBoundingClientRect();
     const vh = window.innerHeight || document.documentElement.clientHeight;
 
+    const header = document.querySelector('header.header') || document.querySelector('.header');
+    const headerH = header ? Math.ceil(header.getBoundingClientRect().height || 0) : 0;
+    const SAFE_GAP = 12;
+
     /* ===============================
        НАСТРОЙКИ ОБЗОРА
     =============================== */
-    const VIEW_TOP_OFFSET = 140;   // 👈 ЗОНА ОБЗОРА СВЕРХУ
+    const VIEW_TOP_OFFSET = headerH + SAFE_GAP;   // 👈 ЗОНА ОБЗОРА СВЕРХУ
     const VIEW_BOTTOM_OFFSET = 100; // 👈 снизу
-    const SCROLL_OFFSET = 150;     // 👈 куда реально скроллим
+    const SCROLL_OFFSET = headerH + SAFE_GAP;     // 👈 куда реально скроллим
 
     const isVisible =
       rect.top >= VIEW_TOP_OFFSET &&
@@ -1242,8 +1340,11 @@
 
     // ✅ если уже в зоне видимости — только подсветка + bounce
     if (isVisible) {
+      if (scrollTimer) {
+        clearTimeout(scrollTimer);
+        scrollTimer = null;
+      }
       highlightComment(comment);
-      scrolling = false;
       return;
     }
 
@@ -1256,10 +1357,11 @@
       behavior: 'smooth'
     });
 
-    setTimeout(() => {
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
       highlightComment(comment);
-      scrolling = false;
-    }, 550);
+      scrollTimer = null;
+    }, 300);
   });
 
   function highlightComment(comment) {
@@ -1271,7 +1373,7 @@
       .querySelectorAll('.comment-text.root-mention-highlight')
       .forEach(el => el.classList.remove('root-mention-highlight'));
 
-    // перезапуск анимации
+    // перезапуск анимации без ожидания завершения предыдущей
     text.classList.remove('root-mention-highlight');
     void text.offsetWidth; // 🔥 принудительный reflow
     text.classList.add('root-mention-highlight');
@@ -1447,13 +1549,32 @@ function buildShortHTML(fullHTML, maxLen = 400) {
       }
     }
 
-    function hideRange(from, to) {
+    function hideRange(from, to, animate = false) {
       for (let i = from; i < to; i++) {
         const el = rootComments[i];
         if (!el) continue;
 
-        el.style.display = 'none';
         el.classList.remove('listing-animate');
+
+        if (animate) {
+          if (el._hideTimer) {
+            clearTimeout(el._hideTimer);
+            el._hideTimer = null;
+          }
+
+          el.classList.remove('listing-collapse');
+          void el.offsetWidth;
+          el.classList.add('listing-collapse');
+
+          el._hideTimer = setTimeout(() => {
+            el.style.display = 'none';
+            el.classList.remove('listing-collapse');
+            el._hideTimer = null;
+          }, 450);
+        } else {
+          el.style.display = 'none';
+          el.classList.remove('listing-collapse');
+        }
       }
     }
 
@@ -1482,7 +1603,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
       } else {
         // Скрываем последние 10 комментариев
         const next = Math.max(STEP, visibleCount - STEP);
-        hideRange(next, visibleCount);
+        hideRange(next, visibleCount, true);
         visibleCount = next;
       }
       // Сохраняем состояние после каждого изменения
