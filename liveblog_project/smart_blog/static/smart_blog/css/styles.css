@@ -12,9 +12,9 @@ html {
     flex-grow: 1;
 }
 
-.container {
+/* .container {
     max-width: 1200px;
-}
+} */
 
 .header {
     position: fixed;

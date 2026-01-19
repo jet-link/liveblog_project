@@ -1,10 +1,18 @@
 <!-- templates/accounts/profile.html -->
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}
   {{ user_obj.username }} - profile room
 {% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'login/js/profile_sections.js' %}"></script>
+{% endblock %}
 {% block content %}
   <div class="container content_block">
+    {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
+    {% url 'login_app:profile-section' user_obj.username 'liked' as profile_liked_url %}
+    {% url 'login_app:profile-section' user_obj.username 'bookmarked' as profile_bookmarked_url %}
     <div class="d-flex justify-content-between align-items-center pb-4">
       <h5 class="m-0 text-muted"><span class="success_">{{ user_obj.username }}'s</span> personal room</h5>
       {% if user_obj.is_staff and user.username == user_obj.username %}
@@ -12,35 +20,24 @@
       {% endif %}
     </div>
     {% include 'includes/personal_info.html' %}
-    {% include 'includes/profile_tabs.html' %}
+    <div class="profile-section-tabs d-flex align-items-center gap-1 mt-5">
+      <button type="button" class="profile-section-tab"
+              data-section-target="profile-section-created">Created items</button>
+      {% if is_owner %}
+        <button type="button" class="profile-section-tab"
+                data-section-target="profile-section-liked">Liked items</button>
+        <button type="button" class="profile-section-tab"
+                data-section-target="profile-section-bookmarked">Bookmarked items</button>
+      {% endif %}
+    </div>
 
-    <div class="tab-content">
-      <div class="tab-pane fade show active">
-        {# header with small meta (page info etc) #}
-        <div class="d-flex justify-content-between align-items-center pb-3">
-          <div class="d-flex gap-2 align-items-center">
-            {% if items %}
-             <span class="custom_badge_success">
-                {% with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
-                  {{ start }}–{{ end }} of {{ total }}
-                {% endwith %}
-              </span>
-            {% else %}
-              <h6 class="m-0 text-muted">There are no items yet!</h6>
-            {% endif %}
-          </div>
+    <div class="profile-sections-carousel">
+      <div class="profile-sections-track">
+        {% include 'includes/profile_section_cards.html' with section_id='created' title='Created' count=all_count items=created_items link_url=profile_created_url %}
 
-          {% if items|length > 10  %}
-            <div class="d-flex gap-2 text-muted fw-bolder">
-              <small>Page</small>
-              <small>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</small>
-            </div>
-          {% endif %}
-        </div>
-        {# включаем универсальный шаблон списка (он использует переменную items и page_obj) #}
-        {% if items %}
-          {% include 'includes/all_cards.html' %}
-          {% include 'includes/pagination.html' %}
+        {% if is_owner %}
+          {% include 'includes/profile_section_cards.html' with section_id='liked' title='Liked' count=liked_count items=liked_items link_url=profile_liked_url %}
+          {% include 'includes/profile_section_cards.html' with section_id='bookmarked' title='Bookmarked' count=bookmarked_count items=bookmarked_items link_url=profile_bookmarked_url %}
         {% endif %}
       </div>
     </div>

@@ -514,3 +514,122 @@
 .tabs_block{
     padding-top: 100px;
 }
+
+/* ===== Profile sections (horizontal cards) ===== */
+.profile-section-tabs {
+    border: none;
+}
+
+.profile-section-tab {
+    border: 2px solid #858484;
+    color: #858484;
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.profile-section-tab.text-muted {
+    color: #6c757d;
+}
+
+.profile-section-tab.success_ {
+    color: #2980b9;
+    border-color: #2980b9;
+}
+
+.profile-sections-carousel {
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.profile-sections-track {
+    position: relative;
+}
+
+.profile-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    padding-top: 20px;
+}
+
+.profile-section.is-active {
+    display: block;
+    opacity: 1;
+}
+
+.profile-cards-scroll {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding-bottom: 6px;
+}
+
+.profile-cards-scroll .row {
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px;
+    margin: 0;
+    padding-right: 16px;
+    padding-left: 2px;
+}
+
+.profile-cards-scroll .item-card {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.profile-section-link {
+    color: #6c757d;
+}
+
+.profile-section-link:hover {
+    color: #4b5a68;
+}
+
+.scroll-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #dfe4ea;
+    background: #fff;
+    color: #3a3a3a;
+    font-size: 18px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.scroll-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .profile-cards-scroll .item-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .profile-section-tabs {
+        width: 100%;
+    }
+
+    .profile-section-tab {
+        flex: 1 1 0;
+        width: 100%;
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 8px 10px;
+    }
+    .profile-cards-scroll .row{
+        padding-right: 0;
+    }
+}

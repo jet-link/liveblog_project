@@ -12,7 +12,7 @@ from smart_blog.models import Item
 from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.db.models import Count, Q, Max
 from smart_blog.utils import count_convert
 # from django.template.loader import render_to_string
@@ -149,37 +149,31 @@ def profile_view(request, username):
         except Exception:
             bookmarked_items_qs = Item.objects.none()
 
-    # --- табы ---
-    tab = request.GET.get('tab', 'all')
-    page_number = request.GET.get('page', 1)
+    def apply_human_counts(items):
+        for item in items:
+            item.views_count_human = count_convert(item.views_count)
+            item.likes_count_human = count_convert(item.likes_count)
+            item.bookmarks_count_human = count_convert(item.bookmarks_count)
+            item.comments_count_human = count_convert(item.comments_count)
 
-    if tab == 'liked':
-        qs_to_page = liked_items_qs
-    elif tab == 'bookmarked':
-        qs_to_page = bookmarked_items_qs
-    else:
-        qs_to_page = user_items_qs
+    SECTION_LIMIT = 10
+    created_items = list(user_items_qs[:SECTION_LIMIT])
+    apply_human_counts(created_items)
 
-    paginator = Paginator(qs_to_page, 10)
-    page_obj = paginator.get_page(page_number)
-
-    page_range = paginator.get_elided_page_range(
-        number=page_obj.number,
-        on_each_side=1,
-        on_ends=1
-    )
-    for item in page_obj:
-        item.views_count_human = count_convert(item.views_count)
-        item.likes_count_human = count_convert(item.likes_count)
-        item.bookmarks_count_human = count_convert(item.bookmarks_count)
-        item.comments_count_human = count_convert(item.comments_count)
+    is_owner = request.user.is_authenticated and request.user == user_obj
+    liked_items = []
+    bookmarked_items = []
+    if is_owner:
+        liked_items = list(liked_items_qs[:SECTION_LIMIT])
+        bookmarked_items = list(bookmarked_items_qs[:SECTION_LIMIT])
+        apply_human_counts(liked_items)
+        apply_human_counts(bookmarked_items)
 
     counts = {
         'all_count': user_items_qs.count(),
         'liked_count': liked_items_qs.count(),
         'bookmarked_count': bookmarked_items_qs.count(),
     }
-
     # ----------------------------
     # ПЕРСОНАЛЬНЫЕ ДАННЫЕ (CLEAN)
     # ----------------------------
@@ -216,13 +210,148 @@ def profile_view(request, username):
     context = {
         'fields': filtered_fields,
         'user_obj': user_obj,
-        'items': page_obj,
-        'page_obj': page_obj,
-        'page_range': page_range,
-        'active_tab': tab,
+        'created_items': created_items,
+        'liked_items': liked_items,
+        'bookmarked_items': bookmarked_items,
+        'is_owner': is_owner,
         **counts,
     }
     return render(request, 'accounts/profile.html', context)
+
+
+def profile_section_view(request, username, section):
+    user_obj = get_object_or_404(User, username=username)
+
+    user_items_qs = (
+        Item.objects
+        .with_counters()
+        .filter(author=user_obj)
+        .order_by('-published_date')
+    )
+
+    liked_items_qs = (
+        Item.objects
+        .with_counters()
+        .filter(likes__user=user_obj)
+        .annotate(
+            liked_at=Max(
+                'likes__created_at',
+                filter=Q(likes__user=user_obj)
+            )
+        )
+        .order_by('-liked_at')
+        .distinct()
+    )
+
+    if Bookmark is not None:
+        bookmarked_items_qs = (
+            Item.objects
+            .with_counters()
+            .filter(bookmarked_by__user=user_obj)
+            .annotate(
+                bookmarked_at=Max(
+                    'bookmarked_by__created_at',
+                    filter=Q(bookmarked_by__user=user_obj)
+                )
+            )
+            .order_by('-bookmarked_at')
+            .distinct()
+        )
+    else:
+        try:
+            bookmarked_items_qs = (
+                Item.objects
+                .filter(bookmarked_by=user_obj)
+                .order_by('-published_date')
+                .select_related('author')
+                .prefetch_related('images')
+            )
+        except Exception:
+            bookmarked_items_qs = Item.objects.none()
+
+    section = (section or '').lower()
+    if section not in {'created', 'liked', 'bookmarked'}:
+        raise Http404
+
+    is_owner = request.user.is_authenticated and request.user == user_obj
+    if section in {'liked', 'bookmarked'} and not is_owner:
+        raise PermissionDenied
+
+    if section == 'liked':
+        qs_to_page = liked_items_qs
+        section_title = 'Liked'
+        section_count = liked_items_qs.count()
+    elif section == 'bookmarked':
+        qs_to_page = bookmarked_items_qs
+        section_title = 'Bookmarked'
+        section_count = bookmarked_items_qs.count()
+    else:
+        qs_to_page = user_items_qs
+        section_title = 'Created'
+        section_count = user_items_qs.count()
+
+    paginator = Paginator(qs_to_page, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_obj.number,
+        on_each_side=1,
+        on_ends=1
+    )
+
+    for item in page_obj:
+        item.views_count_human = count_convert(item.views_count)
+        item.likes_count_human = count_convert(item.likes_count)
+        item.bookmarks_count_human = count_convert(item.bookmarks_count)
+        item.comments_count_human = count_convert(item.comments_count)
+
+    counts = {
+        'all_count': user_items_qs.count(),
+        'liked_count': liked_items_qs.count(),
+        'bookmarked_count': bookmarked_items_qs.count(),
+    }
+
+    fields = {
+        "Username": {
+            "value": user_obj.username,
+            "type": "text",
+        },
+        "First name": {
+            "value": user_obj.first_name,
+            "type": "text",
+        },
+        "Last name": {
+            "value": user_obj.last_name,
+            "type": "text",
+        },
+    }
+
+    if user_obj.email:
+        fields["Email"] = {
+            "value": user_obj.email,
+            "type": "email",
+            "is_owner": request.user == user_obj,
+        }
+
+    filtered_fields = {
+        label: data
+        for label, data in fields.items()
+        if data.get("value") and str(data["value"]).strip()
+    }
+
+    context = {
+        'fields': filtered_fields,
+        'user_obj': user_obj,
+        'items': page_obj,
+        'page_obj': page_obj,
+        'page_range': page_range,
+        'section': section,
+        'section_title': section_title,
+        'section_count': section_count,
+        'is_owner': is_owner,
+        **counts,
+    }
+    return render(request, 'accounts/profile_section.html', context)
 
 
 # Выход из профиля

@@ -35,10 +35,35 @@
         removeItem('listing_scroll');
         removeItem('listing_anchor');
         removeItem('listing_changes');
+        removeItem('listing_instant');
+        removeItem('listing_section_anchor');
+        removeItem('profile_active_tab');
+        removeItem('profile_back_url');
+        removeItem('profile_back_anchor');
+        removeItem('profile_from_detail');
     }
 
     function isProfilePage() {
         return location.pathname.includes('/profile/');
+    }
+
+    function isProfileSectionPage() {
+        try {
+            const parts = (location.pathname || '').split('/').filter(Boolean);
+            return parts.length >= 3 && parts[0] === 'profile';
+        } catch {
+            return false;
+        }
+    }
+
+    function getProfileSectionIdFromPath() {
+        try {
+            const parts = (location.pathname || '').split('/').filter(Boolean);
+            if (parts.length >= 3 && parts[0] === 'profile') {
+                return 'profile-section-' + parts[2];
+            }
+        } catch { }
+        return null;
     }
 
     function getCurrentTab() {
@@ -132,6 +157,37 @@
 
         const itemId = link.dataset?.itemId;
         if (itemId) setItem('listing_anchor', 'item-' + itemId);
+
+        const section = link.closest?.('[data-anchor]');
+        if (section) {
+            setItem('listing_section_anchor', section.dataset.anchor);
+        }
+
+        const activeTab = document.querySelector('.profile-section-tab.success_');
+        if (activeTab?.dataset?.sectionTarget) {
+            setItem('profile_active_tab', activeTab.dataset.sectionTarget);
+        }
+
+        try {
+            setItem('profile_from_detail', '1');
+        } catch { }
+
+        try {
+            const sectionId = section?.dataset?.anchor;
+            const container = section?.querySelector?.('[data-scroll-container]');
+            if (sectionId && container) {
+                const row = container.querySelector('.row');
+                const card = container.querySelector('.item-card');
+                if (card) {
+                    const styles = row ? window.getComputedStyle(row) : null;
+                    const gap = styles ? parseFloat(styles.columnGap || styles.gap || '0') : 0;
+                    const perView = window.matchMedia('(max-width: 768px)').matches ? 1 : 2;
+                    const step = (card.getBoundingClientRect().width + (Number.isNaN(gap) ? 0 : gap)) * perView;
+                    const index = step ? Math.round(container.scrollLeft / step) : 0;
+                    setItem('section_scroll_index_' + sectionId, String(index));
+                }
+            }
+        } catch { }
     }, { passive: true });
 
     /* =====================================================
@@ -147,10 +203,34 @@
         if (!savedUrl || savedUrl !== location.pathname + location.search) return;
 
         const anchorId = getItem('listing_anchor');
-        if (!anchorId) return;
+        const sectionAnchor = getItem('listing_section_anchor');
+        const targetId = anchorId || sectionAnchor;
+        const instant = getItem('listing_instant') === '1';
+        const savedTab = getItem('profile_active_tab');
 
-        const el = document.getElementById(anchorId);
+        const fromDetail = getItem('profile_from_detail') === '1';
+        if (savedTab && window.profileSectionsActivate && fromDetail) {
+            try { window.profileSectionsActivate(savedTab); } catch { }
+        }
+
+        if (instant && fromDetail) {
+            const savedScroll = parseInt(getItem('listing_scroll') || '0', 10);
+            if (!Number.isNaN(savedScroll)) {
+                window.scrollTo(0, savedScroll);
+            }
+            removeItem('listing_instant');
+            return;
+        }
+
+        if (!targetId || !fromDetail) return;
+
+        const el = document.getElementById(targetId);
         if (!el) return;
+
+        const section = el.closest?.('.profile-section');
+        if (section && window.profileSectionsActivate) {
+            try { window.profileSectionsActivate(section.id); } catch { }
+        }
 
         requestAnimationFrame(() => {
             const rect = el.getBoundingClientRect();
@@ -161,20 +241,35 @@
             );
 
             if (Math.abs(rect.top) > OFFSET) {
-                window.scrollBy({
-                    top: rect.top - OFFSET,
-                    behavior: 'smooth'
-                });
+                const targetTop = window.scrollY + rect.top - OFFSET;
+                if (instant) {
+                    window.scrollTo(0, targetTop);
+                } else {
+                    window.scrollBy({
+                        top: rect.top - OFFSET,
+                        behavior: 'smooth'
+                    });
+                }
             }
 
-            el.classList.remove('back-highlight');
-            void el.offsetWidth;
-            el.classList.add('back-highlight');
+            if (anchorId && String(anchorId).startsWith('item-')) {
+                el.classList.remove('back-highlight');
+                void el.offsetWidth;
+                el.classList.add('back-highlight');
+            }
         });
     }
 
     window.addEventListener('pageshow', restoreListingPosition);
     document.addEventListener('DOMContentLoaded', restoreListingPosition);
+
+    if (isProfileSectionPage()) {
+        const sectionId = getProfileSectionIdFromPath();
+        if (sectionId) {
+            setItem('profile_active_tab', sectionId);
+            setItem('profile_from_detail', '1');
+        }
+    }
 
     /* =====================================================
        3) APPLY listing_changes (likes / bookmarks / views / comments)
@@ -232,6 +327,28 @@
         btn.addEventListener('click', function (e) {
             e.preventDefault();
 
+            if (isProfileSectionPage()) {
+                const backUrl = getItem('profile_back_url');
+                const backAnchor = getItem('profile_back_anchor');
+                const sectionAnchor = getItem('listing_section_anchor');
+                const activeTab = getItem('profile_active_tab');
+                if (backUrl) {
+                    setItem('listing_url', backUrl);
+                    if (sectionAnchor) {
+                        setItem('listing_anchor', sectionAnchor);
+                    } else if (backAnchor) {
+                        setItem('listing_anchor', backAnchor);
+                    }
+                    if (activeTab) {
+                        setItem('profile_active_tab', activeTab);
+                        setItem('profile_from_detail', '1');
+                    }
+                    setItem('listing_instant', '1');
+                    location.href = backUrl;
+                    return;
+                }
+            }
+
             const listingUrl = getItem('listing_url');
             if (listingUrl) {
                 try { setItem('from_detail', '1'); } catch { }
@@ -246,6 +363,22 @@
             }
         });
     })();
+
+    /* =====================================================
+       4.1) PASS REDIRECT URL ON DELETE
+    ===================================================== */
+    document.addEventListener('submit', function (e) {
+        const form = e.target;
+        if (!form || !form.matches || !form.matches('form[data-delete-item]')) return;
+
+        const redirectInput = form.querySelector('input.delete-redirect[name="redirect_to"]');
+        if (!redirectInput) return;
+
+        const listingUrl = getItem('listing_url');
+        if (listingUrl) {
+            redirectInput.value = listingUrl;
+        }
+    });
 
     /* =====================================================
        5) CLEAR LISTING WHEN LEAVING ALLOWED PAGES

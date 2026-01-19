@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.http import HttpResponseForbidden, HttpResponse
+from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q
 from django.db.models import Prefetch
@@ -173,10 +174,11 @@ def create_item(request):
                 else:
                     ItemImage.objects.create(item=item, image=f)
 
+            profile_url = redirect('login_app:profile', username=request.user.username).url
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({"success": True, "redirect": "/blog/brainews"})
+                return JsonResponse({"success": True, "redirect": profile_url})
             messages.success(request, "Item created successfully.")
-            return redirect("smart_blog:items_list")
+            return redirect(profile_url)
         else:
             # Form invalid
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -461,8 +463,10 @@ def delete_item(request, slug):
         # можно логировать ошибку
         return HttpResponse("Delete failed", status=500)
 
-    # куда редиректим после удаления
-    # redirect_url = reverse('login_app:profile', args=[request.user.username])
+    redirect_to = request.POST.get('redirect_to') or ''
+    if redirect_to and url_has_allowed_host_and_scheme(redirect_to, allowed_hosts={request.get_host()}):
+        return redirect(redirect_to)
+
     return redirect("smart_blog:items_list")
 
 
