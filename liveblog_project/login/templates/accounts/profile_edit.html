@@ -88,14 +88,17 @@
 
             <div id="avatarUrlPreview" class="d-none position-relative">
               <img src="" alt="Avatar URL preview" />
+              <button type="button" class="avatar-preview-delete" aria-label="Remove avatar"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
 
             <input type="file" name="avatar_file" id="avatarFileInput" hidden accept=".jpg,.jpeg,.png,.webp,.gif,.svg,image/*" />
             <div id="avatarFilePreview" class="d-none position-relative">
               <img src="" alt="Avatar File preview" />
+              <button type="button" class="avatar-preview-delete" aria-label="Remove avatar"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
 
             <div id="avatarFileName" class="small mb-2 d-none"></div>
+            <input type="hidden" name="avatar_clear" id="avatarClearFlag" value="0" />
 
             <div class="d-flex gap-2 mb-0">
               <button name="profile_submit" class="btn btn-primary w-50" type="submit">Save</button>

@@ -128,6 +128,7 @@
     const fileImg = filePreview.querySelector('img');
 
     const fileNameBox = document.getElementById('avatarFileName');
+    const clearFlag = document.getElementById('avatarClearFlag');
 
     const NOT_FOUND = '/static/img/image_not_found.webp';
     const ALLOWED_EXT = /\.(jpg|jpeg|png|gif|webp|svg)$/i;
@@ -159,11 +160,28 @@
         fileNameBox.classList.add('d-none');
     }
 
+    function setClearFlag(val) {
+        if (!clearFlag) return;
+        clearFlag.value = val ? '1' : '0';
+    }
+
+    function clearAvatarSelection() {
+        urlInput.value = '';
+        if (fileInput) fileInput.value = '';
+        urlPreview.classList.add('d-none');
+        filePreview.classList.add('d-none');
+        hideFileName();
+        urlInput.classList.remove('is-invalid');
+        setClearFlag(true);
+        enableSave();
+    }
+
     function showFile(src, name = null) {
         fileImg.src = src;
         filePreview.classList.remove('d-none');
         urlPreview.classList.add('d-none');
         showFileName(name || extractName(src));
+        setClearFlag(false);
     }
 
     function showUrl(src) {
@@ -171,6 +189,7 @@
         urlPreview.classList.remove('d-none');
         filePreview.classList.add('d-none');
         showFileName(extractName(src));
+        setClearFlag(false);
     }
 
     function showInvalidUrl() {
@@ -229,11 +248,21 @@
 
     /* ================== URL input ================== */
 
+    let lastUrlValue = urlInput.value || '';
     urlInput.addEventListener('input', () => {
         const val = urlInput.value.trim();
 
         if (!val) {
-            restoreInitialAvatar();
+            const hasFile = fileInput?.files?.length;
+            if (!hasFile && lastUrlValue) {
+                clearAvatarSelection();
+            } else {
+                urlPreview.classList.add('d-none');
+                if (!hasFile) hideFileName();
+                setClearFlag(!hasFile);
+                enableSave();
+            }
+            lastUrlValue = val;
             return;
         }
 
@@ -254,6 +283,7 @@
             urlInput.classList.remove('is-invalid');
             showUrl(val);
             enableSave();
+            lastUrlValue = val;
         };
         img.onerror = showInvalidUrl;
         img.src = val;
@@ -279,8 +309,15 @@
             urlInput.value = '';
             urlInput.classList.remove('is-invalid');
             enableSave();
+            lastUrlValue = '';
         };
         reader.readAsDataURL(file);
+    });
+
+    document.querySelectorAll('.avatar-preview-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+            clearAvatarSelection();
+        });
     });
 
     /* ================== submit guard ================== */

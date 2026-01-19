@@ -42,11 +42,6 @@ h6 {
     /* важно — внутренние отступы */
     box-sizing: border-box;
     overflow: hidden;
-    /* padding-top: 80px; */
-    /* padding-bottom: 80px; */
-    /* содержимое НЕ выйдет за пределы */
-    border-bottom: 1px solid #F1F2F3;
-    /* box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08); */
     padding-top: 80px;
     padding-bottom: 80px;
 }

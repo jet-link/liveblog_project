@@ -1,14 +1,14 @@
 <div class="tabs_block">
   <ul class="nav nav-tabs mb-4" role="tablist">
     <li class="nav-item small" role="presentation">
-      <a class="nav-link {% if active_tab == 'all' %}active{% endif %} d-flex gap-2" href="?tab=all" role="tab" data-tab="all"><span class="text-uppercase">Created</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="all">{{ all_count }}</span></a>
+      <a class="nav-link {% if active_tab == 'all' %}active{% endif %} d-flex gap-2" href="?tab=all" role="tab" data-tab="all"><span>Created</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="all">{{ all_count }}</span></a>
     </li>
     {% if user.is_authenticated and user.username == user_obj.username %}
       <li class="nav-item small" role="presentation">
-        <a class="nav-link {% if active_tab == 'liked' %}active{% endif %} d-flex gap-2" href="?tab=liked" role="tab" data-tab="liked"><span class="text-uppercase">Liked</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="liked">{{ liked_count }}</span></a>
+        <a class="nav-link {% if active_tab == 'liked' %}active{% endif %} d-flex gap-2" href="?tab=liked" role="tab" data-tab="liked"><span>Liked</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="liked">{{ liked_count }}</span></a>
       </li>
       <li class="nav-item small" role="presentation">
-        <a class="nav-link {% if active_tab == 'bookmarked' %}active{% endif %} d-flex gap-2" href="?tab=bookmarked" role="tab" data-tab="bookmarked"><span class="text-uppercase">Bookmarked</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="bookmarked">{{ bookmarked_count }}</span></a>
+        <a class="nav-link {% if active_tab == 'bookmarked' %}active{% endif %} d-flex gap-2" href="?tab=bookmarked" role="tab" data-tab="bookmarked"><span>Bookmarked</span><span class="tab-count-badge success_ fw-bolder" data-tab-count="bookmarked">{{ bookmarked_count }}</span></a>
       </li>
     {% endif %}
   </ul>

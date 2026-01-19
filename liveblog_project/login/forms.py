@@ -321,9 +321,21 @@ class UserEditForm(forms.ModelForm):
 
         avatar_url = self.cleaned_data.get('avatar_url')
         avatar_file = self.cleaned_data.get('avatar_file')
+        clear_avatar = str(self.data.get('avatar_clear', '0')).lower() in {'1', 'true', 'on', 'yes'}
 
         from .models import Profile
         profile, _ = Profile.objects.get_or_create(user=user)
+
+        if clear_avatar:
+            if profile.avatar_file:
+                try:
+                    profile.avatar_file.delete(save=False)
+                except Exception:
+                    pass
+            profile.avatar_file = None
+            profile.avatar_url = None
+            profile.save()
+            return user
 
         # ✅ 1. Загружен НОВЫЙ файл
         if avatar_file:
