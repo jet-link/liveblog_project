@@ -216,7 +216,7 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         # avatar_url добавлен в список полей
-        fields = ['username', 'first_name', 'last_name', 'email', 'avatar_url', 'avatar_file',]
+        fields = ['username', 'first_name', 'last_name', 'email', 'avatar_url', 'avatar_file']
 
         widgets = {
             'username': forms.TextInput(attrs={
@@ -327,7 +327,7 @@ class UserEditForm(forms.ModelForm):
 
         # ✅ 1. Загружен НОВЫЙ файл
         if avatar_file:
-            profile.avatar_file = avatar_file
+            profile.set_avatar_file(avatar_file)
             profile.avatar_url = None
             profile.save()
             return user
@@ -341,6 +341,7 @@ class UserEditForm(forms.ModelForm):
 
         # ✅ 3. НИЧЕГО НЕ МЕНЯЛИ → НЕ ТРОГАЕМ АВАТАР
         # (оставляем avatar_file / avatar_url как есть)
+        profile.save()
         return user
     
     def clean_avatar_file(self):

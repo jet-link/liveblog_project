@@ -205,6 +205,7 @@
         showUrl(initialAvatar.value);
     }
 
+
     /* ================== reset ================== */
 
     function restoreInitialAvatar() {

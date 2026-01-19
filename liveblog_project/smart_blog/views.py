@@ -11,13 +11,12 @@ from django.template.loader import render_to_string
 from django.http import HttpResponseForbidden, HttpResponse
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q
-from django.utils import timezone
-from datetime import timedelta
 from django.db.models import Prefetch
-from django.utils import timezone
-from datetime import timedelta
 from .utils import count_convert
 import logging
+import os
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 
 def items_list(request):
@@ -113,6 +112,30 @@ MAX_IMAGES = 10
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/jpg", "image/webp"}
 logger = logging.getLogger(__name__)
 
+def find_existing_media_path(filename, subdir=None):
+    if not filename:
+        return None
+    try:
+        base_root = settings.MEDIA_ROOT
+        if base_root:
+            search_root = os.path.join(base_root, subdir) if subdir else base_root
+            if os.path.isdir(search_root):
+                for root, _dirs, files in os.walk(search_root):
+                    if filename in files:
+                        full_path = os.path.join(root, filename)
+                        rel_path = os.path.relpath(full_path, base_root)
+                        return rel_path.replace(os.sep, '/')
+    except Exception:
+        pass
+    if subdir:
+        rel_path = f"{subdir}/{filename}"
+        try:
+            if default_storage.exists(rel_path):
+                return rel_path
+        except Exception:
+            pass
+    return None
+
 @login_required
 def create_item(request):
     if request.method == "POST":
@@ -144,7 +167,11 @@ def create_item(request):
                     item.tags.add(tag_obj)
 
             for f in files[:MAX_IMAGES]:
-                ItemImage.objects.create(item=item, image=f)
+                existing_path = find_existing_media_path(f.name, subdir="items")
+                if existing_path:
+                    ItemImage.objects.create(item=item, image=existing_path)
+                else:
+                    ItemImage.objects.create(item=item, image=f)
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({"success": True, "redirect": "/blog/brainews"})
@@ -348,7 +375,11 @@ def edit_item(request, slug):
 
             # ---- ДОБАВЛЯЕМ новые изображения ----
             for f in files[:MAX_IMAGES]:
-                ItemImage.objects.create(item=item, image=f)
+                existing_path = find_existing_media_path(f.name, subdir="items")
+                if existing_path:
+                    ItemImage.objects.create(item=item, image=existing_path)
+                else:
+                    ItemImage.objects.create(item=item, image=f)
 
             messages.success(request, "Item updated successfully.")
             return redirect(item.get_absolute_url())

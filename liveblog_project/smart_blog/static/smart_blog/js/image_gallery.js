@@ -9,10 +9,7 @@
     });
 
     function initGallery(galleryRoot) {
-        const grid = qs('.gallery-grid', galleryRoot);
         const imgs = qsa('.gallery-img', galleryRoot);
-        const count = imgs.length;
-
         ensureOverlay();
 
         // Setup lazy loading for thumbnails via IntersectionObserver (lightweight)
@@ -23,7 +20,7 @@
             img.addEventListener('click', function (e) {
                 e.preventDefault();
                 const idx = Number(img.dataset.index || 0);
-                openOverlayAt(idx, galleryRoot, count);
+                openOverlayAt(idx, galleryRoot);
             });
             img.style.cursor = 'pointer';
             // hint to browser: set low priority for thumbs that are offscreen
