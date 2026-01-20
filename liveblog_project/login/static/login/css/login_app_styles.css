@@ -296,11 +296,10 @@
 
 .little-avatar {
     width: 100%;
-    max-width: 35px;
+    max-width: 30px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
-    /* box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1); */
 }
 
 
@@ -440,7 +439,7 @@
 .user-tooltip {
     position: absolute;
     top: calc(100% + 13px);
-    right: -30px;
+    right: -32px;
     min-width: 170px;
     background: #fff;
     border-radius: 10px;
@@ -503,7 +502,6 @@
     margin: 6px 0;
     background: #eee;
 }
-
 
 @media (max-width: 768px) {
     .user-tooltip {

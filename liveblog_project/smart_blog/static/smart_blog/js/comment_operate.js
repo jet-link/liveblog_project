@@ -1144,24 +1144,11 @@
       .forEach(el => el.classList.remove('comment-active'));
   }
 
-  /* ===============================
-     SHOW REPLY FORM
-  =============================== */
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-reply');
-    if (!btn) return;
-
-    e.preventDefault();
-
-    const commentId = btn.dataset.commentId;
-    const mentionId = btn.dataset.mentionId;
+  function openReplyForm(commentId, mentionId) {
     const container = document.getElementById(`reply-form-${commentId}`);
     if (!container) return;
 
-    // закрываем все формы
     closeAllReplyForms();
-
-    // открываем нужную
     container.classList.remove('d-none');
 
     const textarea = container.querySelector('textarea[name="text"]');
@@ -1173,7 +1160,100 @@
 
     document.getElementById(`comment-${commentId}`)
       ?.classList.add('comment-active');
+  }
+
+  function closeAllCommentMenus() {
+    document.querySelectorAll('.comment-menu.open')
+      .forEach(menu => {
+        menu.classList.remove('open');
+      });
+  }
+
+  function buildCommentShareUrl(commentId) {
+    const base = window.location.href.split('#')[0];
+    return `${base}#comment-anchor-${commentId}`;
+  }
+
+  async function shareCommentUrl(url) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+        return;
+      } catch { }
+    }
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(url);
+        return;
+      } catch { }
+    }
+
+    const temp = document.createElement('textarea');
+    temp.value = url;
+    temp.setAttribute('readonly', 'true');
+    temp.style.position = 'absolute';
+    temp.style.left = '-9999px';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+  }
+
+  /* ===============================
+     SHOW REPLY FORM
+  =============================== */
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-reply');
+    if (!btn) return;
+
+    e.preventDefault();
+
+    const commentId = btn.dataset.commentId;
+    const mentionId = btn.dataset.mentionId;
+    openReplyForm(commentId, mentionId);
   });
+
+  /* ===============================
+     COMMENT MENU
+  =============================== */
+  document.addEventListener('click', (e) => {
+    const menuBtn = e.target.closest('.comment-menu-btn');
+    if (menuBtn) {
+      e.preventDefault();
+      const menu = menuBtn.closest('.comment-menu');
+      if (!menu) return;
+      const wasOpen = menu.classList.contains('open');
+      closeAllCommentMenus();
+      if (!wasOpen) menu.classList.add('open');
+      return;
+    }
+
+    const actionBtn = e.target.closest('.comment-menu-action');
+    if (actionBtn) {
+      e.preventDefault();
+      const action = actionBtn.dataset.action;
+      const commentId = actionBtn.dataset.commentId;
+      const mentionId = actionBtn.dataset.mentionId;
+
+      if (action === 'reply') {
+        openReplyForm(commentId, mentionId);
+      } else if (action === 'share') {
+        const url = buildCommentShareUrl(commentId);
+        shareCommentUrl(url);
+      } else if (action === 'report') {
+        window.dispatchEvent(new CustomEvent('comment-report', { detail: { commentId } }));
+      }
+
+      closeAllCommentMenus();
+      return;
+    }
+
+    if (!e.target.closest('.comment-menu')) {
+      closeAllCommentMenus();
+    }
+  });
+
 
   /* ===============================
      CANCEL REPLY

@@ -89,6 +89,7 @@
         });
 
         container.addEventListener('scroll', () => {
+            section.__lastIndex = getIndex();
             window.requestAnimationFrame(updateControls);
         });
 
@@ -103,6 +104,7 @@
 
         section.__updateControls = updateControls;
         section.__scrollToIndex = scrollToIndex;
+        section.__getIndex = getIndex;
     }
 
     function setListingState(anchorId) {
@@ -141,18 +143,20 @@
             });
             if (ctx && ctx.__updateControls) {
                 setTimeout(() => {
-                    try {
-                        const savedIndex = sessionStorage.getItem('section_scroll_index_' + ctx.id);
-                        if (savedIndex !== null) {
-                            const parsed = parseInt(savedIndex, 10);
-                            ctx.__lastIndex = Number.isNaN(parsed) ? 0 : parsed;
-                        }
-                    } catch { }
                     if (resetIndex) {
                         ctx.__lastIndex = 0;
                         try { sessionStorage.removeItem('section_scroll_index_' + ctx.id); } catch { }
+                    } else if (ctx.__lastIndex == null) {
+                        try {
+                            const savedIndex = sessionStorage.getItem('section_scroll_index_' + ctx.id);
+                            if (savedIndex !== null) {
+                                const parsed = parseInt(savedIndex, 10);
+                                ctx.__lastIndex = Number.isNaN(parsed) ? 0 : parsed;
+                            }
+                        } catch { }
                     }
-                    ctx.__scrollToIndex?.(ctx.__lastIndex || 0);
+                    if (ctx.__lastIndex == null) ctx.__lastIndex = 0;
+                    ctx.__scrollToIndex?.(ctx.__lastIndex);
                     ctx.__updateControls?.();
                 }, 80);
             }
@@ -173,8 +177,7 @@
                 const target = id ? document.getElementById(id) : null;
                 if (!target) return;
                 setActive(btn);
-                showSection(target, true);
-                try { window.clearProfileListingState?.(); } catch { }
+                showSection(target, false);
             });
         });
 

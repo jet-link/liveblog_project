@@ -9,13 +9,13 @@
       <div class="d-flex gap-2 align-items-center">
         <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
           <span class="custom_badge_success">{{ comment.author }}</span>
-          {% comment %} <div class="little-avatar">
+          <div class="little-avatar">
             {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
               <img src="{{ comment.author.profile.get_avatar }}" alt="{{ comment.author }}" class="user-avatar clickable-avatar" data-full="{{ comment.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
             {% else %}
               <img src="{% static 'img/no_avatar.svg' %}" alt="{{ comment.author }}" class="user-avatar no_avatar" />
             {% endif %}
-          </div> {% endcomment %}
+          </div>
         </a>
       </div>
 
@@ -56,17 +56,25 @@
 
   <div class="d-flex justify-content-between small text-muted align-items-center">
     <div class="text-muted d-flex gap-2 align-items-center">
-      <div class="d-flex gap-1">
-        <small>{{ comment.human_published }}</small>
-      </div>
+      <small>{{ comment.human_published }}</small>
 
-    {% if user != comment.author and user.is_authenticated %}
-      {% if not hide_reply %}
-        {% if not thread_view or depth|default:0 > 0 %}
-          <button type="button" class="btn-reply custom_badge_danger" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+      {% if user != comment.author and user.is_authenticated %}
+        {% if not hide_reply %}
+          {% if not thread_view or depth|default:0 > 0 %}
+            <div class="comment-menu">
+              <button type="button" class="comment-menu-btn" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+              <div class="comment-actions">
+                <i class="fa fa-angle-right mx-1 success_"></i>
+                <button type="button" class="comment-menu-action custom_badge_success fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                {% comment %} <span>→</span> {% endcomment %}
+                <button type="button" class="comment-menu-action custom_badge_success fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+                {% comment %} <span>→</span> {% endcomment %}
+                <button type="button" class="comment-menu-action custom_badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+              </div>
+            </div>
+          {% endif %}
         {% endif %}
       {% endif %}
-    {% endif %}
     </div>
 
     {% if user.is_authenticated and user == comment.author %}
