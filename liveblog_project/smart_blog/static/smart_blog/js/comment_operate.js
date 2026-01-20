@@ -97,6 +97,53 @@
     return Number.isNaN(num) ? 0 : num;
   }
 
+  function countDirectReplyBlocks(container) {
+    if (!container) return 0;
+    let count = 0;
+    for (const child of container.children) {
+      if (child.classList?.contains('comment-block')) count += 1;
+    }
+    return count;
+  }
+  window.countDirectReplyBlocks = countDirectReplyBlocks;
+
+  function applyThreadLinkClasses(link) {
+    if (!link) return;
+    link.classList.remove('success_');
+    link.classList.add(
+      'text-decoration-none',
+      'small',
+      'fw-semibold',
+      'd-flex',
+      'gap-2',
+      'align-items-center',
+      'text-muted'
+    );
+  }
+
+  function renderThreadLinkContents(link, count) {
+    if (!link) return;
+    link.textContent = '';
+    const label = document.createElement('span');
+    label.textContent = 'View all replies';
+    const icon = document.createElement('i');
+    icon.textContent = '→';
+    const badge = document.createElement('span');
+    badge.className = 'replies-count custom_badge_success';
+    badge.textContent = String(count);
+    link.append(label, icon, badge);
+  }
+
+  function buildThreadLink(parentId, threadUrl, count) {
+    const link = document.createElement('a');
+    link.id = `replies-thread-link-${parentId}`;
+    link.href = threadUrl;
+    link.dataset.count = String(count);
+    applyThreadLinkClasses(link);
+    renderThreadLinkContents(link, count);
+    return link;
+  }
+
   function setThreadLinkCount(parentId, count) {
     const link = document.getElementById('replies-thread-link-' + parentId);
     if (!link) return;
@@ -110,13 +157,16 @@
       return;
     }
     link.dataset.count = String(next);
+    applyThreadLinkClasses(link);
+    const label = link.querySelector('span:not(.replies-count)');
+    const icon = link.querySelector('i');
     let span = link.querySelector('.replies-count');
-    if (!span) {
-      span = document.createElement('span');
-      span.className = 'replies-count';
-      link.insertBefore(span, link.querySelector('i') || null);
+    if (!label || !icon || !span) {
+      renderThreadLinkContents(link, next);
+      return;
     }
-    span.textContent = `(${next})`;
+    span.classList.add('custom_badge_success');
+    span.textContent = String(next);
   }
 
   function adjustThreadLinkCount(parentId, delta) {
@@ -395,7 +445,7 @@
               const replies = parentComment.querySelector('.replies');
 
               // 🔥 КЛЮЧЕВОЕ МЕСТО
-              if (replies && !replies.querySelector('.comment-block')) {
+              if (replies && countDirectReplyBlocks(replies) === 0) {
                 replies.remove(); // ← исчезнет линия + точка + ::before
               }
 
@@ -405,22 +455,16 @@
                 const depth = parseInt(parentComment.dataset.depth || '0', 10);
                 const link = document.getElementById('replies-thread-link-' + data.parent_id);
                 if (depth >= 2) {
-                  if (!replies || !replies.querySelector('.comment-block')) {
+                  if (!replies || countDirectReplyBlocks(replies) === 0) {
                     if (link) link.remove();
                   } else if (!link) {
                     const threadUrl =
                       parentComment?.dataset?.threadUrl ||
                       `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
-                    const replyCount = replies
-                      ? replies.querySelectorAll('.comment-block').length
-                      : 1;
+                    const replyCount = replies ? countDirectReplyBlocks(replies) : 1;
                     const wrap = document.createElement('div');
-                    wrap.className = 'mt-3';
-                    wrap.innerHTML = `
-                      <a id="replies-thread-link-${data.parent_id}" href="${threadUrl}" class="text-decoration-none success_ fw-semibold" data-count="${replyCount}">
-                        View all replies <span class="replies-count">(${replyCount})</span><i class="ms-1">→</i>
-                      </a>
-                    `;
+                    wrap.className = 'mt-4';
+                    wrap.appendChild(buildThreadLink(data.parent_id, threadUrl, replyCount));
                     parentComment.appendChild(wrap);
                   } else {
                     window.adjustThreadLinkCount?.(data.parent_id, -1);
@@ -443,13 +487,11 @@
               const threadRoot = document.getElementById('comment-' + threadParentId);
               const threadReplies = threadRoot?.querySelector('.replies');
               const threadEmpty = document.getElementById('threadEmpty');
-              const replyCount = threadReplies
-                ? threadReplies.querySelectorAll('.comment-block').length
-                : 0;
+              const replyCount = countDirectReplyBlocks(threadReplies);
               try {
                 sessionStorage.setItem('thread_replies_count_' + threadParentId, String(replyCount));
               } catch { }
-              if (!threadReplies || !threadReplies.querySelector('.comment-block')) {
+              if (!threadReplies || countDirectReplyBlocks(threadReplies) === 0) {
                 try {
                   sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
                 } catch { }
@@ -545,12 +587,8 @@
                   parentComment?.dataset?.threadUrl ||
                   `${window.location.origin}/blog/comment/${parentId}/thread/`;
                 const wrap = document.createElement('div');
-                wrap.className = 'mt-3';
-                wrap.innerHTML = `
-                  <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold" data-count="${count}">
-                    View all replies <span class="replies-count">(${count})</span><i class="ms-1">→</i>
-                  </a>
-                `;
+                wrap.className = 'mt-4';
+                wrap.appendChild(buildThreadLink(parentId, threadUrl, count));
                 parentComment.appendChild(wrap);
               } else {
                 setThreadLinkCount(parentId, count);
@@ -1242,12 +1280,8 @@
           let link = document.getElementById('replies-thread-link-' + parentId);
           if (!link) {
             const wrap = document.createElement('div');
-            wrap.className = 'mt-3';
-            wrap.innerHTML = `
-              <a id="replies-thread-link-${parentId}" href="${threadUrl}" class="text-decoration-none success_ small fw-semibold" data-count="1">
-                View all replies <span class="replies-count">(1)</span><i class="ms-1">→</i>
-              </a>
-            `;
+            wrap.className = 'mt-4';
+            wrap.appendChild(buildThreadLink(parentId, threadUrl, 1));
             parentComment.appendChild(wrap);
           } else {
             window.adjustThreadLinkCount?.(parentId, 1);
@@ -1278,8 +1312,8 @@
             } catch { }
             const threadRoot = document.getElementById('comment-' + threadParentId);
             const threadReplies = threadRoot?.querySelector('.replies');
-            const replyCount = threadReplies
-              ? threadReplies.querySelectorAll('.comment-block').length
+            const replyCount = window.countDirectReplyBlocks
+              ? window.countDirectReplyBlocks(threadReplies)
               : 0;
             try {
               sessionStorage.setItem('thread_replies_count_' + threadParentId, String(replyCount));

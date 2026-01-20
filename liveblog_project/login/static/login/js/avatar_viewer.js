@@ -126,6 +126,8 @@
 
     const urlImg = urlPreview.querySelector('img');
     const fileImg = filePreview.querySelector('img');
+    const urlDeleteBtn = urlPreview.querySelector('.avatar-preview-delete');
+    const fileDeleteBtn = filePreview.querySelector('.avatar-preview-delete');
 
     const fileNameBox = document.getElementById('avatarFileName');
     const clearFlag = document.getElementById('avatarClearFlag');
@@ -181,6 +183,7 @@
         filePreview.classList.remove('d-none');
         urlPreview.classList.add('d-none');
         showFileName(name || extractName(src));
+        if (fileDeleteBtn) fileDeleteBtn.classList.remove('d-none');
         setClearFlag(false);
     }
 
@@ -189,6 +192,7 @@
         urlPreview.classList.remove('d-none');
         filePreview.classList.add('d-none');
         showFileName(extractName(src));
+        if (urlDeleteBtn) urlDeleteBtn.classList.remove('d-none');
         setClearFlag(false);
     }
 
@@ -198,6 +202,7 @@
         filePreview.classList.add('d-none');
         urlInput.classList.add('is-invalid');
         showFileName('Image not found', true);
+        if (urlDeleteBtn) urlDeleteBtn.classList.add('d-none');
         // hideFileName();
         disableSave();
     }
@@ -260,9 +265,13 @@
                 urlPreview.classList.add('d-none');
                 if (!hasFile) hideFileName();
                 setClearFlag(!hasFile);
+                urlInput.classList.remove('is-invalid');
                 enableSave();
             }
             lastUrlValue = val;
+            if (initialAvatar.type) {
+                restoreInitialAvatar();
+            }
             return;
         }
 

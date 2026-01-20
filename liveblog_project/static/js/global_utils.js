@@ -17,6 +17,28 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Replace broken avatar images with fallback
+(function () {
+    'use strict';
+
+    const FALLBACK_AVATAR = '/static/img/no_image.svg';
+
+    function applyAvatarFallback(img) {
+        if (!img || img.dataset?.avatarFallbackApplied) return;
+        img.dataset.avatarFallbackApplied = '1';
+        img.onerror = null;
+        img.src = FALLBACK_AVATAR;
+    }
+
+    // Capture load errors for avatar images
+    window.addEventListener('error', function (e) {
+        const target = e.target;
+        if (target && target.tagName === 'IMG' && target.classList.contains('user-avatar')) {
+            applyAvatarFallback(target);
+        }
+    }, true);
+})();
+
 // static/js/select_auto_size.js
 (function () {
     'use strict';
