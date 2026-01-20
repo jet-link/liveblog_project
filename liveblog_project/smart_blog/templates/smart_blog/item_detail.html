@@ -5,12 +5,13 @@
   {{ item.title }}
 {% endblock %} {% block content %}
   <div class="container content_block">
-    <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
     <div class="d-inline-flex gap-3 align-items-center fs-6">
       <button type="button" class="text-muted back_btn p-0" id="backBreadcrumb"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</button>
       <span>/</span>
-      <span class="text-muted fw-bolder">{{ item.title }}</span>
+      <span id="breadcrumbLabel" class="success_ fw-semibold">{{ item.title }}</span>
     </div>
+
+    <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
     <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
       <h2 class="text-muted m-0">{{ item.title }}</h2>
       <button type="button" class="share_btn text-decoration-none"><i class="fa fa-bullhorn me-2"></i>Share</button>

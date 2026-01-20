@@ -37,11 +37,33 @@
         removeItem('listing_changes');
         removeItem('listing_instant');
         removeItem('listing_section_anchor');
+        removeItem('listing_label');
         removeItem('profile_active_tab');
         removeItem('profile_back_url');
         removeItem('profile_back_anchor');
         removeItem('profile_from_detail');
     }
+
+    function clearProfileListingState() {
+        removeItem('listing_url');
+        removeItem('listing_scroll');
+        removeItem('listing_anchor');
+        removeItem('listing_instant');
+        removeItem('listing_section_anchor');
+        removeItem('listing_label');
+        removeItem('profile_active_tab');
+        removeItem('profile_back_url');
+        removeItem('profile_back_anchor');
+        removeItem('profile_from_detail');
+        try {
+            Object.keys(sessionStorage).forEach((key) => {
+                if (key.startsWith('section_scroll_index_')) {
+                    sessionStorage.removeItem(key);
+                }
+            });
+        } catch { }
+    }
+    window.clearProfileListingState = clearProfileListingState;
 
     function isProfilePage() {
         return location.pathname.includes('/profile/');
@@ -64,6 +86,24 @@
             }
         } catch { }
         return null;
+    }
+
+    function getListingLabel() {
+        if (isProfileSectionPage()) {
+            const label = document.querySelector('.d-inline-flex .fw-bolder');
+            const text = label?.textContent?.trim();
+            if (text) return text;
+        }
+        if (isProfilePage()) {
+            const activeTab = document.querySelector('.profile-section-tab.success_');
+            const text = activeTab?.textContent?.trim();
+            if (text) return text;
+        }
+        try {
+            const title = document.title?.trim();
+            if (title) return title;
+        } catch { }
+        return '';
     }
 
     function getCurrentTab() {
@@ -151,6 +191,14 @@
 
         const link = e.target.closest?.('a.item-link');
         if (!link) return;
+
+        const label = getListingLabel();
+        if (label) setItem('listing_label', label);
+
+        if (isProfilePage() && !isProfileSectionPage()) {
+            clearProfileListingState();
+            return;
+        }
 
         setItem('listing_url', location.pathname + location.search);
         setItem('listing_scroll', String(window.scrollY || 0));
@@ -262,6 +310,18 @@
 
     window.addEventListener('pageshow', restoreListingPosition);
     document.addEventListener('DOMContentLoaded', restoreListingPosition);
+
+    function applyListingBreadcrumbLabel() {
+        const labelEl = document.getElementById('breadcrumbLabel');
+        if (!labelEl) return;
+        const label = getItem('listing_label');
+        if (label) {
+            labelEl.textContent = label;
+        }
+    }
+
+    window.addEventListener('pageshow', applyListingBreadcrumbLabel);
+    document.addEventListener('DOMContentLoaded', applyListingBreadcrumbLabel);
 
     if (isProfileSectionPage()) {
         const sectionId = getProfileSectionIdFromPath();
@@ -399,6 +459,9 @@
         }
 
         if (target.origin === location.origin) {
+            if (isProfilePage() && !target.pathname.includes('/profile/')) {
+                clearProfileListingState();
+            }
             if (!isAllowedPath(target.pathname + target.search)) {
                 clearListing();
             }

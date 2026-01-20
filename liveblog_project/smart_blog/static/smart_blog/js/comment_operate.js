@@ -143,6 +143,7 @@
     renderThreadLinkContents(link, count);
     return link;
   }
+  window.buildThreadLink = buildThreadLink;
 
   function setThreadLinkCount(parentId, count) {
     const link = document.getElementById('replies-thread-link-' + parentId);

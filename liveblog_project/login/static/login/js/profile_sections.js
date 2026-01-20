@@ -174,7 +174,7 @@
                 if (!target) return;
                 setActive(btn);
                 showSection(target, true);
-                try { sessionStorage.setItem('profile_active_tab', id); } catch { }
+                try { window.clearProfileListingState?.(); } catch { }
             });
         });
 
@@ -182,7 +182,11 @@
             try { return sessionStorage.getItem('profile_active_tab'); } catch { return null; }
         })();
 
-        if (savedTab) {
+        const fromDetail = (function () {
+            try { return sessionStorage.getItem('profile_from_detail') === '1'; } catch { return false; }
+        })();
+
+        if (savedTab && fromDetail) {
             activateById(savedTab);
             return;
         }
@@ -220,18 +224,8 @@
             const sectionAnchor = sessionStorage.getItem('listing_section_anchor');
             if (sectionAnchor && window.profileSectionsActivate && fromDetail) {
                 window.profileSectionsActivate(sectionAnchor);
-            } else {
-                const cardAnchor = sessionStorage.getItem('listing_anchor');
-                if (cardAnchor && fromDetail) {
-                    const el = document.getElementById(cardAnchor);
-                    const section = el?.closest?.('.profile-section');
-                    if (section?.id && window.profileSectionsActivate) {
-                        window.profileSectionsActivate(section.id);
-                    }
-                }
-            }
-            if (!fromDetail) {
-                sessionStorage.setItem('profile_active_tab', 'profile-section-created');
+            } else if (!fromDetail) {
+                window.clearProfileListingState?.();
                 if (window.profileSectionsActivate) {
                     window.profileSectionsActivate('profile-section-created');
                 }
