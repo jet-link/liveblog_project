@@ -13,7 +13,11 @@
         if (!container || !prevBtn || !nextBtn) return;
 
         const row = container.querySelector('.row');
-        const totalCount = parseInt(section.dataset.count || '0', 10);
+
+        const getTotalCount = () => {
+            const parsed = parseInt(section.dataset.count || '0', 10);
+            return Number.isNaN(parsed) ? 0 : parsed;
+        };
 
         const getGap = () => {
             if (!row) return 0;
@@ -66,7 +70,8 @@
 
             prevBtn.disabled = atStart;
 
-            if (!Number.isNaN(totalCount) && totalCount > 10 && index >= maxPreviewIndex) {
+            const totalCount = getTotalCount();
+            if (totalCount > 10 && index >= maxPreviewIndex) {
                 nextBtn.classList.add('d-none');
                 if (viewAll) viewAll.classList.remove('d-none');
             } else {
@@ -75,7 +80,7 @@
                 nextBtn.disabled = atEnd;
             }
 
-            if (Number.isNaN(totalCount) || totalCount <= 10) {
+            if (totalCount <= 10) {
                 if (viewAll) viewAll.classList.add('d-none');
             }
         };

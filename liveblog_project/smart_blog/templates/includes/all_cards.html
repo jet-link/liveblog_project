@@ -49,13 +49,14 @@
               </div>
             </div>
 
-            <div class="item_thumbnail">
+            {% comment %} <div class="item_thumbnail">
               {% if item.images.first %}
                 <img src="{{ item.images.first.image.url }}" alt="thumbnail" class="thumb-sm" />
               {% else %}
                 <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" />
               {% endif %}
-            </div>
+            </div> {% endcomment %}
+            
           </div>
 
           <!-- Обрезанный текст, занимает доступное пространство -->

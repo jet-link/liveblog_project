@@ -56,7 +56,13 @@
 
   <div class="d-flex justify-content-between small text-muted align-items-center">
     <div class="text-muted d-flex gap-2 align-items-center">
-      <small>{{ comment.human_published }}</small>
+      <small class="d-flex gap-2">
+        {{ comment.human_published }}
+        {% if comment.parent is None and comment.is_edited %}
+          <span>/</span>
+          <span class="fw-semibold success_">Edited</span>
+        {% endif %}
+      </small>
 
       {% if user != comment.author and user.is_authenticated %}
         {% if not hide_reply %}

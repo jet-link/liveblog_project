@@ -123,6 +123,76 @@
         }
     }
 
+    let profileRefreshInProgress = false;
+
+    async function refreshProfileListing() {
+        const section = getItem('profile_refresh_section');
+        try {
+            const resp = await fetch(location.href, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                cache: 'no-store'
+            });
+            if (!resp.ok) return;
+
+            const html = await resp.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            if (isProfileSectionPage()) {
+                const fresh = doc.querySelector('.profile-section-page');
+                const current = document.querySelector('.profile-section-page');
+                if (fresh && current) {
+                    current.innerHTML = fresh.innerHTML;
+                }
+                return;
+            }
+
+            if (!section) return;
+            const currentSection = document.getElementById('profile-section-' + section);
+            const freshSection = doc.getElementById('profile-section-' + section);
+            if (!currentSection || !freshSection) return;
+
+            const currentContainer = currentSection.querySelector('[data-scroll-container]');
+            const freshContainer = freshSection.querySelector('[data-scroll-container]');
+            if (currentContainer && freshContainer) {
+                const currentRow = currentContainer.querySelector('.row');
+                const freshRow = freshContainer.querySelector('.row');
+                if (currentRow && freshRow) {
+                    currentRow.innerHTML = freshRow.innerHTML;
+                }
+            }
+
+            if (freshSection.dataset?.count) {
+                currentSection.dataset.count = freshSection.dataset.count;
+            }
+            currentSection.__updateControls?.();
+        } catch { }
+    }
+
+    function maybeRefreshProfileListing() {
+        if (!isProfilePage()) return false;
+        const needsRefresh = getItem('profile_refresh_needed') === '1';
+        const refreshDone = getItem('profile_refresh_done') === '1';
+
+        if (needsRefresh && !refreshDone) {
+            if (profileRefreshInProgress) return true;
+            profileRefreshInProgress = true;
+            setItem('profile_refresh_done', '1');
+            refreshProfileListing().finally(() => {
+                profileRefreshInProgress = false;
+            });
+            return true;
+        }
+
+        if (needsRefresh && refreshDone) {
+            if (profileRefreshInProgress) return true;
+            removeItem('profile_refresh_needed');
+            removeItem('profile_refresh_done');
+            removeItem('profile_refresh_section');
+        }
+        return false;
+    }
+
     function updateTabCount(tab, delta) {
         const badge = document.querySelector('.custom_badge_danger[data-tab="' + tab + '"]');
         if (badge) {
@@ -242,6 +312,7 @@
        2) RESTORE SCROLL + HIGHLIGHT ON BACK
     ===================================================== */
     function restoreListingPosition() {
+        if (maybeRefreshProfileListing()) return;
         if (!isAllowedPath(location.pathname + location.search)) {
             clearListing();
             return;
@@ -310,6 +381,8 @@
 
     window.addEventListener('pageshow', restoreListingPosition);
     document.addEventListener('DOMContentLoaded', restoreListingPosition);
+    window.addEventListener('pageshow', () => { maybeRefreshProfileListing(); });
+    document.addEventListener('DOMContentLoaded', () => { maybeRefreshProfileListing(); });
 
     function applyListingBreadcrumbLabel() {
         const labelEl = document.getElementById('breadcrumbLabel');
@@ -477,14 +550,42 @@
     function removeInvalidProfileCards() {
         if (!isProfilePage()) return;
 
-        const tab = new URL(location.href).searchParams.get('tab');
-        if (!tab) return;
+        const url = new URL(location.href);
+        const tab = url.searchParams.get('tab');
+
+        let sectionFromPath = null;
+        if (isProfileSectionPage()) {
+            try {
+                const parts = (location.pathname || '').split('/').filter(Boolean);
+                if (parts.length >= 3 && parts[0] === 'profile') {
+                    sectionFromPath = parts[2];
+                }
+            } catch { }
+        }
 
         let changes = {};
         try {
             changes = JSON.parse(sessionStorage.getItem('listing_changes') || '{}');
         } catch {
             return;
+        }
+
+        const skipRemovedCheck = isProfileSectionPage();
+
+        function removeCard(col, sectionEl, contextKey) {
+            if (!skipRemovedCheck && contextKey
+                && wasProfileRemoved(col.querySelector('.item_block')?.dataset?.itemId, contextKey)) {
+                return false;
+            }
+            col.remove();
+            if (sectionEl) {
+                const n = parseInt(sectionEl.dataset.count || '0', 10);
+                if (!Number.isNaN(n)) {
+                    sectionEl.dataset.count = String(Math.max(0, n - 1));
+                }
+                sectionEl.__updateControls?.();
+            }
+            return true;
         }
 
         let removedCount = 0;
@@ -494,27 +595,27 @@
 
             const state = changes[itemId];
             const col = card.closest('.item-card');
-
             if (!col) return;
 
-            if (tab === 'liked' && state.liked === false) {
-                if (!wasProfileRemoved(itemId, 'liked')) {
-                    col.remove();
+            const sectionEl = col.closest('.profile-section');
+            const context = tab || sectionFromPath || sectionEl?.dataset?.section || null;
+
+            if (context === 'liked' && state.liked === false) {
+                if (removeCard(col, sectionEl, 'liked')) {
                     removedCount += 1;
-                    markProfileRemoval(itemId, 'liked');
+                    if (!skipRemovedCheck) markProfileRemoval(itemId, 'liked');
                 }
             }
 
-            if (tab === 'bookmarked' && state.bookmarked === false) {
-                if (!wasProfileRemoved(itemId, 'bookmarked')) {
-                    col.remove();
+            if (context === 'bookmarked' && state.bookmarked === false) {
+                if (removeCard(col, sectionEl, 'bookmarked')) {
                     removedCount += 1;
-                    markProfileRemoval(itemId, 'bookmarked');
+                    if (!skipRemovedCheck) markProfileRemoval(itemId, 'bookmarked');
                 }
             }
         });
 
-        if (removedCount > 0) {
+        if (removedCount > 0 && tab) {
             updateTabCount(tab, -removedCount);
             ensureProfilePagination(tab);
             scrollToProfileTabs();

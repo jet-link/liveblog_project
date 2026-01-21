@@ -98,11 +98,16 @@
 {% block extra_js %}
   <script>
     (function () {
-      // После редактирования хотим вести пользователя на листинг
       try {
-        sessionStorage.setItem('listing_url', '{% url "smart_blog:items_list" %}');
-        sessionStorage.setItem('listing_scroll', '0');
-        sessionStorage.setItem('listing_anchor', 'item-{{ item.pk }}');
+        // Не перетираем источник, если уже пришли с профиля/другого листинга
+        const existingUrl = sessionStorage.getItem('listing_url');
+        if (!existingUrl) {
+          sessionStorage.setItem('listing_url', '{% url "smart_blog:items_list" %}');
+          sessionStorage.setItem('listing_scroll', '0');
+        }
+        if (!sessionStorage.getItem('listing_anchor')) {
+          sessionStorage.setItem('listing_anchor', 'item-{{ item.pk }}');
+        }
         sessionStorage.setItem('from_detail', '1');
       } catch (e) { /* ignore */ }
     })();

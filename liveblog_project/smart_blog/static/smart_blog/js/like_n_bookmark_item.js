@@ -46,6 +46,15 @@
       icon.classList.add('btn-bounce');
       setTimeout(() => icon.classList.remove('btn-bounce'), 300);
 
+      // if we came from profile listing, ensure it refreshes on return
+      try {
+        const listingUrl = sessionStorage.getItem('listing_url') || '';
+        if (data.liked === true && listingUrl.includes('/profile/')) {
+          sessionStorage.setItem('profile_refresh_needed', '1');
+          sessionStorage.setItem('profile_refresh_section', 'liked');
+        }
+      } catch { }
+
       // sync listing
       try {
         const key = 'listing_changes';
@@ -122,6 +131,15 @@
 
       icon.classList.add('btn-bounce');
       setTimeout(() => icon.classList.remove('btn-bounce'), 300);
+
+      // if we came from profile listing, ensure it refreshes on return
+      try {
+        const listingUrl = sessionStorage.getItem('listing_url') || '';
+        if (data.bookmarked === true && listingUrl.includes('/profile/')) {
+          sessionStorage.setItem('profile_refresh_needed', '1');
+          sessionStorage.setItem('profile_refresh_section', 'bookmarked');
+        }
+      } catch { }
 
       // sync listing
       try {

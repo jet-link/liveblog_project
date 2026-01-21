@@ -147,6 +147,12 @@ class Item(models.Model):
         """True если текущее время <= editable_until."""
         now = timezone.now()
         return now <= self.editable_until
+
+    @property
+    def is_edited(self):
+        if not self.created or not self.updated:
+            return False
+        return self.updated - self.created > timedelta(seconds=1)
     
     @property
     def human_published(self):
@@ -196,6 +202,7 @@ class Comment(models.Model):
 
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @property
     def human_published(self):
@@ -230,6 +237,12 @@ class Comment(models.Model):
     @property
     def is_editable(self):
         return timezone.now() <= self.editable_until
+
+    @property
+    def is_edited(self):
+        if not self.created or not self.updated:
+            return False
+        return self.updated - self.created > timedelta(seconds=1)
         
 
 
