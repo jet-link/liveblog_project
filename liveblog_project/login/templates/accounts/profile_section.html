@@ -4,12 +4,10 @@
 {% endblock %}
 {% block content %}
   <div class="container content_block">
-    <div class="d-inline-flex gap-2 align-items-center fs-6 mb-3">
-      <button type="button" class="text-muted back_btn p-0" id="backBreadcrumb"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</button>
-      <span>/</span>
-      <span class="success_ fw-semibold">{{ section_title }} items</span>
+    <nav class="breadcrumb-trail mb-3" data-breadcrumbs data-breadcrumb-label="{{ section_title }} items" aria-label="Breadcrumb">
+      <span class="breadcrumb-current">{{ section_title }} items</span>
       <span class="custom_badge_success">{{ section_count }}</span>
-    </div>
+    </nav>
 
     {% if section == 'created' %}
       {% include 'includes/created_items.html' %}

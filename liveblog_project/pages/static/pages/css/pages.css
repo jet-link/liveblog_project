@@ -2,6 +2,35 @@
     top: 3rem;
 }
 
+.breadcrumb-trail {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.breadcrumb-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.breadcrumb-current {
+    color: inherit;
+    font-weight: 600;
+}
+
+.breadcrumb-sep {
+    color: #adb5bd;
+    margin: 0 2px;
+}
+
 /* h1,
 h2,
 h3,

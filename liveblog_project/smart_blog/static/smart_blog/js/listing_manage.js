@@ -385,11 +385,66 @@
     document.addEventListener('DOMContentLoaded', () => { maybeRefreshProfileListing(); });
 
     function applyListingBreadcrumbLabel() {
-        const labelEl = document.getElementById('breadcrumbLabel');
-        if (!labelEl) return;
-        const label = getItem('listing_label');
-        if (label) {
-            labelEl.textContent = label;
+        const container = document.querySelector('[data-breadcrumbs]');
+        if (document.getElementById('threadBackBtn')) return;
+
+        const TRAIL_KEY = 'breadcrumb_trail';
+        const MAX_LENGTH = 7;
+        const currentUrl = location.pathname + location.search;
+        const labelAttr = container?.dataset?.breadcrumbLabel;
+        const currentLabel = (labelAttr && labelAttr.trim())
+            ? labelAttr.trim()
+            : (document.title || '').trim() || currentUrl;
+
+        let trail = [];
+        try {
+            trail = JSON.parse(sessionStorage.getItem(TRAIL_KEY) || '[]');
+        } catch { }
+
+        if (!Array.isArray(trail)) trail = [];
+
+        const existingIndex = trail.findIndex(entry => entry.url === currentUrl);
+        if (existingIndex >= 0) {
+            trail = trail.slice(0, existingIndex + 1);
+        } else {
+            trail.push({ url: currentUrl, label: currentLabel });
+        }
+
+        if (trail.length > 0) {
+            trail[trail.length - 1].label = currentLabel;
+        }
+
+        const rootEntry = { url: '/', label: 'BrainStorm' };
+        trail = [rootEntry].concat(trail.filter(entry => entry.url !== '/'));
+
+        if (trail.length > MAX_LENGTH) {
+            trail = [trail[0]].concat(trail.slice(-(MAX_LENGTH - 1)));
+        }
+
+        try {
+            sessionStorage.setItem(TRAIL_KEY, JSON.stringify(trail));
+        } catch { }
+
+        if (container) {
+            container.innerHTML = '';
+            trail.forEach((entry, idx) => {
+                const isLast = idx === trail.length - 1;
+                const node = document.createElement(isLast ? 'span' : 'a');
+                node.textContent = entry.label || entry.url;
+                if (isLast) {
+                    node.className = 'breadcrumb-current success_';
+                } else {
+                    node.className = 'breadcrumb-link success_';
+                    node.href = entry.url;
+                }
+                container.appendChild(node);
+                if (!isLast) {
+                    const sep = document.createElement('span');
+                    sep.className = 'breadcrumb-sep';
+                    sep.textContent = '/';
+                    container.appendChild(sep);
+                }
+            });
         }
     }
 
