@@ -78,6 +78,7 @@ class Item(models.Model):
     published_date = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    edited = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
     objects = ItemManager()
 
@@ -127,6 +128,13 @@ class Item(models.Model):
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug_candidate
+        if self.pk:
+            try:
+                previous = Item.objects.only('text').get(pk=self.pk)
+                if previous.text != self.text:
+                    self.edited = True
+            except Item.DoesNotExist:
+                pass
 
         super().save(*args, **kwargs)
 
@@ -150,9 +158,7 @@ class Item(models.Model):
 
     @property
     def is_edited(self):
-        if not self.created or not self.updated:
-            return False
-        return self.updated - self.created > timedelta(seconds=1)
+        return bool(self.edited)
     
     @property
     def human_published(self):
@@ -203,6 +209,7 @@ class Comment(models.Model):
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    edited = models.BooleanField(default=False)
 
     @property
     def human_published(self):
@@ -240,9 +247,17 @@ class Comment(models.Model):
 
     @property
     def is_edited(self):
-        if not self.created or not self.updated:
-            return False
-        return self.updated - self.created > timedelta(seconds=1)
+        return bool(self.edited)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                previous = Comment.objects.only('text').get(pk=self.pk)
+                if previous.text != self.text:
+                    self.edited = True
+            except Comment.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
         
 
 

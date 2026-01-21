@@ -12,21 +12,20 @@ html {
     flex-grow: 1;
 }
 
-/* .container {
+.container {
     max-width: 1200px;
-} */
+}
 
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: static;
     width: 100%;
     z-index: 1050;
     background: #fff;
     padding: 20px 0;
-    transform: translateY(0);
-    transition: transform .4s ease;
-    will-change: transform;
+    transform: none;
+    transition: none;
+    will-change: auto;
+    border-bottom: 1px solid #f1f2f3;
 
 }
 
@@ -38,6 +37,7 @@ html {
 .header-spacer {
     height: 0;
     pointer-events: none;
+    display: none;
 }
 
 .content_block {
@@ -135,15 +135,12 @@ textarea {
 
 /* Контейнер топ-хедера */
 .top_header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: static;
     z-index: 1000;
     background: #FFFFFF;
     /* или твой цвет */
-    transition: transform 0.2s ease-in;
-    will-change: transform;
+    transition: none;
+    will-change: auto;
     box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -915,13 +912,13 @@ textarea {
 }
 
 .share_btn {
-    padding: 10px 15px;
+    padding: 8px 13px;
     border: 2px solid #2980b9;
     border-radius: 8px;
     color: #2980b9;
     transition: .2s ease-in-out;
     background-color: #FFFFFF;
-    font-size: .9rem;
+    font-size: .8rem;
 }
 
 .share_btn:hover {
@@ -1940,7 +1937,7 @@ pre {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 0 14px;
+    padding: 0 12px;
     position: relative;
 }
 

@@ -383,7 +383,7 @@ def edit_item(request, slug):
                 else:
                     ItemImage.objects.create(item=item, image=f)
 
-            messages.success(request, "Item updated successfully.")
+            # messages.success(request, "Item updated successfully.")
             return redirect(item.get_absolute_url())
         else:
             # if AJAX -> return errors JSON

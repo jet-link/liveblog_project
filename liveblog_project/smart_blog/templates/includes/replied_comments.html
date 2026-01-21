@@ -24,7 +24,7 @@
       {% endfor %}
     </div>
   {% elif depth >= 2 %}
-      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none small fw-semibold d-flex gap-2 align-items-center text-muted mt-3" data-count="{{ comment.replies.count }}">
+      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none small fw-semibold d-inline-flex gap-2 align-items-center text-muted mt-3" data-count="{{ comment.replies.count }}">
         <span>View all replies</span>
         <i>→</i>
         <span class="replies-count custom_badge_success">{{ comment.replies.count }}</span>

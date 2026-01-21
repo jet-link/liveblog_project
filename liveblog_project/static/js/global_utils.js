@@ -577,61 +577,61 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-// // sticky header
-(function () {
-    const header = document.querySelector('.header');
-    if (!header) return;
-
-    const userMenu = document.getElementById('userMenu');
-
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-
-    // spacer
-    const spacer = document.createElement('div');
-    spacer.className = 'header-spacer';
-    header.after(spacer);
-
-    const headerHeight = header.getBoundingClientRect().height;
-    spacer.style.height = headerHeight + 'px';
-
-    const DELTA = 6;
-
-    function closeUserMenu() {
-        if (userMenu) {
-            userMenu.classList.remove('open');
-        }
-    }
-
-    function onScroll() {
-        const currentY = window.scrollY;
-        const diff = currentY - lastScrollY;
-
-        if (Math.abs(diff) > DELTA) {
-            if (diff > 0) {
-                // ⬇️ скроллим вниз — header исчезает
-                header.classList.add('header--hidden');
-
-                // 🔥 ВАЖНО: закрываем меню
-                closeUserMenu();
-            } else {
-                // ⬆️ скроллим вверх — header появляется
-                header.classList.remove('header--hidden');
-            }
-
-            lastScrollY = currentY;
-        }
-
-        ticking = false;
-    }
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(onScroll);
-            ticking = true;
-        }
-    }, { passive: true });
-})();
+// // sticky header (disabled for now)
+// (function () {
+//     const header = document.querySelector('.header');
+//     if (!header) return;
+//
+//     const userMenu = document.getElementById('userMenu');
+//
+//     let lastScrollY = window.scrollY;
+//     let ticking = false;
+//
+//     // spacer
+//     const spacer = document.createElement('div');
+//     spacer.className = 'header-spacer';
+//     header.after(spacer);
+//
+//     const headerHeight = header.getBoundingClientRect().height;
+//     spacer.style.height = headerHeight + 'px';
+//
+//     const DELTA = 6;
+//
+//     function closeUserMenu() {
+//         if (userMenu) {
+//             userMenu.classList.remove('open');
+//         }
+//     }
+//
+//     function onScroll() {
+//         const currentY = window.scrollY;
+//         const diff = currentY - lastScrollY;
+//
+//         if (Math.abs(diff) > DELTA) {
+//             if (diff > 0) {
+//                 // ⬇️ скроллим вниз — header исчезает
+//                 header.classList.add('header--hidden');
+//
+//                 // 🔥 ВАЖНО: закрываем меню
+//                 closeUserMenu();
+//             } else {
+//                 // ⬆️ скроллим вверх — header появляется
+//                 header.classList.remove('header--hidden');
+//             }
+//
+//             lastScrollY = currentY;
+//         }
+//
+//         ticking = false;
+//     }
+//
+//     window.addEventListener('scroll', () => {
+//         if (!ticking) {
+//             requestAnimationFrame(onScroll);
+//             ticking = true;
+//         }
+//     }, { passive: true });
+// })();
 
 
 
