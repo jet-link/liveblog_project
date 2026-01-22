@@ -1,13 +1,19 @@
 {% extends 'base.html' %}
 {% block title %}
-  {{ user_obj.username }} - {{ section_title }}
+  {{ user_obj.username }} {{ section_title }}
 {% endblock %}
 {% block content %}
   <div class="container content_block">
-    <nav class="breadcrumb-trail mb-3" data-breadcrumbs data-breadcrumb-label="{{ section_title }} items" aria-label="Breadcrumb">
-      <span class="breadcrumb-current">{{ section_title }} items</span>
+    <div class="d-flex gap-2 align-items-center mb-3">
+      <button type="button" class="text-muted back_btn p-0" id="backBreadcrumb">
+        <i class="fa fa-angle-left back-angle me-1" aria-hidden="true"></i>
+        Back
+      </button>
+      <span id="breadcrumbSep" class="text-muted">/</span>
+      <span id="breadcrumbLabel" class="text-muted fw-semibold">{{ section_title }} items</span>
+      {% comment %} <span id="profileSectionLabel" class="visually-hidden">{{ section_title }} items</span> {% endcomment %}
       <span class="custom_badge_success">{{ section_count }}</span>
-    </nav>
+    </div>
 
     {% if section == 'created' %}
       {% include 'includes/created_items.html' %}

@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    if (location.pathname.includes('/edit')) {
+    if (location.pathname.includes('/edit/')) {
         return;
     }
 
@@ -90,8 +90,11 @@
 
     function getListingLabel() {
         if (isProfileSectionPage()) {
-            const label = document.querySelector('.d-inline-flex .fw-bolder');
-            const text = label?.textContent?.trim();
+            const label = document.getElementById('profileSectionLabel');
+            const countEl = document.querySelector('.custom_badge_success');
+            const text = label?.textContent?.trim() || '';
+            const count = countEl?.textContent?.trim() || '';
+            if (text && count) return `${text} (${count})`;
             if (text) return text;
         }
         if (isProfilePage()) {
@@ -265,11 +268,6 @@
         const label = getListingLabel();
         if (label) setItem('listing_label', label);
 
-        if (isProfilePage() && !isProfileSectionPage()) {
-            clearProfileListingState();
-            return;
-        }
-
         setItem('listing_url', location.pathname + location.search);
         setItem('listing_scroll', String(window.scrollY || 0));
 
@@ -384,72 +382,31 @@
     window.addEventListener('pageshow', () => { maybeRefreshProfileListing(); });
     document.addEventListener('DOMContentLoaded', () => { maybeRefreshProfileListing(); });
 
-    function applyListingBreadcrumbLabel() {
-        const container = document.querySelector('[data-breadcrumbs]');
+    function applyBackLabel() {
         if (document.getElementById('threadBackBtn')) return;
+        const labelEl = document.getElementById('breadcrumbLabel');
+        if (!labelEl) return;
 
-        const TRAIL_KEY = 'breadcrumb_trail';
-        const MAX_LENGTH = 7;
-        const currentUrl = location.pathname + location.search;
-        const labelAttr = container?.dataset?.breadcrumbLabel;
-        const currentLabel = (labelAttr && labelAttr.trim())
-            ? labelAttr.trim()
-            : (document.title || '').trim() || currentUrl;
+        const sepEl = document.getElementById('breadcrumbSep');
+        const storedLabel = (getItem('listing_label') || '').trim();
+        const existingLabel = (labelEl.textContent || '').trim();
+        const currentLabel = (getListingLabel() || '').trim();
+        const label = isProfileSectionPage()
+            ? currentLabel
+            : (storedLabel || existingLabel);
 
-        let trail = [];
-        try {
-            trail = JSON.parse(sessionStorage.getItem(TRAIL_KEY) || '[]');
-        } catch { }
-
-        if (!Array.isArray(trail)) trail = [];
-
-        const existingIndex = trail.findIndex(entry => entry.url === currentUrl);
-        if (existingIndex >= 0) {
-            trail = trail.slice(0, existingIndex + 1);
-        } else {
-            trail.push({ url: currentUrl, label: currentLabel });
+        labelEl.textContent = label || '';
+        if (sepEl) {
+            sepEl.style.display = label ? '' : 'none';
         }
 
-        if (trail.length > 0) {
-            trail[trail.length - 1].label = currentLabel;
-        }
-
-        const rootEntry = { url: '/', label: 'BrainStorm' };
-        trail = [rootEntry].concat(trail.filter(entry => entry.url !== '/'));
-
-        if (trail.length > MAX_LENGTH) {
-            trail = [trail[0]].concat(trail.slice(-(MAX_LENGTH - 1)));
-        }
-
-        try {
-            sessionStorage.setItem(TRAIL_KEY, JSON.stringify(trail));
-        } catch { }
-
-        if (container) {
-            container.innerHTML = '';
-            trail.forEach((entry, idx) => {
-                const isLast = idx === trail.length - 1;
-                const node = document.createElement(isLast ? 'span' : 'a');
-                node.textContent = entry.label || entry.url;
-                if (isLast) {
-                    node.className = 'breadcrumb-current success_';
-                } else {
-                    node.className = 'breadcrumb-link success_';
-                    node.href = entry.url;
-                }
-                container.appendChild(node);
-                if (!isLast) {
-                    const sep = document.createElement('span');
-                    sep.className = 'breadcrumb-sep';
-                    sep.textContent = '/';
-                    container.appendChild(sep);
-                }
-            });
+        if (isProfileSectionPage() && label) {
+            setItem('listing_label', label);
         }
     }
 
-    window.addEventListener('pageshow', applyListingBreadcrumbLabel);
-    document.addEventListener('DOMContentLoaded', applyListingBreadcrumbLabel);
+    window.addEventListener('pageshow', applyBackLabel);
+    document.addEventListener('DOMContentLoaded', applyBackLabel);
 
     if (isProfileSectionPage()) {
         const sectionId = getProfileSectionIdFromPath();
@@ -575,6 +532,10 @@
         const a = e.target.closest?.('a[href]');
         if (!a) return;
 
+        if (a.classList?.contains('item-link')) {
+            return;
+        }
+
         const href = a.getAttribute('href');
         if (!href || href.startsWith('#') || href.startsWith('javascript:')
             || href.startsWith('mailto:') || href.startsWith('tel:')) return;
@@ -587,6 +548,12 @@
         }
 
         if (target.origin === location.origin) {
+            if (target.pathname.includes('/item/')) {
+                return;
+            }
+            if (target.pathname.includes('/item/') && target.pathname.includes('/edit/')) {
+                return;
+            }
             if (isProfilePage() && !target.pathname.includes('/profile/')) {
                 clearProfileListingState();
             }
