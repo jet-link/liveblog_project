@@ -6,10 +6,10 @@
 {% block content %}
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="d-flex gap-2 align-items-center">
-        <h5 class="m-0 text-muted">All items for tag -</h5>
-        <span class="badge bg-secondary text-decoration-none fs-6">{{ tag.tag_name }}</span>
+        <h6 class="m-0 text-muted">All items for tag -</h6>
+        <span class="badge bg-secondary text-decoration-none small">{{ tag.tag_name }}</span>
       </div>
       <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
     </div>

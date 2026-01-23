@@ -27,7 +27,7 @@ def items_list(request):
         .order_by('-published_date')
     )
 
-    paginator = Paginator(qs, 20)
+    paginator = Paginator(qs, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

@@ -1,8 +1,4 @@
 <section id="profile-section-{{ section_id }}" class="profile-section" data-section="{{ section_id }}" data-count="{{ count }}">
-  {% comment %} <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-2 success_ cube">{{ title }} items</h5>
-  </div> {% endcomment %}
-
   {% if items %}
     <div class="profile-cards-scroll" data-scroll-container data-anchor="profile-section-{{ section_id }}">
       {% include 'includes/all_cards.html' with items=items %}

@@ -1970,12 +1970,12 @@ pre {
 
 .comment-menu-btn {
     display: inline;
-    border: 2px solid #2980b9;
+    border: 1px solid #2980b9;
     background: transparent;
     color: #2980b9;
-    font-size: .8rem;
+    font-size: .7rem;
     line-height: 1;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 20px;
     cursor: pointer;
 }

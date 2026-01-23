@@ -109,6 +109,16 @@
         return '';
     }
 
+    function isItemDetailHref(href) {
+        try {
+            const u = new URL(href, location.origin);
+            if (!u.pathname.includes('/item/')) return false;
+            return !u.pathname.includes('/edit/');
+        } catch {
+            return false;
+        }
+    }
+
     function getCurrentTab() {
         try {
             return new URL(location.href).searchParams.get('tab') || 'all';
@@ -262,7 +272,13 @@
     document.addEventListener('click', function (e) {
         if (!isAllowedPath(location.pathname + location.search)) return;
 
-        const link = e.target.closest?.('a.item-link');
+        let link = e.target.closest?.('a.item-link');
+        if (!link) {
+            const generic = e.target.closest?.('a[href]');
+            if (generic && isItemDetailHref(generic.getAttribute('href') || '')) {
+                link = generic;
+            }
+        }
         if (!link) return;
 
         const label = getListingLabel();
@@ -270,6 +286,8 @@
 
         setItem('listing_url', location.pathname + location.search);
         setItem('listing_scroll', String(window.scrollY || 0));
+        // Ensure slider restore is instant when returning from detail
+        setItem('section_scroll_instant', '1');
 
         const itemId = link.dataset?.itemId;
         if (itemId) setItem('listing_anchor', 'item-' + itemId);
@@ -290,7 +308,9 @@
 
         try {
             const sectionId = section?.dataset?.anchor;
-            const container = section?.querySelector?.('[data-scroll-container]');
+            const container = section?.matches?.('[data-scroll-container]')
+                ? section
+                : section?.querySelector?.('[data-scroll-container]');
             if (sectionId && container) {
                 const row = container.querySelector('.row');
                 const card = container.querySelector('.item-card');
@@ -326,8 +346,12 @@
         const savedTab = getItem('profile_active_tab');
 
         const fromDetail = getItem('profile_from_detail') === '1';
+        const instantSection = getItem('section_scroll_instant') === '1';
         if (savedTab && window.profileSectionsActivate && fromDetail) {
-            try { window.profileSectionsActivate(savedTab); } catch { }
+            try { window.profileSectionsActivate(savedTab, instantSection); } catch { }
+            if (instantSection) {
+                removeItem('section_scroll_instant');
+            }
         }
 
         if (instant && fromDetail) {

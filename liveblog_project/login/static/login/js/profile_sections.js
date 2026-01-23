@@ -51,12 +51,12 @@
             return Math.max(0, Math.round(maxScroll / step));
         };
 
-        const scrollToIndex = (nextIndex) => {
+        const scrollToIndex = (nextIndex, behavior = 'smooth') => {
             const step = getStep();
             if (!step) return;
             const maxIndex = getMaxIndex();
             const clamped = Math.max(0, Math.min(maxIndex, nextIndex));
-            container.scrollTo({ left: clamped * step, behavior: 'smooth' });
+            container.scrollTo({ left: clamped * step, behavior });
         };
 
         const updateControls = () => {
@@ -139,7 +139,7 @@
             if (btn) btn.classList.add('success_');
         }
 
-        function showSection(target, resetIndex = false) {
+        function showSection(target, resetIndex = false, instant = false) {
             const index = sections.findIndex(s => s.section === target);
             if (index < 0) return;
             const ctx = sections[index].section;
@@ -161,17 +161,17 @@
                         } catch { }
                     }
                     if (ctx.__lastIndex == null) ctx.__lastIndex = 0;
-                    ctx.__scrollToIndex?.(ctx.__lastIndex);
+                    ctx.__scrollToIndex?.(ctx.__lastIndex, instant ? 'auto' : 'smooth');
                     ctx.__updateControls?.();
                 }, 80);
             }
         }
 
-        function activateById(sectionId) {
+        function activateById(sectionId, instant = false) {
             const found = sections.find(s => s.section?.id === sectionId);
             if (!found) return;
             setActive(found.btn);
-            showSection(found.section);
+            showSection(found.section, false, instant);
         }
 
         window.profileSectionsActivate = activateById;
@@ -194,8 +194,15 @@
             try { return sessionStorage.getItem('profile_from_detail') === '1'; } catch { return false; }
         })();
 
+        const instantRestore = (function () {
+            try { return sessionStorage.getItem('section_scroll_instant') === '1'; } catch { return false; }
+        })();
+
         if (savedTab && fromDetail) {
-            activateById(savedTab);
+            activateById(savedTab, instantRestore);
+            if (instantRestore) {
+                try { sessionStorage.removeItem('section_scroll_instant'); } catch { }
+            }
             return;
         }
 
