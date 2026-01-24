@@ -68,7 +68,7 @@
         {% if not hide_reply %}
           {% if not thread_view or depth|default:0 > 0 %}
             <div class="comment-menu">
-              <button type="button" class="comment-menu-btn" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
               <div class="comment-actions">
                 <i class="fa fa-angle-right mx-1 success_"></i>
                 <button type="button" class="comment-menu-action custom_badge_success fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>

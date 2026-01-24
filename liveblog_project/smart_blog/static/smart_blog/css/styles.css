@@ -16,6 +16,10 @@ html {
     max-width: 1200px;
 }
 
+.stretched-link {
+    color: #2980b9 !important;
+}
+
 .header {
     position: static;
     width: 100%;
@@ -711,7 +715,7 @@ textarea {
 
 .replies {
     position: relative;
-    margin-left: 30px;
+    margin-left: 22px;
     /* отступ от родителя */
     padding-left: 0;
     margin-top: 8px;
@@ -745,8 +749,8 @@ textarea {
     content: "";
     position: absolute;
     left: -20px;
-    top: 27px;
-    width: 16px;
+    top: 30px;
+    width: 15px;
     height: 2px;
     background: #cccccc;
     border-radius: 3px;
@@ -755,7 +759,7 @@ textarea {
 
 /* поддержка вложенных replies - увеличиваем отступ */
 .replies .replies {
-    margin-left: 20px;
+    margin-left: 23px;
 }
 
 /* для вложенных replies вертикальная линия должна быть смещена */
@@ -795,8 +799,9 @@ textarea {
     }
 }
 
+
 .btn-reply,
-.comment-menu-btn{
+.comment-menu-btn {
     font-weight: 500;
 }
 
@@ -813,7 +818,7 @@ textarea {
 
 .show-more-btn-toggle {
     padding: 8px 14px;
-    border-radius: 5px;
+    border-radius: 8px;
     border: 1px solid #ddd;
     background: #fff;
     cursor: pointer;
@@ -911,20 +916,61 @@ textarea {
     border-radius: 7px;
 }
 
-.share_btn {
-    padding: 8px 13px;
-    border: 2px solid #2980b9;
-    border-radius: 8px;
-    color: #2980b9;
-    transition: .2s ease-in-out;
-    background-color: #FFFFFF;
-    font-size: .8rem;
+.share_btn{
+    border: 2px solid #27ae60;
+    background-color: #ffffff;
+    color: #27ae60
 }
 
-.share_btn:hover {
-    background-color: #2980b9;
-    color: #ffffff;
+.cstm-btn{
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: .2s ease-in-out;
+    font-size: .9rem;
+    text-decoration: none;
+    text-align: center;
 }
+
+.cstm-btn-sm{
+    padding: 7px 10px;
+    transition: .2s ease-in-out;
+    font-size: .790rem;
+    font-weight: normal;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.custom-secondary-btn {
+    color: #ffffff;
+    background-color: #8f8f8f;
+    border: none;
+}
+
+.custom-success-btn{
+    color: #ffffff;
+    background-color: #27ae60;
+    border: none;
+}
+
+.custom-danger-btn{
+    color: #ffffff;
+    background-color: #e74c3c;
+    border: none;
+}
+
+.custom-primary-btn {
+    color: #ffffff;
+    background-color: #2980b9;
+    border: none;
+}
+
+.comment-btn.is-blocked {
+    background-color: #e74c3c;
+    color: #ffffff;
+    cursor: auto;
+    border: none;
+}
+
 
 .success_ {
     color: #2980b9;
@@ -1169,11 +1215,11 @@ textarea {
 
 /* Views Comments Likes Bookmart */
 .VLB {
-    padding: 10px;
+    padding: 8px;
     box-shadow: var(--card-shadow);
     border-radius: 8px;
     background-color: #ffffff;
-    font-size: .9rem;
+    font-size: .8rem;
     font-weight: 600;
 }
 
@@ -1582,8 +1628,6 @@ textarea {
     text-decoration: none;
     font-size: .7rem;
     border: 1px solid transparent;
-    box-shadow: var(--card-shadow);
-
 }
 
 .custom_badge_danger {
@@ -1975,7 +2019,7 @@ pre {
     color: #2980b9;
     font-size: .7rem;
     line-height: 1;
-    padding: 3px 12px;
+    padding: 4px 12px;
     border-radius: 20px;
     cursor: pointer;
 }
@@ -2008,4 +2052,27 @@ pre {
 
 .comment-menu.open {
     z-index: 10;
+}
+
+.comment-share-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--overlay-bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 9999;
+}
+
+.comment-share-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.comment-share-overlay-text {
+    color: #ffffff;
+    font-weight: 600;
 }

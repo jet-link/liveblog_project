@@ -264,9 +264,9 @@
 
         // если дошли до конца — возвращаемся в начало БЕЗ рывка
         if (snap.scrollLeft + snap.clientWidth >= snap.scrollWidth - STEP) {
-            snap.scrollTo({ left: 0, behavior: 'smooth' });
+            snap.scrollTo({ left: 0, behavior: 'auto' });
         } else {
-            snap.scrollBy({ left: STEP, behavior: 'smooth' });
+            snap.scrollBy({ left: STEP, behavior: 'auto' });
         }
     }
 
@@ -296,9 +296,9 @@
         stopAuto();
 
         if (e.key === 'ArrowRight') {
-            snap.scrollBy({ left: STEP, behavior: 'smooth' });
+            snap.scrollBy({ left: STEP, behavior: 'auto' });
         } else {
-            snap.scrollBy({ left: -STEP, behavior: 'smooth' });
+            snap.scrollBy({ left: -STEP, behavior: 'auto' });
         }
     });
 

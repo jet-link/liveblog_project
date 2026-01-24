@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}
-  Founded - {{ query }}
+Found - "{{ query }}"
 {% endblock %}
 
 {% block content %}
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
+    {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
     <div class="mb-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h6 class="text-muted m-0">
@@ -44,7 +45,7 @@
       </div>
     </div>
     {% if items %}
-      {% include 'includes/all_cards.html' %}
+      {% include 'includes/all_cards.html' with listing_source='search' listing_source_url=request.get_full_path listing_query=query %}
 
       {% if items.count > 10 %}
         <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5" data-total="{{ items|length }}">

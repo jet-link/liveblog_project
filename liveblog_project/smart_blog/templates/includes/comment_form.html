@@ -13,13 +13,7 @@
       <label for="id_comment_text">Comment here</label>
     </div>
 
-    <button id="submitCommentBtn" type="submit" class="btn btn-primary btn-sm">Comment</button>
-    <!-- в comment_form.html — рядом с кнопкой Comment -->
-    <button id="clearComment" type="button" class="btn btn-link text-decoration-none btn-sm hidden" aria-label="Clear comment">Clear</button>
+    <button id="submitCommentBtn" type="submit" class="cstm-btn custom-primary-btn comment-btn">Comment</button>
+    <button id="clearComment" type="button" class="btn btn-link text-decoration-none btn-sm hidden success_" aria-label="Clear comment">Clear</button>
   </form>
-{% comment %} {% else %}
-  <div class="alert alert-info alert-dismissible fade show" role="alert">
-    <span>You cannot add comments, please <a href="{% url 'login_app:login' %}" class="text-decoration-none">Login</a></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div> {% endcomment %}
 {% endif %}

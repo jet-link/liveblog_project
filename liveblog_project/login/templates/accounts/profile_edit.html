@@ -76,7 +76,7 @@
                 <label for="floatingAvatarProfile">Avatar URL (optional)</label>
               </div>
               <!-- кнопка выбора файла -->
-              <button type="button" class="btn btn-primary avatar-file-trigger" title="Upload image file"><i class="fa fa-folder-open"></i></button>
+              <button type="button" class="cstm-btn custom-primary-btn avatar-file-trigger" title="Upload image file"><i class="fa fa-folder-open"></i></button>
             </div>
             {% if form.avatar_url.errors %}
               <div class="text-danger small my-2">
@@ -101,8 +101,8 @@
             <input type="hidden" name="avatar_clear" id="avatarClearFlag" value="0" />
 
             <div class="d-flex gap-2 mb-0">
-              <button name="profile_submit" class="btn btn-primary w-50" type="submit">Save</button>
-              <a href="{% url 'login_app:profile' user_obj.username %}" class="btn btn-secondary w-50">Back</a>
+              <button name="profile_submit" class="cstm-btn custom-primary-btn w-50" type="submit">Save</button>
+              <a href="{% url 'login_app:profile' user_obj.username %}" class="cstm-btn custom-secondary-btn w-50">Back</a>
             </div>
           </form>
         </div>
@@ -110,7 +110,7 @@
         <div id="passwordCard" class="card-panel from-top is-hidden" role="region" aria-labelledby="passwordCardTitle">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 id="passwordCardTitle" class="m-0 text-muted text-uppercase">Change password</h5>
-            <button id="closePasswordBtn" type="button" class="btn btn-secondary btn-change">Back</button>
+            <button id="closePasswordBtn" type="button" class="cstm-btn custom-secondary-btn btn-change">Back</button>
           </div>
           {% include 'includes/password_change.html' %}
           {% include 'includes/password_generator.html' %}

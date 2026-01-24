@@ -14,10 +14,10 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="m-0 text-uppercase text-muted">Edit</h5>
 
-        <a href="{{ item.get_absolute_url }}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</a>
+        <a href="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</a>
       </div>
 
-      <form method="post" enctype="multipart/form-data" data-replace-history="{{ item.get_absolute_url }}" novalidate data-validate="true">
+      <form method="post" enctype="multipart/form-data" data-replace-history="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" novalidate data-validate="true">
         {% csrf_token %}
         {% if form.non_field_errors %}
           <div class="alert alert-danger">
@@ -87,8 +87,7 @@
           <small class="success_ text-small">First image will be thumbnail.</small>
         </div>
         <div class="d-flex gap-1 mt-2">
-          <button class="btn btn-primary btn-sm" type="submit">Edit item</button>
-          {% comment %} <a href="{{ item.get_absolute_url }}" class="btn btn-secondary btn-sm">Go back</a> {% endcomment %}
+          <button class="cstm-btn custom-primary-btn" type="submit">Edit item</button>
         </div>
       </form>
     </main>

@@ -1,23 +1,6 @@
 <div class="profile-section-page">
-  <div class="d-flex justify-content-between align-items-center pb-3">
-    {% comment %} <div class="d-flex gap-2 align-items-center">
-      {% if items %}
-        <span class="custom_badge_success">{{ section_title }} ({{ section_count }})</span>
-      {% else %}
-        <h6 class="m-0 text-muted">There are no items yet!</h6>
-      {% endif %}
-    </div> {% endcomment %}
-
-    {% if items and page_obj.paginator.num_pages > 1 %}
-      <div class="d-flex gap-2 text-muted fw-bolder">
-        <small>Page</small>
-        <small>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</small>
-      </div>
-    {% endif %}
-  </div>
-
   {% if items %}
-    {% include 'includes/all_cards.html' %}
+    {% include 'includes/all_cards.html' with listing_source='profile' listing_user=user_obj.username listing_section=section %}
     {% include 'includes/pagination.html' %}
   {% endif %}
 </div>

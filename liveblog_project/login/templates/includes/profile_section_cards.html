@@ -1,7 +1,7 @@
 <section id="profile-section-{{ section_id }}" class="profile-section" data-section="{{ section_id }}" data-count="{{ count }}">
   {% if items %}
     <div class="profile-cards-scroll" data-scroll-container data-anchor="profile-section-{{ section_id }}">
-      {% include 'includes/all_cards.html' with items=items %}
+      {% include 'includes/all_cards.html' with items=items listing_source='profile' listing_user=user_obj.username listing_section=section_id %}
     </div>
   {% else %}
     <div class="text-muted small mb-2">There are no items yet!</div>

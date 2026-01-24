@@ -13,7 +13,7 @@
     }
 
     /* ================= CONFIG ================= */
-    const ALLOWED_PATTERNS = ['brainews', 'blog', '/profile', '/search', 'smart_blog'];
+    const ALLOWED_PATTERNS = ['brainews', 'blog', '/profile', '/search', '/tag', 'smart_blog'];
 
     function isAllowedPath(pathname) {
         try {
@@ -86,27 +86,6 @@
             }
         } catch { }
         return null;
-    }
-
-    function getListingLabel() {
-        if (isProfileSectionPage()) {
-            const label = document.getElementById('profileSectionLabel');
-            const countEl = document.querySelector('.custom_badge_success');
-            const text = label?.textContent?.trim() || '';
-            const count = countEl?.textContent?.trim() || '';
-            if (text && count) return `${text} (${count})`;
-            if (text) return text;
-        }
-        if (isProfilePage()) {
-            const activeTab = document.querySelector('.profile-section-tab.success_');
-            const text = activeTab?.textContent?.trim();
-            if (text) return text;
-        }
-        try {
-            const title = document.title?.trim();
-            if (title) return title;
-        } catch { }
-        return '';
     }
 
     function isItemDetailHref(href) {
@@ -262,13 +241,25 @@
     function scrollToProfileTabs() {
         const tabs = document.querySelector('.tabs_block');
         if (tabs) {
-            tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            tabs.scrollIntoView({ behavior: 'auto', block: 'start' });
         }
     }
 
     /* =====================================================
        1) SAVE LISTING STATE ON CARD CLICK
     ===================================================== */
+    document.addEventListener('click', function (e) {
+        const crumbLink = e.target.closest?.('.breadcrumb-trail a');
+        if (!crumbLink) return;
+        if (!location.pathname.includes('/item/') || location.pathname.includes('/edit/')) return;
+
+        // Ensure instant restore when leaving detail via breadcrumbs
+        try {
+            setItem('listing_instant', '1');
+            setItem('profile_from_detail', '1');
+        } catch { }
+    }, { passive: true });
+
     document.addEventListener('click', function (e) {
         if (!isAllowedPath(location.pathname + location.search)) return;
 
@@ -280,9 +271,6 @@
             }
         }
         if (!link) return;
-
-        const label = getListingLabel();
-        if (label) setItem('listing_label', label);
 
         setItem('listing_url', location.pathname + location.search);
         setItem('listing_scroll', String(window.scrollY || 0));
@@ -329,6 +317,80 @@
     /* =====================================================
        2) RESTORE SCROLL + HIGHLIGHT ON BACK
     ===================================================== */
+    function getShownCount() {
+        const items = Array.from(document.querySelectorAll('.item-card'));
+        if (!items.length) return 0;
+        return items.filter(i => !i.classList.contains('listing-hidden')).length;
+    }
+
+    function saveShownCount() {
+        const wrapper = document.getElementById('showMoreWrapper');
+        if (!wrapper) return;
+        const shown = getShownCount();
+        if (!shown) return;
+        setItem('listing_shown_count', String(shown));
+        setItem('listing_shown_url', location.pathname + location.search);
+    }
+
+    function restoreShownCount() {
+        const wrapper = document.getElementById('showMoreWrapper');
+        if (!wrapper) return;
+
+        const savedUrl = getItem('listing_shown_url');
+        if (!savedUrl || savedUrl !== location.pathname + location.search) return;
+
+        const raw = getItem('listing_shown_count');
+        const shown = parseInt(raw || '0', 10);
+        if (!shown) return;
+
+        const items = Array.from(document.querySelectorAll('.item-card'));
+        if (!items.length) return;
+
+        items.forEach((item, index) => {
+            if (index < shown) {
+                item.classList.remove('listing-hidden');
+            } else {
+                item.classList.add('listing-hidden');
+            }
+            item.classList.remove('listing-animate');
+        });
+
+        const total = items.length;
+        const counter = document.getElementById('shownCounter');
+        if (counter) counter.textContent = `${Math.min(shown, total)} / ${total}`;
+        const btn = document.getElementById('showMoreBtn');
+        if (btn) btn.style.display = shown >= total ? 'none' : '';
+    }
+
+    function ensureListingCardVisible(el) {
+        const wrapper = document.getElementById('showMoreWrapper');
+        if (!wrapper || !el) return;
+
+        const card = el.closest?.('.item-card');
+        if (!card) return;
+
+        const items = Array.from(document.querySelectorAll('.item-card'));
+        if (!items.length) return;
+
+        const idx = items.indexOf(card);
+        if (idx < 0) return;
+
+        for (let i = 0; i <= idx; i += 1) {
+            items[i].classList.remove('listing-hidden');
+        }
+
+        const total = items.length;
+        const shown = items.filter(i => !i.classList.contains('listing-hidden')).length;
+        const counter = document.getElementById('shownCounter');
+        if (counter) {
+            counter.textContent = `${shown} / ${total}`;
+        }
+        const btn = document.getElementById('showMoreBtn');
+        if (btn) {
+            btn.style.display = shown >= total ? 'none' : '';
+        }
+    }
+
     function restoreListingPosition() {
         if (maybeRefreshProfileListing()) return;
         if (!isAllowedPath(location.pathname + location.search)) {
@@ -354,13 +416,16 @@
             }
         }
 
+        restoreShownCount();
+
         if (instant && fromDetail) {
             const savedScroll = parseInt(getItem('listing_scroll') || '0', 10);
             if (!Number.isNaN(savedScroll)) {
-                window.scrollTo(0, savedScroll);
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, savedScroll);
+                });
             }
             removeItem('listing_instant');
-            return;
         }
 
         if (!targetId || !fromDetail) return;
@@ -368,31 +433,14 @@
         const el = document.getElementById(targetId);
         if (!el) return;
 
+        ensureListingCardVisible(el);
+
         const section = el.closest?.('.profile-section');
         if (section && window.profileSectionsActivate) {
             try { window.profileSectionsActivate(section.id); } catch { }
         }
 
         requestAnimationFrame(() => {
-            const rect = el.getBoundingClientRect();
-
-            const OFFSET = Math.min(
-                window.innerHeight * 0.35, // 35% экрана
-                420                        // но не больше 420px
-            );
-
-            if (Math.abs(rect.top) > OFFSET) {
-                const targetTop = window.scrollY + rect.top - OFFSET;
-                if (instant) {
-                    window.scrollTo(0, targetTop);
-                } else {
-                    window.scrollBy({
-                        top: rect.top - OFFSET,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-
             if (anchorId && String(anchorId).startsWith('item-')) {
                 el.classList.remove('back-highlight');
                 void el.offsetWidth;
@@ -405,32 +453,6 @@
     document.addEventListener('DOMContentLoaded', restoreListingPosition);
     window.addEventListener('pageshow', () => { maybeRefreshProfileListing(); });
     document.addEventListener('DOMContentLoaded', () => { maybeRefreshProfileListing(); });
-
-    function applyBackLabel() {
-        if (document.getElementById('threadBackBtn')) return;
-        const labelEl = document.getElementById('breadcrumbLabel');
-        if (!labelEl) return;
-
-        const sepEl = document.getElementById('breadcrumbSep');
-        const storedLabel = (getItem('listing_label') || '').trim();
-        const existingLabel = (labelEl.textContent || '').trim();
-        const currentLabel = (getListingLabel() || '').trim();
-        const label = isProfileSectionPage()
-            ? currentLabel
-            : (storedLabel || existingLabel);
-
-        labelEl.textContent = label || '';
-        if (sepEl) {
-            sepEl.style.display = label ? '' : 'none';
-        }
-
-        if (isProfileSectionPage() && label) {
-            setItem('listing_label', label);
-        }
-    }
-
-    window.addEventListener('pageshow', applyBackLabel);
-    document.addEventListener('DOMContentLoaded', applyBackLabel);
 
     if (isProfileSectionPage()) {
         const sectionId = getProfileSectionIdFromPath();
@@ -487,53 +509,6 @@
     document.addEventListener('DOMContentLoaded', applyListingChanges);
 
     /* =====================================================
-       4) BREADCRUMB BACK = BROWSER BACK
-    ===================================================== */
-    (function wireBackBtn() {
-        const btn = document.getElementById('backBreadcrumb');
-        if (!btn) return;
-
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            if (isProfileSectionPage()) {
-                const backUrl = getItem('profile_back_url');
-                const backAnchor = getItem('profile_back_anchor');
-                const sectionAnchor = getItem('listing_section_anchor');
-                const activeTab = getItem('profile_active_tab');
-                if (backUrl) {
-                    setItem('listing_url', backUrl);
-                    if (sectionAnchor) {
-                        setItem('listing_anchor', sectionAnchor);
-                    } else if (backAnchor) {
-                        setItem('listing_anchor', backAnchor);
-                    }
-                    if (activeTab) {
-                        setItem('profile_active_tab', activeTab);
-                        setItem('profile_from_detail', '1');
-                    }
-                    setItem('listing_instant', '1');
-                    location.href = backUrl;
-                    return;
-                }
-            }
-
-            const listingUrl = getItem('listing_url');
-            if (listingUrl) {
-                try { setItem('from_detail', '1'); } catch { }
-                location.href = listingUrl;
-                return;
-            }
-
-            if (history.length > 1) {
-                history.back();
-            } else {
-                location.href = '/';
-            }
-        });
-    })();
-
-    /* =====================================================
        4.1) PASS REDIRECT URL ON DELETE
     ===================================================== */
     document.addEventListener('submit', function (e) {
@@ -586,6 +561,19 @@
             }
         } else {
             clearListing();
+        }
+    }, { passive: true });
+
+    document.addEventListener('click', function (e) {
+        const showMoreBtn = e.target.closest?.('#showMoreBtn');
+        if (showMoreBtn) {
+            setTimeout(saveShownCount, 0);
+            return;
+        }
+
+        const link = e.target.closest?.('a.item-link');
+        if (link) {
+            saveShownCount();
         }
     }, { passive: true });
 

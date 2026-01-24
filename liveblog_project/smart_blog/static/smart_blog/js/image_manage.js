@@ -331,7 +331,7 @@
                     // bring user's attention to image area
                     const nodeToScroll = preview || existingContainer || qs('#imagesHelp') || mainInput;
                     if (nodeToScroll) {
-                        nodeToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        nodeToScroll.scrollIntoView({ behavior: 'auto', block: 'center' });
                     }
                     return false;
                 }

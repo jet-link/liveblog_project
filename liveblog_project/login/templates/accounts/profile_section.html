@@ -1,18 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}
-  {{ user_obj.username }} {{ section_title }}
+  {{ section_title }}
 {% endblock %}
 {% block content %}
   <div class="container content_block">
-    <div class="d-inline-flex gap-3 align-items-center mb-3">
-      <button type="button" class="text-muted back_btn p-0" id="backBreadcrumb">
-        <i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i>
-        Back
-      </button>
-      <span id="breadcrumbSep" class="text-muted">/</span>
-      <span id="breadcrumbLabel" class="success_ fw-semibold">{{ section_title }} items</span>
-      <span class="custom_badge_success">{{ section_count }}</span>
-    </div>
+    {% include 'includes/breadcrumbs.html' %}
 
     {% if section == 'created' %}
       {% include 'includes/created_items.html' %}

@@ -29,4 +29,5 @@ def render_mentions(text, parent_comment_id=None):
 
     text = escape(text)
     text = MENTION_RE.sub(repl, text)
+    text = text.replace('\r\n', '\n').replace('\r', '\n').replace('\n', '<br>')
     return mark_safe(text)

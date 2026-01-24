@@ -8,12 +8,13 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q
 from django.db.models import Prefetch
-from .utils import count_convert
+from .utils import count_convert, build_breadcrumbs, breadcrumb
 import logging
 import os
 from django.conf import settings
@@ -27,7 +28,7 @@ def items_list(request):
         .order_by('-published_date')
     )
 
-    paginator = Paginator(qs, 10)
+    paginator = Paginator(qs, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -37,10 +38,15 @@ def items_list(request):
         on_ends=1
     )
 
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", None),
+    )
+
     return render(request, "smart_blog/items_list.html", {
         "page_obj": page_obj,
         "page_range": page_range,
         "items": page_obj.object_list,
+        "breadcrumbs": breadcrumbs,
     })
 
 
@@ -53,9 +59,15 @@ def tag_list(request, slug):
         .order_by('-published_date')
     )
 
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb(tag.tag_name, None),
+    )
+
     return render(request, "smart_blog/tag_items_list.html", {
         "tag": tag,
         "items": items,
+        "breadcrumbs": breadcrumbs,
     })
 
 
@@ -103,9 +115,19 @@ def search_view(request):
             .order_by('-published_date')
         )
 
+    if q:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("Search", reverse("global_search")),
+            breadcrumb(q, None),
+        )
+    else:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("Search", None),
+        )
+
     # без пагинации — как ты просил, просто все результаты
-    return render(request, 'smart_blog/search_results.html', 
-                  {'items': items, 'query': q, 'selected_fields': selected_fields})
+    return render(request, 'smart_blog/search_results.html',
+                  {'items': items, 'query': q, 'selected_fields': selected_fields, 'breadcrumbs': breadcrumbs})
 
 
 
@@ -274,6 +296,57 @@ def item_detail(request, slug):
     editable_until = (item.published_date or item.created) + timedelta(hours=24)
     is_editable = timezone.now() <= editable_until
 
+    source = request.GET.get("from")
+    source_user = request.GET.get("user")
+    source_section = request.GET.get("section")
+    source_url = request.GET.get("source_url")
+    source_query = request.GET.get("query")
+    source_tag = request.GET.get("tag")
+    source_tag_slug = request.GET.get("tag_slug")
+    section_titles = {
+        "created": "Created",
+        "liked": "Liked",
+        "bookmarked": "Bookmarked",
+    }
+
+    safe_source_url = None
+    if source_url and url_has_allowed_host_and_scheme(
+        url=source_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure()
+    ):
+        safe_source_url = source_url
+
+    if source == "profile" and source_user and source_section in section_titles:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb(source_user, reverse("login_app:profile", kwargs={"username": source_user})),
+            breadcrumb(section_titles[source_section], None),
+            breadcrumb(item.title, None),
+        )
+    elif source == "items_list":
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("BraiNews", safe_source_url or reverse("smart_blog:items_list")),
+            breadcrumb(item.title, None),
+        )
+    elif source == "search" and source_query:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb(f"Found - {source_query}", safe_source_url or reverse("smart_blog:items_list")),
+            breadcrumb(item.title, None),
+        )
+    elif source == "tag" and source_tag:
+        tag_url = safe_source_url
+        if not tag_url and source_tag_slug:
+            tag_url = reverse("smart_blog:tag_list", kwargs={"slug": source_tag_slug})
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb(f"Tag - {source_tag}", tag_url or reverse("smart_blog:items_list")),
+            breadcrumb(item.title, None),
+        )
+    else:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+            breadcrumb(item.title, None),
+        )
+
     return render(request, "smart_blog/item_detail.html", {
         "item": item,                 # ← ВСЕ СЧЁТЧИКИ УЖЕ ЗДЕСЬ
         "form": CommentForm(),
@@ -282,6 +355,7 @@ def item_detail(request, slug):
         "user_bookmarked": user_bookmarked,
         "editable_until_iso": editable_until.isoformat(),
         "is_editable": is_editable,
+        "breadcrumbs": breadcrumbs,
     })
 
 
@@ -301,9 +375,16 @@ def comment_thread(request, pk):
         .get()
     )
 
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb(comment.item.title, comment.item.get_absolute_url()),
+        breadcrumb("Replies", None),
+    )
+
     return render(request, "smart_blog/comment_thread.html", {
         "comment": comment,
         "item": comment.item,
+        "breadcrumbs": breadcrumbs,
     })
 
 
@@ -384,6 +465,8 @@ def edit_item(request, slug):
                     ItemImage.objects.create(item=item, image=f)
 
             # messages.success(request, "Item updated successfully.")
+            if request.GET:
+                return redirect(f"{item.get_absolute_url()}?{request.GET.urlencode()}")
             return redirect(item.get_absolute_url())
         else:
             # if AJAX -> return errors JSON

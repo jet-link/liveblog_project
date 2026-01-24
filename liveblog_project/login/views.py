@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.urls import reverse
 from smart_blog.models import Item
 # from django.http import HttpResponseForbidden, HttpResponse
 from login.models import Profile
@@ -14,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.templatetags.static import static
 from django.http import JsonResponse, Http404
 from django.db.models import Count, Q, Max
-from smart_blog.utils import count_convert
+from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb
 # from django.template.loader import render_to_string
 # Редактирование пользователя
 from django.core.exceptions import PermissionDenied
@@ -339,6 +340,11 @@ def profile_section_view(request, username, section):
         if data.get("value") and str(data["value"]).strip()
     }
 
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb(user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
+        breadcrumb(section_title, None),
+    )
+
     context = {
         'fields': filtered_fields,
         'user_obj': user_obj,
@@ -349,6 +355,7 @@ def profile_section_view(request, username, section):
         'section_title': section_title,
         'section_count': section_count,
         'is_owner': is_owner,
+        'breadcrumbs': breadcrumbs,
         **counts,
     }
     return render(request, 'accounts/profile_section.html', context)

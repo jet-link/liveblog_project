@@ -22,12 +22,12 @@
     {% include 'includes/personal_info.html' %}
     <div class="profile-section-tabs d-flex align-items-center gap-1 mt-5">
       <button type="button" class="profile-section-tab"
-              data-section-target="profile-section-created">Created items</button>
+              data-section-target="profile-section-created">Created<i class="fa fa-check ms-2"></i></button>
       {% if is_owner %}
         <button type="button" class="profile-section-tab"
-                data-section-target="profile-section-liked">Liked items</button>
+                data-section-target="profile-section-liked">Liked<i class="fa fa-heart ms-2"></i></button>
         <button type="button" class="profile-section-tab"
-                data-section-target="profile-section-bookmarked">Bookmarked items</button>
+                data-section-target="profile-section-bookmarked">Bookmarked<i class="fa fa-bookmark ms-2"></i></button>
       {% endif %}
     </div>
 

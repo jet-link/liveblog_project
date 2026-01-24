@@ -24,9 +24,9 @@
 {% if user.is_authenticated and user.username == user_obj.username %}
   <div class="d-flex justify-content-between align-items-center mt-3">
     <div>
-      <a class="btn btn-primary btn-sm" href="{% url 'smart_blog:create_item' %}">Create item</a>
-      <a class="btn btn-primary btn-sm" href="{% url 'login_app:profile-edit' request.user.username %}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Edit profile"><i class="fa fa-cog" aria-hidden="true"></i></a>
+      <a class="cstm-btn custom-primary-btn" href="{% url 'smart_blog:create_item' %}">Create item</a>
+      <a class="cstm-btn custom-primary-btn" href="{% url 'login_app:profile-edit' request.user.username %}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Edit profile"><i class="fa fa-cog" aria-hidden="true"></i></a>
     </div>
-    <a class="btn btn-danger btn-sm" href="{% url 'login_app:logout' %}">Logout<i class="fa fa-sign-out ms-2"></i></a>
+    <a class="cstm-btn custom-danger-btn" href="{% url 'login_app:logout' %}">Logout<i class="fa fa-sign-out ms-2"></i></a>
   </div>
 {% endif %}

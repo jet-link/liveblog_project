@@ -51,7 +51,7 @@
             return Math.max(0, Math.round(maxScroll / step));
         };
 
-        const scrollToIndex = (nextIndex, behavior = 'smooth') => {
+        const scrollToIndex = (nextIndex, behavior = 'auto') => {
             const step = getStep();
             if (!step) return;
             const maxIndex = getMaxIndex();
@@ -161,7 +161,7 @@
                         } catch { }
                     }
                     if (ctx.__lastIndex == null) ctx.__lastIndex = 0;
-                    ctx.__scrollToIndex?.(ctx.__lastIndex, instant ? 'auto' : 'smooth');
+                    ctx.__scrollToIndex?.(ctx.__lastIndex, 'auto');
                     ctx.__updateControls?.();
                 }, 80);
             }
@@ -200,6 +200,7 @@
 
         if (savedTab && fromDetail) {
             activateById(savedTab, instantRestore);
+            window.__profileSectionRestored = true;
             if (instantRestore) {
                 try { sessionStorage.removeItem('section_scroll_instant'); } catch { }
             }
@@ -237,8 +238,12 @@
         try {
             const fromDetail = sessionStorage.getItem('profile_from_detail') === '1';
             const sectionAnchor = sessionStorage.getItem('listing_section_anchor');
-            if (sectionAnchor && window.profileSectionsActivate && fromDetail) {
-                window.profileSectionsActivate(sectionAnchor);
+            const instantRestore = sessionStorage.getItem('section_scroll_instant') === '1';
+            if (sectionAnchor && window.profileSectionsActivate && fromDetail && !window.__profileSectionRestored) {
+                window.profileSectionsActivate(sectionAnchor, instantRestore);
+                if (instantRestore) {
+                    try { sessionStorage.removeItem('section_scroll_instant'); } catch { }
+                }
             } else if (!fromDetail) {
                 window.clearProfileListingState?.();
                 if (window.profileSectionsActivate) {
@@ -272,6 +277,6 @@
         const maxIndex = step ? Math.max(0, Math.round(maxScroll / step)) : 0;
         const nextIndex = e.key === 'ArrowRight' ? index + 1 : index - 1;
         const clamped = Math.max(0, Math.min(maxIndex, nextIndex));
-        container.scrollTo({ left: clamped * step, behavior: 'smooth' });
+        container.scrollTo({ left: clamped * step, behavior: 'auto' });
     });
 })();

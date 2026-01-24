@@ -3,6 +3,19 @@
 # from django.http import JsonResponse
 import math
 
+
+def breadcrumb(title, url=None):
+    return {
+        "title": title,
+        "url": url,
+    }
+
+
+def build_breadcrumbs(*crumbs):
+    breadcrumbs = [breadcrumb("BrainStorm", "/")]
+    breadcrumbs.extend(crumbs)
+    return breadcrumbs
+
 def form_errors_to_json(form):
     """
     Преобразует form.errors и non_field_errors -> чистая JSON-структура:

@@ -58,11 +58,10 @@
                 <i class="fa fa-plus me-2"></i>Create item</a>
               <div class="divider"></div>
               <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Logout</a>
-              {% comment %} <a href="#" class="danger user-logout-btn" data-logout-url="{% url 'login_app:logout' %}"><i class="fa fa-sign-out me-2"></i>Logout</a> {% endcomment %}
             </div>
           </div>
         {% else %}
-          <a href="{% url 'login_app:login' %}" class="text-muted text-decoration-none"><i class="fa fa-user-circle fs-4"></i></a>
+          <a href="{% url 'login_app:login' %}" class="text-muted text-decoration-none">Login</a>
         {% endif %}
       </div>
     </nav>

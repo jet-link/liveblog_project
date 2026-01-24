@@ -145,6 +145,16 @@
   }
   window.buildThreadLink = buildThreadLink;
 
+  function getThreadContext() {
+    const marker = document.getElementById('threadViewMarker');
+    if (!marker) return null;
+    return {
+      parentId: marker.dataset.parentId,
+      backUrl: marker.dataset.backUrl,
+    };
+  }
+  window.getThreadContext = getThreadContext;
+
   function setThreadLinkCount(parentId, count) {
     const link = document.getElementById('replies-thread-link-' + parentId);
     if (!link) return;
@@ -228,7 +238,8 @@
 
     if (remaining > 0) {
       btn.disabled = true;
-      btn.textContent = `${originalText} (${remaining}s)`;
+      btn.classList.add('is-blocked');
+      btn.textContent = `Blocked ${remaining}s`;
 
       if (!btn.__cooldownTimer) {
         btn.__cooldownTimer = setInterval(() => {
@@ -239,13 +250,14 @@
             const key = `${COMMENT_COOLDOWN_KEY_PREFIX}${itemId}`;
             localStorage.removeItem(key);
             btn.disabled = false;
+            btn.classList.remove('is-blocked');
             btn.textContent = btn.dataset.originalText;
             const form = btn.closest('form');
             const textarea = form?.querySelector('textarea[name="text"]');
             clearFieldError(textarea);
             return;
           }
-          btn.textContent = `${btn.dataset.originalText} (${left}s)`;
+          btn.textContent = `Blocked ${left}s`;
         }, 1000);
       }
       return;
@@ -256,6 +268,7 @@
       btn.__cooldownTimer = null;
     }
     btn.disabled = false;
+    btn.classList.remove('is-blocked');
     btn.textContent = btn.dataset.originalText || originalText;
     const form = btn.closest('form');
     const textarea = form?.querySelector('textarea[name="text"]');
@@ -403,7 +416,7 @@
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.btn-delete-comment');
       if (!btn) return;
-
+ 
       confirmBtn.dataset.deleteUrl = btn.dataset.deleteUrl;
       confirmBtn.dataset.itemId = modal.dataset.itemId; // КЛЮЧ
     });
@@ -451,8 +464,8 @@
               }
 
               // update thread link visibility/count (only on item_detail)
-              const threadBtn = document.getElementById('threadBackBtn');
-              if (!threadBtn) {
+          const threadContext = getThreadContext();
+          if (!threadContext) {
                 const depth = parseInt(parentComment.dataset.depth || '0', 10);
                 const link = document.getElementById('replies-thread-link-' + data.parent_id);
                 if (depth >= 2) {
@@ -481,9 +494,9 @@
           }
 
           // If we are in thread view and replies are empty, mark link for removal + show empty state
-          const threadBtn = document.getElementById('threadBackBtn');
-          if (threadBtn) {
-            const threadParentId = threadBtn.dataset.parentId;
+          const threadContext = getThreadContext();
+          if (threadContext) {
+            const threadParentId = threadContext.parentId;
             if (threadParentId) {
               const threadRoot = document.getElementById('comment-' + threadParentId);
               const threadReplies = threadRoot?.querySelector('.replies');
@@ -504,19 +517,19 @@
           }
 
           // If deleting the thread root comment, go back to item detail and scroll to thread link
-          if (threadBtn) {
-            const threadParentId = threadBtn.dataset.parentId;
+          if (threadContext) {
+            const threadParentId = threadContext.parentId;
             if (String(data.comment_id) === String(threadParentId)) {
               try {
                 sessionStorage.setItem('thread_back_anchor', 'replies-thread-link-' + threadParentId);
-                sessionStorage.setItem('thread_back_url', threadBtn.dataset.backUrl || window.location.origin);
+                sessionStorage.setItem('thread_back_url', threadContext.backUrl || window.location.origin);
                 sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
                 sessionStorage.setItem('thread_deleted_parent_' + threadParentId, '1');
               } catch { }
               if (history.length > 1) {
                 history.back();
               } else {
-                const backUrl = threadBtn.dataset.backUrl || '/';
+                const backUrl = threadContext.backUrl || '/';
                 window.location.href = backUrl;
               }
               return;
@@ -600,19 +613,8 @@
         sessionStorage.removeItem(key);
       }
 
-      const target = sessionStorage.getItem('thread_back_anchor');
-      const backUrl = sessionStorage.getItem('thread_back_url');
-      if (target && (!backUrl || window.location.href.startsWith(backUrl))) {
-        const el = document.getElementById(target);
-        const parentId = target.replace('replies-thread-link-', '');
-        if (el) {
-          requestAnimationFrame(() => {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          });
-        }
-        sessionStorage.removeItem('thread_back_anchor');
-        sessionStorage.removeItem('thread_back_url');
-      }
+      sessionStorage.removeItem('thread_back_anchor');
+      sessionStorage.removeItem('thread_back_url');
     } catch (e) { /* ignore */ }
   }
 
@@ -690,7 +692,18 @@
      OPEN EDITOR
   =============================== */
 
+  function closeAllCommentEditForms() {
+    document.querySelectorAll('.comment-edit-form .cancel-edit')
+      .forEach(btn => btn.click());
+  }
+
+  window.closeAllCommentEditForms = closeAllCommentEditForms;
+
   function openEditor(commentNode, commentId, editUrl) {
+    if (window.closeAllReplyForms) {
+      window.closeAllReplyForms();
+    }
+
     const body = commentNode.querySelector('.comment-body');
     if (!body) return;
 
@@ -756,13 +769,14 @@
 
     const btnSave = document.createElement('button');
     btnSave.type = 'submit';
-    btnSave.className = 'btn btn-primary btn-sm';
+    btnSave.className = 'cstm-btn custom-primary-btn cstm-btn-sm';
     btnSave.textContent = 'Edit';
 
     const btnCancel = document.createElement('button');
     btnCancel.type = 'button';
-    btnCancel.className = 'btn btn-secondary btn-sm';
+    btnCancel.className = 'cstm-btn custom-secondary-btn cstm-btn-sm';
     btnCancel.textContent = 'Cancel';
+    btnCancel.classList.add('cancel-edit');
 
     btnRow.appendChild(btnSave);
     btnRow.appendChild(btnCancel);
@@ -1066,7 +1080,7 @@
 
   btn.addEventListener('click', () => {
     commentsHeader.scrollIntoView({
-      behavior: 'smooth',
+      behavior: 'auto',
       block: 'start'
     });
   });
@@ -1112,6 +1126,15 @@
 (function () {
   'use strict';
 
+  const getThreadContext = window.getThreadContext || function () {
+    const marker = document.getElementById('threadViewMarker');
+    if (!marker) return null;
+    return {
+      parentId: marker.dataset.parentId,
+      backUrl: marker.dataset.backUrl,
+    };
+  };
+
   function getCookie(name) {
     return document.cookie
       .split('; ')
@@ -1143,11 +1166,21 @@
       .querySelectorAll('.comment-active')
       .forEach(el => el.classList.remove('comment-active'));
   }
+  window.closeAllReplyForms = closeAllReplyForms;
+
+  function closeAllCommentEditForms() {
+    document.querySelectorAll('.comment-edit-form .cancel-edit')
+      .forEach(btn => btn.click());
+  }
+  window.closeAllCommentEditForms = closeAllCommentEditForms;
 
   function openReplyForm(commentId, mentionId) {
     const container = document.getElementById(`reply-form-${commentId}`);
     if (!container) return;
 
+    if (window.closeAllCommentEditForms) {
+      window.closeAllCommentEditForms();
+    }
     closeAllReplyForms();
     container.classList.remove('d-none');
 
@@ -1169,22 +1202,56 @@
       });
   }
 
+  /* ===============================
+     CLOSE FORMS ON OUTSIDE CLICK
+  =============================== */
+  document.addEventListener('click', (e) => {
+    const clickedReplyForm = e.target.closest?.('.reply-form');
+    const clickedEditForm = e.target.closest?.('.comment-edit-form');
+    const replyTrigger = e.target.closest?.('.btn-reply, .comment-menu-action[data-action="reply"]');
+    const editTrigger = e.target.closest?.('.btn-edit-comment');
+
+    if (!clickedReplyForm && !replyTrigger) {
+      closeAllReplyForms();
+    }
+    if (!clickedEditForm && !editTrigger) {
+      closeAllCommentEditForms();
+    }
+  });
+
   function buildCommentShareUrl(commentId) {
     const base = window.location.href.split('#')[0];
     return `${base}#comment-anchor-${commentId}`;
   }
 
-  async function shareCommentUrl(url) {
-    if (navigator.share) {
-      try {
-        await navigator.share({ url });
-        return;
-      } catch { }
-    }
+  function ensureShareOverlay() {
+    let overlay = document.getElementById('commentShareOverlay');
+    if (overlay) return overlay;
 
+    overlay = document.createElement('div');
+    overlay.id = 'commentShareOverlay';
+    overlay.className = 'comment-share-overlay';
+    overlay.innerHTML = '<div class="comment-share-overlay-text">Link copied to clipboard</div>';
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function showShareOverlay() {
+    const overlay = ensureShareOverlay();
+    overlay.classList.add('is-visible');
+    if (overlay.__timer) {
+      clearTimeout(overlay.__timer);
+    }
+    overlay.__timer = setTimeout(() => {
+      overlay.classList.remove('is-visible');
+    }, 1400);
+  }
+
+  async function shareCommentUrl(url) {
     if (navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(url);
+        showShareOverlay();
         return;
       } catch { }
     }
@@ -1198,6 +1265,7 @@
     temp.select();
     document.execCommand('copy');
     document.body.removeChild(temp);
+    showShareOverlay();
   }
 
   /* ===============================
@@ -1354,7 +1422,7 @@
 
       try {
         // ⬇️ ВСТАВКА REPLY
-        const isThreadView = !!document.getElementById('threadBackBtn');
+        const isThreadView = !!getThreadContext();
         const parentDepth = parseInt(parentComment.dataset.depth || '0', 10);
         if (!isThreadView && parentDepth >= 2) {
           // For deep replies, keep only the thread link on item page
@@ -1382,9 +1450,9 @@
         window.initCommentToggles?.(replies);
 
         // if we're on thread page, ensure empty state cleared and link removal flag reset
-        const threadBtn = document.getElementById('threadBackBtn');
-        if (threadBtn) {
-          const threadParentId = threadBtn.dataset.parentId;
+        const threadContext = getThreadContext();
+        if (threadContext) {
+          const threadParentId = threadContext.parentId;
           if (threadParentId) {
             const threadEmpty = document.getElementById('threadEmpty');
             if (threadEmpty) threadEmpty.classList.add('d-none');
@@ -1469,7 +1537,7 @@
 
     window.scrollTo({
       top: targetY,
-      behavior: 'smooth'
+      behavior: 'auto'
     });
 
     if (scrollTimer) clearTimeout(scrollTimer);
