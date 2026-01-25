@@ -7,7 +7,7 @@
     <main class="edit-profile-field form-wrapper mx-auto">
       <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
         {% csrf_token %}
-        <h5 class="mb-3 fw-normal success_ text-uppercase">Login</h5>
+        <h5 class="mb-3 fw-normal primary_ text-uppercase">Login</h5>
         {# GLOBAL / NON-FIELD ERRORS (например: Invalid username or password) #}
         {% if form.non_field_errors %}
           <div class="alert alert-danger py-2">
@@ -57,15 +57,15 @@
         {# BUTTONS #}
         <div class="d-flex justify-content-between align-items-center mt-2">
           <div class="d-flex gap-1">
-            <button type="submit" class="cstm-btn-sm custom-primary-btn">Login</button>
-            <a href="{% url 'login_app:register' %}" class="cstm-btn-sm custom-primary-btn">Sign up</a>
+            <button type="submit" class="btn btn-outline-primary btn-sm">Login</button>
+            <a href="{% url 'login_app:register' %}" class="btn btn-outline-primary btn-sm">Sign up</a>
           </div>
 
-          <div class="another_login_block d-flex gap-1">
+          {% comment %} <div class="another_login_block d-flex gap-1">
             <a href="#" class="google_btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by Google"><i class="fa fa-google" aria-hidden="true"></i></a>
             <a href="#" class="apple_btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by Apple"><i class="fa fa-apple" aria-hidden="true"></i></a>
             <a href="#" class="twitter_btn_login" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-          </div>
+          </div> {% endcomment %}
         </div>
       </form>
     </main>

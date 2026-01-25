@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-2 align-items-center">
         <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
-          <span class="custom_badge_success">{{ comment.author }}</span>
+          <span class="custom_badge_success fw-semibold">{{ comment.author }}</span>
           <div class="little-avatar">
             {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
               <img src="{{ comment.author.profile.get_avatar }}" alt="{{ comment.author }}" class="user-avatar clickable-avatar" data-full="{{ comment.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -21,7 +21,7 @@
 
       {% if comment.parent is None %}
         <div class="d-flex gap-2 align-items-center comment-like-count">
-          <span id="comment-likes-count-{{ comment.pk }}" class="success_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
+          <span id="comment-likes-count-{{ comment.pk }}" class="primary_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
           <span class="text-muted text-uppercase">:Likes</span>
         </div>
       {% endif %}
@@ -34,7 +34,7 @@
       </div>
 
       <div class="d-flex gap-2 align-items-center comment-like-count">
-        <span id="comment-likes-count-{{ comment.pk }}" class="success_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
+        <span id="comment-likes-count-{{ comment.pk }}" class="primary_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
         <span class="text-muted text-uppercase">:Likes</span>
       </div>
     </div>

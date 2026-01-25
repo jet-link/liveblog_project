@@ -14,7 +14,7 @@
     {% url 'login_app:profile-section' user_obj.username 'liked' as profile_liked_url %}
     {% url 'login_app:profile-section' user_obj.username 'bookmarked' as profile_bookmarked_url %}
     <div class="d-flex justify-content-between align-items-center pb-4">
-      <h5 class="m-0 text-muted"><span class="success_">{{ user_obj.username }}'s</span> personal room</h5>
+      <h5 class="m-0 text-muted"><span class="primary_">{{ user_obj.username }}'s</span> personal room</h5>
       {% if user_obj.is_staff and user.username == user_obj.username %}
         <a href="/admin" class="text-decoration-none text-muted">Administration</a>
       {% endif %}

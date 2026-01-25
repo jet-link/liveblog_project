@@ -173,7 +173,7 @@ textarea {
     padding: 20px;
     /* we will add spacing by wrapper in page if needed */
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .back_btn {
@@ -192,8 +192,8 @@ textarea {
 .header-search-input {
     width: 100%;
     height: 60px;
-    padding: 13px 50px 13px 15px;
-    border-radius: 8px;
+    padding: 13px 50px 13px 20px;
+    border-radius: 30px;
     font-size: 15px;
     border: 1px solid #e6e6e6;
 }
@@ -215,7 +215,7 @@ textarea {
     justify-content: center;
     z-index: 5;
     padding: 0;
-    border-radius: 6px;
+    border-radius: 30px;
     text-decoration: none;
 }
 
@@ -241,8 +241,8 @@ textarea {
     bottom: 25px;
     transform: translateX(-50%) translateY(22px);
     z-index: 1200;
-    width: 58px;
-    height: 58px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -260,7 +260,7 @@ textarea {
         width 600ms cubic-bezier(.2, .9, .3, 1),
         box-shadow 550ms cubic-bezier(.22, .85, .32, 1);
     will-change: opacity, transform, width;
-    font-size: 17px;
+    font-size: 1rem;
 }
 
 /* видимость кнопки (через JS) */
@@ -366,7 +366,7 @@ textarea {
     overflow: auto;
 
     background: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 22px;
 }
 
@@ -383,9 +383,8 @@ textarea {
     z-index: 10000;
     transition: transform .15s ease;
     border-radius: 30px;
-    /* backdrop-filter: blur(6px); */
-    font-size: 16px;
-    padding: 18px 30px;
+    font-size: .975rem;
+    padding: 15px 25px;
 }
 
 .overlay-close span {
@@ -818,11 +817,11 @@ textarea {
 
 .show-more-btn-toggle {
     padding: 8px 14px;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 1px solid #ddd;
     background: #fff;
     cursor: pointer;
-    font-size: .9rem;
+    font-size: .8rem;
     font-weight: 500;
     text-decoration: none;
     color: #424242;
@@ -917,10 +916,11 @@ textarea {
 }
 
 .share_btn{
-    border: 2px solid #27ae60;
-    background-color: #ffffff;
-    color: #27ae60
+    border: none;
+    background-color: #27ae60;
+    color: #ffffff
 }
+
 
 .cstm-btn{
     padding: 10px 15px;
@@ -929,13 +929,14 @@ textarea {
     font-size: .9rem;
     text-decoration: none;
     text-align: center;
+    font-weight: 500;
 }
 
 .cstm-btn-sm{
     padding: 7px 10px;
     transition: .2s ease-in-out;
     font-size: .790rem;
-    font-weight: normal;
+    font-weight: 500;
     text-decoration: none;
     border-radius: 5px;
 }
@@ -971,8 +972,7 @@ textarea {
     border: none;
 }
 
-
-.success_ {
+.primary_ {
     color: #2980b9;
 }
 
@@ -1220,7 +1220,6 @@ textarea {
     border-radius: 8px;
     background-color: #ffffff;
     font-size: .8rem;
-    font-weight: 600;
 }
 
 .comment-count,
@@ -1682,7 +1681,7 @@ textarea {
 
 .social_btn {
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 10px 15px;
     transition: .2s ease-in-out;
     border: none;

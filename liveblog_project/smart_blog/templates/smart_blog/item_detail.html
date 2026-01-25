@@ -28,11 +28,11 @@
       </div>
       {% if item.author %}
         {% if user == item.author %}
-          <small class="success_ fw-bolder">It's your item</small>
+          <small class="primary_ fw-bolder">It's your item</small>
         {% else %}
           <div>
             <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
-              <small class="custom_badge_success">{{ item.author }}</small>
+              <small class="custom_badge_success fw-semibold">{{ item.author }}</small>
               <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                   <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -69,11 +69,11 @@
 
         <div class="stat">
           <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
-          <i class="fa fa-bookmark success_"></i>
+          <i class="fa fa-bookmark primary_"></i>
         </div>
 
         <div class="stat">
-          <span id="commentsCount">{{ item.comments_count }}</span>
+          <span id="commentsCount">{{ item.comments_count|human }}</span>
           <i class="fa fa-comment stat-comment"></i>
         </div>
       </div>

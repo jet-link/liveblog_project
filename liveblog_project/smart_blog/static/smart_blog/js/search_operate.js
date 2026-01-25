@@ -270,6 +270,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     })();
 
+    // --- clear header search when leaving BraiNews ---
+    (function handleBraiNewsLeave() {
+        const headerInput = document.getElementById('headerSearchInput');
+        if (!headerInput) return;
+        const isBraiNews = location.pathname.includes('/brainews');
+        if (!isBraiNews) return;
+
+        function markClearOnLeave() {
+            const val = (headerInput.value || '').trim();
+            if (!val) return;
+            try { sessionStorage.setItem('clear_header_search', '1'); } catch { }
+        }
+
+        window.addEventListener('pagehide', markClearOnLeave);
+        window.addEventListener('pageshow', () => {
+            try {
+                if (sessionStorage.getItem('clear_header_search') === '1') {
+                    sessionStorage.removeItem('clear_header_search');
+                    headerInput.value = '';
+                    const hsClear = document.getElementById('headerSearchClear');
+                    if (hsClear) hsClear.classList.add('hidden');
+                }
+            } catch { }
+        });
+    })();
+
     // Accessibility: basic focus trap while overlay open
     document.addEventListener('focus', function (ev) {
         if (!overlayRoot || overlayRoot.classList.contains('hidden')) return;

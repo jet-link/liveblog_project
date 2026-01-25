@@ -139,7 +139,7 @@
 
     const TITLE_MAX = 48;
     const SUB_MAX = 28;
-    const BASE_ASTRO_MAX = 520; // базовая дальность подъёма (px)
+    const BASE_ASTRO_MAX = 480; // базовая дальность подъёма (px)
 
     // Пер-элемент state
     const elems = astros.map(img => {
@@ -172,6 +172,7 @@
 
     let tCur = 0, tTgt = 0;
     let sCur = 0, sTgt = 0;
+    let pCur = 0, pTgt = 0;
     let ticking = false;
 
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -186,6 +187,7 @@
 
         tTgt = -TITLE_MAX * progress;
         sTgt = -SUB_MAX * progress;
+        pTgt = progress;
 
         elems.forEach(e => {
             // цель подъёма — базовая * depth * progress
@@ -197,6 +199,7 @@
         // текст
         tCur += (tTgt - tCur) * 0.14;
         sCur += (sTgt - sCur) * 0.14;
+        pCur += (pTgt - pCur) * 0.12;
         if (title) title.style.transform = `translateY(${tCur}px)`;
         if (sub) sub.style.transform = `translateY(${sCur}px)`;
 
@@ -207,11 +210,13 @@
             e.cur += (e.tgt - e.cur) * speed;
 
             // горизонтальный лёгкий параллакс: дальние меньше двигаются
-            const wobbleAmp = 2.0 * (1 + (1 - Math.min(1, e.depth))); // ближе -> чуть больше wobble
+            const depthNorm = Math.max(0.3, Math.min(1.6, e.depth));
+            const wobbleAmp = 1.4 + (depthNorm - 0.6) * 1.2;
             const wobble = Math.sin(e.cur * 0.02 + (e.z * 0.5)) * wobbleAmp;
 
             // применяем scale вместе с translateY
-            const scale = e.scale;
+            const scaleShift = 1 + (depthNorm - 1) * 0.06 + (depthNorm - 1) * 0.03 * pCur;
+            const scale = e.scale * scaleShift;
             e.el.style.transform = `translateX(-50%) translateY(${e.cur}px) translateX(${wobble}px) scale(${scale})`;
 
             // blur и z уже заданы в начале, но можно динамически чуть подкорректировать blur при подъёме (опционально)

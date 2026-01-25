@@ -1,6 +1,3 @@
-# from collections import deque
-# smart_blog/utils.py
-# from django.http import JsonResponse
 import math
 
 
