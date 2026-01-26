@@ -69,6 +69,9 @@
       if (detailLikes && data.likes_count != null) {
         detailLikes.textContent = data.likes_count;
       }
+      if (window.updateLikedUsersUI) {
+        window.updateLikedUsersUI(data);
+      }
 
     } finally {
       btn.classList.remove('opacity-50');

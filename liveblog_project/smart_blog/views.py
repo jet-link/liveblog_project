@@ -292,6 +292,13 @@ def item_detail(request, slug):
         if request.user.is_authenticated else False
     )
 
+    liked_users = (
+        Like.objects
+        .filter(item=item)
+        .select_related('user', 'user__profile')
+        .order_by('-created_at')
+    )
+
     # ---- 5) Редактирование ----
     editable_until = (item.published_date or item.created) + timedelta(hours=24)
     is_editable = timezone.now() <= editable_until
@@ -353,6 +360,7 @@ def item_detail(request, slug):
         "comments": comments,
         "user_liked": user_liked,
         "user_bookmarked": user_bookmarked,
+        "liked_users": liked_users,
         "editable_until_iso": editable_until.isoformat(),
         "is_editable": is_editable,
         "breadcrumbs": breadcrumbs,

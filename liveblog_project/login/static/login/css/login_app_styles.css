@@ -91,7 +91,7 @@
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     clip-path: circle(50% at 50% 50%);
     -webkit-clip-path: circle(50% at 50% 50%);
 }
@@ -300,6 +300,7 @@
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 

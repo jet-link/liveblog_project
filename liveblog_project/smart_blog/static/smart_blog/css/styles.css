@@ -923,25 +923,35 @@ textarea {
 
 
 .cstm-btn{
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 13px 15px;
+    border-radius: 8px;
     transition: .2s ease-in-out;
     font-size: .9rem;
     text-decoration: none;
     text-align: center;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .cstm-btn-sm{
-    padding: 7px 10px;
+    padding: 9px 12px;
     transition: .2s ease-in-out;
     font-size: .790rem;
     font-weight: 500;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
 }
 
-.custom-secondary-btn {
+.custom-secondary-btn{
     color: #ffffff;
     background-color: #8f8f8f;
     border: none;
@@ -959,7 +969,7 @@ textarea {
     border: none;
 }
 
-.custom-primary-btn {
+.custom-primary-btn{
     color: #ffffff;
     background-color: #2980b9;
     border: none;
@@ -970,6 +980,19 @@ textarea {
     color: #ffffff;
     cursor: auto;
     border: none;
+}
+
+.liked-users-close{
+   width: 30px;
+   height: 30px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: .8rem;
+   background-color: #8e8f90;
+   border-radius: 50%;
+   color: #ffffff;
+   border: none;
 }
 
 .primary_ {
@@ -1210,6 +1233,132 @@ textarea {
     box-shadow: var(--card-shadow);
     background: #fff;
     border-radius: 8px;
+}
+
+.liked-users-block {
+    min-width: 220px;
+    min-height: 56px;
+}
+
+.liked-users-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 80%;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.liked-users-link.is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.liked-users-link:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.liked-users-link:focus {
+    outline: none;
+}
+
+.liked-users-stack {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 32px;
+}
+
+.liked-user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    background: #f1f2f6;
+    aspect-ratio: 1/1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.liked-users-stack .liked-user-avatar {
+    margin-left: -10px;
+}
+
+.liked-users-stack .liked-user-avatar:first-child {
+    margin-left: 0;
+}
+
+.liked-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.liked-user-avatar img.no_avatar {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
+}
+
+.liked-users-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.liked-users-overlay.hidden {
+    display: none;
+}
+
+.liked-users-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.liked-users-panel {
+    position: relative;
+    z-index: 1;
+    width: min(620px, 94vw);
+    max-height: 80vh;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+}
+
+.liked-users-header {
+    padding-bottom: 15px;
+}
+
+.liked-users-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(80vh - 100px);
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.liked-users-item {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.liked-users-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.liked-users-item .custom_badge {
+    text-transform: none;
 }
 
 
@@ -1619,22 +1768,22 @@ textarea {
 }
 
 
-.custom_badge_danger,
-.custom_badge_success,
+.custom_badge,
+.custom_badge,
 .replied-badge {
-    padding: 3px 12px;
+    padding: 3px 15px;
     border-radius: 20px;
     text-decoration: none;
     font-size: .7rem;
     border: 1px solid transparent;
 }
 
-.custom_badge_danger {
+.badge_danger {
     background-color: #ff6b6b;
     color: #ffffff;
 }
 
-.custom_badge_success {
+.badge_primary {
     background-color: #2980b9;
     color: #ffffff;
 }
@@ -1645,7 +1794,7 @@ textarea {
     border: 1px solid #2980b9;
 }
 
-.badge {
+.badge{
     font-weight: 500;
 }
 
@@ -2018,7 +2167,7 @@ pre {
     color: #2980b9;
     font-size: .7rem;
     line-height: 1;
-    padding: 4px 12px;
+    padding: 4px 14px;
     border-radius: 20px;
     cursor: pointer;
 }

@@ -10,7 +10,7 @@
     <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="text-muted m-0">{{ item.title }}</h2>
-      <button type="button" class="cstm-btn share_btn">
+      <button type="button" class="cstm-btn custom-primary-btn share_btn">
       <i class="fa fa-bullhorn me-2"></i>
         Share
       </button>
@@ -32,7 +32,7 @@
         {% else %}
           <div>
             <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
-              <small class="custom_badge_success fw-semibold">{{ item.author }}</small>
+              <small class="custom_badge badge_primary">{{ item.author }}</small>
               <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                   <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -50,7 +50,7 @@
         </div>
       {% endif %}
     </div>
-    <div class="d-inline-flex gap-2 align-items-center small VLB">
+    <div class="d-inline-flex gap-2 align-items-center small">
       <span id="viewsCount">{{ item.views_count|human }}</span>
       <i class="fa fa-eye" style="color:#0984e3;"></i>
     </div>
@@ -100,7 +100,7 @@
       </div>
     </div>
     <!-- ===== Теги ===== -->
-    <div class="mb-4 tags_block d-flex align-items-center">
+    <div class="mb-4 tags_block d-flex align-items-center justify-content-between">
       <!-- левая часть: теги — растёт и переносит элементы -->
       <div class="flex-grow-1 tag-list">
         {% if item.tags.all %}
@@ -111,18 +111,49 @@
             {% endfor %}
           </div>
         {% else %}
-          <div class="d-inline-flex danger_ fw-semibold text-decoration-underline">
+          <div class="d-inline-flex danger_ text-decoration-underline">
             <small>Without tags</small>
           </div>
         {% endif %}
       </div>
+
+      <!-- правая часть: liked users -->
+      <div class="liked-users-block text-end">
+        <button id="likedUsersBtn"
+                type="button"
+                class="liked-users-link text-decoration-none mb-2{% if item.likes_count|add:0 < 1 %} is-hidden{% endif %}"
+                {% if item.likes_count|add:0 < 1 %}disabled{% endif %}>
+          Liked users
+        </button>
+        <div class="liked-users-stack">
+          {% for like in liked_users|slice:":4" %}
+            {% if like.user %}
+              <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
+                {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                {% else %}
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" />
+                {% endif %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
     </div>
+
+    {% if user.is_authenticated %}
+      <div id="likedUsersCurrent"
+           data-username="{{ user.username }}"
+           data-profile-url="{% url 'login_app:profile' user.username %}"
+           data-avatar="{% if user.profile.avatar_url or user.profile.avatar_file %}{{ user.profile.get_avatar }}{% else %}{% static 'img/no_avatar.svg' %}{% endif %}"
+           class="hidden"></div>
+    {% endif %}
 
     <!-- ===== Форма комментариев ===== -->
     {% include 'includes/comment_form.html' %}
     <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h5 class="py-4 m-0 success_ text-decoration-underline">Comments</h5>
+        <h5 class="py-4 m-0 primary_ text-decoration-underline">Comments</h5>
       {% else %}
         <h5 class="py-4 m-0 text-muted">There are not comments yet.</h5>
       {% endif %}
@@ -147,4 +178,38 @@
   {% include 'includes/comment_modal.html' %}
   {% include 'includes/item_modal.html' %}
   {% include 'includes/share_modal.html' %}
+
+  <div id="likedUsersOverlay" class="liked-users-overlay hidden" aria-hidden="true">
+    <div class="liked-users-backdrop"></div>
+    <div class="liked-users-panel">
+      <div class="liked-users-header d-flex align-items-center justify-content-between">
+        <h5 class="m-0 text-muted">Liked users</h5>
+        <button id="likedUsersClose" type="button" class="liked-users-close" aria-label="Close liked users">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="liked-users-list">
+        {% for like in liked_users %}
+          {% if like.user %}
+            <a href="{% url 'login_app:profile' like.user.username %}" class="liked-users-item d-flex align-items-center gap-2 text-decoration-none" data-like-user="{{ like.user.username }}">
+              <div class="liked-user-avatar little-avatar">
+                {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                {% else %}
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" />
+                {% endif %}
+              </div>
+              <span class="custom_badge badge_primary">{{ like.user.username }}</span>
+            </a>
+          {% endif %}
+        {% empty %}
+          <div class="text-muted small">No likes yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'smart_blog/js/liked_users_overlay.js' %}"></script>
 {% endblock %}

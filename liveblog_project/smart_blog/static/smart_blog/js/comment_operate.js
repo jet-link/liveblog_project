@@ -83,7 +83,7 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="py-4 m-0 success_ text-decoration-underline">Comments</h5>`
+      ? `<h5 class="py-4 m-0 primary_ text-decoration-underline">Comments</h5>`
       : `<h5 class="py-4 m-0 text-muted">There are not comments yet.</h5>`;
   }
 

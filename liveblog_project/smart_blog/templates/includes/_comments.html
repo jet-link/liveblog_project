@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-2 align-items-center">
         <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
-          <span class="custom_badge_success fw-semibold">{{ comment.author }}</span>
+          <span class="custom_badge badge_primary">{{ comment.author }}</span>
           <div class="little-avatar">
             {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
               <img src="{{ comment.author.profile.get_avatar }}" alt="{{ comment.author }}" class="user-avatar clickable-avatar" data-full="{{ comment.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -71,11 +71,11 @@
               <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
               <div class="comment-actions">
                 <i class="fa fa-angle-right mx-1 success_"></i>
-                <button type="button" class="comment-menu-action custom_badge_success fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
                 {% comment %} <span>→</span> {% endcomment %}
-                <button type="button" class="comment-menu-action custom_badge_success fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+                <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                 {% comment %} <span>→</span> {% endcomment %}
-                <button type="button" class="comment-menu-action custom_badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+                <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
               </div>
             </div>
           {% endif %}

@@ -14,7 +14,7 @@
 
       <hr />
       <div class="d-flex justify-content-between align-items-center pb-3">
-        <span class="custom_badge_success">
+        <span class="custom_badge badge_primary">
           {% with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
             {{ start }}–{{ end }} of {{ total }}
           {% endwith %}
