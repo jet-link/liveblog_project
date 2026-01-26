@@ -983,16 +983,10 @@ textarea {
 }
 
 .liked-users-close{
-   width: 30px;
-   height: 30px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   font-size: .8rem;
-   background-color: #8e8f90;
-   border-radius: 50%;
-   color: #ffffff;
-   border: none;
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
 }
 
 .primary_ {
@@ -1237,7 +1231,7 @@ textarea {
 
 .liked-users-block {
     min-width: 220px;
-    min-height: 56px;
+    min-height: 65px;
 }
 
 .liked-users-link {
