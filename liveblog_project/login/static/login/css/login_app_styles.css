@@ -296,7 +296,7 @@
 
 .little-avatar {
     width: 100%;
-    max-width: 35px;
+    max-width: 30px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
@@ -312,8 +312,8 @@
 }
 
 .thumb-sm {
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     border-radius: 50%;
     display: block;

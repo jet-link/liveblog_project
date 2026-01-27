@@ -10,10 +10,12 @@
     <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="text-muted m-0">{{ item.title }}</h2>
-      <button type="button" class="cstm-btn custom-primary-btn share_btn">
-      <i class="fa fa-bullhorn me-2"></i>
-        Share
-      </button>
+      <div class="d-flex gap-1 align-items-center">
+        <button type="button" class="item_share_btn"><i class="fa fa-share-alt"></i></button>
+        {% if user != item.author %}
+          <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
+        {% endif %}
+      </div>
     </div>
     <hr />
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -86,7 +88,13 @@
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="edit_btn manipulate" href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" aria-label="Edit item" data-bs-title="Edit item" aria-label="Edit item"><i class="fa fa-pencil text-center"></i></a>
+            <a class="edit_btn manipulate"
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}"
+              aria-label="Edit item"
+              data-bs-title="Edit item"
+              aria-label="Edit item">
+              <i class="fa fa-pencil text-center"></i>
+            </a>
 
             <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}" aria-label="Delete item" data-bs-title="Delete item" aria-label="Delete item"><i class="fa fa-trash"></i></button>
           {% elif user == item.author and not is_editable %}
@@ -104,7 +112,7 @@
       <!-- левая часть: теги — растёт и переносит элементы -->
       <div class="flex-grow-1 tag-list">
         {% if item.tags.all %}
-          <small class="text-muted">Tags</small>
+          <small class="text-muted fw-semibold">Tags</small>
           <div class="d-flex flex-wrap gap-1 mt-2">
             {% for tag in item.tags.all %}
               <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>
@@ -119,14 +127,13 @@
 
       <!-- правая часть: liked users -->
       <div class="liked-users-block text-end">
-        <button id="likedUsersBtn"
-                type="button"
-                class="liked-users-link text-decoration-none mb-2{% if item.likes_count|add:0 < 1 %} is-hidden{% endif %}"
-                {% if item.likes_count|add:0 < 1 %}disabled{% endif %}>
-          Liked users
-        </button>
-        <div class="liked-users-stack">
-          {% for like in liked_users|slice:":4" %}
+        {% if item.likes_count|add:0 < 1 %}
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none is-hidden fw-semibold" disabled>Liked users</button>
+        {% else %}
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none fw-semibold">Liked users</button>
+        {% endif %}
+        <div class="liked-users-stack mt-2">
+          {% for like in liked_users|slice:':5' %}
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
                 {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
@@ -143,10 +150,14 @@
 
     {% if user.is_authenticated %}
       <div id="likedUsersCurrent"
-           data-username="{{ user.username }}"
-           data-profile-url="{% url 'login_app:profile' user.username %}"
-           data-avatar="{% if user.profile.avatar_url or user.profile.avatar_file %}{{ user.profile.get_avatar }}{% else %}{% static 'img/no_avatar.svg' %}{% endif %}"
-           class="hidden"></div>
+        data-username="{{ user.username }}"
+        data-profile-url="{% url 'login_app:profile' user.username %}"
+        data-avatar="{% if user.profile.avatar_url or user.profile.avatar_file %}
+          {{ user.profile.get_avatar }}
+        {% else %}
+          {% static 'img/no_avatar.svg' %}
+        {% endif %}"
+        class="hidden"></div>
     {% endif %}
 
     <!-- ===== Форма комментариев ===== -->
@@ -178,15 +189,14 @@
   {% include 'includes/comment_modal.html' %}
   {% include 'includes/item_modal.html' %}
   {% include 'includes/share_modal.html' %}
+  {% include 'includes/report_modal.html' %}
 
   <div id="likedUsersOverlay" class="liked-users-overlay hidden" aria-hidden="true">
     <div class="liked-users-backdrop"></div>
     <div class="liked-users-panel">
       <div class="liked-users-header d-flex align-items-center justify-content-between">
         <h5 class="m-0 text-muted">Liked users</h5>
-        <button id="likedUsersClose" type="button" class="liked-users-close" aria-label="Close liked users">
-          ×
-        </button>
+        <button id="likedUsersClose" type="button" class="liked-users-close text-muted" aria-label="Close liked users">×</button>
       </div>
       <div class="liked-users-list">
         {% for like in liked_users %}
@@ -202,8 +212,6 @@
               <span class="custom_badge badge_primary">{{ like.user.username }}</span>
             </a>
           {% endif %}
-        {% empty %}
-          <div class="text-muted small">No likes yet.</div>
         {% endfor %}
       </div>
     </div>
@@ -212,4 +220,5 @@
 
 {% block extra_js %}
   <script src="{% static 'smart_blog/js/liked_users_overlay.js' %}"></script>
+  <script src="{% static 'smart_blog/js/report_modal.js' %}"></script>
 {% endblock %}

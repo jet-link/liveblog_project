@@ -301,6 +301,44 @@ class Like(models.Model):
         return f"{self.user} likes {self.item}"
     
     
+class ContentReport(models.Model):
+    REASON_SPAM = "spam"
+    REASON_ABUSE = "abuse"
+    REASON_HARASSMENT = "harassment"
+    REASON_COPYRIGHT = "copyright"
+    REASON_OTHER = "other"
+
+    REASON_CHOICES = [
+        (REASON_SPAM, "Spam"),
+        (REASON_ABUSE, "Abuse"),
+        (REASON_HARASSMENT, "Harassment"),
+        (REASON_COPYRIGHT, "Copyright"),
+        (REASON_OTHER, "Other"),
+    ]
+
+    STATUS_OPEN = "open"
+    STATUS_RESOLVED = "resolved"
+
+    STATUS_CHOICES = [
+        (STATUS_OPEN, "Open"),
+        (STATUS_RESOLVED, "Resolved"),
+    ]
+
+    reporter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reports")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES)
+    details = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        target = self.item or self.comment
+        return f"Report({self.reason}) for {target}"
+
 
 
 # просмотр публикации

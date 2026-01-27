@@ -18,7 +18,7 @@ Tag - "{{ tag.tag_name }}"
       <div class="d-flex gap-2 text-muted text-small align-items-center">
         <span>Total</span>
         <span>found</span>
-        <span class="custom_badge_success fw-bolder">{{ tag.items.count }}</span>
+        <span class="custom_badge badge_primary fw-bolder">{{ tag.items.count }}</span>
         {% if tag.items.count != 1 %}
           <span>items</span>
         {% else %}

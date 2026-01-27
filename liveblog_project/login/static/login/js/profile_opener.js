@@ -33,4 +33,9 @@
             menu.classList.remove('open');
         }
     });
+
+    // закрытие при скролле
+    window.addEventListener('scroll', () => {
+        menu.classList.remove('open');
+    }, { passive: true });
 })();

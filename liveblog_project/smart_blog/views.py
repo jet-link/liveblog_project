@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike
+from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport
 from .forms import CommentForm, ItemCreateForm
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+import json
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -559,6 +560,49 @@ def delete_item(request, slug):
         return redirect(redirect_to)
 
     return redirect("smart_blog:items_list")
+
+
+@require_POST
+def submit_report(request):
+    try:
+        payload = request.POST
+        if request.headers.get("Content-Type", "").startswith("application/json"):
+            payload = json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
+        payload = request.POST
+
+    target_type = (payload.get("target_type") or "").strip()
+    target_id = payload.get("target_id")
+    reason = (payload.get("reason") or "").strip()
+    details = (payload.get("details") or "").strip()
+
+    if reason not in dict(ContentReport.REASON_CHOICES):
+        return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
+
+    try:
+        target_id = int(target_id)
+    except (TypeError, ValueError):
+        return JsonResponse({"success": False, "error": "Invalid target."}, status=400)
+
+    item = None
+    comment = None
+    if target_type == "item":
+        item = get_object_or_404(Item, pk=target_id)
+    elif target_type == "comment":
+        comment = get_object_or_404(Comment, pk=target_id)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid target type."}, status=400)
+
+    reporter = request.user if request.user.is_authenticated else None
+    ContentReport.objects.create(
+        reporter=reporter,
+        item=item,
+        comment=comment,
+        reason=reason,
+        details=details,
+    )
+
+    return JsonResponse({"success": True})
 
 
 @login_required

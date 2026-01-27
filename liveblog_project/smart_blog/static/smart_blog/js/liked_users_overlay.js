@@ -38,32 +38,13 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeOverlay();
   });
-
-  function upsertAvatar(username, avatarUrl, profileUrl) {
-    if (!stack) return;
-    const existing = stack.querySelector(`.liked-user-avatar[title="${username}"]`);
-    if (existing) return;
-    const link = document.createElement('a');
-    link.href = profileUrl || '#';
-    link.className = 'liked-user-avatar little-avatar';
-    link.title = username;
-    const img = document.createElement('img');
-    img.src = avatarUrl;
-    img.alt = username;
-    img.className = 'user-avatar';
-    img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
-    link.appendChild(img);
-    stack.prepend(link);
-    while (stack.children.length > 4) {
-      stack.removeChild(stack.lastElementChild);
-    }
-  }
-
-  function removeAvatar(username) {
-    if (!stack) return;
-    const existing = stack.querySelector(`.liked-user-avatar[title="${username}"]`);
-    if (existing) existing.remove();
-  }
+  list?.addEventListener('click', (e) => {
+    const link = e.target.closest?.('a');
+    if (!link) return;
+    closeOverlay();
+  });
+  window.addEventListener('pagehide', closeOverlay);
+  window.addEventListener('pageshow', closeOverlay);
 
   function upsertListItem(username, avatarUrl, profileUrl) {
     if (!list) return;
@@ -95,6 +76,28 @@
     if (existing) existing.remove();
   }
 
+  function syncStackFromList() {
+    if (!stack || !list) return;
+    const items = Array.from(list.querySelectorAll('[data-like-user]')).slice(0, 5);
+    stack.innerHTML = '';
+    items.forEach((row) => {
+      const username = row.dataset.likeUser;
+      const href = row.getAttribute('href') || '#';
+      const sourceImg = row.querySelector('img');
+      const link = document.createElement('a');
+      link.href = href;
+      link.className = 'liked-user-avatar little-avatar';
+      link.title = username;
+      const img = document.createElement('img');
+      img.src = sourceImg?.getAttribute('src') || '/static/img/no_avatar.svg';
+      img.alt = username;
+      img.className = sourceImg?.className || 'user-avatar';
+      img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
+      link.appendChild(img);
+      stack.appendChild(link);
+    });
+  }
+
   function updateButtonVisibility(likesCount) {
     if (!btn) return;
     if (likesCount >= 1) {
@@ -114,11 +117,11 @@
     if (!username) return;
 
     if (data.liked) {
-      upsertAvatar(username, avatar, profileUrl);
       upsertListItem(username, avatar, profileUrl);
+      syncStackFromList();
     } else {
-      removeAvatar(username);
       removeListItem(username);
+      syncStackFromList();
     }
     if (typeof data.likes_count === 'number') {
       updateButtonVisibility(data.likes_count);

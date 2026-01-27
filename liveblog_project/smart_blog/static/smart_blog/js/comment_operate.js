@@ -748,6 +748,7 @@
     const textarea = document.createElement('textarea');
     textarea.name = 'text';
     textarea.className = 'form-control';
+    textarea.id = `comment-edit-text-${commentId}`;
     textarea.rows = 1;
     textarea.required = true;
     textarea.placeholder = 'Edited text';
@@ -759,6 +760,7 @@
 
     const label = document.createElement('label');
     label.textContent = 'Edited text';
+    label.htmlFor = textarea.id;
 
     wrap.appendChild(textarea);
     wrap.appendChild(label);
@@ -1561,6 +1563,19 @@
     void text.offsetWidth; // 🔥 принудительный reflow
     text.classList.add('root-mention-highlight');
   }
+
+  function highlightFromHash() {
+    const hash = window.location.hash || '';
+    if (!hash.startsWith('#comment-anchor-')) return;
+    const id = hash.replace('#comment-anchor-', '').trim();
+    if (!id) return;
+    const comment = document.getElementById(`comment-${id}`);
+    if (!comment) return;
+    setTimeout(() => highlightComment(comment), 120);
+  }
+
+  window.addEventListener('hashchange', highlightFromHash);
+  document.addEventListener('DOMContentLoaded', highlightFromHash);
 })();
 
 

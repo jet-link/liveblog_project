@@ -11,7 +11,7 @@ Found - "{{ query }}"
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h6 class="text-muted m-0">
           Search results{% if query %}
-            for - <span class="success_">{{ query }}...</span>
+            for - <span class="primary_">{{ query }}...</span>
           {% endif %}
         </h6>
 
@@ -21,7 +21,7 @@ Found - "{{ query }}"
       <div class="d-flex gap-2 mt-3 text-muted text-small align-items-center">
         <span>Total</span>
         <span>found</span>
-        <span class="custom_badge_success fw-bolder">{{ items.count }}</span>
+        <span class="custom_badge badge_primary fw-bolder">{{ items.count }}</span>
         {% if items.count != 1 %}
           <span>items</span>
         {% else %}

@@ -19,6 +19,7 @@ urlpatterns = [
     path('comment/<int:pk>/thread/', views.comment_thread, name='comment_thread'),
     path("item/<slug:slug>/like/", views.toggle_like, name="toggle_like"),
     path('item/<slug:slug>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
+    path("report/", views.submit_report, name="submit_report"),
     
     # browser back button action
     path("api/item/<int:item_id>/counters/", views.item_counters, name="item_counters")

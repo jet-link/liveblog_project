@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const feedback = document.getElementById('shareCopyFeedback');
 
     // Open source: if you want clicking .share_link to open modal (works with bootstrap attr too)
-    document.querySelectorAll('.share_btn').forEach(el => {
+    document.querySelectorAll('.item_share_btn').forEach(el => {
         el.addEventListener('click', function (e) {
             e.preventDefault();
             // Use Bootstrap 5 modal JS API to show
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Manage focus return to trigger (accessibility)
     let lastTrigger = null;
 
-    document.querySelectorAll('.share_btn').forEach(el => {
+    document.querySelectorAll('.item_share_btn').forEach(el => {
         el.addEventListener('click', () => {
             lastTrigger = el;
         });

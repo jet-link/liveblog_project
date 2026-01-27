@@ -1,0 +1,25 @@
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true" data-report-url="{% url 'smart_blog:submit_report' %}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex flex-wrap gap-2 mb-3" id="reportReasonList">
+          <button type="button" class="report-reason-btn" data-reason="spam">Spam</button>
+          <button type="button" class="report-reason-btn" data-reason="abuse">Abuse</button>
+          <button type="button" class="report-reason-btn" data-reason="harassment">Harassment</button>
+          <button type="button" class="report-reason-btn" data-reason="copyright">Copyright</button>
+          <button type="button" class="report-reason-btn" data-reason="other">Other</button>
+        </div>
+        <textarea id="reportDetails" class="form-control" rows="3" placeholder="Optional details"></textarea>
+        <div id="reportFeedback" class="text-muted small mt-2"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="cstm-btn custom-secondary-btn" data-bs-dismiss="modal">Cancel</button>
+        <button id="reportSubmitBtn" type="button" class="cstm-btn custom-primary-btn">Send</button>
+      </div>
+    </div>
+  </div>
+</div>

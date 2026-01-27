@@ -169,11 +169,7 @@ textarea {
 /* Slightly change inner wrapper to sit nicely in container */
 .header-search-inner {
     width: 100%;
-    /* align with your content width */
-    padding: 20px;
-    /* we will add spacing by wrapper in page if needed */
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 10px;
+    padding: 20px 0;
 }
 
 .back_btn {
@@ -357,16 +353,12 @@ textarea {
 /* Center panel */
 .overlay-panel {
     position: relative;
-    /* ❗ НЕ absolute */
     margin-top: 15vh;
-    /* вместо top */
-
     width: min(980px, calc(100% - 48px));
     max-height: 82vh;
     overflow: auto;
-
     background: #fff;
-    border-radius: 10px;
+    border-radius: 20px;
     padding: 22px;
 }
 
@@ -915,12 +907,33 @@ textarea {
     border-radius: 7px;
 }
 
-.share_btn{
-    border: none;
-    background-color: #27ae60;
-    color: #ffffff
+.item_share_btn{
+    border: 2px solid #2980b9;
+    background-color: transparent;
+    color: #2980b9;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .785rem;
+    border-radius: 50%;
 }
 
+.item_report_btn{
+    border: 2px solid #e74c3c;
+    background-color: transparent;
+    color: #e74c3c;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .785rem;
+    border-radius: 50%;
+}
 
 .cstm-btn{
     padding: 13px 15px;
@@ -943,7 +956,7 @@ textarea {
     font-size: .790rem;
     font-weight: 500;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1765,11 +1778,12 @@ textarea {
 .custom_badge,
 .custom_badge,
 .replied-badge {
-    padding: 3px 15px;
+    padding: 3px 13px;
     border-radius: 20px;
     text-decoration: none;
     font-size: .7rem;
     border: 1px solid transparent;
+    font-weight: 500;
 }
 
 .badge_danger {
@@ -2154,20 +2168,23 @@ pre {
     z-index: 5;
 }
 
-.comment-menu-btn {
-    display: inline;
+.comment-menu-btn,
+.comment-menu-action {
+    display: inline-flex;
+    align-items: center;
     border: 1px solid #2980b9;
     background: transparent;
     color: #2980b9;
     font-size: .7rem;
     line-height: 1;
-    padding: 4px 14px;
+    padding: 5px 14px;
     border-radius: 20px;
     cursor: pointer;
 }
 
-.comment-menu-btn:hover {
-    color: #2471a3;
+.comment-menu-action.badge_danger {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
 }
 
 .comment-menu-btn:focus-visible {
@@ -2196,6 +2213,22 @@ pre {
     z-index: 10;
 }
 
+.report-reason-btn {
+    border: 1px solid #dfe4ea;
+    background: #fff;
+    color: #4b5a68;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.report-reason-btn.is-selected {
+    border-color: #2980b9;
+    color: #ffffff;
+    background: #2980b9;
+}
+
 .comment-share-overlay {
     position: fixed;
     inset: 0;
@@ -2218,3 +2251,13 @@ pre {
     color: #ffffff;
     font-weight: 600;
 }
+
+#reportDetails{
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+.modal-dialog{
+    max-width: 600px;
+}
+

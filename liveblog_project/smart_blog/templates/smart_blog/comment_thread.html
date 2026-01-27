@@ -16,4 +16,9 @@
     <div id="threadEmpty" class="text-muted{% if comment.replies.all %} d-none{% endif %}">There are no replies yet!</div>
   </div>
   {% include 'includes/comment_modal.html' %}
+  {% include 'includes/report_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'smart_blog/js/report_modal.js' %}"></script>
 {% endblock %}
