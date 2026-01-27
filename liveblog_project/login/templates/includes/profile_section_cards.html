@@ -4,7 +4,7 @@
       {% include 'includes/all_cards.html' with items=items listing_source='profile' listing_user=user_obj.username listing_section=section_id %}
     </div>
   {% else %}
-    <div class="text-muted small mb-2">There are no items yet!</div>
+    <div class="text-muted small fw-bolder">There are no items yet!</div>
   {% endif %}
 
   {% if items and count|add:0 > 2 %}

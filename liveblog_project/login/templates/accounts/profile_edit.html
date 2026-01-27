@@ -12,7 +12,7 @@
             <button id="showPasswordBtn" type="button" class="btn btn-link text-decoration-none btn-sm text-muted">Change password</button>
           </div>
 
-          <form id="profileForm" method="post" enctype="multipart/form-data">
+          <form id="profileForm" method="post" enctype="multipart/form-data" novalidate data-validate="true">
             {% csrf_token %}
             {% if form.non_field_errors %}
               <div class="alert alert-danger py-2">

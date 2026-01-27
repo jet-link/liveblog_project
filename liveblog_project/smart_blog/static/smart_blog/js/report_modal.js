@@ -47,7 +47,7 @@
 
   submitBtn?.addEventListener('click', async () => {
     if (!selectedReason) {
-      setFeedback('Please выбрать причину.', true);
+      setFeedback('Please select a reason.', true);
       return;
     }
     if (!reportUrl || !targetType || !targetId) {
@@ -79,7 +79,7 @@
         setFeedback(data?.error || 'Report failed.', true);
         return;
       }
-      setFeedback('Report sent.');
+      setFeedback('Report sent! Thank you.');
       setTimeout(() => {
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.hide();

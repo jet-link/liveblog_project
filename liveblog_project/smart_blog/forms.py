@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import Item, Tag, Comment
 from .widgets import MultiFileInput
+from .utils import normalize_comment_text
 
 # try import CSSSanitizer (bleach >= 6)
 try:
@@ -221,6 +222,15 @@ class CommentForm(forms.ModelForm):
             }
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["text"].error_messages = {"required": _("Please write a comment *")}
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["text"].error_messages = {"required": _("Please write a comment *")}
+
+    def clean_text(self):
+        text = self.cleaned_data.get("text", "")
+        text = normalize_comment_text(text)
+
+        if not text or len(text.strip()) < 2:
+            raise forms.ValidationError("Comment cannot be empty.")
+
+        return text

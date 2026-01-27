@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Report</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="d-flex flex-wrap gap-2 mb-3" id="reportReasonList">
@@ -17,8 +17,8 @@
         <div id="reportFeedback" class="text-muted small mt-2"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="cstm-btn custom-secondary-btn" data-bs-dismiss="modal">Cancel</button>
-        <button id="reportSubmitBtn" type="button" class="cstm-btn custom-primary-btn">Send</button>
+        {% comment %} <button type="button" class="cstm-btn custom-secondary-btn" data-bs-dismiss="modal">Cancel</button> {% endcomment %}
+        <button id="reportSubmitBtn" type="button" class="cstm-btn custom-danger-btn">Report</button>
       </div>
     </div>
   </div>

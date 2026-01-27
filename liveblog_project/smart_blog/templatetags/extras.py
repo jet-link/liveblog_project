@@ -2,6 +2,7 @@ from django import template
 from django.utils.html import strip_tags
 from django.utils.text import Truncator
 
+
 register = template.Library()
 @register.filter(name='excerpt_plain')
 def excerpt_plain(value, num=500):
@@ -13,3 +14,4 @@ def excerpt_plain(value, num=500):
     text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
     # аккуратно обрезаем
     return Truncator(text).chars(int(num), truncate=' …')
+

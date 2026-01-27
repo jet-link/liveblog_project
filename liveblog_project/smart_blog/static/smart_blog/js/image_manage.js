@@ -142,7 +142,7 @@
         function updateInfo() {
             const count = (mainInput.files && mainInput.files.length) || 0;
             const cntObj = countThumbnails();
-            setInfo(`Selected ${count} / ${MAX} files (JPEG/PNG/WebP/JPG/SVG).`, (cntObj.total > MAX));
+            setInfo(`Selected ${count} / ${MAX} files (JPEG/PNG/WebP/JPG).`, (cntObj.total > MAX));
         }
 
         function mergeFilesToMainInput(newFiles) {
