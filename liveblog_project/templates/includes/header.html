@@ -54,8 +54,10 @@
               <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Logout</a>
             </div>
           </div>
-        <a href="#" class="text-muted text-decoration-none fs-5 notification-btn">
-          <span class="notifications-count custom_badge badge_danger">10+</span>
+        <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn">
+          {% if notifications_count_label %}
+            <span class="notifications-count">{{ notifications_count_label }}</span>
+          {% endif %}
           <i class="fa fa-bell-o" aria-hidden="true"></i>
         </a>
         {% else %}

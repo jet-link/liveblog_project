@@ -1,0 +1,15 @@
+from .models import Notification
+
+
+def notifications_context(request):
+    if not request.user.is_authenticated:
+        return {"notifications_count": 0, "notifications_count_label": ""}
+
+    count = Notification.objects.filter(recipient=request.user, is_read=False).count()
+    label = ""
+    if count > 0:
+        label = "10+" if count >= 10 else str(count)
+    return {
+        "notifications_count": count,
+        "notifications_count_label": label,
+    }

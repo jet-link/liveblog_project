@@ -1,4 +1,4 @@
-<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true" data-report-url="{% url 'smart_blog:submit_report' %}">
+<div class="modal fade report-modal" id="reportModal" tabindex="-1" aria-hidden="true" data-report-url="{% url 'smart_blog:submit_report' %}">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -13,7 +13,7 @@
           <button type="button" class="report-reason-btn" data-reason="copyright">Copyright</button>
           <button type="button" class="report-reason-btn" data-reason="other">Other</button>
         </div>
-        <textarea id="reportDetails" class="form-control" rows="3" placeholder="Optional details"></textarea>
+        <textarea id="reportDetails" class="form-control report-details" rows="4" placeholder="Optional details"></textarea>
         <div id="reportFeedback" class="text-muted small mt-2"></div>
       </div>
       <div class="modal-footer">

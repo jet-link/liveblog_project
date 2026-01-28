@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport
+from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification
 from .forms import CommentForm, ItemCreateForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -15,7 +15,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q
 from django.db.models import Prefetch
-from .utils import count_convert, build_breadcrumbs, breadcrumb
+from .utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 import logging
 import os
 from django.conf import settings
@@ -349,6 +349,11 @@ def item_detail(request, slug):
             breadcrumb(f"Tag - {source_tag}", tag_url or reverse("smart_blog:items_list")),
             breadcrumb(item.title, None),
         )
+    elif source == "home":
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("BrainStorm", safe_source_url or "/"),
+            breadcrumb(item.title, None),
+        )
     else:
         breadcrumbs = build_breadcrumbs(
             breadcrumb("BraiNews", reverse("smart_blog:items_list")),
@@ -574,9 +579,22 @@ def submit_report(request):
     target_type = (payload.get("target_type") or "").strip()
     target_id = payload.get("target_id")
     reason = (payload.get("reason") or "").strip()
+    reasons = payload.get("reasons") or []
     details = (payload.get("details") or "").strip()
 
-    if reason not in dict(ContentReport.REASON_CHOICES):
+    valid_reasons = set(dict(ContentReport.REASON_CHOICES))
+    if isinstance(reasons, str):
+        reasons = [reasons]
+    if reasons:
+        reasons = [r for r in reasons if r in valid_reasons]
+        if not reasons:
+            return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
+        reason = reasons[0]
+    elif reason:
+        if reason not in valid_reasons:
+            return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
+        reasons = [reason]
+    else:
         return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
 
     try:
@@ -590,6 +608,7 @@ def submit_report(request):
         item = get_object_or_404(Item, pk=target_id)
     elif target_type == "comment":
         comment = get_object_or_404(Comment, pk=target_id)
+        item = comment.item
     else:
         return JsonResponse({"success": False, "error": "Invalid target type."}, status=400)
 
@@ -599,9 +618,62 @@ def submit_report(request):
         item=item,
         comment=comment,
         reason=reason,
+        reasons=reasons,
         details=details,
     )
 
+    return JsonResponse({"success": True})
+
+
+@login_required
+def notifications_view(request):
+    notifications = (
+        Notification.objects
+        .filter(recipient=request.user)
+        .select_related("item", "reply_comment", "parent_comment", "reply_comment__author")
+        .order_by("-created_at")
+    )
+    for notif in notifications:
+        notif.preview_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+    unread_count = notifications.filter(is_read=False).count()
+    return render(request, "smart_blog/notifications.html", {
+        "notifications": notifications,
+        "unread_count": unread_count,
+    })
+
+
+@login_required
+@require_POST
+def mark_notification_read(request):
+    notif_id = request.POST.get("notification_id")
+    try:
+        notif_id = int(notif_id)
+    except (TypeError, ValueError):
+        return JsonResponse({"success": False, "error": "Invalid id."}, status=400)
+
+    notif = get_object_or_404(Notification, pk=notif_id, recipient=request.user)
+    notif.is_read = True
+    notif.save(update_fields=["is_read"])
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def delete_notifications(request):
+    mode = request.POST.get("mode")
+    qs = Notification.objects.filter(recipient=request.user)
+    if mode == "last5":
+        ids = list(qs.values_list("id", flat=True)[:5])
+        Notification.objects.filter(id__in=ids).delete()
+    else:
+        qs.delete()
     return JsonResponse({"success": True})
 
 
@@ -632,7 +704,7 @@ def add_comment(request, slug):
             {"success": False, "errors": form.errors},
             status=400
         )
-    text = request.POST.get('text', '').strip()
+    text = form.cleaned_data.get('text', '')
     
     # --- parent (reply) ---
     parent = None
@@ -643,13 +715,20 @@ def add_comment(request, slug):
         ).first()
 
     comment = form.save(commit=False)
-    comment.text = text          
+    comment.text = text
     comment.author = request.user
     comment.item = item
     comment.parent = parent
     comment.save()
     if not parent_id:
         request.session[cooldown_key] = now_ts
+    if parent and parent.author and parent.author != request.user:
+        Notification.objects.create(
+            recipient=parent.author,
+            item=item,
+            parent_comment=parent,
+            reply_comment=comment,
+        )
     comment = Comment.objects.annotate(
         replies_count=Count('replies')
     ).get(pk=comment.pk)

@@ -3,6 +3,7 @@ from django import template
 from django.contrib.auth import get_user_model
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from smart_blog.utils import normalize_comment_text
 
 register = template.Library()
 User = get_user_model()
@@ -27,6 +28,7 @@ def render_mentions(text, parent_comment_id=None):
         except User.DoesNotExist:
             return '<span class="mention-deleted">@deleted-user</span>'
 
+    text = normalize_comment_text(text)
     text = escape(text)
     text = MENTION_RE.sub(repl, text)
     text = text.replace('\r\n', '\n').replace('\r', '\n').replace('\n', '<br>')

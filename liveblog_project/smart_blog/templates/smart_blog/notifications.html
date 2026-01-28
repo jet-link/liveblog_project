@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Notifications
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-muted m-0">Notifications</h4>
+      {% if notifications %}
+        <div id="notificationsActions" class="d-flex align-items-center gap-2">
+          {% if unread_count == 0 %}
+            <span id="notificationsReadAllDone" class="notifications-done hidden" aria-label="All read" title="All has been read"><i class="fa fa-check"></i></span>
+          {% else %}
+            <button id="notificationsReadAll" type="button" class="cstm-btn custom-primary-btn cstm-btn-sm">Read all</button>
+          {% endif %}
+          <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm">Delete</button>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if notifications %}
+      <div class="notifications-list">
+        {% for n in notifications %}
+          <div class="notification-row{% if n.is_read %} is-read{% endif %}" data-notification-id="{{ n.id }}" data-is-read="{{ n.is_read|yesno:'1,0' }}">
+            <!-- 🔝 TOP: заголовок -->
+            <div class="notification-header">
+              <div class="text-muted small">
+                Replied to your comment from - 
+                <a href="{{ n.get_absolute_url }}" class="text-decoration-none primary_ fw-semibold">{{ n.item.title }}</a>
+              </div>
+            </div>
+
+            <!-- ───────── line ───────── -->
+            <div class="notification-divider"></div>
+
+            <!-- 🔽 BOTTOM: тело + действия -->
+            <div class="notification-content d-flex align-items-center gap-3">
+              <!-- body -->
+              <div class="notification-body flex-grow-1">
+                <blockquote class="block-quote">{{ n.preview_text|truncatechars:160 }}</blockquote>
+              </div>
+
+              <!-- actions -->
+              <div class="notification-actions">
+                {% if n.is_read %}
+                  <span class="notifications-done" aria-label="Read"><i class="fa fa-check"></i></span>
+                {% else %}
+                  <button type="button" class="manipulate notification-read-btn"><i class="fa fa-eye"></i></button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% comment %} <a href="#">{{ n.comment.author }}</a> {% endcomment %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-muted">No notifications yet.</div>
+    {% endif %}
+    <div id="notificationsState" class="d-none" data-unread="{{ unread_count }}"></div>
+  </div>
+
+  <div class="modal fade" id="notificationsDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete notifications</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% comment %} <div class="modal-body">Choose what to delete:</div> {% endcomment %}
+        <div class="modal-footer">
+          <button id="notificationsDeleteAll" type="button" class="cstm-btn custom-danger-btn cstm-btn-sm">Delete all</button>
+          <button id="notificationsDeleteLast5" type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm">Delete last 5</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'smart_blog/js/notifications.js' %}"></script>
+{% endblock %}

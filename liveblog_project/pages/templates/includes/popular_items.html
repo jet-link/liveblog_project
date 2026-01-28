@@ -11,7 +11,7 @@
       <div class="d-flex hero-card-body flex-column">
         <h4 class="mb-3">{{ item.title }}</h4>
         <div class="d-flex justify-content-between align-items-center">
-          <a href="{{ item.get_absolute_url }}">Read more →</a>
+          <a href="{{ item.get_absolute_url }}?from=home&amp;source_url=/" >Read more →</a>
           <div class="d-flex gap-2">
             <span id="likes-count-{{ item.pk }}">
               {{ item.likes_count|human }}

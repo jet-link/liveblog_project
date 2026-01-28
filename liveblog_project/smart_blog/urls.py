@@ -20,6 +20,10 @@ urlpatterns = [
     path("item/<slug:slug>/like/", views.toggle_like, name="toggle_like"),
     path('item/<slug:slug>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
     path("report/", views.submit_report, name="submit_report"),
+    path("notifications/", views.notifications_view, name="notifications"),
+    path("notifications/read/", views.mark_notification_read, name="notification_read"),
+    path("notifications/read-all/", views.mark_all_notifications_read, name="notifications_read_all"),
+    path("notifications/delete/", views.delete_notifications, name="notifications_delete"),
     
     # browser back button action
     path("api/item/<int:item_id>/counters/", views.item_counters, name="item_counters")

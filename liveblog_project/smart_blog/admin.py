@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Tag, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport
+from .models import Tag, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 
@@ -29,12 +29,18 @@ admin.site.register(CommentLike)
 admin.site.register(Like)
 admin.site.register(ItemView)
 admin.site.register(Bookmark)
+admin.site.register(Notification)
 @admin.register(ContentReport)
 class ContentReportAdmin(admin.ModelAdmin):
-    list_display = ("reason", "status", "reporter", "item_link", "comment_link", "created_at")
+    list_display = ("reason", "reasons_display", "status", "reporter", "item_link", "comment_link", "created_at")
     list_filter = ("reason", "status", "created_at")
     search_fields = ("details", "reporter__username", "item__title", "comment__text")
     readonly_fields = ("item_link", "comment_link", "created_at")
+    fields = ("reporter", "item", "item_link", "comment", "comment_link", "reason", "reasons", "details", "status", "created_at")
+
+    def reasons_display(self, obj):
+        return ", ".join(obj.reasons or []) or "-"
+    reasons_display.short_description = "Reasons"
 
     def item_link(self, obj):
         if not obj.item:

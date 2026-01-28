@@ -61,8 +61,17 @@ def normalize_comment_text(text: str) -> str:
     # 5. Склеиваем обратно
     text = '\n'.join(lines)
 
-    # 6. 🔥 Схлопываем 2+ пустых строк → 1 пустая строка
-    text = re.sub(r'\n{3,}', '\n', text)
+    # 6. 🔥 Схлопываем любые множественные пустые строки → 1 перевод строки
+    text = re.sub(r'\n\s*\n+', '\n', text)
 
     # 7. Убираем пустые строки в начале и конце
     return text.strip()
+
+
+def strip_mention_tokens(text: str) -> str:
+    if not text:
+        return ""
+    text = normalize_comment_text(text)
+    text = re.sub(r'@\[\s*user\s*:\s*\d+\s*\], ', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text

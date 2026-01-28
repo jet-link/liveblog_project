@@ -12,7 +12,7 @@
 
   let targetType = null;
   let targetId = null;
-  let selectedReason = null;
+  let selectedReasons = [];
 
   function setFeedback(text, isError = false) {
     if (!feedback) return;
@@ -22,7 +22,7 @@
   }
 
   function resetForm() {
-    selectedReason = null;
+    selectedReasons = [];
     details.value = '';
     setFeedback('');
     reasonList?.querySelectorAll('.report-reason-btn')
@@ -40,13 +40,19 @@
   reasonList?.addEventListener('click', (e) => {
     const btn = e.target.closest('.report-reason-btn');
     if (!btn) return;
-    selectedReason = btn.dataset.reason;
-    reasonList.querySelectorAll('.report-reason-btn')
-      .forEach(b => b.classList.toggle('is-selected', b === btn));
+    const reason = btn.dataset.reason;
+    if (!reason) return;
+    if (selectedReasons.includes(reason)) {
+      selectedReasons = selectedReasons.filter(r => r !== reason);
+      btn.classList.remove('is-selected');
+    } else {
+      selectedReasons.push(reason);
+      btn.classList.add('is-selected');
+    }
   });
 
   submitBtn?.addEventListener('click', async () => {
-    if (!selectedReason) {
+    if (!selectedReasons.length) {
       setFeedback('Please select a reason.', true);
       return;
     }
@@ -69,7 +75,7 @@
         body: JSON.stringify({
           target_type: targetType,
           target_id: targetId,
-          reason: selectedReason,
+          reasons: selectedReasons,
           details: details.value || ''
         })
       });

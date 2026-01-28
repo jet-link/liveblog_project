@@ -907,7 +907,7 @@ textarea {
     border-radius: 7px;
 }
 
-.item_share_btn{
+.item_share_btn {
     border: 2px solid #2980b9;
     background-color: transparent;
     color: #2980b9;
@@ -921,7 +921,7 @@ textarea {
     border-radius: 50%;
 }
 
-.item_report_btn{
+.item_report_btn {
     border: 2px solid #e74c3c;
     background-color: transparent;
     color: #e74c3c;
@@ -935,7 +935,7 @@ textarea {
     border-radius: 50%;
 }
 
-.cstm-btn{
+.cstm-btn {
     padding: 10px 15px;
     border-radius: 5px;
     transition: .2s ease-in-out;
@@ -950,7 +950,7 @@ textarea {
     vertical-align: middle;
 }
 
-.cstm-btn-sm{
+.cstm-btn-sm {
     padding: 9px 12px;
     transition: .2s ease-in-out;
     font-size: .790rem;
@@ -964,25 +964,25 @@ textarea {
     vertical-align: middle;
 }
 
-.custom-secondary-btn{
+.custom-secondary-btn {
     color: #ffffff;
     background-color: #8f8f8f;
     border: none;
 }
 
-.custom-success-btn{
+.custom-success-btn {
     color: #ffffff;
     background-color: #27ae60;
     border: none;
 }
 
-.custom-danger-btn{
+.custom-danger-btn {
     color: #ffffff;
     background-color: #e74c3c;
     border: none;
 }
 
-.custom-primary-btn{
+.custom-primary-btn {
     color: #ffffff;
     background-color: #2980b9;
     border: none;
@@ -995,7 +995,7 @@ textarea {
     border: none;
 }
 
-.liked-users-close{
+.liked-users-close {
     background: none;
     border: none;
     font-size: 26px;
@@ -1675,7 +1675,7 @@ textarea {
     border: 1px solid #2980b9;
 }
 
-.badge{
+.badge {
     font-weight: 500;
 }
 
@@ -2086,62 +2086,3 @@ pre {
     z-index: 10;
 }
 
-.report-reason-btn {
-    border: 1px solid #dfe4ea;
-    background: #fff;
-    color: #4b5a68;
-    padding: 6px 12px;
-    border-radius: 18px;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
-.report-reason-btn.is-selected {
-    border-color: #2980b9;
-    color: #ffffff;
-    background: #2980b9;
-}
-
-.comment-share-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--overlay-bg);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
-    z-index: 9999;
-}
-
-.comment-share-overlay.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.comment-share-overlay-text {
-    color: #ffffff;
-    font-weight: 600;
-}
-
-#reportDetails{
-    overflow-y: auto;
-    min-height: 200px;
-}
-
-.modal-dialog{
-    max-width: 600px;
-}
-
-.notification-btn{
-    position: relative;
-}
-
-.notifications-count{
-    position: absolute;
-    top: -2px;
-    left: 7px;
-    font-size: .5rem;
-    padding: 3px;
-}

@@ -9,15 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from smart_blog.models import Item
-# from django.http import HttpResponseForbidden, HttpResponse
 from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
 from django.http import JsonResponse, Http404
 from django.db.models import Count, Q, Max
-from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb
-# from django.template.loader import render_to_string
-# Редактирование пользователя
+from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
+from smart_blog.models import Notification
 from django.core.exceptions import PermissionDenied
 
 # Авторизация пользователя
@@ -368,12 +366,24 @@ def logout_view(request):
     return redirect('login_app:login')
 
 
-# def logout_view(request):
-#     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         logout(request)
-#         return JsonResponse({'success': True})
-#     return JsonResponse({'success': False}, status=400)
+@login_required
+def notifications_view(request, username):
+    if request.user.username != username and not request.user.is_staff:
+        raise PermissionDenied
 
+    notifications = (
+        Notification.objects
+        .filter(recipient=request.user)
+        .select_related("item", "reply_comment", "parent_comment", "reply_comment__author")
+        .order_by("-created_at")
+    )
+    for notif in notifications:
+        notif.preview_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+    unread_count = notifications.filter(is_read=False).count()
+    return render(request, "smart_blog/notifications.html", {
+        "notifications": notifications,
+        "unread_count": unread_count,
+    })
 
 
 

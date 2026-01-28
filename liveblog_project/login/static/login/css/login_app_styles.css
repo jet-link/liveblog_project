@@ -754,3 +754,158 @@
         padding-right: 0;
     }
 }
+
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notification-row {
+    padding: 15px;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.notification-body {
+    color: #4b4b4b;
+    font-size: 0.9rem;
+    width: 100%;
+}
+.notification-read-btn{
+    border: 2px solid #2980b9;
+    color: #2980b9;
+    background: transparent;
+}
+
+.notifications-done {
+    background-color: transparent;
+    border: 2px solid #27ae60;
+    border-radius: 50%;
+    color: #27ae60;
+    font-size: .8rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.report-reason-btn {
+    border: 1px solid #dfe4ea;
+    background: #fff;
+    color: #4b5a68;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.report-reason-btn.is-selected {
+    border-color: #2980b9;
+    color: #ffffff;
+    background: #2980b9;
+}
+
+.report-modal .modal-dialog {
+    max-width: 640px;
+}
+
+.report-details {
+    max-height: 180px;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.comment-share-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--overlay-bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 9999;
+}
+
+.comment-share-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.comment-share-overlay-text {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+#reportDetails {
+    overflow-y: auto;
+    min-height: 200px;
+    resize: none;
+}
+
+.modal-dialog {
+    max-width: 600px;
+}
+
+.notification-btn {
+    position: relative;
+}
+
+.notifications-count {
+    position: absolute;
+    top: -2px;
+    left: 10px;
+    font-size: .5rem;
+    padding: 2px 6px;
+    background-color: #ff6b6b;
+    color: #FFFFFF;
+    border-radius: 20px;
+
+}
+
+.block-quote {
+    margin: .6rem 0;
+    padding: 1rem;
+    border-left: 4px solid #2980b9;
+    background: #f8f9fc;
+    color: #2d3436;
+    font-weight: 500;
+    border-radius: 7px;
+    font-size: .8rem;
+}
+
+.block-quote p:last-child {
+    margin-bottom: 0;
+}
+
+/* верхний блок */
+.notification-header {
+    padding: 10px 0;
+}
+
+/* линия */
+.notification-divider {
+    height: 1px;
+    background: #e6e9ef;
+    margin: 8px 0 12px;
+}
+
+/* нижний блок */
+.notification-content {
+    position: relative;
+}
+
+/* иконка прочитано */
+.notification-actions {
+    flex-shrink: 0;
+}
+
+/* blockquote (используем твой стиль) */
+.block-quote {
+    margin: 0;
+}

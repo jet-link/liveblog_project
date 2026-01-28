@@ -328,6 +328,7 @@ class ContentReport(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
     reason = models.CharField(max_length=30, choices=REASON_CHOICES)
+    reasons = models.JSONField(default=list, blank=True)
     details = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
@@ -387,3 +388,21 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return f"{self.user} bookmarked {self.item}"
+
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="notifications")
+    parent_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reply_notifications")
+    reply_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="notifications")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"Notification for {self.recipient} on {self.item}"
+
+    def get_absolute_url(self):
+        return f"{self.item.get_absolute_url()}#comment-anchor-{self.reply_comment.pk}"

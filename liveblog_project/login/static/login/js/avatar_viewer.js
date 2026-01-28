@@ -138,11 +138,24 @@
     /* ================== helpers ================== */
 
     function disableSave() {
-        if (saveBtn) saveBtn.disabled = true;
+        if (!saveBtn) return;
+        if (!saveBtn.dataset.origText) {
+            saveBtn.dataset.origText = saveBtn.textContent || '';
+        }
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Blocked';
+        saveBtn.classList.remove('custom-primary-btn');
+        saveBtn.classList.add('custom-danger-btn');
     }
 
     function enableSave() {
-        if (saveBtn) saveBtn.disabled = false;
+        if (!saveBtn) return;
+        saveBtn.disabled = false;
+        if (saveBtn.dataset.origText) {
+            saveBtn.textContent = saveBtn.dataset.origText;
+        }
+        saveBtn.classList.remove('custom-danger-btn');
+        saveBtn.classList.add('custom-primary-btn');
     }
 
     function extractName(url) {
