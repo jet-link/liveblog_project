@@ -7,8 +7,8 @@
   {% if comment.author %}
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-1 align-items-center">
-        <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center custom_badge badge_primary" title="Author">
-          {{ comment.author }}
+        <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
+          <span class="custom_badge badge_primary">{{ comment.author }}</span>
           {% comment %} <div class="little-avatar">
             {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
               <img src="{{ comment.author.profile.get_avatar }}" alt="{{ comment.author }}" class="user-avatar clickable-avatar" data-full="{{ comment.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -17,7 +17,6 @@
             {% endif %}
           </div> {% endcomment %}
         </a>
-
         {% if user != comment.author and user.is_authenticated %}
           {% if not hide_reply %}
             {% if not thread_view or depth|default:0 > 0 %}
@@ -29,6 +28,8 @@
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                   {% if not user.is_staff %}
                     <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+                  {% else %}
+                    <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Delete</button>
                   {% endif %}
                 </div>
               </div>
@@ -48,9 +49,9 @@
     </div>
   {% else %}
     <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex gap-2 success_ fw-bolder align-items-center">
+      <div class="d-flex gap-2 primary_ align-items-center">
         <i class="fa fa-frown-o" aria-hidden="true"></i>
-        <small>Deleted account</small>
+        <small class="fw-semibold">Deleted account</small>
       </div>
 
       <div class="d-flex gap-1 align-items-center comment-like-count">

@@ -634,7 +634,16 @@ def notifications_view(request):
         .order_by("-created_at")
     )
     for notif in notifications:
-        notif.preview_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+        notif.actor_name = getattr(notif.actor, "username", "")
+        if notif.notif_type == Notification.TYPE_REPLY:
+            notif.header_text = "Replied in the post"
+            notif.body_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+        elif notif.notif_type == Notification.TYPE_COMMENT_LIKE:
+            notif.header_text = "Liked comment"
+            notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
+        else:
+            notif.header_text = "Liked item"
+            notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "smart_blog/notifications.html", {
         "notifications": notifications,
@@ -725,6 +734,8 @@ def add_comment(request, slug):
     if parent and parent.author and parent.author != request.user:
         Notification.objects.create(
             recipient=parent.author,
+            actor=request.user,
+            notif_type=Notification.TYPE_REPLY,
             item=item,
             parent_comment=parent,
             reply_comment=comment,
@@ -816,9 +827,22 @@ def toggle_like(request, slug):
     if like_qs.exists():
         like_qs.delete()
         liked = False
+        Notification.objects.filter(
+            recipient=item.author,
+            actor=request.user,
+            notif_type=Notification.TYPE_ITEM_LIKE,
+            item=item
+        ).delete()
     else:
         Like.objects.create(item=item, user=request.user)
         liked = True
+        if item.author and item.author != request.user:
+            Notification.objects.create(
+                recipient=item.author,
+                actor=request.user,
+                notif_type=Notification.TYPE_ITEM_LIKE,
+                item=item
+            )
 
     return JsonResponse({
         "success": True,
@@ -871,9 +895,24 @@ def toggle_comment_like(request, pk):
     if like_qs.exists():
         like_qs.delete()
         liked = False
+        Notification.objects.filter(
+            recipient=comment.author,
+            actor=request.user,
+            notif_type=Notification.TYPE_COMMENT_LIKE,
+            item=comment.item,
+            parent_comment=comment
+        ).delete()
     else:
         CommentLike.objects.create(comment=comment, user=user)
         liked = True
+        if comment.author and comment.author != request.user:
+            Notification.objects.create(
+                recipient=comment.author,
+                actor=request.user,
+                notif_type=Notification.TYPE_COMMENT_LIKE,
+                item=comment.item,
+                parent_comment=comment
+            )
 
     return JsonResponse({
         "success": True,

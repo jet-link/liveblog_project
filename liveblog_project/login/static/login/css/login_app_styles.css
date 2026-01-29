@@ -771,7 +771,7 @@
 
 .notification-body {
     color: #4b4b4b;
-    font-size: 0.9rem;
+    font-size: .8rem;
     width: 100%;
 }
 .notification-read-btn{
@@ -858,13 +858,14 @@
 
 .notifications-count {
     position: absolute;
-    top: -2px;
-    left: 10px;
+    top: 0;
+    left: 8px;
     font-size: .5rem;
     padding: 2px 6px;
     background-color: #ff6b6b;
     color: #FFFFFF;
     border-radius: 20px;
+    font-weight: 500;
 
 }
 
@@ -908,4 +909,8 @@
 /* blockquote (используем твой стиль) */
 .block-quote {
     margin: 0;
+}
+
+.liked-item{
+    font-size: .875rem;
 }

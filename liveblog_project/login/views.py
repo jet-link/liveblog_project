@@ -378,7 +378,16 @@ def notifications_view(request, username):
         .order_by("-created_at")
     )
     for notif in notifications:
-        notif.preview_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+        notif.actor_name = getattr(notif.actor, "username", "")
+        if notif.notif_type == Notification.TYPE_REPLY:
+            notif.header_text = "replied in the item"
+            notif.body_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
+        elif notif.notif_type == Notification.TYPE_COMMENT_LIKE:
+            notif.header_text = "liked comment in the item"
+            notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
+        else:
+            notif.header_text = "liked item"
+            notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "smart_blog/notifications.html", {
         "notifications": notifications,

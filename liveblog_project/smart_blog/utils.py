@@ -10,8 +10,12 @@ def breadcrumb(title, url=None):
 
 
 def build_breadcrumbs(*crumbs):
-    breadcrumbs = [breadcrumb("BrainStorm", "/")]
-    breadcrumbs.extend(crumbs)
+    breadcrumbs = []
+    if crumbs and crumbs[0].get("title") == "BrainStorm":
+        breadcrumbs.extend(crumbs)
+    else:
+        breadcrumbs = [breadcrumb("BrainStorm", "/")]
+        breadcrumbs.extend(crumbs)
     return breadcrumbs
 
 def form_errors_to_json(form):

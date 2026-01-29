@@ -707,7 +707,6 @@ textarea {
 .replies {
     position: relative;
     margin-left: 22px;
-    /* отступ от родителя */
     padding-left: 0;
     margin-top: 8px;
 }
@@ -2084,5 +2083,45 @@ pre {
 
 .comment-menu.open {
     z-index: 10;
+}
+
+/* notifications */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification-row {
+    padding: 12px 14px;
+    border: 1px solid #ececec;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.notification-body {
+    color: #4b4b4b;
+    font-size: 0.9rem;
+}
+
+.notifications-done {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #27ae60;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+
+.notifications-fade {
+    transition: opacity 0.3s ease;
+}
+
+.notifications-fade.is-hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 

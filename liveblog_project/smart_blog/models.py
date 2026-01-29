@@ -391,10 +391,22 @@ class Bookmark(models.Model):
 
 
 class Notification(models.Model):
+    TYPE_REPLY = "reply"
+    TYPE_ITEM_LIKE = "item_like"
+    TYPE_COMMENT_LIKE = "comment_like"
+
+    TYPE_CHOICES = [
+        (TYPE_REPLY, "Reply"),
+        (TYPE_ITEM_LIKE, "Liked item"),
+        (TYPE_COMMENT_LIKE, "Liked comment"),
+    ]
+
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    actor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="sent_notifications")
+    notif_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="notifications")
-    parent_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reply_notifications")
-    reply_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="notifications")
+    parent_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reply_notifications", null=True, blank=True)
+    reply_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="notifications", null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -405,4 +417,15 @@ class Notification(models.Model):
         return f"Notification for {self.recipient} on {self.item}"
 
     def get_absolute_url(self):
-        return f"{self.item.get_absolute_url()}#comment-anchor-{self.reply_comment.pk}"
+        if self.reply_comment_id:
+            reply = self.reply_comment
+            root = reply
+            while root and root.parent_id:
+                root = root.parent
+            if reply.parent_id and reply.parent and reply.parent.parent_id:
+                thread_url = reverse("smart_blog:comment_thread", args=[root.pk])
+                return f"{thread_url}#comment-anchor-{reply.pk}"
+            return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"
+        if self.parent_comment_id:
+            return f"{self.item.get_absolute_url()}#comment-anchor-{self.parent_comment.pk}"
+        return self.item.get_absolute_url()

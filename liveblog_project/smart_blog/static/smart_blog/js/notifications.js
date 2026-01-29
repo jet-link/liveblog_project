@@ -27,6 +27,7 @@
   const stateEl = document.getElementById('notificationsState');
   const readAllDone = document.getElementById('notificationsReadAllDone');
   const actions = document.getElementById('notificationsActions');
+  const emptyState = document.getElementById('notificationsEmpty');
   let unreadCount = parseInt(stateEl?.dataset?.unread || '0', 10);
 
   function renderReadBadge(container) {
@@ -40,11 +41,17 @@
   }
 
   function updateHeaderCount(count) {
-    const badge = document.querySelector('.notifications-count');
-    if (!badge) return;
+    let badge = document.querySelector('.notifications-count');
     if (count <= 0) {
-      badge.remove();
+      if (badge) badge.remove();
       return;
+    }
+    if (!badge) {
+      const btn = document.querySelector('.notification-btn');
+      if (!btn) return;
+      badge = document.createElement('span');
+      badge.className = 'notifications-count custom_badge badge_danger';
+      btn.insertBefore(badge, btn.querySelector('i'));
     }
     badge.textContent = count >= 10 ? '10+' : String(count);
   }
@@ -54,12 +61,16 @@
     if (unreadCount <= 0) {
       const done = document.createElement('span');
       done.id = 'notificationsReadAllDone';
-      done.className = 'notifications-done';
+      done.className = 'notifications-done notifications-fade';
       done.setAttribute('aria-label', 'All read');
       const icon = document.createElement('i');
       icon.className = 'fa fa-check';
       done.appendChild(icon);
       readAllBtn.replaceWith(done);
+      setTimeout(() => {
+        done.classList.add('is-hidden');
+        setTimeout(() => done.remove(), 300);
+      }, 1200);
     }
   }
 
@@ -68,7 +79,35 @@
     const remaining = document.querySelectorAll('.notification-row').length;
     if (remaining === 0) {
       actions.classList.add('d-none');
+      if (emptyState) emptyState.classList.remove('d-none');
+      const wrapper = document.getElementById('showMoreWrapper');
+      if (wrapper) wrapper.classList.add('d-none');
     }
+  }
+
+  function updateShowMore() {
+    const btn = document.getElementById('showMoreBtn');
+    const rows = Array.from(document.querySelectorAll('.notification-row'));
+    if (!btn || !rows.length) return;
+    const STEP = 10;
+    let shown = Math.min(STEP, rows.length);
+
+    function render() {
+      rows.forEach((row, idx) => {
+        if (idx < shown) {
+          row.classList.remove('listing-hidden');
+        } else {
+          row.classList.add('listing-hidden');
+        }
+      });
+      if (shown >= rows.length) btn.style.display = 'none';
+    }
+
+    render();
+    btn.addEventListener('click', () => {
+      shown = Math.min(shown + STEP, rows.length);
+      render();
+    });
   }
 
   list?.addEventListener('click', async (e) => {
@@ -88,6 +127,7 @@
       updateHeaderCount(unreadCount);
       updateReadAllButton();
       renderReadBadge(btn);
+      hideActionsIfEmpty();
     } finally {
       btn.disabled = false;
     }
@@ -155,4 +195,6 @@
       deleteLast5Btn.disabled = false;
     }
   });
+
+  updateShowMore();
 })();

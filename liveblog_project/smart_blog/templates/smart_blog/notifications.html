@@ -11,9 +11,7 @@
       <h4 class="text-muted m-0">Notifications</h4>
       {% if notifications %}
         <div id="notificationsActions" class="d-flex align-items-center gap-2">
-          {% if unread_count == 0 %}
-            <span id="notificationsReadAllDone" class="notifications-done hidden" aria-label="All read" title="All has been read"><i class="fa fa-check"></i></span>
-          {% else %}
+          {% if unread_count > 0 %}
             <button id="notificationsReadAll" type="button" class="cstm-btn custom-primary-btn cstm-btn-sm">Read all</button>
           {% endif %}
           <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm">Delete</button>
@@ -25,11 +23,20 @@
       <div class="notifications-list">
         {% for n in notifications %}
           <div class="notification-row{% if n.is_read %} is-read{% endif %}" data-notification-id="{{ n.id }}" data-is-read="{{ n.is_read|yesno:'1,0' }}">
-            <!-- 🔝 TOP: заголовок -->
+            <!-- заголовок -->
             <div class="notification-header">
-              <div class="text-muted small">
-                Replied to your comment from - 
-                <a href="{{ n.get_absolute_url }}" class="text-decoration-none primary_ fw-semibold">{{ n.item.title }}</a>
+              <div class="text-muted small d-flex align-items-center gap-2">
+                {% if n.actor_name %}
+                  <span class="custom_badge badge_primary">{{ n.actor_name }}</span>
+                {% else %}
+                  <span class="fw-bolder">Deleted account</span>
+                {% endif %}
+                  <span>{{ n.header_text }}</span>
+                  {% if n.notif_type == 'item_like' %}
+                    <span></span>
+                  {% else %}
+                    <a href="{{ n.get_absolute_url }}" class="text-decoration-none primary_">{{ n.item.title }}</a>
+                  {% endif %}
               </div>
             </div>
 
@@ -40,15 +47,24 @@
             <div class="notification-content d-flex align-items-center gap-3">
               <!-- body -->
               <div class="notification-body flex-grow-1">
-                <blockquote class="block-quote">{{ n.preview_text|truncatechars:160 }}</blockquote>
+                {% if n.notif_type == 'item_like' %}
+                    <a href="{{ n.item.get_absolute_url }}" class="text-decoration-none primary_ liked-item fw-semibold">{{ n.item.title }}</a>
+                {% else %}
+                  <blockquote class="block-quote">{{ n.body_text|truncatechars:160 }}</blockquote>
+                {% endif %}
               </div>
 
               <!-- actions -->
-              <div class="notification-actions">
-                {% if n.is_read %}
-                  <span class="notifications-done" aria-label="Read"><i class="fa fa-check"></i></span>
+              <div class="notification-actions d-flex align-items-center gap-1">
+                {% comment %} {% if n.notif_type == 'item_like' %}
+                  <a href="{{ n.item.get_absolute_url }}" class="cstm-btn cstm-btn-sm custom-secondary-btn">Go to</a>
                 {% else %}
-                  <button type="button" class="manipulate notification-read-btn"><i class="fa fa-eye"></i></button>
+                  <a href="{{ n.get_absolute_url }}" class="cstm-btn cstm-btn-sm custom-secondary-btn">Go to</a>
+                {% endif %} {% endcomment %}
+                {% if n.is_read %}
+                  <span class="notifications-done" aria-label="Read" title="Has been read!"><i class="fa fa-check"></i></span>
+                {% else %}
+                  <button type="button" class="cstm-btn cstm-btn-sm notification-read-btn">Read</button>
                 {% endif %}
               </div>
             </div>
@@ -56,8 +72,14 @@
           {% comment %} <a href="#">{{ n.comment.author }}</a> {% endcomment %}
         {% endfor %}
       </div>
+      <div id="notificationsEmpty" class="text-muted d-none">No notifications yet.</div>
+      {% if notifications|length > 10 %}
+        <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center gap-3 my-4">
+          <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
+        </div>
+      {% endif %}
     {% else %}
-      <div class="text-muted">No notifications yet.</div>
+      <div id="notificationsEmpty" class="text-muted">No notifications yet.</div>
     {% endif %}
     <div id="notificationsState" class="d-none" data-unread="{{ unread_count }}"></div>
   </div>
@@ -66,10 +88,10 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete notifications</h5>
+          <h5 class="modal-title text-muted">Delete notifications</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        {% comment %} <div class="modal-body">Choose what to delete:</div> {% endcomment %}
+        <div class="modal-body">Select an action for notifications:</div>
         <div class="modal-footer">
           <button id="notificationsDeleteAll" type="button" class="cstm-btn custom-danger-btn cstm-btn-sm">Delete all</button>
           <button id="notificationsDeleteLast5" type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm">Delete last 5</button>

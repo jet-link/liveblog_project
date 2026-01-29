@@ -129,7 +129,7 @@
     const icon = document.createElement('i');
     icon.textContent = '→';
     const badge = document.createElement('span');
-    badge.className = 'replies-count custom_badge_success';
+    badge.className = 'replies-count primary_';
     badge.textContent = String(count);
     link.append(label, icon, badge);
   }
@@ -176,7 +176,7 @@
       renderThreadLinkContents(link, next);
       return;
     }
-    span.classList.add('custom_badge_success');
+    span.classList.add('primaru_');
     span.textContent = String(next);
   }
 

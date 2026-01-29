@@ -10,9 +10,6 @@ DEFAULT_AVATAR = 'img/no_image.svg'
 
 
 def avatar_upload_path(instance, filename):
-    """
-    avatars/user_5/avatar.jpg
-    """
     return f'avatars/user_{instance.user_id}/{filename}'
 
 
@@ -37,18 +34,14 @@ class Profile(models.Model):
         null=True
     )
 
+    avatar_pos_x = models.FloatField(default=0.0)
+    avatar_pos_y = models.FloatField(default=0.0)
+
 
     def __str__(self):
         return f'Profile: {self.user.username}'
 
-    # ⭐ ЕДИНАЯ точка доступа
     def get_avatar(self):
-        """
-        Priority:
-        1. Uploaded file
-        2. URL
-        3. Default static avatar
-        """
         if self.avatar_file:
             return self.avatar_file.url
 
