@@ -48,16 +48,11 @@
       {% endif %}
     </div>
   {% else %}
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex gap-2 primary_ align-items-center">
+    <div class="d-flex gap-2 align-items-center">
+      <span class="custom_badge badge_primary">
         <i class="fa fa-frown-o" aria-hidden="true"></i>
-        <small class="fw-semibold">Deleted account</small>
-      </div>
-
-      <div class="d-flex gap-1 align-items-center comment-like-count">
-        <span id="comment-likes-count-{{ comment.pk }}" class="primary_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
-        <span class="text-muted text-uppercase">:Likes</span>
-      </div>
+        <span>Deleted account</span>
+      </span>
     </div>
   {% endif %}
   <!-- comment body -->

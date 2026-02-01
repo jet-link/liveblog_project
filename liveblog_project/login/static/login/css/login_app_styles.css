@@ -774,10 +774,26 @@
     font-size: .8rem;
     width: 100%;
 }
-.notification-read-btn{
+
+.notification-read-btn {
     border: 2px solid #2980b9;
     color: #2980b9;
     background: transparent;
+}
+
+.notification-row.notif-reply .notification-read-btn {
+    border-color: #8e44ad;
+    color: #8e44ad;
+}
+
+.notification-row.notif-comment_like .notification-read-btn {
+    border-color: #2d9cdb;
+    color: #2d9cdb;
+}
+
+.notification-row.notif-item_like .notification-read-btn {
+    border-color: #f39c12;
+    color: #f39c12;
 }
 
 .notifications-done {
@@ -792,6 +808,76 @@
     justify-content: center;
     align-items: center;
 }
+
+.notifications-fade {
+    transition: opacity 0.3s ease;
+}
+
+.notifications-fade.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.comment-reply-marker {
+    background: #8e44ad;
+}
+
+.comment-like-marker {
+    background: #2d9cdb;
+}
+
+.item-like-marker {
+    background: #f39c12;
+}
+
+.notification-row.notif-reply {
+    border-color: #8e44ad;
+}
+
+.notification-row.notif-comment_like {
+    border-color: #2d9cdb;
+}
+
+.notification-row.notif-item_like {
+    border-color: #f39c12;
+}
+
+.notification-row.is-seen {
+    border-color: #ececec;
+}
+
+.notification-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+
+.notification-dot.dot-reply {
+    background: #8e44ad;
+}
+
+.notification-dot.dot-comment_like {
+    background: #2d9cdb;
+}
+
+.notification-dot.dot-item_like {
+    background: #f39c12;
+}
+
+.notification-row.is-seen .notification-dot {
+    opacity: 0;
+    pointer-events: none;
+}
+
 
 .report-reason-btn {
     border: 1px solid #dfe4ea;
@@ -872,7 +958,7 @@
 .block-quote {
     margin: .6rem 0;
     padding: 1rem;
-    border-left: 4px solid #2980b9;
+    border-left: 3px solid #2980b9;
     background: #f8f9fc;
     color: #2d3436;
     font-weight: 500;
@@ -911,6 +997,25 @@
     margin: 0;
 }
 
-.liked-item{
+.liked-item {
     font-size: .875rem;
 }
+
+/* .marker{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+}
+
+.comment-reply-marker{
+    background: #8e44ad;
+}
+
+.comment-like-marker{
+    background: #3498db;
+}
+
+.item-like-marker{
+    background: #e67e22;
+} */

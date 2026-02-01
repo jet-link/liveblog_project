@@ -169,13 +169,14 @@ class Item(models.Model):
         delta_days = (now_local.date() - dt_local.date()).days
 
         if delta_days == 0:
-            return f"Today at {t.strftime('%H:%M')}"
+            return "Today"
         elif delta_days == 1:
-            return f"Yesterday at {t.strftime('%H:%M')}"
+            return "Yesterday"
         elif 2 <= delta_days <= 5:
-            return f"{delta_days} days ago at {t.strftime('%H:%M')}"
+            return f"{delta_days} days ago"
         else:
-            return f"{dt_local.strftime("%d.%m.%Y")} at {t.strftime('%H:%M')}"
+            return f"{dt_local.strftime("%d.%m.%Y")}"
+            # return f"{dt_local.strftime("%d.%m.%Y")} at {t.strftime('%H:%M')}"
             # return dt_local.strftime("%d.%m.%Y")
         
         
@@ -218,13 +219,14 @@ class Comment(models.Model):
         delta_days = (now_local.date() - created.date()).days
 
         if delta_days == 0:
-            return f"Today at {created.strftime('%H:%M')}"
+            return "Today"
         elif delta_days == 1:
-            return f"Yesterday at {created.strftime('%H:%M')}"
+            return "Yesterday"
         elif 2 <= delta_days <= 5:
-            return f"{delta_days} days ago at {created.strftime('%H:%M')}"
+            return f"{delta_days} days ago"
         else:
-            return f"{created.strftime("%d.%m.%Y")} at {created.strftime('%H:%M')}"
+            return f"{created.strftime("%d.%m.%Y")}"
+            # return f"{created.strftime("%d.%m.%Y")} at {created.strftime('%H:%M')}"
 
     class Meta:
         ordering = ("created",)
@@ -419,11 +421,13 @@ class Notification(models.Model):
     def get_absolute_url(self):
         if self.reply_comment_id:
             reply = self.reply_comment
-            root = reply
-            while root and root.parent_id:
-                root = root.parent
-            if reply.parent_id and reply.parent and reply.parent.parent_id:
-                thread_url = reverse("smart_blog:comment_thread", args=[root.pk])
+            chain = [reply]
+            current = reply
+            while current and current.parent_id:
+                current = current.parent
+                chain.append(current)
+            if reply.parent_id:
+                thread_url = reverse("smart_blog:comment_thread", args=[reply.parent_id])
                 return f"{thread_url}#comment-anchor-{reply.pk}"
             return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"
         if self.parent_comment_id:

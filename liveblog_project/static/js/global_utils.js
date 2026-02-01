@@ -17,6 +17,61 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Notifications bell count (sync from localStorage)
+(function () {
+    'use strict';
+
+    function updateBellCountFromStorage() {
+        const btn = document.querySelector('.notification-btn');
+        if (!btn) return;
+
+        let stored = null;
+        try {
+            stored = localStorage.getItem('notification_unread_count');
+        } catch (err) {}
+
+        const serverRaw = btn.dataset?.notificationsCount;
+        const serverCount = serverRaw !== undefined && serverRaw !== null && serverRaw !== ''
+            ? parseInt(serverRaw, 10)
+            : NaN;
+        const storedCount = stored !== null ? parseInt(stored, 10) : NaN;
+
+        let count;
+        if (!Number.isNaN(serverCount)) {
+            // server is the source of truth when available
+            count = serverCount;
+        } else if (!Number.isNaN(storedCount)) {
+            count = storedCount;
+        } else {
+            return;
+        }
+
+        try {
+            localStorage.setItem('notification_unread_count', String(count));
+        } catch (err) {}
+
+        let badge = document.querySelector('.notifications-count');
+        if (count <= 0) {
+            if (badge) badge.remove();
+            return;
+        }
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'notifications-count custom_badge badge_danger';
+            btn.insertBefore(badge, btn.querySelector('i'));
+        }
+        badge.textContent = count >= 10 ? '10+' : String(count);
+    }
+
+    document.addEventListener('DOMContentLoaded', updateBellCountFromStorage);
+    window.addEventListener('pageshow', updateBellCountFromStorage);
+    window.addEventListener('storage', function (e) {
+        if (e.key === 'notification_unread_count') {
+            updateBellCountFromStorage();
+        }
+    });
+})();
+
 // Replace broken avatar images with fallback
 (function () {
     'use strict';

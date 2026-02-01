@@ -371,22 +371,34 @@ def notifications_view(request, username):
     if request.user.username != username and not request.user.is_staff:
         raise PermissionDenied
 
+    invalid_q = (
+        Q(item__isnull=True) |
+        Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
+        Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
+    )
+    Notification.objects.filter(recipient=request.user).filter(invalid_q).delete()
+
     notifications = (
         Notification.objects
         .filter(recipient=request.user)
+        .exclude(item__isnull=True)
+        .exclude(
+            Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
+            Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
+        )
         .select_related("item", "reply_comment", "parent_comment", "reply_comment__author")
         .order_by("-created_at")
     )
     for notif in notifications:
         notif.actor_name = getattr(notif.actor, "username", "")
         if notif.notif_type == Notification.TYPE_REPLY:
-            notif.header_text = "replied in the item"
+            notif.header_text = "replied comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
         elif notif.notif_type == Notification.TYPE_COMMENT_LIKE:
-            notif.header_text = "liked comment in the item"
+            notif.header_text = "liked comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
         else:
-            notif.header_text = "liked item"
+            notif.header_text = "liked item."
             notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "smart_blog/notifications.html", {

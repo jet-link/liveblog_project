@@ -18,6 +18,30 @@
     });
   }
 
+  function sendReadToServer(id) {
+    if (!id) return;
+    const body = new URLSearchParams({
+      notification_id: id,
+      csrfmiddlewaretoken: getCSRF()
+    }).toString();
+    if (navigator.sendBeacon) {
+      const blob = new Blob([body], { type: 'application/x-www-form-urlencoded' });
+      navigator.sendBeacon('/blog/notifications/read/', blob);
+      return;
+    }
+    fetch('/blog/notifications/read/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCSRF(),
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body,
+      keepalive: true
+    }).catch(() => {});
+  }
+
   const list = document.querySelector('.notifications-list');
   const readAllBtn = document.getElementById('notificationsReadAll');
   const deleteBtn = document.getElementById('notificationsDelete');
@@ -28,6 +52,7 @@
   const readAllDone = document.getElementById('notificationsReadAllDone');
   const actions = document.getElementById('notificationsActions');
   const emptyState = document.getElementById('notificationsEmpty');
+  const legend = document.getElementById('notificationsLegend');
   let unreadCount = parseInt(stateEl?.dataset?.unread || '0', 10);
 
   function renderReadBadge(container) {
@@ -74,6 +99,15 @@
     }
   }
 
+  function syncUnreadCount() {
+    unreadCount = document.querySelectorAll('.notification-row[data-is-read="0"]').length;
+    updateHeaderCount(unreadCount);
+    updateReadAllButton();
+    try {
+      localStorage.setItem('notification_unread_count', String(unreadCount));
+    } catch (err) {}
+  }
+
   function hideActionsIfEmpty() {
     if (!actions) return;
     const remaining = document.querySelectorAll('.notification-row').length;
@@ -82,7 +116,59 @@
       if (emptyState) emptyState.classList.remove('d-none');
       const wrapper = document.getElementById('showMoreWrapper');
       if (wrapper) wrapper.classList.add('d-none');
+      if (legend) legend.classList.add('d-none');
     }
+  }
+
+  function markSeen(id, syncServer = false) {
+    if (!id) return;
+    try {
+      localStorage.setItem(`notification_seen_${id}`, '1');
+    } catch (err) {}
+    if (syncServer) {
+      sendReadToServer(id);
+    }
+    const row = document.querySelector(`.notification-row[data-notification-id="${id}"]`);
+    if (row) {
+      const wasUnread = row.dataset.isRead !== '1';
+      row.classList.add('is-seen');
+      row.dataset.isRead = '1';
+      row.classList.add('is-read');
+      const btn = row.querySelector('.notification-read-btn');
+      if (btn) renderReadBadge(btn);
+      if (wasUnread) syncUnreadCount();
+    }
+  }
+
+  function initSeenMarkers() {
+    const rows = document.querySelectorAll('.notification-row');
+    rows.forEach(row => {
+      const id = row.dataset.notificationId;
+      if (!id) return;
+      let seen = false;
+      try {
+        seen = localStorage.getItem(`notification_seen_${id}`) === '1';
+      } catch (err) {}
+      if (seen || row.dataset.isRead === '1') {
+        row.classList.add('is-seen');
+        row.dataset.isRead = '1';
+        row.classList.add('is-read');
+        const btn = row.querySelector('.notification-read-btn');
+        if (btn) renderReadBadge(btn);
+        try {
+          localStorage.setItem(`notification_seen_${id}`, '1');
+        } catch (err) {}
+      }
+    });
+
+    document.querySelectorAll('.notification-target-link').forEach(link => {
+      if (link.dataset.seenInit) return;
+      link.dataset.seenInit = '1';
+      link.addEventListener('click', () => {
+        const id = link.dataset.notificationId;
+        markSeen(id, true);
+      });
+    });
   }
 
   function updateShowMore() {
@@ -110,7 +196,7 @@
     });
   }
 
-  list?.addEventListener('click', async (e) => {
+  list?.addEventListener('click', (e) => {
     const btn = e.target.closest('.notification-read-btn');
     if (!btn) return;
     const row = btn.closest('.notification-row');
@@ -118,19 +204,9 @@
     if (!id) return;
 
     btn.disabled = true;
-    try {
-      const resp = await post('/blog/notifications/read/', { notification_id: id });
-      if (!resp.ok) return;
-      row.dataset.isRead = '1';
-      row.classList.add('is-read');
-      unreadCount = Math.max(0, unreadCount - 1);
-      updateHeaderCount(unreadCount);
-      updateReadAllButton();
-      renderReadBadge(btn);
-      hideActionsIfEmpty();
-    } finally {
-      btn.disabled = false;
-    }
+    markSeen(id, true);
+    hideActionsIfEmpty();
+    btn.disabled = false;
   });
 
   readAllBtn?.addEventListener('click', async () => {
@@ -145,10 +221,10 @@
         if (btn) {
           renderReadBadge(btn);
         }
+        const id = el.dataset.notificationId;
+        if (id) markSeen(id);
       });
-      unreadCount = 0;
-      updateHeaderCount(unreadCount);
-      updateReadAllButton();
+      syncUnreadCount();
     } finally {
       readAllBtn.disabled = false;
     }
@@ -182,13 +258,10 @@
       const rows = document.querySelectorAll('.notification-row');
       rows.forEach((el, idx) => {
         if (idx < 5) {
-          if (el.dataset.isRead !== '1') {
-            unreadCount = Math.max(0, unreadCount - 1);
-          }
           el.remove();
         }
       });
-      updateHeaderCount(unreadCount);
+      syncUnreadCount();
       bootstrap.Modal.getOrCreateInstance(deleteModalEl).hide();
       hideActionsIfEmpty();
     } finally {
@@ -197,4 +270,10 @@
   });
 
   updateShowMore();
+  initSeenMarkers();
+  syncUnreadCount();
+  window.addEventListener('pageshow', () => {
+    initSeenMarkers();
+    syncUnreadCount();
+  });
 })();
