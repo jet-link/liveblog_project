@@ -72,8 +72,9 @@
 
   <div class="d-flex justify-content-between small text-muted align-items-center">
     <div class="text-muted d-flex align-items-center">
-      <small class="d-flex gap-2">
-        {{ comment.human_published }}
+      <small class="d-flex align-items-center gap-2">
+        <i class="fa fa-clock-o" aria-hidden="true"></i>
+        <span>{{ comment.human_published }}</span>
         {% if comment.parent is None and comment.is_edited %}
           <span>/</span>
           <span class="fw-semibold text-muted">Edited</span>
