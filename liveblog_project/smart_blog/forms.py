@@ -227,10 +227,47 @@ class CommentForm(forms.ModelForm):
             self.fields["text"].error_messages = {"required": _("Please write a comment *")}
 
     def clean_text(self):
-        text = self.cleaned_data.get("text", "")
-        text = normalize_comment_text(text)
+        raw = self.cleaned_data.get("text", "") or ""
+        raw = raw.replace('\x00', '')
 
-        if not text or len(text.strip()) < 2:
-            raise forms.ValidationError("Comment cannot be empty.")
+        allowed_tags = ['a', 'b', 'strong', 'i', 'em', 'u', 'br', 'p', 'div', 'span']
+        allowed_attrs = {
+            'a': ['href', 'title', 'target', 'rel', 'class'],
+            'div': ['class'],
+            'span': ['class'],
+            'p': ['class'],
+        }
 
-        return text
+        cleaned = bleach.clean(raw, tags=allowed_tags, attributes=allowed_attrs, strip=True)
+
+        def _linkify_cb(attrs, new=False):
+            current = attrs.get((None, "class"), "")
+            if "primary_" not in current:
+                attrs[(None, "class")] = (current + " primary_").strip()
+            attrs[(None, "target")] = "_blank"
+            attrs[(None, "rel")] = "noopener noreferrer"
+            return attrs
+
+        try:
+            cleaned = bleach.linkify(cleaned, skip_tags=['a'], parse_email=False, callbacks=[_linkify_cb])
+        except Exception:
+            pass
+
+        # ensure all links open in new tab
+        cleaned = re.sub(
+            r'<a(?![^>]*\btarget=)[^>]*>',
+            lambda m: m.group(0).replace('<a', '<a target="_blank" rel="noopener noreferrer"', 1),
+            cleaned,
+            flags=re.I
+        )
+
+        # collapse multiple line breaks / empty blocks
+        cleaned = re.sub(r'(<br\s*/?>\s*){2,}', '<br>', cleaned, flags=re.I)
+        cleaned = re.sub(r'(<p>\s*<br\s*/?>\s*</p>\s*){2,}', '<br>', cleaned, flags=re.I)
+        cleaned = re.sub(r'(<div>\s*<br\s*/?>\s*</div>\s*){2,}', '<br>', cleaned, flags=re.I)
+
+        plain = re.sub(r'<[^>]+>', '', cleaned).strip()
+        if not plain or len(plain) < 2:
+            raise forms.ValidationError("Please enter comment")
+
+        return cleaned

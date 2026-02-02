@@ -837,6 +837,10 @@
     background: #f39c12;
 }
 
+.read-marker {
+    background: #ececec;
+}
+
 .notification-row.notif-reply {
     border-color: #8e44ad;
 }
@@ -847,6 +851,10 @@
 
 .notification-row.notif-item_like {
     border-color: #f39c12;
+}
+
+.notification-row.is-read {
+    border-color: #ececec;
 }
 
 .notification-row.is-seen {
@@ -873,8 +881,16 @@
     background: #f39c12;
 }
 
+.notification-dot.dot-read {
+    background: #ececec;
+}
+
+.notification-row.is-read .notification-dot {
+    background: #ececec;
+}
+
 .notification-row.is-seen .notification-dot {
-    opacity: 0;
+    opacity: 1;
     pointer-events: none;
 }
 

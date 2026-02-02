@@ -630,6 +630,7 @@ def notifications_view(request):
     invalid_q = (
         Q(item__isnull=True) |
         Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
+        Q(notif_type=Notification.TYPE_REPLY, parent_comment__isnull=True) |
         Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
     )
     Notification.objects.filter(recipient=request.user).filter(invalid_q).delete()
@@ -640,6 +641,7 @@ def notifications_view(request):
         .exclude(item__isnull=True)
         .exclude(
             Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
+            Q(notif_type=Notification.TYPE_REPLY, parent_comment__isnull=True) |
             Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
         )
         .select_related("item", "reply_comment", "parent_comment", "reply_comment__author")
