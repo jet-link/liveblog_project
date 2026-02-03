@@ -53,6 +53,7 @@
   const actions = document.getElementById('notificationsActions');
   const emptyState = document.getElementById('notificationsEmpty');
   const legend = document.getElementById('notificationsLegend');
+  const legendToggleBtn = document.querySelector('.notification-dropdown-info-btn');
   let unreadCount = parseInt(stateEl?.dataset?.unread || '0', 10);
 
   function renderReadBadge(container) {
@@ -117,7 +118,24 @@
       const wrapper = document.getElementById('showMoreWrapper');
       if (wrapper) wrapper.classList.add('d-none');
       if (legend) legend.classList.add('d-none');
+      if (legendToggleBtn) legendToggleBtn.classList.add('d-none');
     }
+  }
+
+  function initLegendDropdown() {
+    if (!legend || !legendToggleBtn) {
+      if (legendToggleBtn) legendToggleBtn.classList.add('d-none');
+      return;
+    }
+    legend.classList.remove('is-open');
+    legendToggleBtn.classList.remove('is-open');
+    legendToggleBtn.setAttribute('aria-expanded', 'false');
+
+    legendToggleBtn.addEventListener('click', () => {
+      const isOpen = legend.classList.toggle('is-open');
+      legendToggleBtn.classList.toggle('is-open', isOpen);
+      legendToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
   }
 
   function markSeen(id, syncServer = false) {
@@ -270,6 +288,7 @@
   });
 
   updateShowMore();
+  initLegendDropdown();
   initSeenMarkers();
   syncUnreadCount();
   window.addEventListener('pageshow', () => {

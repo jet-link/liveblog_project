@@ -1512,6 +1512,11 @@
     e.stopImmediatePropagation();
 
     const commentId = link.dataset.parentId;
+    if (window.ensureCommentVisible) {
+      window.ensureCommentVisible(commentId);
+    } else if (window.ensureRootCommentVisible) {
+      window.ensureRootCommentVisible(commentId);
+    }
     const comment = document.getElementById(`comment-${commentId}`);
     if (!comment) {
       return;
@@ -1581,6 +1586,11 @@
     if (!hash.startsWith('#comment-anchor-')) return;
     const id = hash.replace('#comment-anchor-', '').trim();
     if (!id) return;
+    if (window.ensureCommentVisible) {
+      window.ensureCommentVisible(id);
+    } else if (window.ensureRootCommentVisible) {
+      window.ensureRootCommentVisible(id);
+    }
     const comment = document.getElementById(`comment-${id}`);
     if (!comment) return;
     setTimeout(() => highlightComment(comment), 120);
@@ -1674,8 +1684,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
 })();
 
 
-
-//comments-root-pagination.js
+/* comments-root-pagination.js (temporarily disabled)
 (function () {
   const STEP = 10;
   let paginationState = null; // Сохраняем состояние пагинации
@@ -1821,9 +1830,46 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     initRootCommentsPagination(true); // preserveState = true
   };
 
+  // Ensure a root comment is visible for hash navigation
+  function findRootComment(container, target) {
+    if (!container || !target) return null;
+    let current = target.closest?.('.comment-block') || target;
+    while (current && current.parentElement && current.parentElement !== container) {
+      current = current.parentElement.closest?.('.comment-block');
+    }
+    if (current && current.parentElement === container) return current;
+    return null;
+  }
+
+  window.ensureCommentVisible = function(commentId) {
+    const container = document.getElementById('commentsList');
+    if (!container) return false;
+    const target = document.getElementById(`comment-${commentId}`);
+    if (!target) return false;
+    const rootTarget = findRootComment(container, target);
+    if (!rootTarget) return false;
+    const rootComments = Array.from(
+      container.querySelectorAll(':scope > .comment-block')
+    );
+    const index = rootComments.indexOf(rootTarget);
+    if (index === -1) return false;
+
+    const total = rootComments.length;
+    const neededVisible = Math.max(index + 1, STEP);
+    paginationState = {
+      visibleCount: Math.min(neededVisible, total),
+      total,
+      collapseMode: neededVisible >= total
+    };
+    initRootCommentsPagination(true);
+    return true;
+  };
+  window.ensureRootCommentVisible = window.ensureCommentVisible;
+
   document.addEventListener('DOMContentLoaded', () => {
     initRootCommentsPagination(false); // При первой загрузке не сохраняем состояние
   });
 })();
+*/
 
 

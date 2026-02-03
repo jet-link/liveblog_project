@@ -8,7 +8,13 @@
 {% block content %}
   <div class="container content_block">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="text-muted m-0">Notifications</h4>
+      <div class="d-flex align-items-center gap-2">
+        <h4 class="text-muted m-0">Notifications</h4>
+        <button type="button" class="button notification-dropdown-info-btn" aria-expanded="false" aria-controls="notificationsLegend">
+          <i class="fa fa-angle-down notification-legend-icon notification-legend-icon-open" aria-hidden="true"></i>
+          <i class="fa fa-angle-up notification-legend-icon notification-legend-icon-close" aria-hidden="true"></i>
+        </button>
+      </div>
       {% if notifications %}
         <div id="notificationsActions" class="d-flex align-items-center gap-2">
           {% if unread_count > 0 %}
@@ -20,15 +26,15 @@
     </div>
     <hr />
     {% if notifications %}
-      <div id="notificationsLegend" class="my-3 text-muted">
+      <div id="notificationsLegend" class="notifications-legend text-muted">
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker comment-reply-marker"></span>
-          <span>Replied comment</span>
+          <span>Replied comments</span>
         </div>
 
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker comment-like-marker"></span>
-          <span>Liked comment</span>
+          <span>Liked comments</span>
         </div>
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker item-like-marker"></span>

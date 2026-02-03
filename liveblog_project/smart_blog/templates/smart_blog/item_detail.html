@@ -179,11 +179,11 @@
       {% endfor %}
     </div>
 
-    {% if comments|length > 10 %}
+    {% comment %} {% if comments|length > 10 %}
       <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center mt-2">
         <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
       </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     <button id="commentsBackToTop" type="button" aria-label="Back to comments top" title="Back to comments top"><span>↑</span></button>
   </div>
