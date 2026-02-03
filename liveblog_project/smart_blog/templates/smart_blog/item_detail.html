@@ -12,16 +12,17 @@
       <h2 class="text-muted m-0">{{ item.title }}</h2>
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
-        {% if user != item.author and not user.is_staff %}
+        {% if user != item.author and not user.is_staff and user.is_authenticated %}
           <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
         {% endif %}
       </div>
     </div>
     <hr />
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="text-muted">
-        <small class="d-flex gap-2">
-          <span class="primary_">Published:</span>
+      <div class="text-muted d-flex align-items-center">
+        <small class="d-flex align-items-center gap-2">
+          {% comment %} <span class="primary_">Published:</span> {% endcomment %}
+          <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
@@ -104,7 +105,7 @@
             <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Deleting expired"><i class="fa fa-trash-o"></i></span>
           {% endif %}
         {% else %}
-          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none">Login</a></small>
+          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Login.</a></small>
         {% endif %}
       </div>
     </div>
@@ -165,7 +166,7 @@
     {% include 'includes/comment_form.html' %}
     <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h5 class="pt-5 pb-2 m-0 primary_">Comments</h5>
+        <h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>
       {% else %}
         <h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>
       {% endif %}

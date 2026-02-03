@@ -83,7 +83,7 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-5 pb-2 m-0 primary_">Comments</h5>`
+      ? `<h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>`
       : `<h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
   }
 
@@ -113,11 +113,11 @@
     link.classList.add(
       'text-decoration-none',
       'small',
-      'fw-semibold',
       'd-flex',
       'gap-2',
       'align-items-center',
-      'text-muted'
+      'text-muted',
+      'fw-semibold'
     );
   }
 
@@ -712,12 +712,25 @@
 
     const originalHtml = body.innerHTML;
     const textDiv = body.querySelector('.comment-text');
+    const rawHtml = commentNode.dataset.rawHtml || '';
 
-    const fullHtml =
+    const decodeHtml = (value) => {
+      if (!value) return '';
+      const temp = document.createElement('textarea');
+      temp.innerHTML = value;
+      return temp.value;
+    };
+
+    const displayHtml =
       textDiv?.dataset.fullHtml || textDiv?.innerHTML || '';
-    // cache full html for restore after cancel
-    if (fullHtml) {
-      commentNode.dataset.fullHtmlCache = fullHtml;
+    const fullHtml =
+      decodeHtml(rawHtml) || displayHtml;
+    if (fullHtml && !commentNode.dataset.rawHtml) {
+      commentNode.dataset.rawHtml = fullHtml;
+    }
+    // cache rendered html for restore after cancel
+    if (displayHtml) {
+      commentNode.dataset.fullHtmlCache = displayHtml;
     }
 
     let originalText = fullHtml
@@ -808,7 +821,6 @@
       }
       commentNode.querySelectorAll('.comment-toggle-btn').forEach(btn => btn.remove());
 
-      // 🔥 ОБЯЗАТЕЛЬНО
       restoreCommentUI(commentNode);
     });
 

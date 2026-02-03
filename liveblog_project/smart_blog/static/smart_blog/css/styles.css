@@ -706,9 +706,9 @@ textarea {
 
 .replies {
     position: relative;
-    margin-left: 22px;
+    margin-left: 25px;
     padding-left: 0;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 /* вертикальная линия - идет вниз от родителя */
@@ -739,7 +739,8 @@ textarea {
     content: "";
     position: absolute;
     left: -20px;
-    top: 27px;
+    /* top: 27px; */
+    top: 30px;
     width: 15px;
     height: 1px;
     background: #cccccc;
@@ -749,7 +750,7 @@ textarea {
 
 /* поддержка вложенных replies - увеличиваем отступ */
 .replies .replies {
-    margin-left: 21px;
+    margin-left: 25px;
 }
 
 /* для вложенных replies вертикальная линия должна быть смещена */
@@ -762,7 +763,6 @@ textarea {
     border-left: 3px solid rgba(41, 128, 185, 0.25);
     border-left-color: #2980b9;
 }
-
 
 /* ===============================
    ROOT COMMENT HIGHLIGHT (MENTION)
@@ -1177,7 +1177,7 @@ textarea {
     border-radius: 7px;
     position: relative;
     z-index: 1;
-    line-height: 1.9rem;
+    line-height: 1.6rem;
     word-wrap: break-word;
     font-size: .8rem;
 }

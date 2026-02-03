@@ -427,6 +427,10 @@ class Notification(models.Model):
                 current = current.parent
                 chain.append(current)
             if reply.parent_id:
+                # If reply is directly under root, it's visible on item page.
+                if reply.parent and reply.parent.parent_id is None:
+                    return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"
+                # Otherwise go to thread page for its parent.
                 thread_url = reverse("smart_blog:comment_thread", args=[reply.parent_id])
                 return f"{thread_url}#comment-anchor-{reply.pk}"
             return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"

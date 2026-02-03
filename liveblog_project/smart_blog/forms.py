@@ -1,5 +1,6 @@
 # forms.py (вставь/замени соответствующие части в своём файле)
 import re
+import html
 import bleach
 from django import forms
 from django.core.exceptions import ValidationError
@@ -135,6 +136,7 @@ class ItemCreateForm(forms.ModelForm):
 
         # normalize
         raw = raw.replace('\x00', '')
+        raw = html.unescape(raw)
 
         # 1) Markdown fenced-code conversion (best-effort)
         converted = raw
@@ -261,10 +263,10 @@ class CommentForm(forms.ModelForm):
             flags=re.I
         )
 
-        # collapse multiple line breaks / empty blocks
-        cleaned = re.sub(r'(<br\s*/?>\s*){2,}', '<br>', cleaned, flags=re.I)
-        cleaned = re.sub(r'(<p>\s*<br\s*/?>\s*</p>\s*){2,}', '<br>', cleaned, flags=re.I)
-        cleaned = re.sub(r'(<div>\s*<br\s*/?>\s*</div>\s*){2,}', '<br>', cleaned, flags=re.I)
+        # collapse multiple line breaks / empty blocks to максимум двух
+        cleaned = re.sub(r'(<br\s*/?>\s*){3,}', '<br><br>', cleaned, flags=re.I)
+        cleaned = re.sub(r'(<p>\s*<br\s*/?>\s*</p>\s*){3,}', '<br><br>', cleaned, flags=re.I)
+        cleaned = re.sub(r'(<div>\s*<br\s*/?>\s*</div>\s*){3,}', '<br><br>', cleaned, flags=re.I)
 
         plain = re.sub(r'<[^>]+>', '', cleaned).strip()
         if not plain or len(plain) < 2:

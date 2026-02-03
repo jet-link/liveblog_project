@@ -29,6 +29,5 @@ def render_mentions(text, parent_comment_id=None):
 
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     text = MENTION_RE.sub(repl, text)
-    if '<' not in text:
-        text = text.replace('\n', '<br>')
+    text = text.replace('\n', '<br>')
     return mark_safe(text)

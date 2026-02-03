@@ -764,8 +764,8 @@
 
 .notification-row {
     padding: 15px;
-    border: 1px solid #ececec;
-    border-radius: 8px;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
     background: #fff;
 }
 
@@ -894,7 +894,6 @@
     pointer-events: none;
 }
 
-
 .report-reason-btn {
     border: 1px solid #dfe4ea;
     background: #fff;
@@ -1016,22 +1015,3 @@
 .liked-item {
     font-size: .875rem;
 }
-
-/* .marker{
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: none;
-}
-
-.comment-reply-marker{
-    background: #8e44ad;
-}
-
-.comment-like-marker{
-    background: #3498db;
-}
-
-.item-like-marker{
-    background: #e67e22;
-} */
