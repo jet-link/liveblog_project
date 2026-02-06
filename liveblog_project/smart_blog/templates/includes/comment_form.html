@@ -1,6 +1,9 @@
 {% if user.is_authenticated %}
-  <div class="d-flex gap-4 align-items-center justify-content-between pt-4 mb-4">
-    <h5 class="text-muted m-0">Write a comment</h5>
+  <div class="d-flex gap-2 align-items-center justify-content-between pt-4 mb-4">
+    <div class="d-flex align-items-center gap-2">
+      <h6 class="text-muted m-0">Write a comment</h6>
+      <small class="text-muted hidden" title="Max 500 characters.">(Max 500 chars)</small>
+    </div>
   </div>
 
   <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-4">

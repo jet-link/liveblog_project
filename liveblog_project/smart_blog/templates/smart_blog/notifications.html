@@ -29,16 +29,16 @@
       <div id="notificationsLegend" class="notifications-legend text-muted">
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker comment-reply-marker"></span>
-          <span>Replied comments</span>
+          <span>Comment replied</span>
         </div>
 
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker comment-like-marker"></span>
-          <span>Liked comments</span>
+          <span>Comment liked</span>
         </div>
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker item-like-marker"></span>
-          <span>Liked items</span>
+          <span>Item liked</span>
         </div>
         <div class="d-flex align-items-center gap-2 my-1">
           <span class="marker read-marker"></span>
@@ -55,8 +55,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted small d-flex align-items-center gap-1">
                   {% if n.actor_name %}
-                    <span class="custom_badge badge_primary">{{ n.actor_name }}</span>
-                    {% comment %} <span>-</span> {% endcomment %}
+                    <a href="{% url 'login_app:profile' n.actor_name %}" class="custom_badge badge_primary">{{ n.actor_name }}</a>
                   {% else %}
                     <span class="fw-bolder">Deleted account</span>
                   {% endif %}
@@ -73,6 +72,10 @@
                   <span class="notification-dot dot-{{ n.notif_type }}" aria-hidden="true"></span>
                 {% endif %}
               </div>
+            </div>
+            <div class="d-flex gap-1 mt-3 small">
+              <i class="fa fa-calendar-check-o"></i>
+              <small class="text-muted">{{ n.human_added }}</small>
             </div>
 
             <!-- ───────── line ───────── -->
@@ -131,5 +134,5 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'smart_blog/js/notifications.js' %}"></script>
+  <script defer src="{% static 'smart_blog/js/notifications.js' %}"></script>
 {% endblock %}

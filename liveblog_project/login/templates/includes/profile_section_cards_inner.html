@@ -1,0 +1,18 @@
+{% if items %}
+  <div class="profile-cards-scroll" data-scroll-container data-anchor="profile-section-{{ section_id }}">
+    {% include 'includes/all_cards.html' with items=items listing_source='profile' listing_user=listing_user listing_section=section_id %}
+  </div>
+{% else %}
+  <div class="text-muted small fw-bolder">There are no items yet!</div>
+{% endif %}
+
+{% if items and count|add:0 > 2 %}
+  <div class="profile-section-controls d-flex justify-content-between align-items-center">
+    <a href="{{ link_url }}" class="profile-section-link text-decoration-none small" data-anchor="profile-section-{{ section_id }}">View all {{ title|lower }} items <span class="ms-2">→</span></a>
+    <div class="profile-scroll-buttons d-flex align-items-center gap-2">
+      <button type="button" class="scroll-btn" data-scroll-prev aria-label="Scroll left"><i class="fa fa-angle-left back-angle" aria-hidden="true"></i></button>
+      <button type="button" class="scroll-btn" data-scroll-next aria-label="Scroll right"><i class="fa fa-angle-right back-angle" aria-hidden="true"></i></button>
+      <a href="{{ link_url }}" class="profile-section-link text-decoration-none small d-none" data-anchor="profile-section-{{ section_id }}" data-scroll-viewall>View all {{ title|lower }} items <span class="ms-2">→</span></a>
+    </div>
+  </div>
+{% endif %}

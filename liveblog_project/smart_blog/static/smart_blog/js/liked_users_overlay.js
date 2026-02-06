@@ -10,7 +10,24 @@
   const current = document.getElementById('likedUsersCurrent');
   if (!overlay) return;
 
+  function updateListMaxHeight() {
+    if (!list) return;
+    const sample = list.querySelector('.liked-users-item');
+    if (!sample) {
+      list.style.maxHeight = '';
+      return;
+    }
+    const styles = window.getComputedStyle(list);
+    const gap = parseFloat(styles.rowGap || styles.gap || 0) || 0;
+    const itemHeight = sample.getBoundingClientRect().height || 0;
+    if (!itemHeight) return;
+    const target = Math.round(itemHeight * 10 + gap * 9);
+    list.style.maxHeight = `${target}px`;
+    list.style.overflowY = 'auto';
+  }
+
   function openOverlay() {
+    updateListMaxHeight();
     overlay.classList.remove('hidden');
     overlay.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
@@ -45,6 +62,9 @@
   });
   window.addEventListener('pagehide', closeOverlay);
   window.addEventListener('pageshow', closeOverlay);
+  window.addEventListener('resize', () => {
+    updateListMaxHeight();
+  });
 
   function upsertListItem(username, avatarUrl, profileUrl) {
     if (!list) return;
@@ -60,6 +80,10 @@
     img.src = avatarUrl;
     img.alt = username;
     img.className = 'user-avatar';
+    img.width = 30;
+    img.height = 30;
+    img.decoding = 'async';
+    img.loading = 'lazy';
     img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
     avatarWrap.appendChild(img);
     const badge = document.createElement('span');
@@ -92,6 +116,10 @@
       img.src = sourceImg?.getAttribute('src') || '/static/img/no_avatar.svg';
       img.alt = username;
       img.className = sourceImg?.className || 'user-avatar';
+      img.width = 30;
+      img.height = 30;
+      img.decoding = 'async';
+      img.loading = 'lazy';
       img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
       link.appendChild(img);
       stack.appendChild(link);
@@ -126,5 +154,6 @@
     if (typeof data.likes_count === 'number') {
       updateButtonVisibility(data.likes_count);
     }
+    updateListMaxHeight();
   };
 })();

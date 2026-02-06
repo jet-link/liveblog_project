@@ -83,8 +83,8 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>`
-      : `<h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
+      ? `<h6 class="pt-5 pb-2 m-0 text-muted">Comments</h6>`
+      : `<h6 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h6>`;
   }
 
   function getThreadLinkCount(link) {
@@ -211,6 +211,30 @@
     textarea?.closest('form')?.querySelector('.field-error')?.remove();
   }
 
+  const COMMENT_MAX_CHARS = 500;
+
+  function countCommentChars(value) {
+    return String(value || '').replace(/\r?\n/g, '').length;
+  }
+
+  function enforceCommentLimit(textarea, errorContainer = null) {
+    if (!textarea) return true;
+    const count = countCommentChars(textarea.value);
+    if (count <= COMMENT_MAX_CHARS) {
+      if (errorContainer) errorContainer.textContent = '';
+      else clearFieldError(textarea);
+      return true;
+    }
+    const msg = 'Maximum 500 characters (line breaks are not counted).';
+    if (errorContainer) {
+      errorContainer.textContent = msg;
+    } else {
+      showFieldError(textarea, msg);
+    }
+    return false;
+  }
+  window.enforceCommentLimit = enforceCommentLimit;
+
   /* ===============================
      ADD COMMENT
   =============================== */
@@ -332,6 +356,7 @@
     updateCommentButtonCooldown(btn, itemId);
     textarea.addEventListener('input', () => {
       clearFieldError(textarea);
+      enforceCommentLimit(textarea);
     });
 
     btn.addEventListener('click', async (e) => {
@@ -343,6 +368,7 @@
       }
 
       clearFieldError(textarea);
+      if (!enforceCommentLimit(textarea)) return;
       const text = textarea.value.trim();
       if (!text) {
         showFieldError(textarea, 'Please write a text...');
@@ -1385,6 +1411,14 @@
     if (!textarea || !errors || !parentComment) return;
 
     errors.textContent = '';
+
+    const limitOk = window.enforceCommentLimit
+      ? window.enforceCommentLimit(textarea, errors)
+      : true;
+    if (!limitOk) {
+      textarea.focus();
+      return;
+    }
 
     let text = textarea.value.trim();
     if (!text) {

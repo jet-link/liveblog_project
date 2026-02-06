@@ -206,6 +206,7 @@ class ItemCreateForm(forms.ModelForm):
 
 # simple CommentForm (оставил как есть; при необходимости можно расширить)
 class CommentForm(forms.ModelForm):
+    MAX_TEXT_LEN = 500
     class Meta:
         model = Comment
         fields = ["text"]
@@ -231,6 +232,11 @@ class CommentForm(forms.ModelForm):
     def clean_text(self):
         raw = self.cleaned_data.get("text", "") or ""
         raw = raw.replace('\x00', '')
+        normalized = normalize_comment_text(raw)
+        text_for_count = re.sub(r'@\[\s*user\s*:\s*\d+\s*\],\s*', '', normalized)
+        text_for_count = re.sub(r'[\r\n]', '', text_for_count)
+        if len(text_for_count) > self.MAX_TEXT_LEN:
+            raise ValidationError(_('Maximum 500 characters (line breaks are not counted).'))
 
         allowed_tags = ['a', 'b', 'strong', 'i', 'em', 'u', 'br', 'p', 'div', 'span']
         allowed_attrs = {

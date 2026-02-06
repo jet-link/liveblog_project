@@ -122,6 +122,31 @@
         } catch { }
     }
 
+    function loadSectionContent(section) {
+        if (!section) return Promise.resolve(false);
+        if (section.dataset.loaded === '1') return Promise.resolve(true);
+        const url = section.dataset.lazyUrl;
+        if (!url) {
+            section.dataset.loaded = '1';
+            return Promise.resolve(true);
+        }
+        section.classList.add('is-loading');
+        return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(resp => (resp.ok ? resp.text() : ''))
+            .then(html => {
+                if (!html) return false;
+                section.innerHTML = html;
+                section.dataset.loaded = '1';
+                setupHorizontalScroll(section);
+                section.__updateControls?.();
+                return true;
+            })
+            .catch(() => false)
+            .finally(() => {
+                section.classList.remove('is-loading');
+            });
+    }
+
     function setupSectionTabs() {
         const tabs = Array.from(document.querySelectorAll('.profile-section-tab'));
         if (!tabs.length) return;
@@ -146,25 +171,27 @@
             sections.forEach(({ section }) => {
                 section.classList.toggle('is-active', section === ctx);
             });
-            if (ctx && ctx.__updateControls) {
-                setTimeout(() => {
-                    if (resetIndex) {
-                        ctx.__lastIndex = 0;
-                        try { sessionStorage.removeItem('section_scroll_index_' + ctx.id); } catch { }
-                    } else if (ctx.__lastIndex == null) {
-                        try {
-                            const savedIndex = sessionStorage.getItem('section_scroll_index_' + ctx.id);
-                            if (savedIndex !== null) {
-                                const parsed = parseInt(savedIndex, 10);
-                                ctx.__lastIndex = Number.isNaN(parsed) ? 0 : parsed;
-                            }
-                        } catch { }
-                    }
-                    if (ctx.__lastIndex == null) ctx.__lastIndex = 0;
-                    ctx.__scrollToIndex?.(ctx.__lastIndex, 'auto');
-                    ctx.__updateControls?.();
-                }, 80);
-            }
+            loadSectionContent(ctx).then(() => {
+                if (ctx && ctx.__updateControls) {
+                    setTimeout(() => {
+                        if (resetIndex) {
+                            ctx.__lastIndex = 0;
+                            try { sessionStorage.removeItem('section_scroll_index_' + ctx.id); } catch { }
+                        } else if (ctx.__lastIndex == null) {
+                            try {
+                                const savedIndex = sessionStorage.getItem('section_scroll_index_' + ctx.id);
+                                if (savedIndex !== null) {
+                                    const parsed = parseInt(savedIndex, 10);
+                                    ctx.__lastIndex = Number.isNaN(parsed) ? 0 : parsed;
+                                }
+                            } catch { }
+                        }
+                        if (ctx.__lastIndex == null) ctx.__lastIndex = 0;
+                        ctx.__scrollToIndex?.(ctx.__lastIndex, 'auto');
+                        ctx.__updateControls?.();
+                    }, 80);
+                }
+            });
         }
 
         function activateById(sectionId, instant = false) {

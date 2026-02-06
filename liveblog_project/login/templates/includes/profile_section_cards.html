@@ -1,20 +1,19 @@
-<section id="profile-section-{{ section_id }}" class="profile-section" data-section="{{ section_id }}" data-count="{{ count }}">
+<section id="profile-section-{{ section_id }}"
+         class="profile-section"
+         data-section="{{ section_id }}"
+         data-count="{{ count }}"
+         data-lazy-url="{{ lazy_url|default:'' }}"
+         data-loaded="{% if items %}1{% else %}0{% endif %}">
   {% if items %}
-    <div class="profile-cards-scroll" data-scroll-container data-anchor="profile-section-{{ section_id }}">
-      {% include 'includes/all_cards.html' with items=items listing_source='profile' listing_user=user_obj.username listing_section=section_id %}
+    {% include 'includes/profile_section_cards_inner.html' with items=items count=count section_id=section_id title=title link_url=link_url listing_user=user_obj.username %}
+  {% elif lazy_url %}
+    <div class="profile-section-placeholder text-muted small">
+      Tap the tab to load {{ title|lower }} items.
     </div>
+    {% if count|add:0 > 0 %}
+      <a href="{{ link_url }}" class="profile-section-link text-decoration-none small" data-anchor="profile-section-{{ section_id }}">View all {{ title|lower }} items <span class="ms-2">→</span></a>
+    {% endif %}
   {% else %}
     <div class="text-muted small fw-bolder">There are no items yet!</div>
-  {% endif %}
-
-  {% if items and count|add:0 > 2 %}
-    <div class="profile-section-controls d-flex justify-content-between align-items-center">
-      <a href="{{ link_url }}" class="profile-section-link text-decoration-none small" data-anchor="profile-section-{{ section_id }}">View all {{ title|lower }} items <span class="ms-2">→</span></a>
-      <div class="profile-scroll-buttons d-flex align-items-center gap-2">
-        <button type="button" class="scroll-btn" data-scroll-prev aria-label="Scroll left"><i class="fa fa-angle-left back-angle" aria-hidden="true"></i></button>
-        <button type="button" class="scroll-btn" data-scroll-next aria-label="Scroll right"><i class="fa fa-angle-right back-angle" aria-hidden="true"></i></button>
-        <a href="{{ link_url }}" class="profile-section-link text-decoration-none small d-none" data-anchor="profile-section-{{ section_id }}" data-scroll-viewall>View all {{ title|lower }} items <span class="ms-2">→</span></a>
-      </div>
-    </div>
   {% endif %}
 </section>

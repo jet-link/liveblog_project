@@ -681,6 +681,14 @@
     opacity: 1;
 }
 
+.profile-section-placeholder {
+    padding: 18px 0;
+}
+
+.profile-section.is-loading {
+    opacity: 0.7;
+}
+
 .profile-cards-scroll {
     overflow-x: hidden;
     scroll-behavior: smooth;
@@ -764,7 +772,7 @@
 
 .notification-row {
     padding: 15px;
-    border: 1.5px solid #ececec;
+    border: 1px solid #ececec;
     border-radius: 12px;
     background: #fff;
 }
@@ -776,7 +784,7 @@
 }
 
 .notification-read-btn {
-    border: 2px solid #2980b9;
+    border: 1px solid #2980b9;
     color: #2980b9;
     background: transparent;
 }
@@ -1028,7 +1036,7 @@
     border-left: 3px solid #2980b9;
     background: #f8f9fc;
     color: #2d3436;
-    font-weight: 500;
+    /* font-weight: 500; */
     border-radius: 7px;
     font-size: .8rem;
 }

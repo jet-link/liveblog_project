@@ -417,6 +417,20 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.recipient} on {self.item}"
+    
+    @property
+    def human_added(self):
+        created_at = timezone.localtime(self.created_at)
+        now_local = timezone.localtime(timezone.now())
+        delta_days = (now_local.date() - created_at.date()).days
+        if delta_days == 0:
+            return f"Today at {created_at.strftime('%H:%M')}"
+        elif delta_days == 1:
+            return f"Yesterday {created_at.strftime('%H:%M')}"
+        elif 2 <= delta_days <= 5:
+            return f"{delta_days} days ago at {created_at.strftime('%H:%M')}"
+        else:
+            return f"{created_at.strftime("%d.%m.%Y")} at {created_at.strftime('%H:%M')}"
 
     def get_absolute_url(self):
         if self.reply_comment_id:

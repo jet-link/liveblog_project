@@ -21,8 +21,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
         <small class="d-flex align-items-center gap-2">
-          {% comment %} <span class="primary_">Published:</span> {% endcomment %}
-          <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+          {% comment %} <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {% endcomment %}
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
@@ -35,8 +34,9 @@
           <small class="primary_ fw-bolder">It's your item</small>
         {% else %}
           <div>
-            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Author">
-              <small class="custom_badge badge_primary">{{ item.author }}</small>
+            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Item author">
+              {% comment %} <small class="custom_badge badge_primary">{{ item.author }}</small> {% endcomment %}
+
               <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                   <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -44,6 +44,7 @@
                   <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" />
                 {% endif %}
               </div>
+
             </a>
           </div>
         {% endif %}
@@ -139,9 +140,9 @@
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
                 {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" />
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" />
                 {% endif %}
               </a>
             {% endif %}
@@ -166,9 +167,9 @@
     {% include 'includes/comment_form.html' %}
     <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>
+        <h6 class="pt-5 pb-2 m-0 text-muted">Comments</h6>
       {% else %}
-        <h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>
+        <h6 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h6>
       {% endif %}
     </div>
 
@@ -206,9 +207,9 @@
             <a href="{% url 'login_app:profile' like.user.username %}" class="liked-users-item d-flex align-items-center gap-2 text-decoration-none" data-like-user="{{ like.user.username }}">
               <div class="liked-user-avatar little-avatar">
                 {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" />
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" />
                 {% endif %}
               </div>
               <span class="custom_badge badge_primary">{{ like.user.username }}</span>
@@ -221,6 +222,6 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'smart_blog/js/liked_users_overlay.js' %}"></script>
-  <script src="{% static 'smart_blog/js/report_modal.js' %}"></script>
+  <script defer src="{% static 'smart_blog/js/liked_users_overlay.js' %}"></script>
+  <script defer src="{% static 'smart_blog/js/report_modal.js' %}"></script>
 {% endblock %}

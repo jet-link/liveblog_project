@@ -8,17 +8,17 @@
       <article id="item-{{ item.pk }}" class="card w-100 h-100 shadow-sm border rounded overflow-hidden d-flex flex-column item_block" data-item-id="{{ item.pk }}">
         <div class="card-body d-flex flex-column">
           <!-- Верх: автор и просмотры -->
-          <div class="d-flex justify-content-between align-items-center my-3">
+          <div class="d-flex justify-content-between align-items-center py-2">
             <div class="d-flex align-items-center gap-2">
               {% if item.author %}
-                <div class="little-avatar ms-1">
+                <div class="little-avatar">
                   {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                    <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                    <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
                   {% else %}
-                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" />
+                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" />
                   {% endif %}
                 </div>
-                <small class="d-inline-block text-primary-emphasis ms-1 fw-bolder">{{ item.author }}</small>
+                <small class="d-inline-block text-primary-emphasis fw-semibold">{{ item.author }}</small>
               {% else %}
                 <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i>
                 <strong class="d-inline-block text-primary-emphasis fw-semibold">Deleted account</strong>
@@ -26,17 +26,18 @@
             </div>
 
             <div class="item-stats text-muted d-inline-flex align-items-center">
-              <div class="stat">
+              <div class="stat p-0">
                 <!-- здесь id у span совпадает с тем, что ищет listing-apply-changes -->
                 <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
                 <i class="fa fa-heart danger_" aria-hidden="true"></i>
               </div>
-              <div class="stat">
+              {% comment %} <div class="stat">
                 <!-- Иконка bookmark — даём уникальный id, и span для количества -->
                 <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
                 <i class="fa fa-bookmark primary_" aria-hidden="true"></i>
-              </div>
+              </div> {% endcomment %}
             </div>
+            
           </div>
           <hr />
           <!-- Заголовок -->
@@ -50,21 +51,21 @@
               </div>
             </div>
 
-            <div class="item_thumbnail">
+            {% comment %} <div class="item_thumbnail">
               {% if item.images.first %}
-                <img src="{{ item.images.first.image.url }}" alt="thumbnail" class="thumb-sm" />
+                <img src="{{ item.images.first.image.url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
               {% else %}
-                <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" />
+                <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
               {% endif %}
-            </div>
+            </div> {% endcomment %}
           </div>
 
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-3 excerpt-html">{{ item.short_text }}</p>
 
           <hr />
-          <!-- Нижняя панель — ссылка влево, лайки/закладки вправо -->
-          <div class="d-flex justify-content-between align-items-center pt-4 pb-4">
+          <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->
+          <div class="d-flex justify-content-between align-items-center py-2">
             <!-- ! важно: добавил класс item-link и data-item-id (тот же id) -->
             {% if listing_source == 'profile' and listing_user and listing_section %}
               <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>

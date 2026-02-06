@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'login/js/profile_sections.js' %}"></script>
+  <script defer src="{% static 'login/js/profile_sections.js' %}"></script>
 {% endblock %}
 {% block content %}
   <div class="container content_block">
@@ -36,8 +36,8 @@
         {% include 'includes/profile_section_cards.html' with section_id='created' title='Created' count=all_count items=created_items link_url=profile_created_url %}
 
         {% if is_owner %}
-          {% include 'includes/profile_section_cards.html' with section_id='liked' title='Liked' count=liked_count items=liked_items link_url=profile_liked_url %}
-          {% include 'includes/profile_section_cards.html' with section_id='bookmarked' title='Bookmarked' count=bookmarked_count items=bookmarked_items link_url=profile_bookmarked_url %}
+          {% include 'includes/profile_section_cards.html' with section_id='liked' title='Liked' count=liked_count items=liked_items link_url=profile_liked_url lazy_url=profile_liked_url|add:'?partial=1' %}
+          {% include 'includes/profile_section_cards.html' with section_id='bookmarked' title='Bookmarked' count=bookmarked_count items=bookmarked_items link_url=profile_bookmarked_url lazy_url=profile_bookmarked_url|add:'?partial=1' %}
         {% endif %}
       </div>
     </div>

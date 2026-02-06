@@ -98,6 +98,7 @@ MAIN_COMMENTS_ANNOTATION = {
 # detail profile view
 def profile_view(request, username):
     user_obj = get_object_or_404(User, username=username)
+    is_owner = request.user.is_authenticated and request.user == user_obj
 
 
     # --- базовые queryset'ы ---
@@ -108,45 +109,48 @@ def profile_view(request, username):
         .order_by('-published_date')
     )
 
-    liked_items_qs = (
-        Item.objects
-        .with_counters()
-        .filter(likes__user=user_obj)
-        .annotate(
-            liked_at=Max(
-                'likes__created_at',
-                filter=Q(likes__user=user_obj)
-            )
-        )
-        .order_by('-liked_at')
-        .distinct()
-    )
-
-    if Bookmark is not None:
-        bookmarked_items_qs = (
+    liked_items_qs = Item.objects.none()
+    bookmarked_items_qs = Item.objects.none()
+    if is_owner:
+        liked_items_qs = (
             Item.objects
             .with_counters()
-            .filter(bookmarked_by__user=user_obj)
+            .filter(likes__user=user_obj)
             .annotate(
-                bookmarked_at=Max(
-                    'bookmarked_by__created_at',
-                    filter=Q(bookmarked_by__user=user_obj)
+                liked_at=Max(
+                    'likes__created_at',
+                    filter=Q(likes__user=user_obj)
                 )
             )
-            .order_by('-bookmarked_at')
+            .order_by('-liked_at')
             .distinct()
         )
-    else:
-        try:
+
+        if Bookmark is not None:
             bookmarked_items_qs = (
                 Item.objects
-                .filter(bookmarked_by=user_obj)
-                .order_by('-published_date')
-                .select_related('author')
-                .prefetch_related('images')
+                .with_counters()
+                .filter(bookmarked_by__user=user_obj)
+                .annotate(
+                    bookmarked_at=Max(
+                        'bookmarked_by__created_at',
+                        filter=Q(bookmarked_by__user=user_obj)
+                    )
+                )
+                .order_by('-bookmarked_at')
+                .distinct()
             )
-        except Exception:
-            bookmarked_items_qs = Item.objects.none()
+        else:
+            try:
+                bookmarked_items_qs = (
+                    Item.objects
+                    .filter(bookmarked_by=user_obj)
+                    .order_by('-published_date')
+                    .select_related('author')
+                    .prefetch_related('images')
+                )
+            except Exception:
+                bookmarked_items_qs = Item.objects.none()
 
     def apply_human_counts(items):
         for item in items:
@@ -159,14 +163,8 @@ def profile_view(request, username):
     created_items = list(user_items_qs[:SECTION_LIMIT])
     apply_human_counts(created_items)
 
-    is_owner = request.user.is_authenticated and request.user == user_obj
     liked_items = []
     bookmarked_items = []
-    if is_owner:
-        liked_items = list(liked_items_qs[:SECTION_LIMIT])
-        bookmarked_items = list(bookmarked_items_qs[:SECTION_LIMIT])
-        apply_human_counts(liked_items)
-        apply_human_counts(bookmarked_items)
 
     counts = {
         'all_count': user_items_qs.count(),
@@ -343,6 +341,7 @@ def profile_section_view(request, username, section):
         breadcrumb(section_title, None),
     )
 
+    link_url = reverse("login_app:profile-section", kwargs={"username": user_obj.username, "section": section})
     context = {
         'fields': filtered_fields,
         'user_obj': user_obj,
@@ -354,8 +353,15 @@ def profile_section_view(request, username, section):
         'section_count': section_count,
         'is_owner': is_owner,
         'breadcrumbs': breadcrumbs,
+        'section_id': section,
+        'title': section_title,
+        'count': section_count,
+        'link_url': link_url,
+        'listing_user': user_obj.username,
         **counts,
     }
+    if request.GET.get("partial") == "1":
+        return render(request, "includes/profile_section_cards_inner.html", context)
     return render(request, 'accounts/profile_section.html', context)
 
 
@@ -400,7 +406,7 @@ def notifications_view(request, username):
             notif.header_text = "liked comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
         else:
-            notif.header_text = "liked item."
+            notif.header_text = "liked item"
             notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "smart_blog/notifications.html", {
