@@ -20,24 +20,38 @@
                 </div>
                 <small class="d-inline-block text-primary-emphasis fw-semibold">{{ item.author }}</small>
               {% else %}
-                <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i>
-                <strong class="d-inline-block text-primary-emphasis fw-semibold">Deleted account</strong>
+                {% comment %} <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i> {% endcomment %}
+                <div class="little-avatar">
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+                </div>
+                <small class="d-inline-block text-primary-emphasis fw-semibold">Vanished user</small>
               {% endif %}
             </div>
 
-            <div class="item-stats text-muted d-inline-flex align-items-center">
-              <div class="stat p-0">
-                <!-- здесь id у span совпадает с тем, что ищет listing-apply-changes -->
-                <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                <i class="fa fa-heart danger_" aria-hidden="true"></i>
+            {% if user != item.author and user.is_authenticated %}
+              <div class="item-stats text-muted d-inline-flex align-items-center">
+                <div class="stat p-0">
+                  <!-- здесь id у span совпадает с тем, что ищет listing-apply-changes -->
+                  <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                  {% if item.user_liked %}
+                    <i id="like-icon-{{ item.pk }}" class="fa fa-heart danger_" aria-hidden="true"></i>
+                  {% else %}
+                    <i id="like-icon-{{ item.pk }}" class="fa fa-heart-o danger_" aria-hidden="true"></i>
+                  {% endif %}
+                </div>
+
+                {% comment %} <div class="stat">
+                  <!-- Иконка bookmark — даём уникальный id, и span для количества -->
+                  <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
+                  <i class="fa fa-bookmark primary_" aria-hidden="true"></i>
+                </div> {% endcomment %}
               </div>
-              {% comment %} <div class="stat">
-                <!-- Иконка bookmark — даём уникальный id, и span для количества -->
-                <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
-                <i class="fa fa-bookmark primary_" aria-hidden="true"></i>
-              </div> {% endcomment %}
-            </div>
-            
+            {% else %}
+              <div class="d-flex gap-1 small">
+                <span class="text-muted">Likes =</span>
+                <span class="danger_" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+              </div>
+            {% endif %}
           </div>
           <hr />
           <!-- Заголовок -->
@@ -79,11 +93,9 @@
               <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
             {% endif %}
 
-            <div class="d-flex gap-3 align-items-center">
-              <div class="d-flex gap-2 item-stats">
-                <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
-                <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
-              </div>
+            <div class="d-flex gap-2 item-stats">
+              <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
+              <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
             </div>
           </div>
         </div> <!-- /.card-body -->

@@ -8,7 +8,6 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-1 align-items-center">
         <a href="{% url 'login_app:profile' comment.author %}" class="d-flex align-items-center gap-1 text-decoration-none" title="Comment author">
-          
           <div class="little-avatar">
             {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
               <img src="{{ comment.author.profile.get_avatar }}" alt="{{ comment.author }}" class="user-avatar clickable-avatar" width="38" height="38" loading="eager" decoding="async" data-full="{{ comment.author.profile.get_avatar }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
@@ -39,22 +38,33 @@
           {% endif %}
         {% elif not user.is_authenticated or user == comment.author %}
           <button type="button" class="comment-menu-action custom_badge badge_primary" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+          {% if user.is_authenticated %}
+            <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Delete</button>
+          {% endif %}
         {% endif %}
       </div>
 
       {% if comment.parent is None %}
         <div class="d-flex gap-1 align-items-center comment-like-count">
-          <span id="comment-likes-count-{{ comment.pk }}" class="danger_ fw-bolder">{{ comment.likes_count|default:comment.likes.count }}</span>
-          <span class="text-muted fw-semibold">Likes</span>
+          <span class="text-muted">Likes =</span>
+          <span id="comment-likes-count-{{ comment.pk }}" class="danger_">{{ comment.likes_count|default:comment.likes.count }}</span>
         </div>
       {% endif %}
     </div>
   {% else %}
-    <div class="d-flex gap-2 align-items-center">
-      <span class="custom_badge badge_primary">
+    {% comment %} <div class="d-flex gap-2 align-items-center">
+      {% endcomment %}
+      {% comment %} <span class="custom_badge badge_primary">
         <i class="fa fa-frown-o" aria-hidden="true"></i>
         <span>Deleted account</span>
-      </span>
+      </span> {% endcomment %}
+      <div class="d-flex gap-2 align-items-center">
+        <div class="little-avatar">
+          <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+        </div>
+        <small class="text-muted fw-semibold">Vanished user</small>
+        {% comment %}
+      </div> {% endcomment %}
     </div>
   {% endif %}
   <!-- comment body -->

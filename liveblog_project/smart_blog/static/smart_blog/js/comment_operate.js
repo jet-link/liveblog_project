@@ -116,8 +116,7 @@
       'd-flex',
       'gap-2',
       'align-items-center',
-      'text-muted',
-      'fw-semibold'
+      'text-muted'
     );
   }
 
@@ -426,6 +425,13 @@
         console.error('Add comment failed:', err);
       } finally {
         updateCommentButtonCooldown(btn, itemId);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      const clickedInForm = e.target.closest?.('#commentForm');
+      if (!clickedInForm) {
+        clearFieldError(textarea);
       }
     });
   }
@@ -1199,6 +1205,11 @@
         textarea.value = '';
         textarea.style.height = 'auto';
         delete textarea.dataset.mentionId;
+      }
+
+      const errors = form.querySelector('.reply-form-errors');
+      if (errors) {
+        errors.textContent = '';
       }
     });
 

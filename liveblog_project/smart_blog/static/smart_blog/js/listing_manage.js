@@ -502,6 +502,14 @@
                     icon.classList.toggle('fa-bookmark-o', !data.bookmarked);
                 }
             }
+
+            if (data.liked != null) {
+                const icon = document.getElementById('like-icon-' + itemId);
+                if (icon) {
+                    icon.classList.toggle('fa-heart', data.liked);
+                    icon.classList.toggle('fa-heart-o', !data.liked);
+                }
+            }
         });
     }
 

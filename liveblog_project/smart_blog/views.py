@@ -22,12 +22,20 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 
 
+def annotate_user_liked(qs, user):
+    if user.is_authenticated:
+        likes_subq = Like.objects.filter(item=OuterRef('pk'), user=user)
+        return qs.annotate(user_liked=Exists(likes_subq))
+    return qs
+
+
 def items_list(request):
     qs = (
         Item.objects
         .with_counters()
         .order_by('-published_date')
     )
+    qs = annotate_user_liked(qs, request.user)
 
     paginator = Paginator(qs, 20)
     page_number = request.GET.get('page')
@@ -59,6 +67,7 @@ def tag_list(request, slug):
         .with_counters()
         .order_by('-published_date')
     )
+    items = annotate_user_liked(items, request.user)
 
     breadcrumbs = build_breadcrumbs(
         breadcrumb("BraiNews", reverse("smart_blog:items_list")),
@@ -115,6 +124,7 @@ def search_view(request):
             .distinct()
             .order_by('-published_date')
         )
+        items = annotate_user_liked(items, request.user)
 
     if q:
         breadcrumbs = build_breadcrumbs(

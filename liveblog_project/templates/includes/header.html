@@ -1,11 +1,25 @@
 <header class="header">
   <div class="container">
-    <nav class="nav justify-content-between align-items-center">
-      <div class="bottom-left-nav d-flex align-items-center gap-4">
-        <a class="nav-link text-muted fs-5" href="/">BrainStorm</a>
+    <nav class="nav header-nav align-items-center">
+      <div class="bottom-left-nav header-brand d-flex align-items-center gap-5">
+        <a class="nav-link text-muted" href="/">BrainStorm</a>
       </div>
-      <div class="d-flex align-items-center gap-3">
+
+      <div class="header-menu d-flex gap-4 small">
+        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
+        <a href="{% url 'pages:page' 'about' %}" class="header-menu-item text-decoration-none text-muted">About</a>
+        <a href="{% url 'pages:page' 'faq' %}" class="header-menu-item text-decoration-none text-muted">FAQ</a>
+        <a href="{% url 'pages:page' 'contacts' %}" class="header-menu-item text-decoration-none text-muted">Contacts</a>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 header-actions">
         {% if user.is_authenticated %}
+          <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn" data-notifications-count="{{ notifications_count }}">
+            {% if notifications_count_label %}
+              <span class="notifications-count">{{ notifications_count_label }}</span>
+            {% endif %}
+            <i class="fa fa-bell-o" aria-hidden="true"></i>
+          </a>
           <div class="user-menu" id="userMenu">
             <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
 
@@ -17,22 +31,16 @@
               <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Logout</a>
             </div>
           </div>
-        <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn" data-notifications-count="{{ notifications_count }}">
-          {% if notifications_count_label %}
-            <span class="notifications-count">{{ notifications_count_label }}</span>
-          {% endif %}
-          <i class="fa fa-bell-o" aria-hidden="true"></i>
-        </a>
         {% else %}
-          <a href="{% url 'login_app:login' %}" class="text-muted text-decoration-none fw-semibold">Login</a>
+          <a href="{% url 'login_app:login' %}" class="text-muted text-decoration-none">Login</a>
         {% endif %}
-        <button id="bottomBurgerBtn" class="bottom-burger" aria-label="Open menu">
+        {% comment %} <button id="bottomBurgerBtn" class="bottom-burger" aria-label="Open menu">
           <span></span>
           <span></span>
           <span></span>
-        </button>
+        </button> {% endcomment %}
       </div>
     </nav>
   </div>
 </header>
-{% include 'includes/overlay-menu.html' %}
+{% comment %} {% include 'includes/overlay-menu.html' %} {% endcomment %}

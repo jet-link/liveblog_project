@@ -5,7 +5,9 @@
         <li class="list-group-item d-flex gap-2 align-items-center justify-content-between personal-field">
           <span class="text-muted">{{ label }}</span>
           <span>
-            {% if field.type == 'email' %}
+            {% if field.is_empty %}
+              <span>( empty field )</span>
+            {% elif field.type == 'email' %}
               {% if field.is_owner %}
                 <span id="emailValue">{{ field.value }}</span>
               {% else %}

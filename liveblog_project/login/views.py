@@ -8,15 +8,32 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
-from smart_blog.models import Item
+from smart_blog.models import Item, Like
 from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
 from django.http import JsonResponse, Http404
-from django.db.models import Count, Q, Max
+from django.db.models import Count, Q, Max, Exists, OuterRef
 from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 from smart_blog.models import Notification
 from django.core.exceptions import PermissionDenied
+
+
+def annotate_user_liked(qs, user):
+    if user.is_authenticated:
+        likes_subq = Like.objects.filter(item=OuterRef('pk'), user=user)
+        return qs.annotate(user_liked=Exists(likes_subq))
+    return qs
+
+
+def build_profile_field(value, field_type, is_owner=False):
+    is_empty = not value or not str(value).strip()
+    return {
+        "value": value if not is_empty else "not specified",
+        "type": field_type,
+        "is_owner": is_owner,
+        "is_empty": is_empty,
+    }
 
 # Авторизация пользователя
 def login_view(request):
@@ -108,6 +125,7 @@ def profile_view(request, username):
         .filter(author=user_obj)
         .order_by('-published_date')
     )
+    user_items_qs = annotate_user_liked(user_items_qs, request.user)
 
     liked_items_qs = Item.objects.none()
     bookmarked_items_qs = Item.objects.none()
@@ -125,6 +143,7 @@ def profile_view(request, username):
             .order_by('-liked_at')
             .distinct()
         )
+        liked_items_qs = annotate_user_liked(liked_items_qs, request.user)
 
         if Bookmark is not None:
             bookmarked_items_qs = (
@@ -140,6 +159,7 @@ def profile_view(request, username):
                 .order_by('-bookmarked_at')
                 .distinct()
             )
+            bookmarked_items_qs = annotate_user_liked(bookmarked_items_qs, request.user)
         else:
             try:
                 bookmarked_items_qs = (
@@ -175,37 +195,20 @@ def profile_view(request, username):
     # ПЕРСОНАЛЬНЫЕ ДАННЫЕ (CLEAN)
     # ----------------------------
     fields = {
-        "Username": {
-            "value": user_obj.username,
-            "type": "text",
-        },
-        "First name": {
-            "value": user_obj.first_name,
-            "type": "text",
-        },
-        "Last name": {
-            "value": user_obj.last_name,
-            "type": "text",
-        },
+        "Username": build_profile_field(user_obj.username, "text"),
+        "First name": build_profile_field(user_obj.first_name, "text"),
+        "Last name": build_profile_field(user_obj.last_name, "text"),
     }
 
     # Email
-    if user_obj.email:
-        fields["Email"] = {
-            "value": user_obj.email,
-            "type": "email",
-            "is_owner": request.user == user_obj,
-        }
-
-    # убрать пустые значения
-    filtered_fields = {
-        label: data
-        for label, data in fields.items()
-        if data.get("value") and str(data["value"]).strip()
-    }
+    fields["Email"] = build_profile_field(
+        user_obj.email,
+        "email",
+        is_owner=request.user == user_obj,
+    )
 
     context = {
-        'fields': filtered_fields,
+        'fields': fields,
         'user_obj': user_obj,
         'created_items': created_items,
         'liked_items': liked_items,
@@ -225,6 +228,7 @@ def profile_section_view(request, username, section):
         .filter(author=user_obj)
         .order_by('-published_date')
     )
+    user_items_qs = annotate_user_liked(user_items_qs, request.user)
 
     liked_items_qs = (
         Item.objects
@@ -239,6 +243,7 @@ def profile_section_view(request, username, section):
         .order_by('-liked_at')
         .distinct()
     )
+    liked_items_qs = annotate_user_liked(liked_items_qs, request.user)
 
     if Bookmark is not None:
         bookmarked_items_qs = (
@@ -254,6 +259,7 @@ def profile_section_view(request, username, section):
             .order_by('-bookmarked_at')
             .distinct()
         )
+        bookmarked_items_qs = annotate_user_liked(bookmarked_items_qs, request.user)
     else:
         try:
             bookmarked_items_qs = (
@@ -406,7 +412,7 @@ def notifications_view(request, username):
             notif.header_text = "liked comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
         else:
-            notif.header_text = "liked item"
+            notif.header_text = "liked post"
             notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "smart_blog/notifications.html", {

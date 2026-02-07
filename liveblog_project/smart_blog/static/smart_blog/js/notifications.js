@@ -189,11 +189,21 @@
     });
   }
 
+  function initInstantLinkMarking() {
+    document.addEventListener('pointerdown', (e) => {
+      const link = e.target.closest?.('a.notification-target-link');
+      if (!link) return;
+      if (e.button !== undefined && e.button !== 0) return;
+      const id = link.dataset.notificationId;
+      if (id) markSeen(id, true);
+    }, true);
+  }
+
   function updateShowMore() {
     const btn = document.getElementById('showMoreBtn');
     const rows = Array.from(document.querySelectorAll('.notification-row'));
     if (!btn || !rows.length) return;
-    const STEP = 10;
+    const STEP = 50;
     let shown = Math.min(STEP, rows.length);
 
     function render() {
@@ -289,6 +299,7 @@
 
   updateShowMore();
   initLegendDropdown();
+  initInstantLinkMarking();
   initSeenMarkers();
   syncUnreadCount();
   window.addEventListener('pageshow', () => {
