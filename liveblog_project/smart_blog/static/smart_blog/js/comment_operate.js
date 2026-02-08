@@ -1692,7 +1692,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     root.querySelectorAll('.comment-text').forEach(textEl => {
       if (textEl.dataset.toggleInit) return;
 
-      if (textEl.textContent.trim().length <= 400) return;
+      if (textEl.textContent.trim().length <= 350) return;
 
       textEl.dataset.fullHtml ||= textEl.innerHTML;
 
@@ -1705,7 +1705,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
       function render() {
         textEl.innerHTML = expanded
           ? textEl.dataset.fullHtml
-          : buildShortHTML(textEl.dataset.fullHtml, 400);
+          : buildShortHTML(textEl.dataset.fullHtml, 350);
 
         btn.textContent = expanded ? 'Show less' : 'Show more';
       }
@@ -1729,9 +1729,9 @@ function buildShortHTML(fullHTML, maxLen = 400) {
 })();
 
 
-/* comments-root-pagination.js (temporarily disabled)
+// comments-root-pagination.js
 (function () {
-  const STEP = 10;
+  const STEP = 50;
   let paginationState = null; // Сохраняем состояние пагинации
   let collapseMode = false;
 
@@ -1915,6 +1915,5 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     initRootCommentsPagination(false); // При первой загрузке не сохраняем состояние
   });
 })();
-*/
 
 

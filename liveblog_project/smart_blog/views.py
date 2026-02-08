@@ -256,6 +256,7 @@ def item_detail(request, slug):
     item = (
         Item.objects
         .with_counters()
+        .annotate(reports_count=Count('reports', distinct=True))
         .get(pk=item.pk)
     )
 
@@ -276,6 +277,7 @@ def item_detail(request, slug):
             user_liked=Exists(likes_subq),
             likes_count=Count('likes', distinct=True),
             replies_count=Count('replies', distinct=True),  # ✅ ВАЖНО
+            reports_count=Count('reports', distinct=True),
         )
         .order_by('-created')
     )
@@ -283,6 +285,7 @@ def item_detail(request, slug):
     replies_qs = (
         Comment.objects
         .filter(parent__isnull=False)
+        .annotate(reports_count=Count('reports', distinct=True))
         .order_by('-created')   # 🔥 СВЕЖИЕ СВЕРХУ
         )
 
@@ -386,10 +389,13 @@ def item_detail(request, slug):
 def comment_thread(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
-    replies_qs = Comment.objects.order_by('-created')
+    replies_qs = Comment.objects.annotate(
+        reports_count=Count('reports', distinct=True)
+    ).order_by('-created')
     comment = (
         Comment.objects
         .filter(pk=comment.pk)
+        .annotate(reports_count=Count('reports', distinct=True))
         .prefetch_related(
             Prefetch('replies', queryset=replies_qs),
             Prefetch('replies__replies', queryset=replies_qs),

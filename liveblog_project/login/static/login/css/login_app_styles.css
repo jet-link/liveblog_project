@@ -134,6 +134,10 @@
     color: #929497;
 }
 
+.empty-field{
+    color: #ff7675 !important;
+}
+
 .preview {
     width: 20px;
     height: 20px;
@@ -455,9 +459,8 @@
 
 .password-toggle {
     display: none;
-    /* hidden by default */
     color: inherit;
-    font-size: 0.9rem;
+    font-size: .8rem;
     opacity: 0.9;
     transition: opacity .12s ease, transform .12s ease;
     -webkit-tap-highlight-color: transparent;
@@ -472,7 +475,6 @@
 
 .password-toggle:focus {
     outline: none;
-    /* transform: translateY(-1px); */
 }
 
 .card-switcher {
@@ -1074,4 +1076,13 @@
 
 .liked-item {
     font-size: .875rem;
+}
+
+
+.instruction-btn{
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    color: #9a9898;
+    padding: 0;
 }

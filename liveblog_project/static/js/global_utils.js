@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     f.dataset._pwShown = '0';
                 }
             });
-            toggle.innerHTML = `Show<i class="fa fa-eye mx-2"></i>password`;
+            toggle.innerHTML = `Show<i class="fa fa-eye mx-1"></i>password`;
             toggle.setAttribute('aria-pressed', 'false');
             toggle.dataset.state = 'hidden';
         }
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             toggle.dataset.state = 'hidden';
             toggle.setAttribute('aria-pressed', 'false');
-            toggle.innerHTML = `Show<i class="fa fa-eye mx-2"></i>password`;
+            toggle.innerHTML = `Show<i class="fa fa-eye mx-1"></i>password`;
         } else {
             fields.forEach(f => {
                 try { f.type = 'text'; } catch (e) { }
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             toggle.dataset.state = 'shown';
             toggle.setAttribute('aria-pressed', 'true');
-            toggle.innerHTML = `Hide<i class="fa fa-eye-slash mx-2"></i>password`;
+            toggle.innerHTML = `Hide<i class="fa fa-eye-slash mx-1"></i>password`;
         }
     }
 

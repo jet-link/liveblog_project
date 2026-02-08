@@ -15,32 +15,44 @@
               <img src="{% static 'img/no_avatar.svg' %}" alt="{{ comment.author }}" class="user-avatar no_avatar" width="38" height="38" loading="eager" decoding="async" />
             {% endif %}
           </div>
-
-          {% comment %} <span class="custom_badge badge_primary">{{ comment.author }}</span> {% endcomment %}
         </a>
-        {% if user != comment.author and user.is_authenticated %}
-          {% if not hide_reply %}
-            {% if not thread_view or depth|default:0 > 0 %}
+        {% if user.is_authenticated %}
+          {% if user == comment.author %}
+            {% if comment.parent is None and comment.is_editable %}
               <div class="comment-menu">
                 <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
                 <div class="comment-actions">
                   <i class="fa fa-angle-right mx-1 success_"></i>
-                  <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                  <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-                  {% if not user.is_staff %}
-                    <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
-                  {% else %}
-                    <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Delete</button>
-                  {% endif %}
                 </div>
               </div>
+            {% else %}
+              <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+            {% endif %}
+          {% else %}
+            {% if not hide_reply %}
+              {% if not thread_view or depth|default:0 > 0 %}
+                <div class="comment-menu">
+                  <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+                  <div class="comment-actions">
+                    <i class="fa fa-angle-right mx-1 success_"></i>
+                    <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                    <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+                    {% if user.is_staff %}
+                      {% if comment.reports_count|default:0 > 10 %}
+                        <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment text-uppercase" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
+                      {% endif %}
+                    {% else %}
+                      <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
             {% endif %}
           {% endif %}
-        {% elif not user.is_authenticated or user == comment.author %}
+        {% else %}
           <button type="button" class="comment-menu-action custom_badge badge_primary" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-          {% if user.is_authenticated %}
-            <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Delete</button>
-          {% endif %}
         {% endif %}
       </div>
 
@@ -52,24 +64,16 @@
       {% endif %}
     </div>
   {% else %}
-    {% comment %} <div class="d-flex gap-2 align-items-center">
-      {% endcomment %}
-      {% comment %} <span class="custom_badge badge_primary">
-        <i class="fa fa-frown-o" aria-hidden="true"></i>
-        <span>Deleted account</span>
-      </span> {% endcomment %}
-      <div class="d-flex gap-2 align-items-center">
-        <div class="little-avatar">
-          <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
-        </div>
-        <small class="text-muted fw-semibold">Vanished user</small>
-        {% comment %}
-      </div> {% endcomment %}
+    <div class="d-flex gap-2 align-items-center">
+      <div class="little-avatar">
+        <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+      </div>
+      <small class="text-muted fw-semibold">Vanished user</small>
     </div>
   {% endif %}
   <!-- comment body -->
-  <div class="comment-body py-3">
-    <div class="comment-text mb-2">
+  <div class="comment-body my-3">
+    <div class="comment-text">
       {% if no_mentions %}
         {{ comment.text|linebreaksbr }}
       {% else %}
@@ -85,7 +89,6 @@
   <div class="d-flex justify-content-between small text-muted align-items-center">
     <div class="text-muted d-flex align-items-center">
       <small class="d-flex align-items-center gap-2">
-        {% comment %} <i class="fa fa-calendar-plus-o" aria-hidden="true"></i> {% endcomment %}
         <span>{{ comment.human_published }}</span>
         {% if comment.parent is None and comment.is_edited %}
           <span>/</span>
@@ -93,20 +96,7 @@
         {% endif %}
       </small>
     </div>
-
-    {% if user.is_authenticated and user == comment.author %}
-      <div class="comment-controls d-flex gap-1 align-items-center">
-        {% if comment.parent is None %}
-          {% if comment.is_editable %}
-            <button type="button" class="manipulate success_ edit_btn btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment"><i class="fa fa-pencil"></i></button>
-          {% else %}
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit comment" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Editing expired"><i class="fa fa-pencil"></i></span>
-          {% endif %}
-        {% endif %}
-
-        {% comment %} <button type="button" class="manipulate delete_btn btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment"><i class="fa fa-trash"></i></button> {% endcomment %}
-      </div>
-    {% elif user.is_authenticated and user != comment.author %}
+    {% if user.is_authenticated and user != comment.author %}
       <div class="d-flex gap-1 align-items-center">
         {% if comment.parent is None %}
           <button type="button" class="thumb_btn btn-comment-like" data-url="{% url 'smart_blog:toggle_comment_like' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-pressed="{{ comment.user_liked|yesno:'true,false' }}"><i id="comment-like-icon-{{ comment.pk }}" class="fa fa-{{ comment.user_liked|yesno:'thumbs-up,thumbs-o-up' }}"></i></button>

@@ -11,8 +11,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="text-muted m-0">{{ item.title }}</h2>
       <div class="d-flex gap-1 align-items-center">
-        <button type="button" class="item_share_btn"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
-
+        <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
+        
         {% if user != item.author and not user.is_staff and user.is_authenticated %}
           <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
         {% endif %}
@@ -49,10 +49,6 @@
           </div>
         {% endif %}
       {% else %}
-        {% comment %} <div class="d-flex gap-2 success_ fw-semibold align-items-center">
-          <i class="fa fa-frown-o" aria-hidden="true"></i>
-          <small>Deleted account</small>
-        </div> {% endcomment %}
         <div class="d-flex align-items-center gap-2">
           <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
@@ -99,7 +95,6 @@
           {% if user == item.author and is_editable %}
             <a class="edit_btn manipulate"
               href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}
-                
                 
                 ?{{ request.GET.urlencode }}
               {% endif %}"
@@ -161,6 +156,12 @@
       </div>
     </div>
 
+    {% if user.is_authenticated and user.is_staff and item.reports_count|default:0 > 10 %}
+      <div class="d-flex justify-content-end mb-4">
+        <button type="button" class="cstm-btn custom-danger-btn cstm-btn-sm" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" aria-label="Delete post">Delete post</button>
+      </div>
+    {% endif %}
+
     {% if user.is_authenticated %}
       <div id="likedUsersCurrent"
         data-username="{{ user.username }}"
@@ -190,11 +191,11 @@
       {% endfor %}
     </div>
 
-    {% comment %} {% if comments|length > 10 %}
+    {% if comments|length > 50 %}
       <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center mt-2">
         <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
       </div>
-    {% endif %} {% endcomment %}
+    {% endif %}
 
     <button id="commentsBackToTop" type="button" aria-label="Back to comments top" title="Back to comments top"><span>↑</span></button>
   </div>

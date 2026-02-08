@@ -11,8 +11,13 @@
         {% csrf_token %}
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="m-0 fw-normal text-uppercase primary_">Sign up</h5>
-          <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I already have account</a></small>
+          <div class="d-flex gap-2 align-items-center">
+            <h5 class="m-0 fw-normal text-uppercase primary_">Sign up</h5>
+            <button type="button" class="instruction-btn">
+              <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+            </button>
+          </div>
+          <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I have account</a></small>
         </div>
 
         {# Общие ошибки формы (например password_mismatch) #}

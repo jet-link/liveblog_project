@@ -93,10 +93,11 @@
               <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
             {% endif %}
 
-            <div class="d-flex gap-2 item-stats">
+            {% comment %} <div class="d-flex gap-2 item-stats">
               <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
               <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
-            </div>
+            </div> {% endcomment %}
+            
           </div>
         </div> <!-- /.card-body -->
       </article>
