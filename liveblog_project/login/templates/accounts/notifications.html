@@ -20,7 +20,10 @@
           {% if unread_count > 0 %}
             <button id="notificationsReadAll" type="button" class="cstm-btn custom-primary-btn cstm-btn-sm">Read all</button>
           {% endif %}
-          <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm">Delete</button>
+          <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm">
+            Remove
+            <i class="fa fa-trash-o mx-1"></i>
+          </button>
         </div>
       {% endif %}
     </div>
@@ -119,13 +122,13 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-muted">Delete notifications</h5>
+          <h5 class="modal-title text-muted">Remove notifications</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">Select an action for notifications:</div>
         <div class="modal-footer">
-          <button id="notificationsDeleteAll" type="button" class="cstm-btn custom-danger-btn cstm-btn-sm">Delete all</button>
-          <button id="notificationsDeleteLast5" type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm">Delete last 5</button>
+          <button id="notificationsDeleteAll" type="button" class="cstm-btn custom-danger-btn cstm-btn-sm">Remove all</button>
+          <button id="notificationsDeleteLast5" type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm">Remove last 5</button>
         </div>
       </div>
     </div>

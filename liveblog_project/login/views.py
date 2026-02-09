@@ -415,7 +415,7 @@ def notifications_view(request, username):
             notif.header_text = "liked post"
             notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
-    return render(request, "smart_blog/notifications.html", {
+    return render(request, "accounts/notifications.html", {
         "notifications": notifications,
         "unread_count": unread_count,
     })
@@ -476,3 +476,38 @@ def remove_avatar(request):
         'success': True,
         'default_avatar': static('img/no_avatar.svg')
     })
+
+
+@login_required
+@require_POST
+def mark_notification_read(request):
+    notif_id = request.POST.get("notification_id")
+    try:
+        notif_id = int(notif_id)
+    except (TypeError, ValueError):
+        return JsonResponse({"success": False, "error": "Invalid id."}, status=400)
+
+    notif = get_object_or_404(Notification, pk=notif_id, recipient=request.user)
+    notif.is_read = True
+    notif.save(update_fields=["is_read"])
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def delete_notifications(request):
+    mode = request.POST.get("mode")
+    qs = Notification.objects.filter(recipient=request.user)
+    if mode == "last5":
+        ids = list(qs.values_list("id", flat=True)[:5])
+        Notification.objects.filter(id__in=ids).delete()
+    else:
+        qs.delete()
+    return JsonResponse({"success": True})

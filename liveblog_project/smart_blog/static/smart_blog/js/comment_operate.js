@@ -83,8 +83,8 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h6 class="pt-5 pb-2 m-0 text-muted">Comments</h6>`
-      : `<h6 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h6>`;
+      ? `<h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>`
+      : `<h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
   }
 
   function getThreadLinkCount(link) {
@@ -333,6 +333,7 @@
     clearBtn.addEventListener('click', () => {
       textarea.value = '';
       textarea.style.height = 'auto';
+      clearFieldError(textarea);
       toggle();
       textarea.focus();
     });
@@ -345,6 +346,10 @@
     if (!form || form.__bound) return;
     form.__bound = true;
 
+    const formBody = document.getElementById('commentFormBody');
+    const toggleBtn = document.querySelector('.comment-form-btn');
+    const toggleDown = toggleBtn?.querySelector('.fa-angle-down');
+    const toggleUp = toggleBtn?.querySelector('.fa-angle-up');
     const btn = document.getElementById('submitCommentBtn');
     const textarea = form.querySelector('textarea[name="text"]');
     const commentsList = document.getElementById('commentsList');
@@ -354,9 +359,25 @@
     initClearCommentButton(textarea, clearBtn);
     updateCommentButtonCooldown(btn, itemId);
     textarea.addEventListener('input', () => {
-      clearFieldError(textarea);
+      if (!textarea.value.trim()) {
+        clearFieldError(textarea);
+      }
       enforceCommentLimit(textarea);
     });
+
+    if (toggleBtn && formBody) {
+      toggleBtn.addEventListener('click', () => {
+        formBody.classList.toggle('hidden');
+        const isOpen = !formBody.classList.contains('hidden');
+        if (toggleDown && toggleUp) {
+          toggleDown.classList.toggle('hidden', isOpen);
+          toggleUp.classList.toggle('hidden', !isOpen);
+        }
+        if (isOpen) {
+          textarea?.focus();
+        }
+      });
+    }
 
     btn.addEventListener('click', async (e) => {
       e.preventDefault();

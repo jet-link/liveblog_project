@@ -26,10 +26,10 @@
     }).toString();
     if (navigator.sendBeacon) {
       const blob = new Blob([body], { type: 'application/x-www-form-urlencoded' });
-      navigator.sendBeacon('/blog/notifications/read/', blob);
+      navigator.sendBeacon('/profile/notifications/read/', blob);
       return;
     }
-    fetch('/blog/notifications/read/', {
+    fetch('/profile/notifications/read/', {
       method: 'POST',
       headers: {
         'X-CSRFToken': getCSRF(),
@@ -240,7 +240,7 @@
   readAllBtn?.addEventListener('click', async () => {
     readAllBtn.disabled = true;
     try {
-      const resp = await post('/blog/notifications/read-all/');
+      const resp = await post('/profile/notifications/read-all/');
       if (!resp.ok) return;
       document.querySelectorAll('.notification-row').forEach(el => {
         el.dataset.isRead = '1';
@@ -266,7 +266,7 @@
   deleteAllBtn?.addEventListener('click', async () => {
     deleteAllBtn.disabled = true;
     try {
-      const resp = await post('/blog/notifications/delete/', { mode: 'all' });
+      const resp = await post('/profile/notifications/delete/', { mode: 'all' });
       if (!resp.ok) return;
       document.querySelectorAll('.notification-row').forEach(el => el.remove());
       bootstrap.Modal.getOrCreateInstance(deleteModalEl).hide();
@@ -281,7 +281,7 @@
   deleteLast5Btn?.addEventListener('click', async () => {
     deleteLast5Btn.disabled = true;
     try {
-      const resp = await post('/blog/notifications/delete/', { mode: 'last5' });
+      const resp = await post('/profile/notifications/delete/', { mode: 'last5' });
       if (!resp.ok) return;
       const rows = document.querySelectorAll('.notification-row');
       rows.forEach((el, idx) => {

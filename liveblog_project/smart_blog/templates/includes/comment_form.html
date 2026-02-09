@@ -1,22 +1,28 @@
 {% if user.is_authenticated %}
-  <div class="d-flex gap-2 align-items-center justify-content-between pt-4 mb-4">
-    <div class="d-flex align-items-center gap-2">
+  <div class="pt-4">
+    <div class="d-flex gap-2 align-items-center">
       <h6 class="text-muted m-0">Write a comment</h6>
-      <small class="text-muted hidden" title="Max 500 characters.">(Max 500 chars)</small>
+      <button type="button" class="comment-form-btn">
+        <i class="fa fa-angle-down"></i>
+        <i class="fa fa-angle-up hidden"></i>
+      </button>
     </div>
+    <small class="text-muted hidden" title="Max 500 characters.">(Max 500 chars)</small>
   </div>
+  <hr />
+  <div id="commentFormBody" class="comment-form-body hidden">
+    <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-2">
+      {% csrf_token %}
 
-  <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" class="pb-4">
-    {% csrf_token %}
+      <div id="commentFormErrors" class="mb-2"></div>
 
-    <div id="commentFormErrors" class="mb-2"></div>
+      <div class="form-floating mb-2">
+        {{ form.text }}
+        <label for="id_comment_text">Comment here</label>
+      </div>
 
-    <div class="form-floating mb-2">
-      {{ form.text }}
-      <label for="id_comment_text">Comment here</label>
-    </div>
-
-    <button id="submitCommentBtn" type="submit" class="cstm-btn custom-primary-btn comment-btn">Comment</button>
-    <button id="clearComment" type="button" class="btn btn-link text-decoration-none btn-sm hidden primary_" aria-label="Clear comment">Clear</button>
-  </form>
+      <button id="submitCommentBtn" type="submit" class="cstm-btn custom-primary-btn comment-btn">Comment</button>
+      <button id="clearComment" type="button" class="btn btn-link text-decoration-none btn-sm hidden primary_" aria-label="Clear comment">Clear</button>
+    </form>
+  </div>
 {% endif %}

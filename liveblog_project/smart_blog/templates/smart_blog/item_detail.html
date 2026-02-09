@@ -94,21 +94,15 @@
           {% endif %}
           {% if user == item.author and is_editable %}
             <a class="edit_btn manipulate"
-              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}
-                
-                ?{{ request.GET.urlencode }}
-              {% endif %}"
-              aria-label="Edit item"
-              data-bs-title="Edit item"
-              aria-label="Edit item">
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
               <i class="fa fa-pencil text-center"></i>
             </a>
 
-            <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}" aria-label="Delete item" data-bs-title="Delete item" aria-label="Delete item"><i class="fa fa-trash"></i></button>
+            <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}"><i class="fa fa-trash"></i></button>
           {% elif user == item.author and not is_editable %}
             <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editing expired"><i class="fa fa-pencil"></i></span>
 
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Deleting expired"><i class="fa fa-trash-o"></i></span>
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Removing expired"><i class="fa fa-trash-o"></i></span>
           {% endif %}
         {% else %}
           <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Login.</a></small>
@@ -178,9 +172,9 @@
     {% include 'includes/comment_form.html' %}
     <div id="commentsHeader" class="d-inline-flex">
       {% if comments %}
-        <h6 class="pt-5 pb-2 m-0 text-muted">Comments</h6>
+        <h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>
       {% else %}
-        <h6 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h6>
+        <h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>
       {% endif %}
     </div>
 

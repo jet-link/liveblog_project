@@ -6,19 +6,19 @@
         {% csrf_token %}
         <input type="hidden" name="redirect_to" class="delete-redirect" value="" />
         <div class="modal-header">
-          <h5 class="modal-title text-muted" id="confirmDeleteModalLabel-{{ item.pk }}">Deleting confirmed</h5>
+          <h5 class="modal-title text-muted" id="confirmDeleteModalLabel-{{ item.pk }}">Removing...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
-          Are you sure you want to delete item <strong class="text-danger">({{ item.title }})</strong> ?
+          Are you sure you want to remove item - <span class="text-danger fw-semibold">{{ item.title }}</span> ?
           {% comment %} <p class="small text-muted mb-0">This action cannot be undone.</p> {% endcomment %}
         </div>
 
         <div class="modal-footer">
           <button type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm" data-bs-dismiss="modal">Cancel</button>
           <!-- Обычный submit: при нажатии выполнится POST на delete_item -->
-          <button type="submit" class="cstm-btn custom-danger-btn cstm-btn-sm">Delete</button>
+          <button type="submit" class="cstm-btn custom-danger-btn cstm-btn-sm">Remove</button>
         </div>
       </form>
     </div>

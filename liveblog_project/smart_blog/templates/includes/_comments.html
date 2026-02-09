@@ -23,8 +23,9 @@
                 <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
                 <div class="comment-actions">
                   <i class="fa fa-angle-right mx-1 success_"></i>
-                  <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+                  <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
+                  <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
                 </div>
               </div>
             {% else %}
@@ -41,7 +42,7 @@
                     <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                     {% if user.is_staff %}
                       {% if comment.reports_count|default:0 > 10 %}
-                        <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment text-uppercase" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
+                        <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
                       {% endif %}
                     {% else %}
                       <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
@@ -89,10 +90,13 @@
   <div class="d-flex justify-content-between small text-muted align-items-center">
     <div class="text-muted d-flex align-items-center">
       <small class="d-flex align-items-center gap-2">
-        <span>{{ comment.human_published }}</span>
+          <span class="fw-semibold">
+            <i class="fa fa-calendar-check-o me-1"></i>
+            {{ comment.human_published }}
+          </span>
         {% if comment.parent is None and comment.is_edited %}
           <span>/</span>
-          <span class="fw-semibold text-muted">Edited</span>
+          <span class="primary_ fw-semibold">Edited</span>
         {% endif %}
       </small>
     </div>

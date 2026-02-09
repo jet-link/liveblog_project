@@ -754,9 +754,9 @@ textarea {
 
 .replies {
     position: relative;
-    margin-left: 21px;
+    margin-left: 24px;
     padding-left: 0;
-    margin-top: 6px;
+    margin-top: 5px;
 }
 
 /* вертикальная линия - идет вниз от родителя */
@@ -798,7 +798,7 @@ textarea {
 
 /* поддержка вложенных replies - увеличиваем отступ */
 .replies .replies {
-    margin-left: 21px;
+    margin-left: 24px;
 }
 
 /* для вложенных replies вертикальная линия должна быть смещена */
@@ -1210,20 +1210,13 @@ textarea {
     text-decoration: none;
 }
 
-/* .comment-block {
-    border-radius: 8px;
-    border: 1px solid #a2a0a0;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-} */
-
 .comment_like_block {
     padding: 5px 10px;
     border-radius: 8px;
 }
 
 .comment-text {
-    padding: 10px 17px;
+    padding: 17px;
     background-color: #ffffff;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     color: #5e5e5e;
@@ -1233,7 +1226,6 @@ textarea {
     line-height: 1.25rem;
     word-wrap: break-word;
     font-size: .8rem;
-    font-weight: 500;
 }
 
 .existing-image.marked-for-delete {
@@ -2137,44 +2129,15 @@ pre {
     z-index: 10;
 }
 
-/* notifications
-.notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.notification-row {
-    padding: 12px 14px;
-    border: 2px solid #ececec;
-    border-radius: 10px;
-    background: #fff;
-}
-
-.notification-body {
-    color: #4b4b4b;
-    font-size: 0.9rem;
-}
-
-.notifications-done {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+.comment-form-btn{
+    border: none;
+    background: transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #27ae60;
-    color: #ffffff;
-    font-size: 0.8rem;
+    width: 26px;
+    height: 26px;
+    position: relative;
 }
-
-.notifications-fade {
-    transition: opacity 0.3s ease;
-}
-
-.notifications-fade.is-hidden {
-    opacity: 0;
-    pointer-events: none;
-} */
 
 
