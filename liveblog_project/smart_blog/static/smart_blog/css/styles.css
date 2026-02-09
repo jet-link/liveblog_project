@@ -2052,7 +2052,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     padding: 0 10px;
     position: relative;
 }

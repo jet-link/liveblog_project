@@ -47,9 +47,9 @@
                 </div> {% endcomment %}
               </div>
             {% else %}
-              <div class="d-flex gap-1 small">
-                <span class="text-muted">Likes =</span>
-                <span class="danger_" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+              <div class="d-flex gap-2 VLB small">
+                <span class="danger_ fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                <span class="text-muted">Likes</span>
               </div>
             {% endif %}
           </div>
@@ -93,11 +93,10 @@
               <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
             {% endif %}
 
-            {% comment %} <div class="d-flex gap-2 item-stats">
+            <div class="d-flex gap-2 item-stats">
               <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
               <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
-            </div> {% endcomment %}
-            
+            </div>
           </div>
         </div> <!-- /.card-body -->
       </article>

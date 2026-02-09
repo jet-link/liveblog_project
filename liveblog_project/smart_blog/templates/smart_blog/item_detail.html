@@ -22,7 +22,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
         <small class="d-flex align-items-center gap-2">
-          {% comment %} <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {% endcomment %}
+          <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
@@ -32,7 +32,7 @@
       </div>
       {% if item.author %}
         {% if user == item.author %}
-          <small class="primary_ fw-bolder">It's your item</small>
+          <small class="primary_">It's your item</small>
         {% else %}
           <div>
             <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Item author">
@@ -100,9 +100,9 @@
 
             <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}"><i class="fa fa-trash"></i></button>
           {% elif user == item.author and not is_editable %}
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editing expired"><i class="fa fa-pencil"></i></span>
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
 
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Removing expired"><i class="fa fa-trash-o"></i></span>
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove expired"><i class="fa fa-trash-o"></i></span>
           {% endif %}
         {% else %}
           <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Login.</a></small>
@@ -198,32 +198,7 @@
   {% include 'includes/item_modal.html' %}
   {% include 'includes/share_modal.html' %}
   {% include 'includes/report_modal.html' %}
-
-  <div id="likedUsersOverlay" class="liked-users-overlay hidden" aria-hidden="true">
-    <div class="liked-users-backdrop"></div>
-    <div class="liked-users-panel">
-      <div class="liked-users-header d-flex align-items-center justify-content-between">
-        <h5 class="m-0 text-muted">Liked users</h5>
-        <button id="likedUsersClose" type="button" class="liked-users-close text-muted" aria-label="Close liked users">×</button>
-      </div>
-      <div class="liked-users-list">
-        {% for like in liked_users %}
-          {% if like.user %}
-            <a href="{% url 'login_app:profile' like.user.username %}" class="liked-users-item d-flex align-items-center gap-2 text-decoration-none" data-like-user="{{ like.user.username }}">
-              <div class="liked-user-avatar little-avatar">
-                {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
-                {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" />
-                {% endif %}
-              </div>
-              <span class="custom_badge badge_primary">{{ like.user.username }}</span>
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-  </div>
+  {% include 'includes/liked_users_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}

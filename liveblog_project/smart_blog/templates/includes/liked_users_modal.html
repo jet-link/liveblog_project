@@ -1,0 +1,26 @@
+{% load static %}
+<div id="likedUsersOverlay" class="liked-users-overlay hidden" aria-hidden="true">
+  <div class="liked-users-backdrop"></div>
+  <div class="liked-users-panel">
+    <div class="liked-users-header d-flex align-items-center justify-content-between">
+      <h5 class="m-0 text-muted">Liked users</h5>
+      <button id="likedUsersClose" type="button" class="liked-users-close text-muted" aria-label="Close liked users">×</button>
+    </div>
+    <div class="liked-users-list">
+      {% for like in liked_users %}
+        {% if like.user %}
+          <a href="{% url 'login_app:profile' like.user.username %}" class="liked-users-item d-flex align-items-center gap-2 text-decoration-none" data-like-user="{{ like.user.username }}">
+            <div class="liked-user-avatar little-avatar">
+              {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+              {% else %}
+                <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" />
+              {% endif %}
+            </div>
+            <span class="custom_badge badge_primary">{{ like.user.username }}</span>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
