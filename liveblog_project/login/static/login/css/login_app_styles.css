@@ -294,8 +294,8 @@
 
 
 .little-avatar {
-    width: 32px;
-    height: 32px;
+    width: 33px;
+    height: 33px;
     border-radius: 50%;
     overflow: hidden;
     display: inline-flex;
@@ -323,6 +323,41 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: visible;
+}
+
+.avatar-ring::before,
+.avatar-ring::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 2px solid rgba(41, 128, 185, 0.45);
+    border-radius: 50%;
+    opacity: 0;
+    animation: avatarPulse 1.5s ease-in infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.avatar-ring::after {
+    inset: -8px;
+    animation-delay: 0.6s;
+}
+
+@keyframes avatarPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+    70% {
+        transform: scale(1.25);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1.35);
+        opacity: 0;
+    }
 }
 
 .thumb-sm {
@@ -595,7 +630,7 @@
     content: "";
     position: absolute;
     top: -5px;
-    right: 41px;
+    right: 43px;
     width: 12px;
     height: 12px;
     background: #fff;
@@ -619,7 +654,7 @@
 /* ссылки */
 .user-tooltip a {
     display: block;
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-size: .85rem;
     color: #111;
     text-decoration: none;
@@ -647,138 +682,6 @@
     }
 }
 
-.tabs_block {
-    padding-top: 100px;
-}
-
-/* ===== Profile sections (horizontal cards) ===== */
-.profile-section-tabs {
-    border: none;
-}
-
-.profile-section-tab {
-    border: 2px solid #858484;
-    color: #858484;
-    background: #fff;
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-size: 1rem;
-    line-height: 1;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.profile-section-tab.text-muted {
-    color: #6c757d;
-}
-
-.profile-section-tab.success_ {
-    color: #2980b9;
-    border-color: #2980b9;
-}
-
-.profile-sections-carousel {
-    overflow: hidden;
-    margin-top: 15px;
-}
-
-.profile-sections-track {
-    position: relative;
-}
-
-.profile-section {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    padding-top: 5px;
-}
-
-.profile-section.is-active {
-    display: block;
-    opacity: 1;
-}
-
-.profile-section-placeholder {
-    padding: 18px 0;
-}
-
-.profile-section.is-loading {
-    opacity: 0.7;
-}
-
-.profile-cards-scroll {
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    padding-bottom: 6px;
-}
-
-.profile-cards-scroll .row {
-    --bs-gutter-x: 0;
-    --bs-gutter-y: 0;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 16px;
-    margin: 0;
-    padding-right: 16px;
-    padding-left: 2px;
-}
-
-.profile-cards-scroll .item-card {
-    flex: 0 0 50%;
-    max-width: 50%;
-}
-
-.profile-section-link {
-    color: #6c757d;
-}
-
-.profile-section-link:hover {
-    color: #4b5a68;
-}
-
-.scroll-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid #dfe4ea;
-    background: #fff;
-    color: #3a3a3a;
-    font-size: 18px;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-
-.scroll-btn:disabled {
-    opacity: 0.4;
-    cursor: auto;
-}
-
-@media (max-width: 768px) {
-    .profile-cards-scroll .item-card {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-
-    .profile-section-tabs {
-        width: 100%;
-    }
-
-    .profile-section-tab {
-        flex: 1 1 0;
-        width: 100%;
-        text-align: center;
-        font-size: 0.85rem;
-        padding: 8px 10px;
-    }
-
-    .profile-cards-scroll .row {
-        padding-right: 0;
-    }
-}
 
 
 .notifications-list {
@@ -1036,15 +939,22 @@
 
 .notifications-count {
     position: absolute;
-    top: 0;
-    left: 8px;
-    font-size: .5rem;
-    padding: 2px 5px;
+    top: -6px;
+    right: -6px;
+    left: auto;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: .6rem;
     background-color: #ff6b6b;
     color: #FFFFFF;
-    border-radius: 20px;
+    border-radius: 999px;
     font-weight: 500;
-
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid #fff;
 }
 
 .block-quote {

@@ -26,7 +26,8 @@
     {% else %}
       <h5 class="text-muted pt-4">There are not items yet.</h5>
     {% endif %}
-
-    {% include 'includes/overlay_search.html' %}
+    <div class="hidden">
+      {% include 'includes/overlay_search.html' %}
+    </div>
   </div>
 {% endblock %}

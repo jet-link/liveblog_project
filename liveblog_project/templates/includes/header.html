@@ -5,7 +5,7 @@
         <a class="nav-link text-muted" href="/">BrainStorm</a>
       </div>
 
-      <div class="header-menu d-flex gap-4 small">
+      <div class="header-menu d-flex align-items-center gap-4 small">
         <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">
           Themes
@@ -26,13 +26,12 @@
           </a>
           <div class="user-menu" id="userMenu">
             <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
-
             <div class="user-tooltip">
-              <a href="{% url 'login_app:profile' user.username %}" class="text-muted"><i class="fa fa-user-circle-o me-2" aria-hidden="true"></i>View profile</a>
-              <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-2" aria-hidden="true"></i>Edit profile</a>
-              <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-2"></i>Create item</a>
+              <a href="{% url 'login_app:profile' user.username %}" class="text-muted"><i class="fa fa-user-circle-o me-3" aria-hidden="true"></i>View profile</a>
+              <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
+              <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create item</a>
               <div class="divider"></div>
-              <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Logout</a>
+              <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Logout</a>
             </div>
           </div>
         {% else %}

@@ -9,21 +9,13 @@
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-2 align-items-center">
-        <i class="fa fa-search text-muted"></i>
-        {% comment %} <h6 class="text-muted m-0">
-          Search results
-          {% if query %}
-            for 
-            <span class="primary_">{{ query }}</span>
-          {% endif %}
-        </h6> {% endcomment %}
         <h6 class="text-muted m-0">Search results for</h6>
         <span class="primary_">{{ query }}</span>
       </div>
       <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
     </div>
     <hr />
-    <div class="d-flex gap-2 mt-3 text-muted text-small align-items-center pb-3">
+    <div class="d-flex gap-2 text-muted small align-items-center pb-3">
       <span>Total</span>
       <span>found</span>
       <span class="custom_badge badge_primary fw-bolder">{{ items.count }}</span>
@@ -55,7 +47,7 @@
       {% if items.count > 10 %}
         <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5" data-total="{{ items|length }}">
           <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-          <span id="shownCounter" class="small text-muted fw-bolder">0 / {{ items|length }}</span>
+          <span id="shownCounter" class="small text-muted">0 / {{ items|length }}</span>
         </div>
       {% endif %}
     {% else %}
@@ -64,6 +56,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     {% endif %}
-    {% include 'includes/overlay_search.html' %}
+    <div class="hidden">
+      {% include 'includes/overlay_search.html' %}
+    </div>
   </div>
 {% endblock %}

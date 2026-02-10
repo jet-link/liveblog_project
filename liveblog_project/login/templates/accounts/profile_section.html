@@ -5,13 +5,6 @@
 {% block content %}
   <div class="container content_block">
     {% include 'includes/breadcrumbs.html' %}
-
-    {% if section == 'created' %}
-      {% include 'includes/created_items.html' %}
-    {% elif section == 'liked' %}
-      {% include 'includes/liked_items.html' %}
-    {% elif section == 'bookmarked' %}
-      {% include 'includes/bookmarked_items.html' %}
-    {% endif %}
+    {% include 'includes/created_items.html' %}
   </div>
 {% endblock %}

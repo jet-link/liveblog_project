@@ -22,11 +22,11 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
         <small class="d-flex align-items-center gap-2">
-          <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+          {% comment %} <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {% endcomment %}
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
-            <span class="fw-semibold text-muted">Edited</span>
+            <span class="primary_">Edited</span>
           {% endif %}
         </small>
       </div>
@@ -50,9 +50,9 @@
         {% endif %}
       {% else %}
         <div class="d-flex align-items-center gap-2">
-          <div class="little-avatar">
+          {% comment %} <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
-          </div>
+          </div> {% endcomment %}
           <small class="text-muted fw-semibold">Vanished user</small>
         </div>
       {% endif %}

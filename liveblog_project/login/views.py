@@ -127,50 +127,6 @@ def profile_view(request, username):
     )
     user_items_qs = annotate_user_liked(user_items_qs, request.user)
 
-    liked_items_qs = Item.objects.none()
-    bookmarked_items_qs = Item.objects.none()
-    if is_owner:
-        liked_items_qs = (
-            Item.objects
-            .with_counters()
-            .filter(likes__user=user_obj)
-            .annotate(
-                liked_at=Max(
-                    'likes__created_at',
-                    filter=Q(likes__user=user_obj)
-                )
-            )
-            .order_by('-liked_at')
-            .distinct()
-        )
-        liked_items_qs = annotate_user_liked(liked_items_qs, request.user)
-
-        if Bookmark is not None:
-            bookmarked_items_qs = (
-                Item.objects
-                .with_counters()
-                .filter(bookmarked_by__user=user_obj)
-                .annotate(
-                    bookmarked_at=Max(
-                        'bookmarked_by__created_at',
-                        filter=Q(bookmarked_by__user=user_obj)
-                    )
-                )
-                .order_by('-bookmarked_at')
-                .distinct()
-            )
-            bookmarked_items_qs = annotate_user_liked(bookmarked_items_qs, request.user)
-        else:
-            try:
-                bookmarked_items_qs = (
-                    Item.objects
-                    .filter(bookmarked_by=user_obj)
-                    .order_by('-published_date')
-                    .select_related('author')
-                    .prefetch_related('images')
-                )
-            except Exception:
-                bookmarked_items_qs = Item.objects.none()
 
     def apply_human_counts(items):
         for item in items:
@@ -183,13 +139,8 @@ def profile_view(request, username):
     created_items = list(user_items_qs[:SECTION_LIMIT])
     apply_human_counts(created_items)
 
-    liked_items = []
-    bookmarked_items = []
-
     counts = {
         'all_count': user_items_qs.count(),
-        'liked_count': liked_items_qs.count(),
-        'bookmarked_count': bookmarked_items_qs.count(),
     }
     # ----------------------------
     # ПЕРСОНАЛЬНЫЕ ДАННЫЕ (CLEAN)
@@ -211,8 +162,6 @@ def profile_view(request, username):
         'fields': fields,
         'user_obj': user_obj,
         'created_items': created_items,
-        'liked_items': liked_items,
-        'bookmarked_items': bookmarked_items,
         'is_owner': is_owner,
         **counts,
     }
@@ -230,70 +179,15 @@ def profile_section_view(request, username, section):
     )
     user_items_qs = annotate_user_liked(user_items_qs, request.user)
 
-    liked_items_qs = (
-        Item.objects
-        .with_counters()
-        .filter(likes__user=user_obj)
-        .annotate(
-            liked_at=Max(
-                'likes__created_at',
-                filter=Q(likes__user=user_obj)
-            )
-        )
-        .order_by('-liked_at')
-        .distinct()
-    )
-    liked_items_qs = annotate_user_liked(liked_items_qs, request.user)
-
-    if Bookmark is not None:
-        bookmarked_items_qs = (
-            Item.objects
-            .with_counters()
-            .filter(bookmarked_by__user=user_obj)
-            .annotate(
-                bookmarked_at=Max(
-                    'bookmarked_by__created_at',
-                    filter=Q(bookmarked_by__user=user_obj)
-                )
-            )
-            .order_by('-bookmarked_at')
-            .distinct()
-        )
-        bookmarked_items_qs = annotate_user_liked(bookmarked_items_qs, request.user)
-    else:
-        try:
-            bookmarked_items_qs = (
-                Item.objects
-                .filter(bookmarked_by=user_obj)
-                .order_by('-published_date')
-                .select_related('author')
-                .prefetch_related('images')
-            )
-        except Exception:
-            bookmarked_items_qs = Item.objects.none()
-
     section = (section or '').lower()
-    if section not in {'created', 'liked', 'bookmarked'}:
+    if section != 'created':
         raise Http404
 
-    is_owner = request.user.is_authenticated and request.user == user_obj
-    if section in {'liked', 'bookmarked'} and not is_owner:
-        raise PermissionDenied
+    qs_to_page = user_items_qs
+    section_title = 'Created'
+    section_count = user_items_qs.count()
 
-    if section == 'liked':
-        qs_to_page = liked_items_qs
-        section_title = 'Liked'
-        section_count = liked_items_qs.count()
-    elif section == 'bookmarked':
-        qs_to_page = bookmarked_items_qs
-        section_title = 'Bookmarked'
-        section_count = bookmarked_items_qs.count()
-    else:
-        qs_to_page = user_items_qs
-        section_title = 'Created'
-        section_count = user_items_qs.count()
-
-    paginator = Paginator(qs_to_page, 10)
+    paginator = Paginator(qs_to_page, 50)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
     page_range = paginator.get_elided_page_range(
@@ -308,40 +202,6 @@ def profile_section_view(request, username, section):
         item.bookmarks_count_human = count_convert(item.bookmarks_count)
         item.comments_count_human = count_convert(item.comments_count)
 
-    counts = {
-        'all_count': user_items_qs.count(),
-        'liked_count': liked_items_qs.count(),
-        'bookmarked_count': bookmarked_items_qs.count(),
-    }
-
-    fields = {
-        "Username": {
-            "value": user_obj.username,
-            "type": "text",
-        },
-        "First name": {
-            "value": user_obj.first_name,
-            "type": "text",
-        },
-        "Last name": {
-            "value": user_obj.last_name,
-            "type": "text",
-        },
-    }
-
-    if user_obj.email:
-        fields["Email"] = {
-            "value": user_obj.email,
-            "type": "email",
-            "is_owner": request.user == user_obj,
-        }
-
-    filtered_fields = {
-        label: data
-        for label, data in fields.items()
-        if data.get("value") and str(data["value"]).strip()
-    }
-
     breadcrumbs = build_breadcrumbs(
         breadcrumb(user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
         breadcrumb(section_title, None),
@@ -349,7 +209,6 @@ def profile_section_view(request, username, section):
 
     link_url = reverse("login_app:profile-section", kwargs={"username": user_obj.username, "section": section})
     context = {
-        'fields': filtered_fields,
         'user_obj': user_obj,
         'items': page_obj,
         'page_obj': page_obj,
@@ -357,17 +216,10 @@ def profile_section_view(request, username, section):
         'section': section,
         'section_title': section_title,
         'section_count': section_count,
-        'is_owner': is_owner,
         'breadcrumbs': breadcrumbs,
-        'section_id': section,
-        'title': section_title,
-        'count': section_count,
         'link_url': link_url,
         'listing_user': user_obj.username,
-        **counts,
     }
-    if request.GET.get("partial") == "1":
-        return render(request, "includes/profile_section_cards_inner.html", context)
     return render(request, 'accounts/profile_section.html', context)
 
 
