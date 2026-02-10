@@ -1,49 +1,54 @@
 {% extends 'base.html' %}
 {% block title %}
-Found - "{{ query }}"
+  Found - "{{ query }}"
 {% endblock %}
 
 {% block content %}
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div class="mb-5">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h6 class="text-muted m-0">
-          Search results{% if query %}
-            for - <span class="primary_">{{ query }}...</span>
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex gap-2 align-items-center">
+        <i class="fa fa-search text-muted"></i>
+        {% comment %} <h6 class="text-muted m-0">
+          Search results
+          {% if query %}
+            for 
+            <span class="primary_">{{ query }}</span>
           {% endif %}
-        </h6>
-
-        <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+        </h6> {% endcomment %}
+        <h6 class="text-muted m-0">Search results for</h6>
+        <span class="primary_">{{ query }}</span>
       </div>
+      <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+    </div>
+    <hr />
+    <div class="d-flex gap-2 mt-3 text-muted text-small align-items-center pb-3">
+      <span>Total</span>
+      <span>found</span>
+      <span class="custom_badge badge_primary fw-bolder">{{ items.count }}</span>
+      {% if items.count != 1 %}
+        <span>items</span>
+      {% else %}
+        <span>item</span>
+      {% endif %}
+    </div>
 
-      <div class="d-flex gap-2 mt-3 text-muted text-small align-items-center">
-        <span>Total</span>
-        <span>found</span>
-        <span class="custom_badge badge_primary fw-bolder">{{ items.count }}</span>
-        {% if items.count != 1 %}
-          <span>items</span>
-        {% else %}
-          <span>item</span>
-        {% endif %}
-      </div>
-
-      <div class="mt-1">
-        <small class="text-muted">
-          searched by{% if selected_fields %}
-            {# если это список/кортеж — join, иначе просто выведем строку #}
-            {% if selected_fields|length and selected_fields.0 is not None %}
-              <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
-            {% else %}
-              {{ selected_fields }}
-            {% endif %}
+    {% comment %} <div class="mt-1">
+      <small class="text-muted">
+        searched by{% if selected_fields %}
+          {# если это список/кортеж — join, иначе просто выведем строку #}
+          {% if selected_fields|length and selected_fields.0 is not None %}
+            <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
           {% else %}
             {{ selected_fields }}
           {% endif %}
-        </small>
-      </div>
-    </div>
+        {% else %}
+          {{ selected_fields }}
+        {% endif %}
+      </small>
+    </div> {% endcomment %}
+
     {% if items %}
       {% include 'includes/all_cards.html' with listing_source='search' listing_source_url=request.get_full_path listing_query=query %}
 

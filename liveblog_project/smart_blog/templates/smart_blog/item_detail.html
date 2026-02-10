@@ -36,15 +36,15 @@
         {% else %}
           <div>
             <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Item author">
-              {% comment %} <small class="custom_badge badge_primary">{{ item.author }}</small> {% endcomment %}
+              <small class="custom_badge badge_primary">{{ item.author }}</small>
 
-              <div class="little-avatar">
+              {% comment %} <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                   <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
                 {% else %}
                   <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" />
                 {% endif %}
-              </div>
+              </div> {% endcomment %}
             </a>
           </div>
         {% endif %}

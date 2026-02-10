@@ -109,14 +109,15 @@
 
   function applyThreadLinkClasses(link) {
     if (!link) return;
-    link.classList.remove('success_');
+    link.classList.remove('primary_');
     link.classList.add(
-      'text-decoration-none',
+      'text-decoration-underline',
       'small',
       'd-flex',
       'gap-2',
       'align-items-center',
-      'text-muted'
+      'text-muted',
+      'fw-normal'
     );
   }
 

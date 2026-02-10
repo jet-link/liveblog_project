@@ -7,13 +7,15 @@ Tag - "{{ tag.tag_name }}"
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-2 align-items-center">
-        <h6 class="m-0 text-muted">All items for tag -</h6>
+        <i class="fa fa-tag text-muted"></i>
+        <h6 class="m-0 text-muted">All items for tag</h6>
         <span class="badge bg-secondary text-decoration-none small">{{ tag.tag_name }}</span>
       </div>
       <a href="{% url 'smart_blog:items_list' %}" class="text-secondary fs-5" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
     </div>
+    <hr />
     <div class="d-flex justify-content-between align-items-center pb-3">
       <div class="d-flex gap-2 text-muted text-small align-items-center">
         <span>Total</span>

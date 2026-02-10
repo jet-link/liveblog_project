@@ -787,9 +787,8 @@ textarea {
     content: "";
     position: absolute;
     left: -20px;
-    /* top: 27px; */
-    top: 31px;
-    width: 15px;
+    top: 32px;
+    width: 14px;
     height: 1px;
     background: #cccccc;
     border-radius: 3px;
