@@ -1412,3 +1412,21 @@ function isInViewport(el, offset = 0) {
                   created
                 {% endif %}items
               </h6> {% endcomment %}
+
+
+
+
+    <!-- чекбоксы под input -->
+    {% comment %} <div class="header-search-filters d-flex gap-2 pt-3 align-items-center" role="group" aria-label="Search filters">
+      <span class="text-muted me-2">Search</span>
+      <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+        <input type="checkbox" class="btn-check" id="searchByTitle" autocomplete="off" name="by_title" />
+        <label class="btn btn-outline-primary" for="searchByTitle">By title</label>
+
+        <input type="checkbox" class="btn-check" id="searchByText" autocomplete="off" name="by_text" />
+        <label class="btn btn-outline-primary" for="searchByText">By text</label>
+
+        <input type="checkbox" class="btn-check" id="searchByTags" autocomplete="off" name="by_tags" />
+        <label class="btn btn-outline-primary" for="searchByTags">By tag</label>
+      </div>
+    </div> {% endcomment %}

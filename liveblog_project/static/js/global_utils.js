@@ -711,14 +711,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const STEP = 10;
 
     const wrapper = document.getElementById('showMoreWrapper');
-    if (!wrapper) return; // нет кнопки — значит страница не listing
+    if (!wrapper) return;
 
     const btn = document.getElementById('showMoreBtn');
     const counter = document.getElementById('shownCounter');
+    if (!btn || !counter) return;
 
-    const items = Array.from(document.querySelectorAll('.item-card'));
-    if (!items.length || !btn || !counter) return;
+    const cardsContainer = document.getElementById('filterCardsWrapper');
+    const items = cardsContainer
+        ? Array.from(cardsContainer.querySelectorAll('.item-card'))
+        : Array.from(document.querySelectorAll('.item-card'));
 
+    if (!items.length) return;
     const total = items.length;
     let shown = 0;
 
@@ -727,10 +731,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < shown) {
                 if (item.classList.contains('listing-hidden')) {
                     item.classList.remove('listing-hidden');
-
                     if (withAnimation && index >= fromIndex) {
                         item.classList.remove('listing-animate');
-                        void item.offsetWidth; // reflow
+                        void item.offsetWidth;
                         item.classList.add('listing-animate');
                     }
                 }
@@ -739,19 +742,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.classList.remove('listing-animate');
             }
         });
-
         counter.textContent = `${shown} / ${total}`;
-
-        if (shown >= total) {
-            btn.style.display = 'none';
-        }
+        btn.style.display = shown >= total ? 'none' : '';
     }
 
-    // 🔥 старт
     shown = Math.min(STEP, total);
     update(false);
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', function () {
         const prev = shown;
         shown = Math.min(shown + STEP, total);
         update(true, prev);

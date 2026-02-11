@@ -114,7 +114,7 @@
       <!-- левая часть: теги — растёт и переносит элементы -->
       <div class="flex-grow-1 tag-list">
         {% if item.tags.all %}
-          <small class="text-muted fw-semibold">Tags</small>
+          <small class="text-muted"><i class="fa fa-tags me-1"></i>Tags</small>
           <div class="d-flex flex-wrap gap-1 mt-2">
             {% for tag in item.tags.all %}
               <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>

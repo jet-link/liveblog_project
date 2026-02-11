@@ -317,8 +317,15 @@
     /* =====================================================
        2) RESTORE SCROLL + HIGHLIGHT ON BACK
     ===================================================== */
+    function getCardsForShowMore() {
+        const container = document.getElementById('filterCardsWrapper');
+        return container
+            ? Array.from(container.querySelectorAll('.item-card'))
+            : Array.from(document.querySelectorAll('.item-card'));
+    }
+
     function getShownCount() {
-        const items = Array.from(document.querySelectorAll('.item-card'));
+        const items = getCardsForShowMore();
         if (!items.length) return 0;
         return items.filter(i => !i.classList.contains('listing-hidden')).length;
     }
@@ -343,7 +350,7 @@
         const shown = parseInt(raw || '0', 10);
         if (!shown) return;
 
-        const items = Array.from(document.querySelectorAll('.item-card'));
+        const items = getCardsForShowMore();
         if (!items.length) return;
 
         items.forEach((item, index) => {
@@ -369,7 +376,7 @@
         const card = el.closest?.('.item-card');
         if (!card) return;
 
-        const items = Array.from(document.querySelectorAll('.item-card'));
+        const items = getCardsForShowMore();
         if (!items.length) return;
 
         const idx = items.indexOf(card);

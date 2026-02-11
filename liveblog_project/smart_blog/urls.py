@@ -5,6 +5,7 @@ app_name = "smart_blog"
 
 urlpatterns = [
     path('brainews/', views.items_list, name='items_list'),
+    path('brainews/filter/', views.items_filtered, name='items_filtered'),
     path('tag/<slug:slug>/', views.tag_list, name='tag_list'),
     # path('search/', views.search_view, name='search'),
     path("item/create/", views.create_item, name="create_item"),

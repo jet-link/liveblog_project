@@ -1,0 +1,81 @@
+{% load static %}
+{% load counters %}
+<div class="filter-cards-wrapper" data-filter-type="{{ filter_type }}">
+  {% if items %}
+    <div class="row mb-2 g-3 align-items-stretch">
+      {% for item in items %}
+        <div class="col-lg-6 col-md-12 col-sm-12 col-12 item-card search-item">
+          <span class="item-anchor" id="item-anchor-{{ item.pk }}"></span>
+          <article id="item-{{ item.pk }}" class="card w-100 h-100 shadow-sm border rounded overflow-hidden d-flex flex-column item_block" data-item-id="{{ item.pk }}">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="d-flex align-items-center gap-2">
+                  {% if item.author %}
+                    <div class="little-avatar{% if user == item.author %} avatar-ring{% endif %}">
+                      {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
+                        <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                      {% else %}
+                        <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" />
+                      {% endif %}
+                    </div>
+                    <small class="d-inline-block text-primary-emphasis fw-semibold">{{ item.author }}</small>
+                  {% else %}
+                    <div class="little-avatar">
+                      <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+                    </div>
+                    <small class="d-inline-block text-primary-emphasis fw-semibold">Vanished user</small>
+                  {% endif %}
+                </div>
+                {% if user != item.author and user.is_authenticated %}
+                  <div class="item-stats text-muted d-inline-flex align-items-center">
+                    <div class="stat p-0">
+                      <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                      {% if item.user_liked %}
+                        <i id="like-icon-{{ item.pk }}" class="fa fa-heart danger_" aria-hidden="true"></i>
+                      {% else %}
+                        <i id="like-icon-{{ item.pk }}" class="fa fa-heart-o danger_" aria-hidden="true"></i>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="d-flex gap-2 VLB small">
+                    <span class="danger_ fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                    <span class="text-muted">Likes</span>
+                  </div>
+                {% endif %}
+              </div>
+              <hr />
+              <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
+                <div class="text-muted">
+                  <h4 class="mb-2">{{ item.title }}</h4>
+                  <div class="small d-inline-flex align-items-center gap-2">
+                    <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                    <small>{{ item.human_published }}</small>
+                  </div>
+                </div>
+              </div>
+              <p class="card-text flex-grow-1 py-2 px-1 mb-3 excerpt-html">{{ item.short_text }}</p>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                {% if listing_source == 'search' and listing_source_url and listing_query %}
+                  <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+                {% elif listing_source == 'tag' and listing_source_url and listing_tag %}
+                  <a href="{{ item.get_absolute_url }}?from=tag&amp;source_url={{ listing_source_url|urlencode }}&amp;tag={{ listing_tag|urlencode }}&amp;tag_slug={{ listing_tag_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+                {% elif listing_source == 'items_list' and listing_source_url %}
+                  <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+                {% else %}
+                  <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+                {% endif %}
+                <div class="d-flex gap-2 item-stats">
+                  <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
+                  <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="filter-empty-message" data-filter-type="{{ filter_type }}">{{ empty_msg }}</div>
+  {% endif %}
+</div>

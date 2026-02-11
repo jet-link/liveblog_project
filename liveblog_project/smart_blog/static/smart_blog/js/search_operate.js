@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             closeOverlay();
-            // navigate to search URL — change '/search/' to your actual search view if different
+            try { sessionStorage.removeItem('brainews_filter_active'); } catch (e) { }
             window.location.href = '/search/?' + params.toString();
         }
 
@@ -261,7 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 params.set('by_title', '1'); params.set('by_text', '1'); params.set('by_tags', '1');
             }
 
-            try { sessionStorage.setItem('search_clear_next', '1'); } catch (e) { }
+            try {
+                sessionStorage.setItem('search_clear_next', '1');
+                sessionStorage.removeItem('brainews_filter_active');
+            } catch (e) { }
             headerInput.value = '';
             const hsClear = document.getElementById('headerSearchClear');
             if (hsClear) hsClear.classList.add('hidden');

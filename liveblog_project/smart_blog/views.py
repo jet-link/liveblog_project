@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
-from django.db.models import Exists, OuterRef, Count, Q
+from django.db.models import Exists, OuterRef, Count, Q, Subquery
 from django.db.models import Prefetch
 from .utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 import logging
@@ -29,6 +29,13 @@ def annotate_user_liked(qs, user):
     return qs
 
 
+def annotate_user_bookmarked(qs, user):
+    if user.is_authenticated:
+        bookmarks_subq = Bookmark.objects.filter(item=OuterRef('pk'), user=user)
+        return qs.annotate(user_bookmarked=Exists(bookmarks_subq))
+    return qs
+
+
 def items_list(request):
     qs = (
         Item.objects
@@ -36,6 +43,7 @@ def items_list(request):
         .order_by('-published_date')
     )
     qs = annotate_user_liked(qs, request.user)
+    qs = annotate_user_bookmarked(qs, request.user)
 
     paginator = Paginator(qs, 20)
     page_number = request.GET.get('page')
@@ -57,6 +65,92 @@ def items_list(request):
         "items": page_obj.object_list,
         "breadcrumbs": breadcrumbs,
     })
+
+
+def items_filtered(request):
+    """Returns filtered items HTML for BraiNews filter block (Popular/Liked/Bookmarked)."""
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+    filter_type = request.GET.get('filter', '').strip().lower()
+    if filter_type not in ('popular', 'liked', 'bookmarked'):
+        return HttpResponse('', content_type='text/html')
+    qs = (
+        Item.objects
+        .with_counters()
+        .order_by('-published_date')
+    )
+    tag_slug = request.GET.get('tag_slug', '').strip()
+    search_q = request.GET.get('q', '').strip()
+    if tag_slug:
+        tag_obj = Tag.objects.filter(slug=tag_slug).first()
+        if tag_obj:
+            qs = qs.filter(tags=tag_obj)
+    elif search_q:
+        by_title = request.GET.get('by_title') in ('1', 'true', 'True')
+        by_text = request.GET.get('by_text') in ('1', 'true', 'True')
+        by_tags = request.GET.get('by_tags') in ('1', 'true', 'True')
+        if not (by_title or by_text or by_tags):
+            by_title = by_text = by_tags = True
+        queries = Q()
+        if by_title:
+            queries |= Q(title__icontains=search_q)
+        if by_text:
+            queries |= Q(text__icontains=search_q)
+        if by_tags:
+            queries |= Q(tags__tag_name__icontains=search_q)
+        qs = qs.filter(queries).distinct()
+    qs = annotate_user_liked(qs, request.user)
+    qs = annotate_user_bookmarked(qs, request.user)
+    if filter_type == 'popular':
+        qs = qs.filter(likes_count__gte=10)
+        empty_msg = 'Popular not ready'
+    elif filter_type == 'liked':
+        like_date_subq = Like.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
+        qs = qs.filter(likes__user=request.user).annotate(
+            user_like_date=Subquery(like_date_subq)
+        ).order_by('-user_like_date').distinct()
+        empty_msg = 'Nothing was liked'
+    else:  # bookmarked
+        bookmark_date_subq = Bookmark.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
+        qs = qs.filter(bookmarked_by__user=request.user).annotate(
+            user_bookmark_date=Subquery(bookmark_date_subq)
+        ).order_by('-user_bookmark_date').distinct()
+        empty_msg = 'Nothing was bookmarked'
+    items = list(qs)
+    if search_q:
+        listing_source = 'search'
+        listing_query = search_q
+        from urllib.parse import urlencode
+        search_params = {'q': search_q}
+        if request.GET.get('by_title'): search_params['by_title'] = request.GET.get('by_title')
+        if request.GET.get('by_text'): search_params['by_text'] = request.GET.get('by_text')
+        if request.GET.get('by_tags'): search_params['by_tags'] = request.GET.get('by_tags')
+        listing_source_url = request.build_absolute_uri('/search/?' + urlencode(search_params))
+    elif tag_slug:
+        listing_source = 'tag'
+        tag_obj = Tag.objects.filter(slug=tag_slug).first()
+        listing_tag = tag_obj.tag_name if tag_obj else ''
+        listing_tag_slug = tag_slug
+        listing_source_url = request.build_absolute_uri(reverse('smart_blog:tag_list', kwargs={'slug': tag_slug}))
+    else:
+        listing_source = 'items_list'
+        listing_query = listing_tag = listing_tag_slug = ''
+        listing_source_url = request.build_absolute_uri(reverse('smart_blog:items_list'))
+    ctx = {
+        'items': items,
+        'user': request.user,
+        'listing_source': listing_source,
+        'listing_source_url': listing_source_url,
+        'empty_msg': empty_msg,
+        'filter_type': filter_type,
+    }
+    if listing_source == 'search':
+        ctx['listing_query'] = listing_query
+    elif listing_source == 'tag':
+        ctx['listing_tag'] = listing_tag
+        ctx['listing_tag_slug'] = listing_tag_slug
+    html = render_to_string('includes/filtered_cards.html', ctx)
+    return HttpResponse(html, content_type='text/html')
 
 
 def tag_list(request, slug):
