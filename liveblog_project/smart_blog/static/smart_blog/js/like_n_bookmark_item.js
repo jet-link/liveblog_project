@@ -63,6 +63,7 @@
         changes[itemId].likes_count = data.likes_count;
         changes[itemId].liked = data.liked;
         sessionStorage.setItem(key, JSON.stringify(changes));
+        try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
       } catch { }
 
       const detailLikes = document.getElementById('likesCount');
@@ -152,6 +153,7 @@
         changes[itemId].bookmarks_count = data.bookmarks_count;
         changes[itemId].bookmarked = data.bookmarked;
         sessionStorage.setItem(key, JSON.stringify(changes));
+        try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
       } catch { }
 
       // instant detail update

@@ -61,6 +61,7 @@ html {
     line-height: 1;
 }
 
+
 .header-actions > a,
 .header-actions > .user-menu {
     display: flex;
@@ -254,7 +255,6 @@ textarea {
 .header-search-row {
     position: relative;
     width: 100%;
-    margin-bottom: 8px;
 }
 
 /* Keep the input styling */
@@ -517,7 +517,7 @@ textarea {
     border: 1px solid #dfe4ea;
     background: #fff;
     color: #4b5a68;
-    padding: 7px 17px;
+    padding: 8px 17px;
     border-radius: 20px;
     font-size: .8rem;
     cursor: pointer;
@@ -1782,16 +1782,19 @@ textarea {
     font-size: .650rem;
     border: 1px solid transparent;
     font-weight: 500;
+    color: #ffffff;
 }
 
 .badge_danger {
     background-color: #ff6b6b;
-    color: #ffffff;
 }
 
 .badge_primary {
     background-color: #2980b9;
-    color: #ffffff;
+}
+
+.badge_success{
+    background-color: #01a3a4;
 }
 
 .replied-badge {

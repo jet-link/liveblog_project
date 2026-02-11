@@ -58,6 +58,9 @@
     function setItem(k, v) { try { sessionStorage.setItem(k, v); } catch { } }
     function getItem(k) { try { return sessionStorage.getItem(k); } catch { return null; } }
     function removeItem(k) { try { sessionStorage.removeItem(k); } catch { } }
+    const REFRESH_FLAG = 'brainews_filter_refresh_needed';
+    function getRefreshFlag() { try { return localStorage.getItem(REFRESH_FLAG); } catch { return null; } }
+    function clearRefreshFlag() { try { localStorage.removeItem(REFRESH_FLAG); } catch { } }
 
     function getFilterButtons() {
         return Array.from(document.querySelectorAll('.filter-block .filter-reason-btn'));
@@ -246,6 +249,7 @@
     function restoreFilterOnReturnForPage() {
         const active = getItem(FILTER_KEY);
         if (!active) return;
+        clearRefreshFlag();
         saveOriginalContent();
         setActiveFilter(active);
         showPagination(false);
@@ -277,23 +281,58 @@
     });
 
     window.addEventListener('pageshow', function (e) {
-        if (!e.persisted) return;
-        if (isFilterablePage()) {
-            const active = getItem(FILTER_KEY);
-            if (active) {
-                restoreFilterOnReturnForPage();
-            } else {
-                removeInvalidFilterCards();
+        if (!e.persisted) {
+            if (isFilterablePage()) {
+                const active = getItem(FILTER_KEY);
+                if (active) restoreFilterOnReturnForPage();
+                else removeInvalidFilterCards();
             }
+            return;
         }
-    });
-
-    window.addEventListener('pageshow', function () {
         if (isFilterablePage()) {
+            refreshFilterIfNeeded();
             removeInvalidFilterCards();
         }
     });
 
+    window.addEventListener('pageshow', function () {
+        if (isFilterablePage()) removeInvalidFilterCards();
+    });
+
     document.addEventListener('DOMContentLoaded', removeInvalidFilterCards);
+
+    function refreshFilterIfNeeded() {
+        if (!isFilterablePage()) return;
+        const active = getItem(FILTER_KEY);
+        if (active !== 'liked' && active !== 'bookmarked') return;
+        if (getRefreshFlag() !== '1') return;
+        clearRefreshFlag();
+        setActiveFilter(active);
+        showPagination(false);
+        fetchFiltered(active).then(html => {
+            replaceCardsWith(html);
+            const emptyEl = document.querySelector('.filter-empty-message');
+            if (emptyEl) {
+                showEmptyHint(emptyEl.textContent);
+            } else {
+                showEmptyHint('');
+            }
+            if (window.applyListingChanges) window.applyListingChanges();
+        }).catch(() => {});
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            refreshFilterIfNeeded();
+        }
+    });
+
+    window.addEventListener('focus', refreshFilterIfNeeded);
+
+    window.addEventListener('storage', function (e) {
+        if (e.key === REFRESH_FLAG && e.newValue === '1') {
+            refreshFilterIfNeeded();
+        }
+    });
 
 })();

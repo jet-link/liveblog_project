@@ -1,5 +1,5 @@
 <!-- templates/includes/search_form.html -->
-<div id="headerSearchOverlay" class="mb-3 header-search-overlay">
+<div id="headerSearchOverlay" class="mb-5 header-search-overlay">
   <div class="header-search-inner" id="headerSearchSticky">
     {% comment %} <h6 class="text-muted mb-3">Search by BraiNews</h6> {% endcomment %}
     <div class="header-search-row position-relative">
@@ -8,16 +8,6 @@
       <!-- clear button: указывает data-target на input -->
       <button id="headerSearchClear" type="button" class="header-search-clear field-clear btn btn-link p-0 ms-2 hidden" data-target="#headerSearchInput" aria-label="Clear search"><i class="fa fa-times" aria-hidden="true"></i></button>
     </div>
-    {% if user.is_authenticated %}
-    <div class="filter-block d-flex flex-wrap gap-2 align-items-center" data-filter-url="{% url 'smart_blog:items_filtered' %}">
-      {% comment %} <span class="filter-block-label">Filter by</span> {% endcomment %}
-      <div class="filter-select d-flex flex-wrap gap-1" id="filterReasonList">
-        <button type="button" class="filter-reason-btn" data-filter="popular">Popular</button>
-        <button type="button" class="filter-reason-btn" data-filter="liked">Liked</button>
-        <button type="button" class="filter-reason-btn" data-filter="bookmarked">Bookmarked</button>
-      </div>
-      <div class="filter-empty-hint hidden" id="filterEmptyHint" aria-live="polite"></div>
-    </div>
-    {% endif %}
+    {% include 'includes/filter_block.html' %}
   </div>
 </div>
