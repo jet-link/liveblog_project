@@ -84,7 +84,7 @@
     img.height = 30;
     img.decoding = 'async';
     img.loading = 'lazy';
-    img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
+    img.onerror = function () { this.onerror = null; this.classList.add('avatar-load-failed'); };
     avatarWrap.appendChild(img);
     const badge = document.createElement('span');
     badge.className = 'custom_badge badge_primary';
@@ -113,14 +113,19 @@
       link.className = 'liked-user-avatar little-avatar';
       link.title = username;
       const img = document.createElement('img');
-      img.src = sourceImg?.getAttribute('src') || '/static/img/no_avatar.svg';
+      if (sourceImg?.classList.contains('avatar-load-failed')) {
+        img.classList.add('avatar-load-failed');
+        img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"/>';
+      } else {
+        img.src = sourceImg?.getAttribute('src') || '/static/img/no_avatar.svg';
+      }
       img.alt = username;
-      img.className = sourceImg?.className || 'user-avatar';
+      img.className = 'user-avatar';
       img.width = 30;
       img.height = 30;
       img.decoding = 'async';
       img.loading = 'lazy';
-      img.onerror = function () { this.onerror = null; this.src = '/static/img/no_avatar.svg'; };
+      img.onerror = function () { this.onerror = null; this.classList.add('avatar-load-failed'); };
       link.appendChild(img);
       stack.appendChild(link);
     });

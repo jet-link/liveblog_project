@@ -13,9 +13,9 @@
                   {% if item.author %}
                     <div class="little-avatar{% if user == item.author %} avatar-ring{% endif %}">
                       {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                        <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                        <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                       {% else %}
-                        <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" />
+                        <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                       {% endif %}
                     </div>
                     <small class="d-inline-block text-primary-emphasis fw-semibold">{{ item.author }}</small>

@@ -40,9 +40,9 @@
 
               {% comment %} <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                  <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                  <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" />
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% endif %}
               </div> {% endcomment %}
             </a>
@@ -139,9 +139,9 @@
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
                 {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{% static 'img/no_avatar.svg' %}';" />
+                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" />
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% endif %}
               </a>
             {% endif %}

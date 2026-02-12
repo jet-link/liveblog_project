@@ -21,7 +21,7 @@
             const img = wrapper.querySelector('img');
             if (!img) return;
 
-            if (img.src.includes('no_avatar') || img.src.includes('no_image')) return;
+            if (img.classList.contains('avatar-load-failed') || img.src.includes('no_avatar') || img.src.includes('no_image')) return;
 
             e.preventDefault();
 

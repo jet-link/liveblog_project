@@ -6,15 +6,13 @@
 {% block content %}
   <div class="container content_block" data-brainews-listing>
     {% include 'includes/search_form.html' %}
-    {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
     {% if items %}
-      <div class="d-flex gap-2 justify-content-between align-items-center">
+      {% comment %} <div class="d-flex gap-2 justify-content-between align-items-center">
         <h4 class="text-muted m-0">BraiNews</h4>
       </div>
-      <hr />
-      <div id="itemsListPaginationBar" class="d-flex justify-content-between align-items-center brainews-pagination-bar my-3">
+      <hr /> {% endcomment %}
+      {% comment %} <div id="itemsListPaginationBar" class="d-flex justify-content-between align-items-center brainews-pagination-bar my-3">
         <div class="d-flex align-items-center gap-1">
-          {% comment %} <small class="text-muted fw-semibold">Total</small> {% endcomment %}
           <span class="custom_badge badge_primary">
           {% with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
             {{ start }}–{{ end }} of {{ total }}
@@ -22,7 +20,8 @@
         </span>
         </div>
         <small class="text-muted fw-semibold">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</small>
-      </div>
+      </div> {% endcomment %}
+
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
         {% include 'includes/all_cards.html' with listing_source='items_list' listing_source_url=request.get_full_path %}
       </div>

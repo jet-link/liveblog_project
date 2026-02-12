@@ -125,12 +125,29 @@
     bottom: 0;
 }
 
-.no_avatar {
+/* серый фон вместо отсутствующей/битой аватарки */
+.user_no_avatar,
+.little-avatar .no_avatar,
+.liked-user-avatar img.no_avatar {
     width: 100% !important;
-    height: 110% !important;
-    object-fit: contain;
+    height: 100% !important;
+    object-fit: cover;
     object-position: 50% 50%;
-    transform: scale(1.1) translateY(2px);
+    aspect-ratio: 1 / 1;
+}
+
+/* fallback: изображение не найдено или повреждено — серый фон #cccccc */
+.little-avatar:has(img.avatar-load-failed),
+.avatar-wrapper:has(img.avatar-load-failed) {
+    background: #cccccc;
+}
+
+img.avatar-load-failed {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
 }
 
 .personal-field span {
@@ -294,8 +311,8 @@
 
 
 .little-avatar {
-    width: 33px;
-    height: 33px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     overflow: hidden;
     display: inline-flex;
@@ -313,9 +330,6 @@
     display: block;
 }
 
-.little-avatar .no_avatar {
-    object-fit: contain;
-}
 
 .avatar-ring {
     border: 3px solid #2980b9;
@@ -430,12 +444,6 @@
     display: block;
 }
 
-.liked-user-avatar img.no_avatar {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
-    aspect-ratio: 1 / 1;
-}
 
 .liked-users-overlay {
     position: fixed;
@@ -724,9 +732,9 @@
 
 .notifications-done {
     background-color: transparent;
-    border: 2px solid #27ae60;
+    border: 2px solid #10ac84;
     border-radius: 50%;
-    color: #27ae60;
+    color: #10ac84;
     font-size: .8rem;
     width: 30px;
     height: 30px;
@@ -736,7 +744,7 @@
 }
 
 .notifications-fade {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
 .notifications-fade.is-hidden {
@@ -958,12 +966,14 @@
 .block-quote {
     margin: .6rem 0;
     padding: 17px;
-    border-left: 3px solid #2980b9;
-    background: #f8f9fc;
+    background: #f5f6fa;
     color: #2d3436;
-    /* font-weight: 500; */
-    border-radius: 7px;
+    border-radius: 8px;
     font-size: .8rem;
+}
+
+.bordered{
+    border-left: 3px solid #2980b9;
 }
 
 .block-quote p:last-child {
@@ -1004,7 +1014,7 @@
 .instruction-btn{
     border: none;
     background: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: #9a9898;
     padding: 0;
 }

@@ -134,7 +134,7 @@
     const icon = document.createElement('i');
     icon.textContent = '→';
     const badge = document.createElement('span');
-    badge.className = 'replies-count custom_badge badge_primary';
+    badge.className = 'replies-count';
     badge.textContent = formatRepliesCountLabel(count);
     link.append(label, icon, badge);
   }
@@ -1308,7 +1308,7 @@
     overlay = document.createElement('div');
     overlay.id = 'commentShareOverlay';
     overlay.className = 'comment-share-overlay';
-    overlay.innerHTML = '<div class="comment-share-overlay-text">Link copied to clipboard</div>';
+    overlay.innerHTML = '<div class="comment-share-overlay-text">Comment link copied to clipboard</div>';
     document.body.appendChild(overlay);
     return overlay;
   }
