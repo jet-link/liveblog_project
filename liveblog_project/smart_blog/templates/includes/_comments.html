@@ -20,7 +20,7 @@
           {% if user == comment.author %}
             {% if comment.is_editable %}
               <div class="comment-menu">
-                <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+                <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">{{ comment.author }}</button>
                 <div class="comment-actions">
                   <i class="fa fa-angle-right mx-1 success_"></i>
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -31,14 +31,14 @@
                 </div>
               </div>
             {% else %}
-              <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+              <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">{{ comment.author }}</button>
             {% endif %}
           {% else %}
             {% if user.is_staff %}
               {% if not hide_reply %}
                 {% if not thread_view or depth|default:0 > 0 %}
                   <div class="comment-menu">
-                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">{{ comment.author }}</button>
                     <div class="comment-actions">
                       <i class="fa fa-angle-right mx-1 success_"></i>
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
@@ -56,7 +56,7 @@
               {% if not hide_reply %}
                 {% if not thread_view or depth|default:0 > 0 %}
                   <div class="comment-menu">
-                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Actions</button>
+                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">{{ comment.author }}</button>
                     <div class="comment-actions">
                       <i class="fa fa-angle-right mx-1 success_"></i>
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
@@ -93,7 +93,7 @@
         {% if user.is_staff %}
           {% if comment.reports_count|default:0 >= 10 %}
             <div class="comment-menu">
-              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Actions</button>
+              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">{{ comment.author }}</button>
               <div class="comment-actions">
                 <i class="fa fa-angle-right mx-1 success_"></i>
                 <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -101,11 +101,11 @@
               </div>
             </div>
           {% else %}
-            <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+            <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Vanished user</button>
           {% endif %}
         {% else %}
           <div class="comment-menu">
-            <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Actions</button>
+            <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Vanished user</button>
             <div class="comment-actions">
               <i class="fa fa-angle-right mx-1 success_"></i>
               <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -114,7 +114,7 @@
           </div>
         {% endif %}
       {% else %}
-        <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+        <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">{{ comment.author }}</button>
       {% endif %}
     </div>
   {% endif %}

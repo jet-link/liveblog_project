@@ -24,11 +24,13 @@
       {% endfor %}
     </div>
   {% elif depth >= 2 %}
-      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-underline small d-inline-flex gap-2 align-items-center text-muted mt-4 fw-normal" data-count="{{ comment.replies.count }}">
-        <span>View all replies</span>
+      {% with replies_count=comment.replies.count %}
+      <a id="replies-thread-link-{{ comment.pk }}" href="{% url 'smart_blog:comment_thread' comment.pk %}" class="text-decoration-none small d-inline-flex gap-2 align-items-center text-muted mt-4 fw-normal" data-count="{{ replies_count }}">
+        <span>View deep replies</span>
         <i>→</i>
-        <span class="replies-count primary_">{{ comment.replies.count }}</span>
+        <span class="replies-count custom_badge badge_primary">{% if replies_count >= 10 %}10+{% else %}{{ replies_count }}{% endif %}</span>
       </a>
+      {% endwith %}
   {% else %}
     <div class="replies" data-parent-id="{{ comment.pk }}">
       {% for reply in comment.replies.all %}

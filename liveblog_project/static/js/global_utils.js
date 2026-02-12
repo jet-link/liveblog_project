@@ -21,13 +21,17 @@ document.addEventListener('DOMContentLoaded', function () {
 (function () {
     'use strict';
 
+    const STALE_MS = 90000;
+
     function updateBellCountFromStorage() {
         const btn = document.querySelector('.notification-btn');
         if (!btn) return;
 
         let stored = null;
+        let updatedAt = null;
         try {
             stored = localStorage.getItem('notification_unread_count');
+            updatedAt = localStorage.getItem('notification_count_updated_at');
         } catch (err) {}
 
         const serverRaw = btn.dataset?.notificationsCount;
@@ -37,8 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const storedCount = stored !== null ? parseInt(stored, 10) : NaN;
 
         let count;
-        if (!Number.isNaN(serverCount)) {
-            // server is the source of truth when available
+        if (!Number.isNaN(serverCount) && !Number.isNaN(storedCount)) {
+            const ts = updatedAt ? parseInt(updatedAt, 10) : 0;
+            const isRecent = ts && (Date.now() - ts) < STALE_MS;
+            count = isRecent ? Math.min(serverCount, storedCount) : serverCount;
+        } else if (!Number.isNaN(serverCount)) {
             count = serverCount;
         } else if (!Number.isNaN(storedCount)) {
             count = storedCount;
@@ -63,6 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
         badge.textContent = count >= 10 ? '10+' : String(count);
     }
 
+    window.updateBellCountFromStorage = updateBellCountFromStorage;
+
     document.addEventListener('DOMContentLoaded', updateBellCountFromStorage);
     window.addEventListener('pageshow', updateBellCountFromStorage);
     window.addEventListener('storage', function (e) {
@@ -70,6 +79,16 @@ document.addEventListener('DOMContentLoaded', function () {
             updateBellCountFromStorage();
         }
     });
+
+    document.addEventListener('click', function (e) {
+        const a = e.target.closest?.('a[href*="logout"]');
+        if (a) {
+            try {
+                localStorage.removeItem('notification_unread_count');
+                localStorage.removeItem('notification_count_updated_at');
+            } catch (err) {}
+        }
+    }, true);
 })();
 
 // Replace broken avatar images with fallback

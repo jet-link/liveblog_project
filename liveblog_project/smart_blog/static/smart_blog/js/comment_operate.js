@@ -83,17 +83,18 @@
     if (!header) return;
 
     header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-5 pb-2 m-0 text-muted">Comments</h5>`
-      : `<h5 class="pt-5 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
+      ? `<h5 class="pt-4 pb-2 m-0 text-muted">Comments</h5>`
+      : `<h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
   }
 
   function getThreadLinkCount(link) {
     if (!link) return 0;
     const fromData = parseInt(link.dataset.count || '0', 10);
-    if (!Number.isNaN(fromData) && fromData > 0) return fromData;
+    if (!Number.isNaN(fromData) && fromData >= 0) return fromData;
     const span = link.querySelector('.replies-count');
     if (!span) return 0;
-    const num = parseInt(span.textContent.replace(/[()]/g, ''), 10);
+    const txt = (span.textContent || '').replace(/[()\s]/g, '');
+    const num = parseInt(txt, 10);
     return Number.isNaN(num) ? 0 : num;
   }
 
@@ -111,7 +112,7 @@
     if (!link) return;
     link.classList.remove('primary_');
     link.classList.add(
-      'text-decoration-underline',
+      'text-decoration-none',
       'small',
       'd-flex',
       'gap-2',
@@ -121,16 +122,20 @@
     );
   }
 
+  function formatRepliesCountLabel(count) {
+    return count >= 10 ? '10+' : String(count);
+  }
+
   function renderThreadLinkContents(link, count) {
     if (!link) return;
     link.textContent = '';
     const label = document.createElement('span');
-    label.textContent = 'View all replies';
+    label.textContent = 'View deep replies';
     const icon = document.createElement('i');
     icon.textContent = '→';
     const badge = document.createElement('span');
-    badge.className = 'replies-count primary_';
-    badge.textContent = String(count);
+    badge.className = 'replies-count custom_badge badge_primary';
+    badge.textContent = formatRepliesCountLabel(count);
     link.append(label, icon, badge);
   }
 
@@ -176,8 +181,7 @@
       renderThreadLinkContents(link, next);
       return;
     }
-    span.classList.add('primaru_');
-    span.textContent = String(next);
+    span.textContent = formatRepliesCountLabel(next);
   }
 
   function adjustThreadLinkCount(parentId, delta) {

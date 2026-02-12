@@ -60,7 +60,7 @@
               <h4 class="mb-2">{{ item.title }}</h4>
               <!-- Published -->
               <div class="small d-inline-flex align-items-center gap-2">
-                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                {% comment %} <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {% endcomment %}
                 <small>{{ item.human_published }}</small>
               </div>
             </div>
@@ -75,7 +75,7 @@
           </div>
 
           <!-- Обрезанный текст, занимает доступное пространство -->
-          <p class="card-text flex-grow-1 py-2 px-1 mb-3 excerpt-html">{{ item.short_text }}</p>
+          <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
 
           {% comment %} <hr />  {% endcomment %}
           <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->

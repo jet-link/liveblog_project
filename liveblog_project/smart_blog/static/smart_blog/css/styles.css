@@ -20,6 +20,23 @@ html {
     color: #2980b9 !important;
 }
 
+.pagination-sm{
+    --bs-pagination-border-radius: 25px;
+    --bs-pagination-padding-x: 12px;
+    --bs-pagination-padding-y: 6px;
+    font-size: .7rem;
+}
+
+.pagination .page-link {
+    color: #2980b9;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    color: #fff;
+}
+
 .header {
     position: static;
     width: 100%;
@@ -62,8 +79,8 @@ html {
 }
 
 
-.header-actions > a,
-.header-actions > .user-menu {
+.header-actions>a,
+.header-actions>.user-menu {
     display: flex;
     align-items: center;
 }
@@ -167,7 +184,7 @@ input::-webkit-search-decoration {
     margin: 0 0 0.75rem;
 }
 
-/* Аннотация карточки — более компактная высота */
+/* Аннотация карточки — более компактная высота + затенение внизу */
 .excerpt-html {
     line-height: 1.425;
     display: -webkit-box;
@@ -175,6 +192,18 @@ input::-webkit-search-decoration {
     -webkit-line-clamp: 6;
     line-clamp: 6;
     overflow: hidden;
+    position: relative;
+}
+
+.excerpt-html::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3.5em;
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.85) 40%, transparent 100%);
+    pointer-events: none;
 }
 
 .excerpt-html p {
@@ -294,8 +323,8 @@ textarea {
 }
 
 .field-clear:hover {
-    background: rgba(0, 0, 0, 0.045);
-    color: #6b7280;
+    background: rgba(52, 9, 91, 0.045);
+    color: #72757b;
 }
 
 /* если у тебя есть класс .btn-reset, можно подстроить вид */
@@ -496,10 +525,10 @@ textarea {
 /* =========================
    BRAINEWS FILTER BLOCK
 ========================= */
-.filter-block {
+/* .filter-block {
     margin-top: 12px;
     padding-top: 10px;
-}
+} */
 
 .filter-block-label {
     font-size: 0.9rem;
@@ -519,14 +548,14 @@ textarea {
     color: #4b5a68;
     padding: 8px 17px;
     border-radius: 20px;
-    font-size: .8rem;
+    font-size: .785rem;
     cursor: pointer;
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #01a3a4;
+    border-color: #686de0;
     color: #ffffff;
-    background: #01a3a4;
+    background: #686de0;
 }
 
 .filter-empty-hint {
@@ -812,7 +841,7 @@ textarea {
 }
 
 .file-btn {
-    background: #007bff;
+    background: #2980b9;
     color: white;
     padding: 8px 12px;
     border-radius: 6px;
@@ -869,7 +898,7 @@ textarea {
     left: -20px;
     width: 1px;
     height: calc(100% - 10px);
-    background: #cccccc;
+    background: #c8d6e5;
     border-radius: 3px;
 }
 
@@ -892,7 +921,7 @@ textarea {
     top: 32px;
     width: 14px;
     height: 1px;
-    background: #cccccc;
+    background: #c8d6e5;
     border-radius: 3px;
     z-index: 1;
 }
@@ -1776,10 +1805,10 @@ textarea {
 
 .custom_badge,
 .replied-badge {
-    padding: 3px 10px;
+    padding: 2px 9px;
     border-radius: 20px;
     text-decoration: none;
-    font-size: .650rem;
+    font-size: .670rem;
     border: 1px solid transparent;
     font-weight: 500;
     color: #ffffff;
@@ -1793,7 +1822,7 @@ textarea {
     background-color: #2980b9;
 }
 
-.badge_success{
+.badge_success {
     background-color: #01a3a4;
 }
 
@@ -1985,15 +2014,15 @@ pre {
 
 @keyframes backPulse {
     0% {
-        background-color: #ecf0f1;
+        background-color: #f5f6fa;
     }
 
     20% {
-        background-color: #ecf0f1;
+        background-color: #f5f6fa;
     }
 
     60% {
-        background-color: #ecf0f1;
+        background-color: #f5f6fa;
     }
 
     100% {
@@ -2138,7 +2167,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 0 10px;
     position: relative;
 }
@@ -2215,7 +2244,7 @@ pre {
     z-index: 10;
 }
 
-.comment-form-btn{
+.comment-form-btn {
     border: none;
     background: transparent;
     display: inline-flex;
@@ -2225,5 +2254,3 @@ pre {
     height: 26px;
     position: relative;
 }
-
-

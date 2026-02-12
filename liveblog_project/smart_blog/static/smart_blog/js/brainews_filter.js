@@ -4,6 +4,7 @@
 
     const FILTER_KEY = 'brainews_filter_active';
     const FILTER_STORAGE_KEY_PREFIX = 'brainews_original_cards_';
+    let latestFilterRequestId = 0;
 
     function getFilterBaseUrl() {
         const block = document.querySelector('.filter-block[data-filter-url]');
@@ -146,6 +147,8 @@
 
     function applyFilter(filter) {
         if (!filter) {
+            latestFilterRequestId++;
+            clearRefreshFlag();
             setActiveFilter(null);
             removeItem(FILTER_KEY);
             if (isBraiNewsListing()) {
@@ -157,13 +160,17 @@
             }
             return;
         }
+        latestFilterRequestId++;
+        const myReqId = latestFilterRequestId;
         saveOriginalContent();
         setActiveFilter(filter);
         setItem(FILTER_KEY, filter);
         showPagination(false);
 
         fetchFiltered(filter).then(html => {
+            if (myReqId !== latestFilterRequestId) return;
             replaceCardsWith(html);
+            showPagination(false);
             const emptyEl = document.querySelector('.filter-empty-message');
             if (emptyEl) {
                 showEmptyHint(emptyEl.textContent);
@@ -172,6 +179,7 @@
             }
             if (window.applyListingChanges) window.applyListingChanges();
         }).catch(() => {
+            if (myReqId !== latestFilterRequestId) return;
             showEmptyHint('Failed to load filter');
         });
     }
@@ -186,7 +194,7 @@
             changes = JSON.parse(sessionStorage.getItem('listing_changes') || '{}');
         } catch { return }
 
-        document.querySelectorAll('.filter-cards-wrapper .item_block[data-item-id]').forEach(card => {
+        document.querySelectorAll('.filter-cards-wrapper .item_block[data-item-id], #filterCardsWrapper .item_block[data-item-id]').forEach(card => {
             const itemId = card.dataset.itemId;
             if (!itemId || !changes[itemId]) return;
             const state = changes[itemId];
@@ -194,25 +202,12 @@
             if (!col) return;
 
             if (active === 'liked' && state.liked === false) {
-                smoothRemove(col);
+                col.remove();
             }
             if (active === 'bookmarked' && state.bookmarked === false) {
-                smoothRemove(col);
+                col.remove();
             }
         });
-    }
-
-    function smoothRemove(node) {
-        if (!node) return;
-        const height = node.offsetHeight;
-        node.style.height = height + 'px';
-        node.style.overflow = 'hidden';
-        requestAnimationFrame(() => {
-            node.classList.add('fade-collapse');
-            node.style.height = '0px';
-            node.style.opacity = '0';
-        });
-        setTimeout(() => node.remove(), 300);
     }
 
     function onFilterChange(e) {
@@ -249,12 +244,16 @@
     function restoreFilterOnReturnForPage() {
         const active = getItem(FILTER_KEY);
         if (!active) return;
+        latestFilterRequestId++;
+        const myReqId = latestFilterRequestId;
         clearRefreshFlag();
         saveOriginalContent();
         setActiveFilter(active);
         showPagination(false);
         fetchFiltered(active).then(html => {
+            if (myReqId !== latestFilterRequestId) return;
             replaceCardsWith(html);
+            showPagination(false);
             const emptyEl = document.querySelector('.filter-empty-message');
             if (emptyEl) {
                 showEmptyHint(emptyEl.textContent);
@@ -263,6 +262,7 @@
             }
             if (window.applyListingChanges) window.applyListingChanges();
         }).catch(() => {
+            if (myReqId !== latestFilterRequestId) return;
             applyFilter(null);
         });
     }
@@ -307,10 +307,14 @@
         if (active !== 'liked' && active !== 'bookmarked') return;
         if (getRefreshFlag() !== '1') return;
         clearRefreshFlag();
+        latestFilterRequestId++;
+        const myReqId = latestFilterRequestId;
         setActiveFilter(active);
         showPagination(false);
         fetchFiltered(active).then(html => {
+            if (myReqId !== latestFilterRequestId) return;
             replaceCardsWith(html);
+            showPagination(false);
             const emptyEl = document.querySelector('.filter-empty-message');
             if (emptyEl) {
                 showEmptyHint(emptyEl.textContent);
@@ -333,6 +337,11 @@
         if (e.key === REFRESH_FLAG && e.newValue === '1') {
             refreshFilterIfNeeded();
         }
+    });
+
+    document.addEventListener('brainews-filter-refresh', function () {
+        removeInvalidFilterCards();
+        refreshFilterIfNeeded();
     });
 
 })();

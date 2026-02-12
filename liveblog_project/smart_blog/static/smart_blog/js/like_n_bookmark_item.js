@@ -64,6 +64,7 @@
         changes[itemId].liked = data.liked;
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
+        try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }
       } catch { }
 
       const detailLikes = document.getElementById('likesCount');
@@ -154,6 +155,7 @@
         changes[itemId].bookmarked = data.bookmarked;
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
+        try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }
       } catch { }
 
       // instant detail update

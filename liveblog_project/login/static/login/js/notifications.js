@@ -106,6 +106,10 @@
     updateReadAllButton();
     try {
       localStorage.setItem('notification_unread_count', String(unreadCount));
+      localStorage.setItem('notification_count_updated_at', String(Date.now()));
+      if (typeof window.updateBellCountFromStorage === 'function') {
+        window.updateBellCountFromStorage();
+      }
     } catch (err) {}
   }
 
@@ -272,6 +276,13 @@
       bootstrap.Modal.getOrCreateInstance(deleteModalEl).hide();
       unreadCount = 0;
       updateHeaderCount(unreadCount);
+      try {
+        localStorage.setItem('notification_unread_count', '0');
+        localStorage.setItem('notification_count_updated_at', String(Date.now()));
+        if (typeof window.updateBellCountFromStorage === 'function') {
+          window.updateBellCountFromStorage();
+        }
+      } catch (err) {}
       hideActionsIfEmpty();
     } finally {
       deleteAllBtn.disabled = false;
