@@ -804,6 +804,13 @@ img.avatar-load-failed {
     margin: 1rem 0 !important;
 }
 
+.read-all-btn{
+    font-size: .9rem;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
 .marker {
     width: 10px;
     height: 10px;
@@ -1008,7 +1015,7 @@ img.avatar-load-failed {
 }
 
 .liked-item {
-    font-size: .875rem;
+    font-size: .8rem;
 }
 
 .instruction-btn{

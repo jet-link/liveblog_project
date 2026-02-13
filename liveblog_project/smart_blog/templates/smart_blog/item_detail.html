@@ -12,7 +12,7 @@
       <h2 class="text-muted m-0">{{ item.title }}</h2>
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
-        
+
         {% if user != item.author and not user.is_staff and user.is_authenticated %}
           <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
         {% endif %}
@@ -35,25 +35,25 @@
           <small class="primary_">It's your item</small>
         {% else %}
           <div>
-            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Item author">
+            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-1 text-decoration-none" title="Item author">
               <small class="custom_badge badge_primary">{{ item.author }}</small>
 
-              {% comment %} <div class="little-avatar">
+              <div class="little-avatar">
                 {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                   <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% else %}
                   <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% endif %}
-              </div> {% endcomment %}
+              </div>
             </a>
           </div>
         {% endif %}
       {% else %}
         <div class="d-flex align-items-center gap-2">
-          {% comment %} <div class="little-avatar">
+          <small class="text-muted">Vanished user</small>
+          <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
-          </div> {% endcomment %}
-          <small class="text-muted fw-semibold">Vanished user</small>
+          </div>
         </div>
       {% endif %}
     </div>
@@ -94,7 +94,9 @@
           {% endif %}
           {% if user == item.author and is_editable %}
             <a class="edit_btn manipulate"
-              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}
+                ?{{ request.GET.urlencode }}
+              {% endif %}">
               <i class="fa fa-pencil text-center"></i>
             </a>
 
@@ -134,7 +136,7 @@
         {% else %}
           <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none">Liked users</button>
         {% endif %}
-        <div class="liked-users-stack mt-2">
+        <div class="liked-users-stack">
           {% for like in liked_users|slice:':5' %}
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">

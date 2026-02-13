@@ -23,9 +23,11 @@
         </div>
         {% include 'includes/all_cards.html' with items=created_items listing_source='profile' listing_user=user_obj.username listing_section='created' %}
         {% if all_count|add:0 > 10 %}
-          <div class="d-flex justify-content-start align-items-center gap-2 mt-4 small">
-            <a href="{{ profile_created_url }}" class="text-decoration-none text-muted">View all created posts</a>
-            <span>→</span>
+          <div class="d-flex justify-content-start align-items-center mt-4 small">
+            <a href="{{ profile_created_url }}" class="text-decoration-none text-muted d-flex gap-2 ">
+              <span>View all created posts</span>
+              <span>→</span>
+            </a>
           </div>
         {% endif %}
       {% else %}

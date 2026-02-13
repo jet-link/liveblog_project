@@ -45,7 +45,7 @@ def items_list(request):
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
 
-    paginator = Paginator(qs, 20)
+    paginator = Paginator(qs, 40)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

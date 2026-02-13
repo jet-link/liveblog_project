@@ -49,7 +49,6 @@
   const deleteLast5Btn = document.getElementById('notificationsDeleteLast5');
   const deleteModalEl = document.getElementById('notificationsDeleteModal');
   const stateEl = document.getElementById('notificationsState');
-  const readAllDone = document.getElementById('notificationsReadAllDone');
   const actions = document.getElementById('notificationsActions');
   const emptyState = document.getElementById('notificationsEmpty');
   const legend = document.getElementById('notificationsLegend');
@@ -85,18 +84,7 @@
   function updateReadAllButton() {
     if (!readAllBtn) return;
     if (unreadCount <= 0) {
-      const done = document.createElement('span');
-      done.id = 'notificationsReadAllDone';
-      done.className = 'notifications-done notifications-fade';
-      done.setAttribute('aria-label', 'All read');
-      const icon = document.createElement('i');
-      icon.className = 'fa fa-check';
-      done.appendChild(icon);
-      readAllBtn.replaceWith(done);
-      setTimeout(() => {
-        done.classList.add('is-hidden');
-        setTimeout(() => done.remove(), 300);
-      }, 1200);
+      readAllBtn.remove();
     }
   }
 

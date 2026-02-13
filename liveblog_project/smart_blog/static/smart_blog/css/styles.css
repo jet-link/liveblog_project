@@ -24,7 +24,6 @@ html {
     --bs-pagination-border-radius: 25px;
     --bs-pagination-padding-x: 12px;
     --bs-pagination-padding-y: 6px;
-    font-size: .7rem;
 }
 
 .pagination .page-link {
@@ -553,9 +552,9 @@ textarea {
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #54a0ff;
+    border-color: #feca57;
     color: #ffffff;
-    background: #54a0ff;
+    background: #feca57;
 }
 
 .filter-empty-hint {
@@ -988,7 +987,7 @@ textarea {
 
 .show-more-btn-toggle {
     padding: 8px 14px;
-    border-radius: 5px;
+    border-radius: 7px;
     border: 1px solid #ddd;
     background: #fff;
     cursor: pointer;

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-  Notifications
+  {{ user.username }} notifications
 {% endblock %}
 
 {% block content %}
@@ -18,10 +18,9 @@
       {% if notifications %}
         <div id="notificationsActions" class="d-flex align-items-center gap-2">
           {% if unread_count > 0 %}
-            <button id="notificationsReadAll" type="button" class="cstm-btn custom-primary-btn cstm-btn-sm rounded-btn">Read all</button>
+            <button id="notificationsReadAll" type="button" class="read-all-btn text-muted">Read all</button>
           {% endif %}
           <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm ms-2">
-            {% comment %}Remove{% endcomment %}
             <i class="fa fa-trash-o fs-5"></i>
           </button>
         </div>
