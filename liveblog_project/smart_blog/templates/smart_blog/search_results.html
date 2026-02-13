@@ -19,19 +19,17 @@
       <div class="d-flex gap-2 text-muted small align-items-center mb-2">
         <span>Total</span>
         <span>found</span>
-        <span class="primary_ fw-bolder">{{ items.count }}</span>
+        <span class="custom_badge badge_primary">{{ items.count }}</span>
         {% if items.count != 1 %}
-          <span>items</span>
+          <span>posts</span>
         {% else %}
           <span>item</span>
         {% endif %}
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <small>→</small>
+      {% comment %} <div class="d-flex align-items-center gap-2">
         <small class="text-muted">
           searched by{% if selected_fields %}
-            {# если это список/кортеж — join, иначе просто выведем строку #}
             {% if selected_fields|length and selected_fields.0 is not None %}
               <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
             {% else %}
@@ -41,7 +39,7 @@
             {{ selected_fields }}
           {% endif %}
         </small>
-      </div>
+      </div> {% endcomment %}
     </div>
 
     {% if items %}

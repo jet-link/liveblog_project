@@ -119,6 +119,8 @@ class Item(models.Model):
         return base
 
     def save(self, *args, **kwargs):
+        if self.slug:
+            self.slug = self.slug.strip()
         # генерируем slug только если он пуст
         if not self.slug:
             base_slug = self._generate_base_slug()

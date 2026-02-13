@@ -8,7 +8,7 @@
       <div class="card-switcher">
         <div id="profileCard" class="card-panel is-visible" role="region" aria-labelledby="profileCardTitle">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="d-flex gap-2 align-items-center">
+            <div class="d-flex gap-3 align-items-center">
               <h5 id="profileCardTitle" class="m-0 text-muted text-uppercase">Edit profile</h5>
               <button type="button" class="instruction-btn"><i class="fa fa-question-circle-o" aria-hidden="true"></i></button>
             </div>
@@ -110,6 +110,7 @@
           </form>
         </div>
 
+        {% include 'includes/instruction_modal.html' %}
         <div id="passwordCard" class="card-panel from-top is-hidden" role="region" aria-labelledby="passwordCardTitle">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 id="passwordCardTitle" class="m-0 text-muted text-uppercase">Change password</h5>

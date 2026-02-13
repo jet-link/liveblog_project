@@ -341,6 +341,7 @@ def register_item_view(request, item):
 
 # detail item 
 def item_detail(request, slug):
+    slug = (slug or '').strip()
     item = get_object_or_404(Item, slug=slug)
 
     # 1️⃣ РЕГИСТРИРУЕМ ПРОСМОТР
@@ -514,6 +515,7 @@ def comment_thread(request, pk):
 
 @login_required
 def edit_item(request, slug):
+    slug = (slug or '').strip()
     item = get_object_or_404(Item, slug=slug)
 
     # ---- защита: только автор может редактировать ----

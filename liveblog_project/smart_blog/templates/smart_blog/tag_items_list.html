@@ -10,7 +10,7 @@
     <div id="filterPageContextBlock" class="filter-page-context-block mt-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
-          <h6 class="m-0 text-muted">All items for tag</h6>
+          <h6 class="m-0 text-muted">Posts for tag</h6>
           <span class="badge bg-secondary text-decoration-none small">{{ tag.tag_name }}</span>
         </div>
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
@@ -19,9 +19,9 @@
       <div class="d-flex gap-2 text-muted align-items-center small pb-3">
         <span>Total</span>
         <span>found</span>
-        <span class="primary_ fw-bolder">{{ tag.items.count }}</span>
+        <span class="custom_badge badge_primary"">{{ tag.items.count }}</span>
         {% if tag.items.count != 1 %}
-          <span>items</span>
+          <span>posts</span>
         {% else %}
           <span>item</span>
         {% endif %}

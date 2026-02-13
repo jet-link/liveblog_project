@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
 import os
+
+from .validators import validate_username
 # from django.core.files.images import get_image_dimensions
 
 
@@ -35,7 +37,7 @@ def is_valid_image_url(url: str) -> bool:
 # Register
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
-        max_length=150,
+        max_length=15,
         required=True,
         label=_('Username'),
         widget=forms.TextInput(attrs={
@@ -43,12 +45,14 @@ class CustomUserCreationForm(UserCreationForm):
             'id': 'floatingUsername',
             'placeholder': 'Username',
             'autocomplete': 'username',
+            'maxlength': '15',
             "required": True
         }),
         error_messages={
             'required': _('Enter username'),
-            'max_length': _('Too long username length'),
-        }
+            'max_length': _('Username must be at most 15 characters.'),
+        },
+        validators=[validate_username],
     )
 
     first_name = forms.CharField(
@@ -141,8 +145,11 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("username", "first_name", "last_name", "email", "password1", "password2")
 
     def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if username and User.objects.filter(username=username).exists():
+        username = (self.cleaned_data.get('username') or '').strip()
+        if not username:
+            return username
+        validate_username(username)
+        if User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(self.error_messages['username_taken'], code='username_taken')
         return username
 
@@ -193,6 +200,20 @@ class LoginForm(forms.Form):
 
 # Edit profile
 class UserEditForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=15,
+        required=True,
+        label=_('Username'),
+        widget=forms.TextInput(attrs={
+            'class': 'form-control text-muted',
+            'id': 'floatingUsernameProfile',
+            'autocomplete': 'username',
+            'placeholder': 'Username',
+            'maxlength': '15',
+            "required": True
+        }),
+    )
+
     avatar_url = forms.URLField(
         required=False,
         label=_('Avatar (image URL)'),
@@ -219,13 +240,6 @@ class UserEditForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'avatar_url', 'avatar_file']
 
         widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'form-control text-muted',
-                'id': 'floatingUsernameProfile',
-                'autocomplete': 'username',
-                'placeholder': 'Username',
-                "required": True
-            }),
             'first_name': forms.TextInput(attrs={
                 'class': 'form-control text-muted',
                 'id': 'floatingFirstNameProfile',
@@ -271,6 +285,8 @@ class UserEditForm(forms.ModelForm):
         username = self.cleaned_data.get('username', '').strip()
         if not username:
             return username
+
+        validate_username(username)
 
         qs = User.objects.filter(username__iexact=username)
         if self.instance and getattr(self.instance, 'pk', None):

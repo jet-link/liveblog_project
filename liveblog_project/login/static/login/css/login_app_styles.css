@@ -701,6 +701,7 @@ img.avatar-load-failed {
     border: 1px solid #ececec;
     border-radius: 12px;
     background: #fff;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .notification-body {
@@ -836,22 +837,27 @@ img.avatar-load-failed {
 
 .notification-row.notif-reply {
     border-color: #8e44ad;
+    box-shadow: 0 0 6px rgba(142, 68, 173, 0.35);
 }
 
 .notification-row.notif-comment_like {
     border-color: #2d9cdb;
+    box-shadow: 0 0 6px rgba(45, 156, 219, 0.35);
 }
 
 .notification-row.notif-item_like {
     border-color: #f39c12;
+    box-shadow: 0 0 6px rgba(243, 156, 18, 0.35);
 }
 
 .notification-row.is-read {
     border-color: #ececec;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.06);
 }
 
 .notification-row.is-seen {
     border-color: #ececec;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.06);
 }
 
 .notification-dot {
@@ -1018,10 +1024,11 @@ img.avatar-load-failed {
     font-size: .8rem;
 }
 
-.instruction-btn{
+.instruction-btn {
     border: none;
     background: none;
     font-size: 1.2rem;
     color: #9a9898;
     padding: 0;
+    cursor: pointer;
 }

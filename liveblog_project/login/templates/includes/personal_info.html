@@ -6,7 +6,7 @@
           <span class="text-muted">{{ label }}</span>
           <span>
             {% if field.is_empty %}
-              <span class="empty-field">empty field</span>
+              <span class="empty-field">Empty field</span>
             {% elif field.type == 'email' %}
               {% if field.is_owner %}
                 <span id="emailValue">{{ field.value }}</span>

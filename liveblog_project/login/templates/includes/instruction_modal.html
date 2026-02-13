@@ -1,0 +1,54 @@
+{% load i18n %}
+<div id="instructionModal" class="modal fade" tabindex="-1" aria-labelledby="instructionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-muted" id="instructionModalLabel">
+          {% trans "Instructions" %}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <hr />
+      <div class="modal-body pt-0">
+        <div class="small text-muted">
+          <p class="fw-semibold mb-2">{% trans "Username rules" %}</p>
+          <ol class="mb-2 ps-3" style="list-style-type: decimal;">
+            <li class="mb-2"> 1–15 characters</li>
+            <li class="mb-2"> {% trans "No spaces" %}</li>
+            <li class="mb-0"> {% trans "Allowed:" %}
+              <ul class="mb-0 mt-1 ps-3" style="list-style-type: disc;">
+                <li>letters, digits</li>
+                <li><code>* _ - ~ ( ) ^ $ @ ? !</code></li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.instruction-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var modalEl = document.getElementById('instructionModal');
+      if (modalEl && typeof bootstrap !== 'undefined') {
+        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+      }
+    });
+  });
+
+  // Скрыть field ошибку username при вводе
+  ['floatingUsername', 'floatingUsernameProfile'].forEach(function(id) {
+    var input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('input', function() {
+        var wrap = this.closest('.form-floating');
+        var err = wrap ? wrap.querySelector('.text-danger') : null;
+        if (err) err.style.display = 'none';
+      });
+    }
+  });
+});
+</script>

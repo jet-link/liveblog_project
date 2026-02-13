@@ -94,9 +94,7 @@
           {% endif %}
           {% if user == item.author and is_editable %}
             <a class="edit_btn manipulate"
-              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}
-                ?{{ request.GET.urlencode }}
-              {% endif %}">
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
               <i class="fa fa-pencil text-center"></i>
             </a>
 

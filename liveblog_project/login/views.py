@@ -92,7 +92,8 @@ def register_view(request):
             messages.success(request, 'Registration successful. You can log in now.')
             return redirect('login_app:login')
         else:
-            messages.error(request, 'Please fix the errors below.')
+            # messages.error(request, 'Please fix the errors below.')
+            pass
     else:
         form = CustomUserCreationForm()
 
