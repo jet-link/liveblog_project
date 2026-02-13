@@ -19,7 +19,7 @@
       {% if created_items %}
         <div class="d-flex align-items-center gap-2 mb-4">
           <h6 class="text-muted m-0">Created posts</h6>
-          <span class="primary_">({{ all_count }})</span>
+          <span class="primary_">[{{ all_count }}]</span>
         </div>
         {% include 'includes/all_cards.html' with items=created_items listing_source='profile' listing_user=user_obj.username listing_section='created' %}
         {% if all_count|add:0 > 10 %}

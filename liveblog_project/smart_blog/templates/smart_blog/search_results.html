@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}
-  Found - "{{ query }}"
+  Search
 {% endblock %}
 
 {% block content %}
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div id="filterPageContextBlock" class="filter-page-context-block mt-5">
+    <div id="filterPageContextBlock" class="filter-page-context-block my-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
           <h6 class="text-muted m-0">Search results for</h6>
@@ -16,7 +16,7 @@
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
       </div>
       <hr />
-      <div class="d-flex gap-2 text-muted small align-items-center pb-3">
+      <div class="d-flex gap-2 text-muted small align-items-center mb-2">
         <span>Total</span>
         <span>found</span>
         <span class="primary_ fw-bolder">{{ items.count }}</span>
@@ -26,31 +26,38 @@
           <span>item</span>
         {% endif %}
       </div>
-    </div>
 
-    {% comment %} <div class="mt-1">
-      <small class="text-muted">
-        searched by{% if selected_fields %}
-          {# если это список/кортеж — join, иначе просто выведем строку #}
-          {% if selected_fields|length and selected_fields.0 is not None %}
-            <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
+      <div class="d-flex align-items-center gap-2">
+        <small>→</small>
+        <small class="text-muted">
+          searched by{% if selected_fields %}
+            {# если это список/кортеж — join, иначе просто выведем строку #}
+            {% if selected_fields|length and selected_fields.0 is not None %}
+              <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
+            {% else %}
+              {{ selected_fields }}
+            {% endif %}
           {% else %}
             {{ selected_fields }}
           {% endif %}
-        {% else %}
-          {{ selected_fields }}
-        {% endif %}
-      </small>
-    </div> {% endcomment %}
+        </small>
+      </div>
+    </div>
 
     {% if items %}
       <div id="filterCardsWrapper" class="filter-cards-container" data-page-type="search">
         {% include 'includes/all_cards.html' with listing_source='search' listing_source_url=request.get_full_path listing_query=query %}
       </div>
       {% if items.count > 10 %}
-        <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
+        <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
           <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-          <span id="shownCounter" class="small text-muted">{% if items|length > 10 %}10{% else %}{{ items|length }}{% endif %} / {{ items|length }}</span>
+          <span id="shownCounter" class="small text-muted">
+            {% if items|length > 10 %}
+              10
+            {% else %}
+              {{ items|length }}
+            {% endif %}/ {{ items|length }}
+          </span>
         </div>
       {% endif %}
     {% else %}

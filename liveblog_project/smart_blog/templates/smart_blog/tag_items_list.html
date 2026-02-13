@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}
-  Tag - "{{ tag.tag_name }}"
+  Posts by tag
 {% endblock %}
 
 {% block content %}
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div id="filterPageContextBlock" class="filter-page-context-block mt-5">
+    <div id="filterPageContextBlock" class="filter-page-context-block mt-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
           <h6 class="m-0 text-muted">All items for tag</h6>
@@ -32,7 +32,7 @@
         {% include 'includes/all_cards.html' with listing_source='tag' listing_source_url=request.get_full_path listing_tag=tag.tag_name listing_tag_slug=tag.slug %}
       </div>
       {% if items.count > 10 %}
-        <div id="showMoreWrapper" class="d-flex justify-content-start align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
+        <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
           <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
           <span id="shownCounter" class="text-muted small">{% if items|length > 10 %}10{% else %}{{ items|length }}{% endif %} / {{ items|length }}</span>
         </div>

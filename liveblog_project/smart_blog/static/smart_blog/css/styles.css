@@ -552,9 +552,9 @@ textarea {
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #feca57;
+    border-color: #5f27cd;
     color: #ffffff;
-    background: #feca57;
+    background: #5f27cd;
 }
 
 .filter-empty-hint {
