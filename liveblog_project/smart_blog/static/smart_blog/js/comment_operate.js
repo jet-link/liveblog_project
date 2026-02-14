@@ -312,6 +312,74 @@
     updateCommentButtonCooldown(targetBtn, itemId);
   }
 
+  /* ===============================
+     REPLY COOLDOWN (30s per comment ID)
+  =============================== */
+  const REPLY_COOLDOWN_SEC = 30;
+  const REPLY_COOLDOWN_KEY_PREFIX = 'reply_cooldown_until_';
+
+  function getReplyCooldownRemaining(commentId) {
+    if (!commentId) return 0;
+    const key = `${REPLY_COOLDOWN_KEY_PREFIX}${commentId}`;
+    const until = Number(localStorage.getItem(key) || 0);
+    const diff = Math.ceil((until - Date.now()) / 1000);
+    return diff > 0 ? diff : 0;
+  }
+
+  function updateReplyButtonCooldown(btn, commentId) {
+    if (!btn || !commentId) return;
+    const remaining = getReplyCooldownRemaining(commentId);
+    const originalText = btn.dataset.originalReplyText || 'Reply';
+    if (!btn.dataset.originalReplyText) btn.dataset.originalReplyText = originalText;
+
+    if (remaining > 0) {
+      btn.disabled = true;
+      btn.classList.add('is-reply-blocked');
+      btn.innerHTML = `<span class="reply-cooldown-timer">${remaining}s</span>`;
+      if (!btn.__replyCooldownTimer) {
+        btn.__replyCooldownTimer = setInterval(() => {
+          const left = getReplyCooldownRemaining(commentId);
+          if (left <= 0) {
+            clearInterval(btn.__replyCooldownTimer);
+            btn.__replyCooldownTimer = null;
+            localStorage.removeItem(`${REPLY_COOLDOWN_KEY_PREFIX}${commentId}`);
+            btn.disabled = false;
+            btn.classList.remove('is-reply-blocked');
+            btn.textContent = originalText;
+            return;
+          }
+          const timerEl = btn.querySelector('.reply-cooldown-timer');
+          if (timerEl) timerEl.textContent = left + 's';
+        }, 1000);
+      }
+      return;
+    }
+
+    if (btn.__replyCooldownTimer) {
+      clearInterval(btn.__replyCooldownTimer);
+      btn.__replyCooldownTimer = null;
+    }
+    btn.disabled = false;
+    btn.classList.remove('is-reply-blocked');
+    btn.textContent = originalText;
+  }
+
+  function startReplyCooldown(commentId, seconds = REPLY_COOLDOWN_SEC) {
+    if (!commentId) return;
+    const until = Date.now() + seconds * 1000;
+    localStorage.setItem(`${REPLY_COOLDOWN_KEY_PREFIX}${commentId}`, String(until));
+    document.querySelectorAll(`.comment-menu-action[data-action="reply"][data-comment-id="${commentId}"]`).forEach(btn => {
+      updateReplyButtonCooldown(btn, commentId);
+    });
+  }
+
+  function initAllReplyButtonsCooldown() {
+    document.querySelectorAll('.comment-menu-action[data-action="reply"]').forEach(btn => {
+      const commentId = btn.dataset.commentId;
+      if (commentId) updateReplyButtonCooldown(btn, commentId);
+    });
+  }
+
   function parseCooldownSeconds(message) {
     if (!message) return null;
     const match = String(message).match(/(\d+)\s*second/);
@@ -685,6 +753,10 @@
   window.addEventListener('pageshow', () => {
     handleThreadBackScroll();
   });
+
+  window.getReplyCooldownRemaining = getReplyCooldownRemaining;
+  window.startReplyCooldown = startReplyCooldown;
+  window.initAllReplyButtonsCooldown = initAllReplyButtonsCooldown;
 
 })();
 
@@ -1255,6 +1327,8 @@
     const container = document.getElementById(`reply-form-${commentId}`);
     if (!container) return;
 
+    if (window.getReplyCooldownRemaining?.(commentId) > 0) return;
+
     if (window.closeAllCommentEditForms) {
       window.closeAllCommentEditForms();
     }
@@ -1356,6 +1430,7 @@
 
     const commentId = btn.dataset.commentId;
     const mentionId = btn.dataset.mentionId;
+    if (window.getReplyCooldownRemaining?.(commentId) > 0) return;
     openReplyForm(commentId, mentionId);
   });
 
@@ -1382,6 +1457,7 @@
       const mentionId = actionBtn.dataset.mentionId;
 
       if (action === 'reply') {
+        if (window.getReplyCooldownRemaining?.(commentId) > 0) return;
         openReplyForm(commentId, mentionId);
       } else if (action === 'share') {
         const url = buildCommentShareUrl(commentId);
@@ -1520,6 +1596,7 @@
           } else {
             window.adjustThreadLinkCount?.(parentId, 1);
           }
+          window.startReplyCooldown?.(parentId);
           closeAllReplyForms();
           return;
         }
@@ -1533,6 +1610,7 @@
 
         replies.insertAdjacentHTML('afterbegin', data.comment_html);
         window.initCommentToggles?.(replies);
+        window.initAllReplyButtonsCooldown?.();
 
         // if we're on thread page, ensure empty state cleared and link removal flag reset
         const threadContext = getThreadContext();
@@ -1555,6 +1633,7 @@
           }
         }
 
+        window.startReplyCooldown?.(parentId);
         closeAllReplyForms();
       } catch (renderErr) {
         console.error('Reply render error:', renderErr);
@@ -1565,6 +1644,8 @@
       errors.textContent = err?.message || 'Network error.';
     }
   });
+
+  window.initAllReplyButtonsCooldown?.();
 
 })();
 

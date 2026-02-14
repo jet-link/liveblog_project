@@ -12,12 +12,13 @@
       <div class="modal-body pt-0">
         <div class="small text-muted">
           <p class="fw-semibold mb-2">{% trans "Username rules" %}</p>
-          <ol class="mb-2 ps-3" style="list-style-type: decimal;">
-            <li class="mb-2"> 1–15 characters</li>
-            <li class="mb-2"> {% trans "No spaces" %}</li>
+          <ol class="mb-2 ps-2" style="list-style-type: none;">
+            <li class="mb-3"> 1–15 characters</li>
+            <li class="mb-3"> {% trans "No spaces" %}</li>
             <li class="mb-0"> {% trans "Allowed:" %}
-              <ul class="mb-0 mt-1 ps-3" style="list-style-type: disc;">
-                <li>letters, digits</li>
+              <ul class="mb-0 mt-1 ps-5" style="list-style-type: disc;">
+                <li class="mb-2">letters</li>
+                <li class="mb-2">digits</li>
                 <li><code>* _ - ~ ( ) ^ $ @ ? !</code></li>
               </ul>
             </li>

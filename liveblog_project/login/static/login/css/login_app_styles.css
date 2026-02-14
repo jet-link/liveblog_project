@@ -837,17 +837,17 @@ img.avatar-load-failed {
 
 .notification-row.notif-reply {
     border-color: #8e44ad;
-    box-shadow: 0 0 6px rgba(142, 68, 173, 0.35);
+    box-shadow: 0 0 8px rgba(142, 68, 173, 0.35);
 }
 
 .notification-row.notif-comment_like {
     border-color: #2d9cdb;
-    box-shadow: 0 0 6px rgba(45, 156, 219, 0.35);
+    box-shadow: 0 0 8px rgba(45, 156, 219, 0.35);
 }
 
 .notification-row.notif-item_like {
     border-color: #f39c12;
-    box-shadow: 0 0 6px rgba(243, 156, 18, 0.35);
+    box-shadow: 0 0 8px rgba(243, 156, 18, 0.35);
 }
 
 .notification-row.is-read {
