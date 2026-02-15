@@ -4,7 +4,9 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.text import slugify
-import string, random
+import re
+import string
+import random
 from transliterate import translit
 from datetime import timedelta
 from django.utils.html import strip_tags
@@ -132,8 +134,13 @@ class Item(models.Model):
             self.slug = slug_candidate
         if self.pk:
             try:
-                previous = Item.objects.only('text').get(pk=self.pk)
-                if previous.text != self.text:
+                previous = Item.objects.only('text', 'title').get(pk=self.pk)
+                # Нормализуем для сравнения — избегаем ложных срабатываний из‑за пробелов/HTML
+                def _norm(s):
+                    if s is None:
+                        return ''
+                    return re.sub(r'\s+', ' ', str(s).strip())
+                if _norm(previous.text) != _norm(self.text) or _norm(previous.title) != _norm(self.title):
                     self.edited = True
             except Item.DoesNotExist:
                 pass

@@ -132,9 +132,6 @@
 
   function markSeen(id, syncServer = false) {
     if (!id) return;
-    try {
-      localStorage.setItem(`notification_seen_${id}`, '1');
-    } catch (err) {}
     if (syncServer) {
       sendReadToServer(id);
     }
@@ -155,19 +152,10 @@
     rows.forEach(row => {
       const id = row.dataset.notificationId;
       if (!id) return;
-      let seen = false;
-      try {
-        seen = localStorage.getItem(`notification_seen_${id}`) === '1';
-      } catch (err) {}
-      if (seen || row.dataset.isRead === '1') {
-        row.classList.add('is-seen');
-        row.dataset.isRead = '1';
-        row.classList.add('is-read');
+      if (row.dataset.isRead === '1') {
+        row.classList.add('is-seen', 'is-read');
         const btn = row.querySelector('.notification-read-btn');
         if (btn) renderReadBadge(btn);
-        try {
-          localStorage.setItem(`notification_seen_${id}`, '1');
-        } catch (err) {}
       }
     });
 

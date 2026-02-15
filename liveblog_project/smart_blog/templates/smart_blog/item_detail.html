@@ -26,10 +26,11 @@
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
-            <span class="primary_">Edited</span>
+            <span class="primary_ fw-semibold">Edited</span>
           {% endif %}
         </small>
       </div>
+      
       {% if item.author %}
         {% if user == item.author %}
           <small class="primary_">It's your item</small>

@@ -7,7 +7,6 @@ html {
     /* scroll-behavior: auto !important; */
 }
 
-
 .main {
     flex-grow: 1;
 }
@@ -34,6 +33,10 @@ html {
     background-color: #2980b9;
     border-color: #2980b9;
     color: #fff;
+}
+
+.modal-footer>*{
+    margin: 0 2px;
 }
 
 .header {
@@ -1118,7 +1121,7 @@ textarea {
 
 .cstm-btn {
     padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: 6px;
     transition: .2s ease-in-out;
     font-size: .9rem;
     text-decoration: none;

@@ -480,7 +480,11 @@
 
         if (!changes || Object.keys(changes).length === 0) return;
 
+        const currentUserId = (document.body.dataset.userId || '').toString();
+
         Object.entries(changes).forEach(([itemId, data]) => {
+            const dataUserId = data.user_id != null ? String(data.user_id) : null;
+            const isSameUser = dataUserId !== null && dataUserId === currentUserId;
 
             if (data.likes_count != null) {
                 const n = document.getElementById('likes-count-' + itemId);
@@ -502,7 +506,7 @@
                 if (n) n.textContent = data.views_count;
             }
 
-            if (data.bookmarked != null) {
+            if (data.bookmarked != null && isSameUser) {
                 const icon = document.getElementById('bookmark-icon-' + itemId);
                 if (icon) {
                     icon.classList.toggle('fa-bookmark', data.bookmarked);
@@ -510,7 +514,7 @@
                 }
             }
 
-            if (data.liked != null) {
+            if (data.liked != null && isSameUser) {
                 const icon = document.getElementById('like-icon-' + itemId);
                 if (icon) {
                     icon.classList.toggle('fa-heart', data.liked);
@@ -520,6 +524,7 @@
         });
     }
 
+    window.applyListingChanges = applyListingChanges;
     window.addEventListener('pageshow', applyListingChanges);
     document.addEventListener('DOMContentLoaded', applyListingChanges);
 

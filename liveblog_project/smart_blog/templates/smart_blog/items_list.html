@@ -5,9 +5,7 @@
 
 {% block content %}
   <div class="container content_block" data-brainews-listing>
-    {% if user.is_authenticated and items %}
       {% include 'includes/search_form.html' %}
-    {% endif %}
     {% if items %}
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
         {% include 'includes/all_cards.html' with listing_source='items_list' listing_source_url=request.get_full_path %}

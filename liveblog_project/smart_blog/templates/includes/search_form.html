@@ -8,6 +8,10 @@
       <!-- clear button: указывает data-target на input -->
       <button id="headerSearchClear" type="button" class="header-search-clear field-clear btn btn-link p-0 ms-2 hidden" data-target="#headerSearchInput" aria-label="Clear search"><i class="fa fa-times" aria-hidden="true"></i></button>
     </div>
-    {% include 'includes/filter_block.html' %}
+    {% if user.is_authenticated %}
+      {% include 'includes/filter_block.html' %}
+    {% endif %}
   </div>
 </div>
+
+

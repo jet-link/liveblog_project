@@ -16,6 +16,7 @@ from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q, Subquery
 from django.db.models import Prefetch
 from .utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
+from .search_utils import build_search_filter, apply_popular_filter
 import logging
 import os
 from django.conf import settings
@@ -77,6 +78,7 @@ def items_filtered(request):
     qs = (
         Item.objects
         .with_counters()
+        .filter(is_published=True)
         .order_by('-published_date')
     )
     tag_slug = request.GET.get('tag_slug', '').strip()
@@ -91,19 +93,12 @@ def items_filtered(request):
         by_tags = request.GET.get('by_tags') in ('1', 'true', 'True')
         if not (by_title or by_text or by_tags):
             by_title = by_text = by_tags = True
-        queries = Q()
-        if by_title:
-            queries |= Q(title__icontains=search_q)
-        if by_text:
-            queries |= Q(text__icontains=search_q)
-        if by_tags:
-            queries |= Q(tags__tag_name__icontains=search_q)
-        qs = qs.filter(queries).distinct()
+        qs = build_search_filter(qs, search_q, by_title, by_text, by_tags)
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
     if filter_type == 'popular':
-        qs = qs.filter(likes_count__gte=10)
-        empty_msg = 'Popular not ready'
+        qs = apply_popular_filter(qs)
+        empty_msg = 'Popular not exists'
     elif filter_type == 'liked':
         like_date_subq = Like.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
         qs = qs.filter(likes__user=request.user).annotate(
@@ -196,29 +191,17 @@ def search_view(request):
     if not q:
         items = Item.objects.none()
     else:
-        queries = Q()
-        # если ни одного фильтра не выбран — искать по title+text+tag по умолчанию
         if not (by_title or by_text or by_tags):
-            by_title = True
-            by_text = True
-            by_tags = True
-
-        if by_title:
-            queries |= Q(title__icontains=q)
-        if by_text:
-            queries |= Q(text__icontains=q)
-        if by_tags:
-            # поиск по тегам по названию тэга
-            queries |= Q(tags__tag_name__icontains=q)
+            by_title = by_text = by_tags = True
 
         items = (
             Item.objects
             .with_counters()
-            .filter(queries)
-            .distinct()
-            .order_by('-published_date')
+            .filter(is_published=True)
         )
+        items = build_search_filter(items, q, by_title, by_text, by_tags)
         items = annotate_user_liked(items, request.user)
+        items = annotate_user_bookmarked(items, request.user)
 
     if q:
         breadcrumbs = build_breadcrumbs(
@@ -291,7 +274,7 @@ def create_item(request):
             new_tags_raw = form.cleaned_data.get('new_tags', '')
             if new_tags_raw:
                 for tg in [t.strip() for t in new_tags_raw.split(',') if t.strip()]:
-                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg)
+                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg.capitalize())
                     item.tags.add(tag_obj)
 
             for f in files[:MAX_IMAGES]:
@@ -557,15 +540,21 @@ def edit_item(request, slug):
             item.title = form.cleaned_data["title"]
             item.text = form.cleaned_data["text"]
 
-            # обновляем теги
-            item.tags.set(form.cleaned_data["tags"])
+            # сравниваем теги до изменений (для Edited badge)
+            old_tag_ids = set(item.tags.values_list("pk", flat=True))
 
-            # новые теги
+            # обновляем теги
+            new_tags_from_form = list(form.cleaned_data["tags"])
             new_tags_raw = form.cleaned_data.get("new_tags", "")
             if new_tags_raw:
                 for tg in [t.strip() for t in new_tags_raw.split(",") if t.strip()]:
-                    tag_obj, created = Tag.objects.get_or_create(tag_name=tg)
-                    item.tags.add(tag_obj)
+                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg.capitalize())
+                    new_tags_from_form.append(tag_obj)
+
+            item.tags.set(new_tags_from_form)
+            new_tag_ids = set(item.tags.values_list("pk", flat=True))
+            if old_tag_ids != new_tag_ids:
+                item.edited = True
 
             item.save()
 
@@ -860,7 +849,7 @@ def delete_comment(request, pk):
     return JsonResponse({
         "success": True,
         "comment_id": pk,
-        "parent_id": parent_id,  # 🔥 ВАЖНО
+        "parent_id": parent_id,
         "comments_count": Comment.objects.filter(
             item=comment.item,
             parent__isnull=True

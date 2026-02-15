@@ -14,6 +14,7 @@
     if (!btn) return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     const url = btn.dataset.url;
     const itemId = btn.dataset.itemId;
@@ -62,6 +63,7 @@
         changes[itemId] = changes[itemId] || {};
         changes[itemId].likes_count = data.likes_count;
         changes[itemId].liked = data.liked;
+        changes[itemId].user_id = document.body.dataset.userId || '';
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
         try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }
@@ -70,6 +72,10 @@
       const detailLikes = document.getElementById('likesCount');
       if (detailLikes && data.likes_count != null) {
         detailLikes.textContent = data.likes_count;
+      }
+      const cardLikes = document.getElementById('likes-count-' + itemId);
+      if (cardLikes && data.likes_count != null) {
+        cardLikes.textContent = data.likes_count;
       }
       if (window.updateLikedUsersUI) {
         window.updateLikedUsersUI(data);
@@ -153,6 +159,7 @@
         changes[itemId] = changes[itemId] || {};
         changes[itemId].bookmarks_count = data.bookmarks_count;
         changes[itemId].bookmarked = data.bookmarked;
+        changes[itemId].user_id = document.body.dataset.userId || '';
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
         try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }

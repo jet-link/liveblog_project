@@ -29,15 +29,16 @@
             </div>
 
             {% if user != item.author and user.is_authenticated %}
-              <div class="item-stats text-muted d-inline-flex align-items-center">
-                <div class="stat p-0">
-                  <!-- здесь id у span совпадает с тем, что ищет listing-apply-changes -->
+              <div class="item-stats text-muted d-inline-flex align-items-center position-relative" style="z-index: 2">
+                <div class="stat p-0 d-inline-flex align-items-center">
                   <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                  {% if item.user_liked %}
-                    <i id="like-icon-{{ item.pk }}" class="fa fa-heart danger_" aria-hidden="true"></i>
-                  {% else %}
-                    <i id="like-icon-{{ item.pk }}" class="fa fa-heart-o danger_" aria-hidden="true"></i>
-                  {% endif %}
+                  <button type="button" class="like-btn border-0 bg-transparent p-0 ms-1 text-danger" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like" aria-label="Like">
+                    {% if item.user_liked %}
+                      <i id="like-icon-{{ item.pk }}" class="fa fa-heart danger_" aria-hidden="true"></i>
+                    {% else %}
+                      <i id="like-icon-{{ item.pk }}" class="fa fa-heart-o danger_" aria-hidden="true"></i>
+                    {% endif %}
+                  </button>
                 </div>
 
                 {% comment %} <div class="stat">
@@ -77,7 +78,6 @@
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
 
-          {% comment %} <hr />  {% endcomment %}
           <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->
           <div class="d-flex justify-content-between align-items-center py-2">
             <!-- ! важно: добавил класс item-link и data-item-id (тот же id) -->
