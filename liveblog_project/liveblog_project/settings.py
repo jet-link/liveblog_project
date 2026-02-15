@@ -14,6 +14,13 @@ MESSAGE_TAGS = {
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load .env if python-dotenv is installed (optional)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR.parent / '.env')
+except ImportError:
+    pass
+
 # SECURITY
 SECRET_KEY = 'django-insecure-qhg*izwtd!%(3up6bh=s#gt7!@g1t5z=0e*02=-5&^80h51+-h'
 # DEBUG = True
@@ -75,13 +82,33 @@ TEMPLATES = [
 WSGI_APPLICATION = 'liveblog_project.wsgi.application'
 
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database — PostgreSQL (set DJANGO_DB_ENGINE=postgresql) or SQLite (fallback)
+_db_engine = os.environ.get('DJANGO_DB_ENGINE', 'sqlite')
+
+if _db_engine == 'postgresql':
+    _db_user = os.environ.get('DJANGO_DB_USER') or os.environ.get('USER')
+    if not _db_user or _db_user in ('YOUR_USERNAME', 'YOUR_MAC_USERNAME'):
+        _db_user = os.environ.get('USER', 'postgres')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DJANGO_DB_NAME', 'liveblog'),
+            'USER': _db_user,
+            'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+            'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+            'OPTIONS': {
+                'connect_timeout': 10,
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validators

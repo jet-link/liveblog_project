@@ -1132,12 +1132,12 @@ textarea {
 }
 
 .cstm-btn-sm {
-    padding: 9px 12px;
+    padding: 9px 10px;
     transition: .2s ease-in-out;
     font-size: .790rem;
     font-weight: 500;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2227,7 +2227,6 @@ pre {
 
 .reply-cooldown-timer{
     font-size: .7rem !important;
-    color: #ff6b6b;
 }
 
 .comment-menu-action.is-reply-blocked {

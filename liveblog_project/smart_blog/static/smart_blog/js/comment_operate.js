@@ -118,7 +118,7 @@
       'gap-2',
       'align-items-center',
       'text-muted',
-      'fw-normal'
+      'fw-semibold'
     );
   }
 

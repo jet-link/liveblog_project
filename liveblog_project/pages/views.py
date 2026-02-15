@@ -4,28 +4,33 @@ from django.template import TemplateDoesNotExist
 from smart_blog.models import Item
 from pages.models import FAQItem
 from django.http import Http404
-from django.db.models import Count, Q
 from django.utils import timezone
-from datetime import timedelta
 
+
+def _popularity_score(item):
+    """
+    Time decay formula: score = likes / (hours_since_post + 2)^1.5
+    """
+    likes = getattr(item, 'likes_count', 0) or 0
+    pub_date = item.published_date or item.created
+    now = timezone.now()
+    if timezone.is_naive(pub_date):
+        pub_date = timezone.make_aware(pub_date)
+    delta = now - pub_date
+    hours_since = max(0, delta.total_seconds() / 3600)
+    denominator = (hours_since + 2) ** 1.5
+    return likes / denominator if denominator > 0 else 0
 
 
 def home_page(request):
-    since = timezone.now() - timedelta(days=30)
-
-    popular_items = (
+    items = list(
         Item.objects
-        .with_counters()   # 🔥 базовые счётчики
-        .annotate(
-            recent_likes=Count(
-                'likes',
-                filter=Q(likes__created_at__gte=since),
-                distinct=True
-            )
-        )
-        .filter(recent_likes__gte=5)
-        .order_by('-recent_likes')[:10]
+        .filter(is_published=True)
+        .with_counters()
+        .order_by('-published_date')[:200]
     )
+    items.sort(key=lambda x: _popularity_score(x), reverse=True)
+    popular_items = items[:10]
 
     return render(request, 'pages/home.html', {
         'popular_items': popular_items
