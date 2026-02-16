@@ -3,8 +3,6 @@ import os
 from django.contrib.messages import constants as messages
 
 
-
-
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
     messages.WARNING: 'warning',
@@ -23,8 +21,6 @@ except ImportError:
 
 # SECURITY
 SECRET_KEY = 'django-insecure-qhg*izwtd!%(3up6bh=s#gt7!@g1t5z=0e*02=-5&^80h51+-h'
-# DEBUG = True
-# ALLOWED_HOSTS = []
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
@@ -82,33 +78,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'liveblog_project.wsgi.application'
 
 
-# Database — PostgreSQL (set DJANGO_DB_ENGINE=postgresql) or SQLite (fallback)
-_db_engine = os.environ.get('DJANGO_DB_ENGINE', 'sqlite')
-
-if _db_engine == 'postgresql':
-    _db_user = os.environ.get('DJANGO_DB_USER') or os.environ.get('USER')
-    if not _db_user or _db_user in ('YOUR_USERNAME', 'YOUR_MAC_USERNAME'):
-        _db_user = os.environ.get('USER', 'postgres')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DJANGO_DB_NAME', 'liveblog'),
-            'USER': _db_user,
-            'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
-            'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
-            'OPTIONS': {
-                'connect_timeout': 10,
-            },
-        }
+# Database — PostgreSQL only
+_db_user = os.environ.get('DJANGO_DB_USER') or os.environ.get('USER', 'postgres')
+_db_password = os.environ.get('DJANGO_DB_PASSWORD', '')
+if not _db_password:
+    raise ValueError(
+        'DJANGO_DB_PASSWORD is not set. This is the PostgreSQL user password, '
+        'NOT your Mac login. Set it in .env or: export DJANGO_DB_PASSWORD="your_postgres_password"'
+    )
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'liveblog'),
+        'USER': _db_user,
+        'PASSWORD': _db_password,
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+        'OPTIONS': {'connect_timeout': 10},
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Password validators

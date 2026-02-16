@@ -1,13 +1,10 @@
 """
 PostgreSQL-powered search and filtering utilities.
-Uses full-text search (FTS) and DB-level popularity scoring when PostgreSQL is available.
+Uses stored tsvector + GIN index for O(1) full-text search when PostgreSQL is available.
 Falls back to icontains / likes_count ordering for SQLite.
 """
-from functools import reduce
-from operator import add
-
 from django.db import connection
-from django.db.models import Q, Value, FloatField
+from django.db.models import Q, Value, FloatField, F
 from django.db.models.functions import Coalesce
 
 
@@ -18,8 +15,8 @@ def is_postgresql():
 def build_search_filter(qs, q, by_title, by_text, by_tags):
     """
     Apply search filter to queryset.
-    - PostgreSQL: Full-text search with SearchVector/SearchQuery/SearchRank on title+text,
-      icontains for tags (M2M). Uses 'simple' config for multilingual support.
+    - PostgreSQL: FTS on precomputed search_vector (GIN index), SearchRank for ordering.
+      Uses 'simple' config for multilingual. Tags via icontains.
     - SQLite: icontains on all selected fields.
     """
     if not q or not (by_title or by_text or by_tags):
@@ -27,29 +24,18 @@ def build_search_filter(qs, q, by_title, by_text, by_tags):
 
     if is_postgresql():
         try:
-            from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+            from django.contrib.postgres.search import SearchQuery, SearchRank
         except ImportError:
             return _search_icontains(qs, q, by_title, by_text, by_tags)
 
-        # Build search vector for title + text (weight A for title = higher rank)
-        vector_parts = []
-        if by_title:
-            vector_parts.append(SearchVector('title', weight='A', config='simple'))
-        if by_text:
-            vector_parts.append(SearchVector('text', weight='B', config='simple'))
-
         tag_q = Q(tags__tag_name__icontains=q) if by_tags else Q(pk__in=[])
 
-        if vector_parts:
-            search_vector = reduce(add, vector_parts)
-            # websearch: supports phrases, AND/OR; fallback to plain for special chars
+        if by_title or by_text:
             query = SearchQuery(q, config='simple', search_type='websearch')
             qs = qs.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, query),
+                rank=SearchRank(F('search_vector'), query),
             )
-            # Match in title/text OR in tags
-            qs = qs.filter(Q(search=query) | tag_q).distinct()
+            qs = qs.filter(Q(search_vector=query) | tag_q).distinct()
             qs = qs.order_by(
                 Coalesce('rank', Value(0.0), output_field=FloatField()).desc(nulls_last=True),
                 '-published_date',
@@ -105,7 +91,7 @@ def apply_popular_filter(qs):
     """
     Filter and order items by popularity (for 'popular' filter).
     Returns qs ordered by time-decayed popularity score.
-    Minimal threshold: at least 1 like.
+    Minimal threshold: at least 6 likes.
     """
     qs = get_popularity_queryset(qs)
-    return qs.filter(likes_count__gte=1)
+    return qs.filter(likes_count__gte=6)

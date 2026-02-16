@@ -86,10 +86,12 @@
         if (ctxBlock) {
             if (show) {
                 ctxBlock.style.display = '';
-                requestAnimationFrame(() => ctxBlock.classList.remove('filter-context-hidden'));
+                requestAnimationFrame(function () {
+                    ctxBlock.classList.remove('filter-context-hidden');
+                });
             } else {
                 ctxBlock.classList.add('filter-context-hidden');
-                setTimeout(() => { ctxBlock.style.display = 'none'; }, 300);
+                setTimeout(function () { ctxBlock.style.display = 'none'; }, 350);
             }
         }
     }
@@ -120,7 +122,16 @@
     function replaceCardsWith(html) {
         const wrapper = document.getElementById('filterCardsWrapper');
         if (!wrapper) return;
-        wrapper.innerHTML = html;
+        wrapper.classList.add('filter-cards-fade-out');
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                wrapper.innerHTML = html;
+                wrapper.classList.remove('filter-cards-fade-out');
+                wrapper.classList.add('filter-cards-fade-in');
+                wrapper.offsetHeight; // reflow
+                wrapper.classList.remove('filter-cards-fade-in');
+            });
+        });
     }
 
     function saveOriginalContent() {

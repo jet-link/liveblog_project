@@ -7,7 +7,7 @@
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div id="filterPageContextBlock" class="filter-page-context-block my-3">
+    <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
           <h6 class="text-muted m-0">Search results for</h6>
@@ -23,7 +23,7 @@
         {% if items.count != 1 %}
           <span>posts</span>
         {% else %}
-          <span>item</span>
+          <span>post</span>
         {% endif %}
       </div>
 
@@ -42,28 +42,27 @@
       </div> {% endcomment %}
     </div>
 
-    {% if items %}
-      <div id="filterCardsWrapper" class="filter-cards-container" data-page-type="search">
+    <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="search">
+      {% if items %}
         {% include 'includes/all_cards.html' with listing_source='search' listing_source_url=request.get_full_path listing_query=query %}
-      </div>
-      {% if items.count > 10 %}
-        <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
-          <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-          <span id="shownCounter" class="small text-muted">
-            {% if items|length > 10 %}
-              10
-            {% else %}
-              {{ items|length }}
-            {% endif %}/ {{ items|length }}
-          </span>
+        {% if items.count > 10 %}
+          <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
+            <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
+            <span id="shownCounter" class="small text-muted">
+              {% if items|length > 10 %}
+                10
+              {% else %}
+                {{ items|length }}
+              {% endif %}/ {{ items|length }}
+            </span>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="filter-cards-wrapper" data-filter-type="">
+          <div class="filter-empty-message filter-empty-message--search">No results found.</div>
         </div>
       {% endif %}
-    {% else %}
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span>No results found.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endif %}
+    </div>
     <div class="hidden">
       {% include 'includes/overlay_search.html' %}
     </div>

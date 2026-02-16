@@ -1,6 +1,7 @@
 # smart_blog/models.py
 from django.db import models
 from django.utils import timezone
+from django.contrib.postgres.search import SearchVectorField
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.text import slugify
@@ -77,6 +78,7 @@ class Item(models.Model):
     text = models.TextField()
     tags = models.ManyToManyField(Tag, related_name="items", blank=True)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
+    search_vector = SearchVectorField(editable=False, null=True)  # PostgreSQL FTS, filled by DB
     published_date = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

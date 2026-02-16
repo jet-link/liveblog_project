@@ -553,14 +553,15 @@ textarea {
     color: #4b5a68;
     padding: 8px 17px;
     border-radius: 20px;
-    font-size: .785rem;
+    font-size: .7rem;
     cursor: pointer;
+    /* font-weight: 500; */
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #5f27cd;
+    border-color: #01a3a4;
     color: #ffffff;
-    background: #5f27cd;
+    background: #01a3a4;
 }
 
 .filter-empty-hint {
@@ -583,7 +584,7 @@ textarea {
 
 .filter-page-context-block {
     max-height: 500px;
-    transition: opacity 0.25s ease, max-height 0.3s ease, margin 0.25s ease, padding 0.25s ease;
+    transition: opacity 0.3s ease, max-height 0.35s ease, margin 0.3s ease, padding 0.3s ease;
     overflow: hidden;
 }
 
@@ -595,6 +596,15 @@ textarea {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     border: none;
+}
+
+/* Smooth card swap when switching filter */
+.filter-cards-container {
+    transition: opacity 0.2s ease;
+}
+
+.filter-cards-container.filter-cards-fade-out {
+    opacity: 0.4;
 }
 
 .filter-empty-message {
