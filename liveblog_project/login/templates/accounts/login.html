@@ -7,7 +7,7 @@
     <main class="edit-profile-field form-wrapper mx-auto">
       <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
         {% csrf_token %}
-        <h5 class="mb-3 fw-normal primary_ text-uppercase">Login</h5>
+        <h5 class="mb-3 fw-normal primary_ text-uppercase">Sign in</h5>
         {# GLOBAL / NON-FIELD ERRORS (например: Invalid username or password) #}
         {% if form.non_field_errors %}
           <div class="alert alert-danger py-2">
@@ -20,7 +20,7 @@
         {# USERNAME #}
         <div class="form-floating mb-2">
           {{ form.username }}
-          <label for="floatingInput">Username <span class="danger_">*</span></label>
+          <label for="floatingInput">Username...</label>
 
           {% if form.username.errors %}
             <div class="text-danger small mt-1">
@@ -34,7 +34,7 @@
         {# PASSWORD #}
         <div class="form-floating mb-3">
           {{ form.password }}
-          <label for="floatingPassword">Password <span class="danger_">*</span></label>
+          <label for="floatingPassword">Password...</label>
 
           {% if form.password.errors %}
             <div class="text-danger small mt-1">

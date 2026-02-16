@@ -473,12 +473,8 @@ img.avatar-load-failed {
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    padding: 20px;
+    padding: 15px;
 }
-
-/* .liked-users-header {
-    padding-bottom: 15px;
-} */
 
 .liked-users-list {
     margin-top: 16px;
@@ -487,7 +483,6 @@ img.avatar-load-failed {
     gap: 10px;
     max-height: calc(80vh - 100px);
     overflow-y: auto;
-    padding-right: 6px;
 }
 
 .liked-users-item {

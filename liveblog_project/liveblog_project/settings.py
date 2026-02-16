@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     # Local apps
-    'smart_blog',
+    'smart_blog.apps.SmartBlogConfig',
     'login',
     'pages',
 ]

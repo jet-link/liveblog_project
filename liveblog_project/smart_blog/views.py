@@ -100,16 +100,18 @@ def items_filtered(request):
         qs = apply_popular_filter(qs)
         empty_msg = 'Popular not exists'
     elif filter_type == 'liked':
+        like_exists = Like.objects.filter(item=OuterRef('pk'), user=request.user)
         like_date_subq = Like.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
-        qs = qs.filter(likes__user=request.user).annotate(
+        qs = qs.filter(Exists(like_exists)).annotate(
             user_like_date=Subquery(like_date_subq)
-        ).order_by('-user_like_date').distinct()
+        ).order_by('-user_like_date')
         empty_msg = 'Nothing was liked'
     else:  # bookmarked
+        bookmark_exists = Bookmark.objects.filter(item=OuterRef('pk'), user=request.user)
         bookmark_date_subq = Bookmark.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
-        qs = qs.filter(bookmarked_by__user=request.user).annotate(
+        qs = qs.filter(Exists(bookmark_exists)).annotate(
             user_bookmark_date=Subquery(bookmark_date_subq)
-        ).order_by('-user_bookmark_date').distinct()
+        ).order_by('-user_bookmark_date')
         empty_msg = 'Nothing was bookmarked'
     items = list(qs)
     if search_q:
@@ -884,11 +886,12 @@ def toggle_like(request, slug):
                 item=item
             )
 
+    item.refresh_from_db()
     return JsonResponse({
         "success": True,
         "item_id": item.pk,
         "liked": liked,
-        "likes_count": item.likes.count(),
+        "likes_count": item.likes_count,
         "views_count": item.views.filter(user__isnull=False).count(),
     })
 

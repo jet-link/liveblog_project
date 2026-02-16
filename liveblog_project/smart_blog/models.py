@@ -24,7 +24,6 @@ class ItemQuerySet(models.QuerySet):
                 filter=Q(views__user__isnull=False),
                 distinct=True
             ),
-            likes_count=Count('likes', distinct=True),
             bookmarks_count=Count('bookmarked_by', distinct=True),
             comments_count=Count(
                 'comments',
@@ -79,6 +78,7 @@ class Item(models.Model):
     tags = models.ManyToManyField(Tag, related_name="items", blank=True)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
     search_vector = SearchVectorField(editable=False, null=True)  # PostgreSQL FTS, filled by DB
+    likes_count = models.PositiveIntegerField(default=0, db_index=True)  # Denormalized for Popular filter
     published_date = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

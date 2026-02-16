@@ -14,7 +14,7 @@ def home_page(request):
         .filter(is_published=True)
         .with_counters()
     )
-    qs = get_popularity_queryset(qs).filter(likes_count__gte=1)
+    qs = get_popularity_queryset(qs, min_likes=6)
     popular_items = list(qs[:10])
 
     return render(request, 'pages/home.html', {
