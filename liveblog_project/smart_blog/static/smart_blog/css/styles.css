@@ -239,9 +239,7 @@ textarea {
     overflow: hidden;
     /* для auto-grow */
     line-height: 1.5;
-    /* как у input */
     padding: 0.5rem 0.75rem;
-    /* Bootstrap input */
     min-height: calc(1.5em + 1rem + 2px);
 }
 
@@ -277,7 +275,7 @@ textarea {
 /* Slightly change inner wrapper to sit nicely in container */
 .header-search-inner {
     width: 100%;
-    padding-bottom: 15px;
+    /* padding-bottom: 15px; */
 }
 
 .back_btn {
@@ -289,6 +287,7 @@ textarea {
 .header-search-row {
     position: relative;
     width: 100%;
+    padding-bottom: 15px;
 }
 
 /* Keep the input styling */
@@ -303,8 +302,8 @@ textarea {
 
 .field-clear {
     position: absolute;
-    right: 12px;
-    top: 50%;
+    right: 13px;
+    top: 42%;
     transform: translateY(-50%);
     border: none;
     background: transparent;
@@ -352,7 +351,7 @@ textarea {
     padding: 0;
     border-radius: 50%;
     border: none;
-    background: #2980b9;
+    background: #273c75;
     color: #fff;
     cursor: pointer;
     opacity: 0;
@@ -374,66 +373,9 @@ textarea {
 }
 
 
-/* LABEL по умолчанию скрыт */
-.floating-search-label {
-    display: none;
-    opacity: 0;
-    white-space: nowrap;
-    transform: translateX(10px) scale(0.98);
-    padding: 8px 12px;
-    border-radius: 10px;
-    transition:
-        opacity 300ms cubic-bezier(.2, .9, .3, 1),
-        transform 340ms cubic-bezier(.2, .9, .3, 1);
-    pointer-events: none;
-}
-
-/* Кнопка расширяется */
-.floating-search-btn.expand {
-    width: auto;
-    padding: 0 14px;
-    border-radius: 30px;
-}
-
-/* Показываем label */
-.floating-search-btn.expand .floating-search-label {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-}
-
-
-
-/* Hover расширение */
-.floating-search-btn:hover {
-    width: auto;
-    padding: 0 15px;
-    border-radius: 30px;
-}
-
-.floating-search-btn:hover .floating-search-label {
-    display: block;
-    opacity: 1;
-    transform: translateX(0) scale(1);
-}
-
-/* отступ для иконки */
-.floating-search-btn:hover .floating-search-icon {
-    padding-left: 12px;
-}
-
-/* Touch mode (ручное раскрытие) */
-.floating-search-btn.show-label {
-    width: auto;
-    padding: 0 14px;
-    border-radius: 30px;
-}
-
-.floating-search-btn.show-label .floating-search-label {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-}
-
-/* OVERLAY */
+/* =========================
+   OVERLAY SEARCH (floating btn)
+========================= */
 .overlay-search-root.hidden {
     display: none;
 }
@@ -442,65 +384,134 @@ textarea {
     position: fixed;
     inset: 0;
     z-index: 1300;
-
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-
+    align-items: center;
     overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Открытие: шторка поднимается снизу вверх */
+.overlay-search-root.overlay-from-bottom {
+    transform: translateY(100%);
+}
+
+/* Закрытие: шторка опускается сверху вниз */
+.overlay-search-root.overlay-sliding-down {
+    transform: translateY(100%);
 }
 
 .overlay-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(15, 15, 15, 0.8);
-    /* backdrop-filter: blur(3px); */
+    background: #ffffff;
+    opacity: 1;
+    transition: opacity 0.35s ease;
 }
 
-/* Center panel */
+.overlay-search-root.overlay-sliding-down .overlay-backdrop {
+    opacity: 0;
+}
+
+/* Centered panel: 50–60% width, white bg */
 .overlay-panel {
     position: relative;
-    margin-top: 15vh;
-    width: min(980px, calc(100% - 48px));
-    max-height: 82vh;
-    overflow: auto;
-    background: #fff;
-    border-radius: 20px;
-    padding: 22px;
+    width: 60%;
+    max-width: 700px;
+    min-width: 300px;
+    padding: 0 24px;
+    z-index: 2;
 }
 
-/* close button top-right */
+.overlay-search-content {
+    background: #fff;
+}
+
+/* Inside overlay: minimal search form */
+.overlay-search-content .header-search-inner {
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.overlay-search-content .header-search-row {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Input: only bottom border, centered text, padding for clear btn */
+.overlay-search-content .header-search-input {
+    width: 100%;
+    height: 56px;
+    padding: 12px 45px 12px 10px;
+    border: none;
+    border-bottom: 2px solid #e0e0e0;
+    border-radius: 0;
+    font-size: 1.1rem;
+    text-align: center;
+    background: transparent;
+    transition: border-color 0.25s ease;
+    color: #3f4c6c;
+}
+
+.overlay-search-content .header-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.overlay-search-content .header-search-input:focus {
+    outline: none;
+    border-bottom-color: #273c75;
+    box-shadow: none;
+}
+
+/* Clear button: keep styles, position right */
+.overlay-search-content .header-search-row .field-clear {
+    position: absolute;
+    right: 4px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+}
+
+/* Filter block inside overlay */
+.overlay-search-content .filter-block {
+    margin-top: 16px;
+    justify-content: center;
+}
+
+/* Close button — unchanged */
 .overlay-close {
     position: fixed;
     left: 50%;
     bottom: 25px;
     transform: translateX(-50%);
     border: none;
-    background: #2980b9;
+    background: #273c75;
     color: #fff;
     cursor: pointer;
     z-index: 10000;
     transition: transform .15s ease;
-    border-radius: 30px;
-    font-size: .8rem;
-    padding: 15px 25px;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
 }
 
 .overlay-close span {
     font-size: 17px;
 }
 
-.overlay-close i {
-    margin-right: 10px;
-    font-size: 16px;
-}
-
-/* inside cloned header: make it fit nicely */
-.overlay-search-content .header-search-inner {
-    box-shadow: none;
-    margin: 0;
-    border-radius: 6px;
-}
 
 /* small close near input in cloned header */
 .header-search-row .header-search-local-close {
@@ -530,10 +541,9 @@ textarea {
 /* =========================
    BRAINEWS FILTER BLOCK
 ========================= */
-/* .filter-block {
-    margin-top: 12px;
-    padding-top: 10px;
-} */
+.filter-block {
+    padding-bottom: 15px;
+}
 
 .filter-block-label {
     font-size: 0.9rem;
@@ -559,9 +569,9 @@ textarea {
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #01a3a4;
+    border-color: #273c75;
     color: #ffffff;
-    background: #01a3a4;
+    background: #273c75;
 }
 
 .filter-empty-hint {

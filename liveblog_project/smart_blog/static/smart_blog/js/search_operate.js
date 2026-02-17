@@ -143,8 +143,15 @@ document.addEventListener('DOMContentLoaded', function () {
         attachClearButtons(overlayContent);
 
         overlayRoot.classList.remove('hidden');
-        overlayRoot.classList.add('fade-in');
+        overlayRoot.removeAttribute('inert');
+        overlayRoot.classList.add('overlay-from-bottom');
         overlayRoot.setAttribute('aria-hidden', 'false');
+
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                overlayRoot.classList.remove('overlay-from-bottom');
+            });
+        });
 
         // 🔒 СОХРАНЯЕМ ОДИН РАЗ
         __searchPrevOverflow.html = document.documentElement.style.overflow;
@@ -162,21 +169,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    function closeOverlay() {
+    function closeOverlay(onAfterAnimation) {
         if (!overlayRoot || !__searchOverlayOpen) return;
-        __searchOverlayOpen = false;
 
-        // 🔑 убрать фокус ДО aria-hidden
-        document.activeElement?.blur();
+        var done = false;
+        function doClose() {
+            if (done) return;
+            done = true;
+            __searchOverlayOpen = false;
+            overlayRoot.classList.remove('overlay-sliding-down');
+            /* inert first: browser moves focus out, prevents aria-hidden warning */
+            overlayRoot.setAttribute('inert', '');
+            requestAnimationFrame(function () {
+                overlayRoot.classList.add('hidden');
+                overlayContent.innerHTML = '';
+                overlayRoot.setAttribute('aria-hidden', 'true');
+                overlayRoot.removeAttribute('inert');
+                document.documentElement.style.overflow = __searchPrevOverflow.html || '';
+                document.body.style.overflow = __searchPrevOverflow.body || '';
+                document.body.style.paddingRight = __searchPrevOverflow.paddingRight || '';
+                if (typeof onAfterAnimation === 'function') onAfterAnimation();
+            });
+        }
 
-        overlayRoot.classList.add('hidden');
-        overlayContent.innerHTML = '';
-        overlayRoot.setAttribute('aria-hidden', 'true');
-
-        // 🔓 ВОССТАНОВЛЕНИЕ ГАРАНТИРОВАНО
-        document.documentElement.style.overflow = __searchPrevOverflow.html || '';
-        document.body.style.overflow = __searchPrevOverflow.body || '';
-        document.body.style.paddingRight = __searchPrevOverflow.paddingRight || '';
+        overlayRoot.classList.add('overlay-sliding-down');
+        overlayRoot.addEventListener('transitionend', function handler(e) {
+            if (e.target !== overlayRoot || e.propertyName !== 'transform') return;
+            overlayRoot.removeEventListener('transitionend', handler);
+            doClose();
+        }, { once: true });
+        setTimeout(doClose, 420);
     }
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && __searchOverlayOpen) {
@@ -199,21 +221,18 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const q = (inputEl && inputEl.value || '').trim();
             if (!q) return;
-            // build params
             const params = new URLSearchParams();
             params.set('q', q);
             if (chkTitle && chkTitle.checked) params.set('by_title', '1');
             if (chkText && chkText.checked) params.set('by_text', '1');
             if (chkTags && chkTags.checked) params.set('by_tags', '1');
-
-            // default to all if none
             if (!((chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked))) {
                 params.set('by_title', '1'); params.set('by_text', '1'); params.set('by_tags', '1');
             }
-
-            closeOverlay();
-            try { sessionStorage.removeItem('brainews_filter_active'); } catch (e) { }
-            window.location.href = '/search/?' + params.toString();
+            try { sessionStorage.removeItem('brainews_filter_active'); } catch (err) { }
+            closeOverlay(function () {
+                window.location.href = '/search/?' + params.toString();
+            });
         }
 
         if (inputEl) {
@@ -227,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function () {
         floatingBtn.addEventListener('click', openOverlay);
     }
     if (overlayCloseBtn) overlayCloseBtn.addEventListener('click', closeOverlay);
-    if (overlayBackdrop) overlayBackdrop.addEventListener('click', closeOverlay);
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && overlayRoot && !overlayRoot.classList.contains('hidden')) {
             closeOverlay();

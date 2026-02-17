@@ -2,10 +2,14 @@
 {% block title %}
   BraiNews
 {% endblock %}
-
 {% block content %}
   <div class="container content_block" data-brainews-listing>
-      {% include 'includes/search_form.html' %}
+    {% include 'includes/search_form.html' %}
+    {% if user.is_authenticated %}
+      {% include 'includes/filter_block.html' %}
+    {% endif %}
+    <h5 class="pt-4 text-muted">BraiNews</h5>
+    <hr />
     {% if items %}
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
         {% include 'includes/all_cards.html' with listing_source='items_list' listing_source_url=request.get_full_path %}
@@ -16,10 +20,6 @@
     {% else %}
       <h5 class="text-muted pt-4">There are not items yet.</h5>
     {% endif %}
-    {% comment %} <div class="hidden"> {% endcomment %}
-      {% include 'includes/overlay_search.html' %}
-    {% comment %} </div> {% endcomment %}
+    {% include 'includes/overlay_search.html' %}
   </div>
 {% endblock %}
-
-

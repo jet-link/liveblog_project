@@ -300,8 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
             inputEl.addEventListener('keydown', onInputKeydown);
         }
 
-        // close btn inside overlay
-        overlayBackdrop.onclick = closeOverlay;
+        // backdrop click no longer closes — only overlay-close or Escape
     }
 
     function onInputKeydown(e) {

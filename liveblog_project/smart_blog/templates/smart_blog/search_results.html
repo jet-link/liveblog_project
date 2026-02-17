@@ -16,9 +16,10 @@
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
       </div>
       <hr />
-      <div class="d-flex gap-2 text-muted small align-items-center mb-2">
+      <div class="d-flex gap-2 text-muted small align-items-center">
         <span>Total</span>
         <span>found</span>
+        <span>-</span>
         <span class="custom_badge badge_primary">{{ items.count }}</span>
         {% if items.count != 1 %}
           <span>posts</span>
@@ -26,20 +27,6 @@
           <span>post</span>
         {% endif %}
       </div>
-
-      {% comment %} <div class="d-flex align-items-center gap-2">
-        <small class="text-muted">
-          searched by{% if selected_fields %}
-            {% if selected_fields|length and selected_fields.0 is not None %}
-              <span class="success_ fw-bolder">{{ selected_fields|join:', ' }}</span>
-            {% else %}
-              {{ selected_fields }}
-            {% endif %}
-          {% else %}
-            {{ selected_fields }}
-          {% endif %}
-        </small>
-      </div> {% endcomment %}
     </div>
 
     <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="search">
@@ -63,8 +50,6 @@
         </div>
       {% endif %}
     </div>
-    <div class="hidden">
       {% include 'includes/overlay_search.html' %}
-    </div>
   </div>
 {% endblock %}

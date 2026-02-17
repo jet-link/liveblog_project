@@ -31,7 +31,7 @@
               <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
               <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create item</a>
               <div class="divider"></div>
-              <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Logout</a>
+              <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
             </div>
           </div>
         {% else %}
