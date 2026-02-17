@@ -565,13 +565,13 @@ textarea {
     border-radius: 20px;
     font-size: .725rem;
     cursor: pointer;
-    font-weight: 500;
+    /* font-weight: 500; */
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #273c75;
+    border-color: #eb2f06;
     color: #ffffff;
-    background: #273c75;
+    background: #eb2f06;
 }
 
 .filter-empty-hint {
@@ -943,7 +943,7 @@ textarea {
     content: "";
     position: absolute;
     left: -20px;
-    top: 32px;
+    top: 34px;
     width: 14px;
     height: 1px;
     background: #c8d6e5;

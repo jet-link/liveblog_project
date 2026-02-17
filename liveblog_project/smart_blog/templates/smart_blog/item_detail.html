@@ -135,7 +135,7 @@
         {% else %}
           <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none">Liked users</button>
         {% endif %}
-        <div class="liked-users-stack">
+        <div class="liked-users-stack mt-1">
           {% for like in liked_users|slice:':5' %}
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">

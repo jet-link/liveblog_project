@@ -8,8 +8,7 @@
     {% if user.is_authenticated %}
       {% include 'includes/filter_block.html' %}
     {% endif %}
-    <h5 class="pt-4 text-muted">BraiNews</h5>
-    <hr />
+    <h5 class="pt-4 mb-3 text-muted">BraiNews</h5>
     {% if items %}
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
         {% include 'includes/all_cards.html' with listing_source='items_list' listing_source_url=request.get_full_path %}

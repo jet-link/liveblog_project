@@ -9,9 +9,9 @@
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
     <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-3">
       <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex gap-2 align-items-center">
+        <div class="d-flex flex-wrap align-items-center">
           <h6 class="text-muted m-0">Search results for</h6>
-          <span class="primary_">{{ query }}</span>
+          <span class="primary_ ms-2 me-3 py-2">{{ query }}</span>
         </div>
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
       </div>
