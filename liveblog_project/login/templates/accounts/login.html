@@ -8,11 +8,11 @@
       <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
         {% csrf_token %}
         <h5 class="mb-3 fw-normal primary_ text-uppercase">Sign in</h5>
-        {# GLOBAL / NON-FIELD ERRORS (например: Invalid username or password) #}
+        {# GLOBAL / NON-FIELD ERRORS (User not found / Incorrect password) #}
         {% if form.non_field_errors %}
-          <div class="alert alert-danger py-2">
+          <div class="custom-alert custom-alert-danger mb-2" data-auto-dismiss="3000">
             {% for err in form.non_field_errors %}
-              {{ err }}<br />
+              {{ err }}{% if not forloop.last %}<br />{% endif %}
             {% endfor %}
           </div>
         {% endif %}

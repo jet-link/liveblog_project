@@ -61,7 +61,7 @@
                       <i class="fa fa-angle-right mx-1 success_"></i>
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-                      <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+                      {% if not report_rate_limited %}<button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>{% endif %}
                     </div>
                   </div>
                 {% else %}
@@ -109,7 +109,7 @@
             <div class="comment-actions">
               <i class="fa fa-angle-right mx-1 success_"></i>
               <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-              <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
+              {% if not report_rate_limited %}<button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>{% endif %}
             </div>
           </div>
         {% endif %}
@@ -143,6 +143,12 @@
         {% if comment.parent is None and comment.is_edited %}
           <span>/</span>
           <span class="primary_ fw-semibold">Edited</span>
+          {% if just_edited %}
+          <div class="comment-edited-success-msg d-flex align-items-center gap-2" data-auto-dismiss="3000">
+            <span>/</span>
+            <span class="fw-semibold" style="color:#27ae60">Comment was successfully edited</span>
+          </div>  
+          {% endif %}
         {% endif %}
       </small>
     </div>

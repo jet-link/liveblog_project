@@ -72,10 +72,16 @@
         return btn ? btn.dataset.filter : null;
     }
 
+    const FILTER_TITLES = { popular: 'Popular', liked: 'Liked', bookmarked: 'Bookmarked' };
+
     function setActiveFilter(value) {
         getFilterButtons().forEach(b => {
             b.classList.toggle('is-selected', b.dataset.filter === value);
         });
+        const titleEl = document.getElementById('brainewsListingTitle');
+        if (titleEl) {
+            titleEl.textContent = value ? (FILTER_TITLES[value] || 'BraiNews') : 'BraiNews';
+        }
     }
 
     function showPagination(show) {

@@ -13,11 +13,14 @@
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
 
-        {% if user != item.author and not user.is_staff and user.is_authenticated %}
+        {% if user != item.author and not user.is_staff and user.is_authenticated and not report_rate_limited %}
           <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
         {% endif %}
       </div>
     </div>
+    {% comment %} {% if user != item.author and not user.is_staff and user.is_authenticated %}
+      <span id="item-reported-label" class="reported-label-item mb-2{% if not user_reported_item %} d-none{% endif %}">Reported</span>
+    {% endif %} {% endcomment %}
     <hr />
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
@@ -175,9 +178,10 @@
       {% if comments %}
         <h5 class="pt-4 pb-2 m-0 text-muted">Comments</h5>
       {% else %}
-        <h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet.</h5>
+        <h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet<i class="fa fa-frown-o ms-2"></i></h5>
       {% endif %}
     </div>
+    
 
     <!-- ===== Список комментариев ===== -->
     <div id="commentsList">

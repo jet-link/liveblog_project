@@ -14,11 +14,12 @@
   let targetId = null;
   let selectedReasons = [];
 
-  function setFeedback(text, isError = false) {
+  function setFeedback(text, isError = false, isSuccess = false) {
     if (!feedback) return;
     feedback.textContent = text || '';
     feedback.classList.toggle('text-danger', !!isError);
-    feedback.classList.toggle('text-muted', !isError);
+    feedback.classList.toggle('text-muted', !isError && !isSuccess);
+    feedback.classList.toggle('report-feedback-success', !!isSuccess);
   }
 
   function resetForm() {
@@ -35,6 +36,13 @@
     resetForm();
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
+  }
+
+  function markTargetReported(type, id) {
+    if (type === 'item') {
+      const el = document.getElementById('item-reported-label');
+      if (el) el.classList.remove('d-none');
+    }
   }
 
   reasonList?.addEventListener('click', (e) => {
@@ -85,7 +93,8 @@
         setFeedback(data?.error || 'Report failed.', true);
         return;
       }
-      setFeedback('Report sent! Thank you.');
+      setFeedback('Report sent. Thank you', false, true);
+      markTargetReported(targetType, targetId);
       setTimeout(() => {
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.hide();

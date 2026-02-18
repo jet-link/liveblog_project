@@ -61,18 +61,17 @@
               <h4 class="mb-2">{{ item.title }}</h4>
               <!-- Published -->
               <div class="small d-inline-flex align-items-center gap-2">
-                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
                 <small>{{ item.human_published }}</small>
               </div>
             </div>
 
-            {% comment %} <div class="item_thumbnail">
+            <div class="item_thumbnail">
               {% if item.images.first %}
                 <img src="{{ item.images.first.image.url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
               {% else %}
                 <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
               {% endif %}
-            </div> {% endcomment %}
+            </div>
           </div>
 
           <!-- Обрезанный текст, занимает доступное пространство -->

@@ -57,11 +57,12 @@ def login_view(request):
                     request.session.set_expiry(0)  # until browser close
 
                 messages.success(request, f'Welcome back, {user.username}!')
-                # return redirect('/', username=user.username)
                 return redirect('login_app:profile', username=user.username)
             else:
-                # неверный логин/пароль — добавим ошибку не к конкретному полю, а к форме
-                form.add_error(None, "Username or password incorrect")
+                if not User.objects.filter(username__iexact=username).exists():
+                    form.add_error(None, "User not found")
+                else:
+                    form.add_error(None, "Incorrect password")
         # если form.is_valid() == False — будут показаны ошибки required и т.д.
     else:
         form = LoginForm()
@@ -259,13 +260,13 @@ def notifications_view(request, username):
     for notif in notifications:
         notif.actor_name = getattr(notif.actor, "username", "")
         if notif.notif_type == Notification.TYPE_REPLY:
-            notif.header_text = "replied comment in the post"
+            notif.header_text = "replied to your comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
         elif notif.notif_type == Notification.TYPE_COMMENT_LIKE:
-            notif.header_text = "liked comment in the post"
+            notif.header_text = "liked your comment in the post"
             notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
         else:
-            notif.header_text = "liked post"
+            notif.header_text = "liked your post."
             notif.body_text = ""
     unread_count = notifications.filter(is_read=False).count()
     return render(request, "accounts/notifications.html", {
@@ -288,8 +289,9 @@ def profile_edit(request, username):
             password_form = PasswordChangeSimpleForm()
 
             if form.is_valid():
-                form.save()  # ← ВСЁ. АВАТАР ТУТ.
+                form.save()
                 new_username = form.cleaned_data.get('username') or user_obj.username
+                messages.success(request, 'Profile was successfully edited')
                 return redirect('login_app:profile', username=new_username)
 
         elif 'password_submit' in request.POST:

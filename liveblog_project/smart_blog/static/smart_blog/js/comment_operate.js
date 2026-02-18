@@ -84,7 +84,7 @@
 
     header.innerHTML = Number(count) > 0
       ? `<h5 class="pt-4 pb-2 m-0 text-muted">Comments</h5>`
-      : `<h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet.</h5>`;
+      : `<h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet<i class="fa fa-frown-o ms-2"></i></h5>`;
   }
 
   function getThreadLinkCount(link) {
@@ -566,109 +566,88 @@
         const data = await parseJsonSafe(resp);
 
         if (resp.ok && data?.success) {
-          // 1️⃣ удаляем сам комментарий
           const deleted = document.getElementById('comment-' + data.comment_id);
           if (!deleted) return;
 
-          // Проверяем, был ли это родительский комментарий (влияет на пагинацию)
-          // Родительские комментарии являются прямыми потомками commentsList
           const container = document.getElementById('commentsList');
           const isRootComment = container && deleted.parentElement === container;
-          
-          const repliesRoot = deleted.closest('.replies');
-          deleted.remove();
-
-          // 2️⃣ если это был reply — проверяем parent
-          if (data.parent_id) {
-            const parentComment = document.getElementById('comment-' + data.parent_id);
-            if (parentComment) {
-              const replies = parentComment.querySelector('.replies');
-
-              // 🔥 КЛЮЧЕВОЕ МЕСТО
-              if (replies && countDirectReplyBlocks(replies) === 0) {
-                replies.remove(); // ← исчезнет линия + точка + ::before
-              }
-
-              // update thread link visibility/count (only on item_detail)
           const threadContext = getThreadContext();
-          if (!threadContext) {
-                const depth = parseInt(parentComment.dataset.depth || '0', 10);
-                const link = document.getElementById('replies-thread-link-' + data.parent_id);
-                if (depth >= 2) {
-                  if (!replies || countDirectReplyBlocks(replies) === 0) {
-                    if (link) link.remove();
-                  } else if (!link) {
-                    const threadUrl =
-                      parentComment?.dataset?.threadUrl ||
-                      `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
-                    const replyCount = replies ? countDirectReplyBlocks(replies) : 1;
-                    const wrap = document.createElement('div');
-                    wrap.className = 'mt-4';
-                    wrap.appendChild(buildThreadLink(data.parent_id, threadUrl, replyCount));
-                    parentComment.appendChild(wrap);
-                  } else {
-                    window.adjustThreadLinkCount?.(data.parent_id, -1);
+          const isThreadRoot = threadContext && String(data.comment_id) === String(threadContext.parentId);
+
+          if (isThreadRoot) {
+            try {
+              sessionStorage.setItem('thread_back_anchor', 'replies-thread-link-' + threadContext.parentId);
+              sessionStorage.setItem('thread_back_url', threadContext.backUrl || window.location.origin);
+              sessionStorage.setItem('thread_remove_link_' + threadContext.parentId, '1');
+              sessionStorage.setItem('thread_deleted_parent_' + threadContext.parentId, '1');
+            } catch { }
+            if (history.length > 1) {
+              history.back();
+            } else {
+              window.location.href = threadContext.backUrl || '/';
+            }
+            return;
+          }
+
+          bootstrap.Modal.getInstance(modal)?.hide();
+
+          const placeholder = document.createElement('div');
+          placeholder.className = 'comment-deleted-placeholder pb-3 pt-2';
+          placeholder.setAttribute('data-auto-dismiss', '3000');
+          placeholder.innerHTML = '<span class="comment-deleted-text">Comment was deleted</span>';
+          deleted.replaceWith(placeholder);
+
+          function doCleanup() {
+            if (data.parent_id) {
+              const parentComment = document.getElementById('comment-' + data.parent_id);
+              if (parentComment) {
+                const replies = parentComment.querySelector('.replies');
+                if (replies && countDirectReplyBlocks(replies) === 0) {
+                  replies.remove();
+                }
+                const ctx = getThreadContext();
+                if (!ctx) {
+                  const depth = parseInt(parentComment.dataset.depth || '0', 10);
+                  const link = document.getElementById('replies-thread-link-' + data.parent_id);
+                  if (depth >= 2) {
+                    if (!replies || countDirectReplyBlocks(replies) === 0) {
+                      if (link) link.remove();
+                    } else if (!link) {
+                      const threadUrl = parentComment?.dataset?.threadUrl || `${window.location.origin}/blog/comment/${data.parent_id}/thread/`;
+                      const replyCount = replies ? countDirectReplyBlocks(replies) : 1;
+                      const wrap = document.createElement('div');
+                      wrap.className = 'mt-4';
+                      wrap.appendChild(buildThreadLink(data.parent_id, threadUrl, replyCount));
+                      parentComment.appendChild(wrap);
+                    } else {
+                      window.adjustThreadLinkCount?.(data.parent_id, -1);
+                    }
                   }
                 }
               }
             }
-          }
-
-          // 3️⃣ Обновляем пагинацию только если удален родительский комментарий
-          if (isRootComment) {
-            window.refreshRootCommentsPagination?.();
-          }
-
-          // If we are in thread view and replies are empty, mark link for removal + show empty state
-          const threadContext = getThreadContext();
-          if (threadContext) {
-            const threadParentId = threadContext.parentId;
-            if (threadParentId) {
-              const threadRoot = document.getElementById('comment-' + threadParentId);
+            if (isRootComment) window.refreshRootCommentsPagination?.();
+            if (threadContext) {
+              const tid = threadContext.parentId;
+              const threadRoot = document.getElementById('comment-' + tid);
               const threadReplies = threadRoot?.querySelector('.replies');
               const threadEmpty = document.getElementById('threadEmpty');
-              const replyCount = countDirectReplyBlocks(threadReplies);
-              try {
-                sessionStorage.setItem('thread_replies_count_' + threadParentId, String(replyCount));
-              } catch { }
+              const rc = countDirectReplyBlocks(threadReplies);
+              try { sessionStorage.setItem('thread_replies_count_' + tid, String(rc)); } catch { }
               if (!threadReplies || countDirectReplyBlocks(threadReplies) === 0) {
-                try {
-                  sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
-                } catch { }
+                try { sessionStorage.setItem('thread_remove_link_' + tid, '1'); } catch { }
                 if (threadEmpty) threadEmpty.classList.remove('d-none');
-              } else if (threadEmpty) {
-                threadEmpty.classList.add('d-none');
-              }
+              } else if (threadEmpty) threadEmpty.classList.add('d-none');
             }
+            const count = data.comments_count;
+            updateDetailCounter(count);
+            updateCardCounter(itemId, count);
+            updateListingComments(itemId, count);
+            updateCommentsHeader(count);
           }
 
-          // If deleting the thread root comment, go back to item detail and scroll to thread link
-          if (threadContext) {
-            const threadParentId = threadContext.parentId;
-            if (String(data.comment_id) === String(threadParentId)) {
-              try {
-                sessionStorage.setItem('thread_back_anchor', 'replies-thread-link-' + threadParentId);
-                sessionStorage.setItem('thread_back_url', threadContext.backUrl || window.location.origin);
-                sessionStorage.setItem('thread_remove_link_' + threadParentId, '1');
-                sessionStorage.setItem('thread_deleted_parent_' + threadParentId, '1');
-              } catch { }
-              if (history.length > 1) {
-                history.back();
-              } else {
-                const backUrl = threadContext.backUrl || '/';
-                window.location.href = backUrl;
-              }
-              return;
-            }
-          }
-
-          const count = data.comments_count;
-
-          updateDetailCounter(count);
-          updateCardCounter(itemId, count);
-          updateListingComments(itemId, count);
-          updateCommentsHeader(count);
-          bootstrap.Modal.getInstance(modal)?.hide();
+          if (window.initAutoDismiss) window.initAutoDismiss(placeholder, doCleanup);
+          else setTimeout(doCleanup, 3300);
         }
         // closeAllReplyForms();
 
@@ -1002,6 +981,7 @@
           if (window.initCommentToggles) {
             restoreCommentUI(newNode);
           }
+          if (window.initAutoDismiss) window.initAutoDismiss(newNode);
           initEditButtons();
           return;
         }

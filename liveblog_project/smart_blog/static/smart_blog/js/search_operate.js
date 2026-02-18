@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    function closeOverlay(onAfterAnimation) {
+    function closeOverlay(onAfterAnimation, options) {
         if (!overlayRoot || !__searchOverlayOpen) return;
 
         var done = false;
@@ -192,13 +192,17 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        overlayRoot.classList.add('overlay-sliding-down');
-        overlayRoot.addEventListener('transitionend', function handler(e) {
-            if (e.target !== overlayRoot || e.propertyName !== 'transform') return;
-            overlayRoot.removeEventListener('transitionend', handler);
+        if (options && options.skipAnimation) {
             doClose();
-        }, { once: true });
-        setTimeout(doClose, 420);
+        } else {
+            overlayRoot.classList.add('overlay-sliding-down');
+            overlayRoot.addEventListener('transitionend', function handler(e) {
+                if (e.target !== overlayRoot || e.propertyName !== 'transform') return;
+                overlayRoot.removeEventListener('transitionend', handler);
+                doClose();
+            }, { once: true });
+            setTimeout(doClose, 420);
+        }
     }
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && __searchOverlayOpen) {
@@ -232,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try { sessionStorage.removeItem('brainews_filter_active'); } catch (err) { }
             closeOverlay(function () {
                 window.location.href = '/search/?' + params.toString();
-            });
+            }, { skipAnimation: true });
         }
 
         if (inputEl) {

@@ -64,15 +64,15 @@
     }
 
     function showNonFieldErrors(container, messages) {
-        // container: form element
-        // find or create a top-level errors container
         let box = container.querySelector('.form-errors-global');
         if (!box) {
             box = document.createElement('div');
-            box.className = 'form-errors-global alert alert-danger';
+            box.className = 'form-errors-global custom-alert custom-alert-danger mb-2';
+            box.setAttribute('data-auto-dismiss', '3000');
             container.insertBefore(box, container.firstChild);
         }
         box.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+        if (window.initAutoDismiss) window.initAutoDismiss(box);
     }
 
     function clearGlobalErrors(form) {

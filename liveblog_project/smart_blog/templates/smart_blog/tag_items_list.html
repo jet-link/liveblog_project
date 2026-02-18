@@ -7,7 +7,7 @@
   <div class="container content_block">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
-    <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition pt-3">
+    <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-4">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
           <h6 class="m-0 text-muted">Posts for tag</h6>
@@ -16,7 +16,7 @@
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
       </div>
       <hr />
-      <div class="d-flex gap-2 text-muted align-items-center small pb-3">
+      <div class="d-flex gap-2 text-muted align-items-center small">
         <span>Total</span>
         <span>found</span>
         <span>-</span>

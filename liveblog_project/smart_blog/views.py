@@ -386,6 +386,16 @@ def item_detail(request, slug):
         if request.user.is_authenticated else False
     )
 
+    user_reported_item = (
+        ContentReport.objects.filter(item=item, reporter=request.user).exists()
+        if request.user.is_authenticated else False
+    )
+
+    report_rate_limited = False
+    if request.user.is_authenticated:
+        since = timezone.now() - timedelta(hours=24)
+        report_rate_limited = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count() >= 5
+
     liked_users = (
         Like.objects
         .filter(item=item)
@@ -459,6 +469,8 @@ def item_detail(request, slug):
         "comments": comments,
         "user_liked": user_liked,
         "user_bookmarked": user_bookmarked,
+        "user_reported_item": user_reported_item,
+        "report_rate_limited": report_rate_limited,
         "liked_users": liked_users,
         "editable_until_iso": editable_until.isoformat(),
         "is_editable": is_editable,
@@ -485,6 +497,11 @@ def comment_thread(request, pk):
         .get()
     )
 
+    report_rate_limited = False
+    if request.user.is_authenticated:
+        since = timezone.now() - timedelta(hours=24)
+        report_rate_limited = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count() >= 5
+
     breadcrumbs = build_breadcrumbs(
         breadcrumb("BraiNews", reverse("smart_blog:items_list")),
         breadcrumb(comment.item.title, comment.item.get_absolute_url()),
@@ -494,6 +511,7 @@ def comment_thread(request, pk):
     return render(request, "smart_blog/comment_thread.html", {
         "comment": comment,
         "item": comment.item,
+        "report_rate_limited": report_rate_limited,
         "breadcrumbs": breadcrumbs,
     })
 
@@ -581,7 +599,7 @@ def edit_item(request, slug):
                 else:
                     ItemImage.objects.create(item=item, image=f)
 
-            # messages.success(request, "Item updated successfully.")
+            messages.success(request, "Post was successfully edited")
             if request.GET:
                 return redirect(f"{item.get_absolute_url()}?{request.GET.urlencode()}")
             return redirect(item.get_absolute_url())
@@ -657,12 +675,13 @@ def delete_item(request, slug):
         return HttpResponseForbidden("Deletion period expired.")
     # удаляем объект (ItemImage, файлы автоматически удалятся, если настроен storage signals или в модели)
     # если нужно принудительно удалить файлы, пробегите item.images.all() и img.image.delete(save=False)
+    item_title = item.title
     try:
         item.delete()
     except Exception:
-        # можно логировать ошибку
         return HttpResponse("Delete failed", status=500)
 
+    messages.info(request, f'Post {item_title} was deleted')
     redirect_to = request.POST.get('redirect_to') or ''
     if redirect_to and url_has_allowed_host_and_scheme(redirect_to, allowed_hosts={request.get_host()}):
         return redirect(redirect_to)
@@ -670,6 +689,7 @@ def delete_item(request, slug):
     return redirect("smart_blog:items_list")
 
 
+@login_required
 @require_POST
 def submit_report(request):
     try:
@@ -711,11 +731,26 @@ def submit_report(request):
         item = get_object_or_404(Item, pk=target_id)
     elif target_type == "comment":
         comment = get_object_or_404(Comment, pk=target_id)
-        item = comment.item
+        # для жалобы на комментарий item не указываем — только item-репорты попадют в user_reported_item
     else:
         return JsonResponse({"success": False, "error": "Invalid target type."}, status=400)
 
-    reporter = request.user if request.user.is_authenticated else None
+    # Rate limit: max 5 reports per 24h per user
+    since = timezone.now() - timedelta(hours=24)
+    recent_count = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count()
+    if recent_count >= 5:
+        return JsonResponse({
+            "success": False,
+            "error": "You have reached the report limit. Try again in 24 hours."
+        }, status=429)
+
+    # Prevent duplicate reports
+    if item and ContentReport.objects.filter(item=item, reporter=request.user).exists():
+        return JsonResponse({"success": True})  # idempotent
+    if comment and ContentReport.objects.filter(comment=comment, reporter=request.user).exists():
+        return JsonResponse({"success": True})  # idempotent
+
+    reporter = request.user
     ContentReport.objects.create(
         reporter=reporter,
         item=item,
@@ -788,7 +823,11 @@ def add_comment(request, slug):
 
     html = render_to_string(
         "includes/_comments.html",
-        {"comment": comment, "user": request.user},
+        {
+            "comment": comment,
+            "user": request.user,
+            "report_rate_limited": False,
+        },
         request=request
     )
 
@@ -826,8 +865,11 @@ def edit_comment(request, pk):
     # сохранить
     form.save()
 
-    # вернуть фрагмент HTML (тот же шаблон, что используется для рендера одного коммента)
-    html = render_to_string("includes/_comments.html", {"comment": comment, "user": request.user})
+    html = render_to_string("includes/_comments.html", {
+        "comment": comment, "user": request.user,
+        "report_rate_limited": False,
+        "just_edited": True,
+    })
     total_comments = Comment.objects.filter(item=comment.item).count()
     return JsonResponse({'success': True, 'comment_html': html, 'comment_id': comment.pk, 'total_comments': total_comments})
 

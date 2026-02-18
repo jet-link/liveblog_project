@@ -233,6 +233,38 @@ p,
     transition: opacity 0.6s linear, transform 0.3s ease;
 }
 
+/* Custom alerts (replace Bootstrap) — auto-dismiss 3s */
+.custom-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+}
+.custom-alert.custom-alert-danger {
+    background-color: rgba(231, 76, 60, 0.88);
+    margin-bottom: 0.5rem; /* mb-2 */
+}
+.custom-alert.custom-alert-success {
+    background-color: rgba(39, 174, 96, 0.88);
+}
+.custom-alert.custom-alert-info {
+    background-color: rgba(116, 185, 255, 0.88);
+}
+.custom-alert.custom-alert-warning {
+    background-color: rgba(243, 156, 18, 0.88);
+}
+.custom-alert.custom-alert-dismissed {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.comment-deleted-placeholder .comment-deleted-text {
+    color: #74b9ff;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
 textarea {
     resize: none;
     /* убираем ручку */
@@ -287,7 +319,7 @@ textarea {
 .header-search-row {
     position: relative;
     width: 100%;
-    padding-bottom: 15px;
+    /* padding-bottom: 15px; */
 }
 
 /* Keep the input styling */
@@ -298,12 +330,13 @@ textarea {
     border-radius: 30px;
     font-size: 15px;
     border: 1px solid #e6e6e6;
+    color: #3f4c6c !important;
 }
 
 .field-clear {
     position: absolute;
     right: 13px;
-    top: 42%;
+    top: 50%;
     transform: translateY(-50%);
     border: none;
     background: transparent;
@@ -362,7 +395,7 @@ textarea {
         width 600ms cubic-bezier(.2, .9, .3, 1),
         box-shadow 550ms cubic-bezier(.22, .85, .32, 1);
     will-change: opacity, transform, width;
-    font-size: 1rem;
+    font-size: .9rem;
 }
 
 /* видимость кнопки (через JS) */
@@ -475,7 +508,7 @@ textarea {
 .overlay-search-content .header-search-row .field-clear {
     position: absolute;
     right: 4px;
-    top: 40%;
+    top: 50%;
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
@@ -490,8 +523,8 @@ textarea {
 /* Close button — unchanged */
 .overlay-close {
     position: fixed;
-    left: 50%;
-    bottom: 25px;
+    top: 20px;
+    right: -5px;
     transform: translateX(-50%);
     border: none;
     background: #273c75;
@@ -542,7 +575,7 @@ textarea {
    BRAINEWS FILTER BLOCK
 ========================= */
 .filter-block {
-    padding-bottom: 15px;
+    padding: 15px 0;
 }
 
 .filter-block-label {
@@ -569,9 +602,9 @@ textarea {
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #eb2f06;
+    border-color: #fc5c65;
     color: #ffffff;
-    background: #eb2f06;
+    background: #fc5c65;
 }
 
 .filter-empty-hint {
@@ -1137,6 +1170,16 @@ textarea {
     align-items: center;
     font-size: .785rem;
     border-radius: 50%;
+}
+
+.reported-label-item {
+    color: #e74c3c;
+    font-weight: 500;
+    font-size: .8rem;
+}
+
+.report-feedback-success {
+    color: #27ae60 !important;
 }
 
 .cstm-btn {
@@ -1879,7 +1922,7 @@ textarea {
 }
 
 /* Подсказка "скопировано" — чуть плавнее */
-#shareCopyFeedback .alert {
+#shareCopyFeedback .custom-alert {
     transition: opacity 220ms ease;
 }
 
@@ -2010,13 +2053,11 @@ pre {
     bottom: 32px;
     left: 50%;
     transform: translateX(-50%);
-
     width: 40px;
     height: 40px;
     border-radius: 50%;
-
     border: none;
-    background: #2980b9;
+    background: #273c75;
     color: #fff;
     font-size: 17px;
     font-weight: bold;

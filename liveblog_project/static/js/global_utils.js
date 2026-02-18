@@ -1,6 +1,31 @@
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
+function initAutoDismiss(container, onAfterRemove) {
+    const root = container || document;
+    let els = root.querySelectorAll ? Array.from(root.querySelectorAll('[data-auto-dismiss]')) : [];
+    if (root.nodeType === 1 && root.matches && root.matches('[data-auto-dismiss]') && !els.includes(root)) {
+        els.unshift(root);
+    }
+    els.forEach(function (el) {
+        if (el.__autoDismissInit) return;
+        el.__autoDismissInit = true;
+        const ms = parseInt(el.getAttribute('data-auto-dismiss'), 10) || 3000;
+        setTimeout(function () {
+            el.style.transition = 'opacity 0.3s ease';
+            el.style.opacity = '0';
+            setTimeout(function () {
+                el.remove();
+                if (typeof onAfterRemove === 'function') onAfterRemove();
+            }, 300);
+        }, ms);
+    });
+}
+window.initAutoDismiss = initAutoDismiss;
+document.addEventListener('DOMContentLoaded', function () {
+    initAutoDismiss(document);
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const tooltipTriggerList = [].slice.call(
@@ -388,8 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function showFeedback() {
         if (!feedback) return;
         feedback.style.display = '';
-        // auto hide
-        setTimeout(() => { feedback.style.display = 'none'; }, 2200);
+        setTimeout(function () { feedback.style.display = 'none'; }, 3000);
     }
 
     // Share to social networks

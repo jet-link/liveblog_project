@@ -20,11 +20,14 @@
           <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I have account</a></small>
         </div>
 
-        {# Общие ошибки формы (например password_mismatch) #}
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger py-2">
+        {# Общие ошибки формы + username exists #}
+        {% if form.non_field_errors or form.username.errors %}
+          <div class="custom-alert custom-alert-danger mb-2" data-auto-dismiss="3000">
             {% for err in form.non_field_errors %}
-              {{ err }}<br />
+              {{ err }}{% if not forloop.last %}<br />{% endif %}
+            {% endfor %}
+            {% for err in form.username.errors %}
+              {% if form.non_field_errors %}<br />{% endif %}{{ err }}
             {% endfor %}
           </div>
         {% endif %}

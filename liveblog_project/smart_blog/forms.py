@@ -130,6 +130,18 @@ class ItemCreateForm(forms.ModelForm):
         """
         raw = self.cleaned_data.get('text', '') or ''
 
+        # normalize multiple line breaks (plain text)
+        raw = re.sub(r'(\r?\n\s*){3,}', '\n\n', raw)
+        raw = re.sub(r'^(\s*\r?\n)+', '\n', raw)
+        raw = re.sub(r'(\r?\n\s*)+$', '\n', raw)
+
+        # normalize empty HTML paragraphs (CKEditor output)
+        raw = re.sub(r'(<p(?:\s[^>]*)?>\s*</p>\s*){2,}', '<p></p>', raw)
+        raw = re.sub(r'^(<p(?:\s[^>]*)?>\s*</p>\s*)+', '', raw)
+        raw = re.sub(r'(<p(?:\s[^>]*)?>\s*</p>\s*)+$', '', raw)
+        raw = re.sub(r'(<p(?:\s[^>]*)?>\s*<br\s*/?>\s*</p>\s*){2,}', '<p><br></p>', raw)
+        raw = raw.strip()
+
         # basic validation
         if not raw or not raw.strip():
             raise ValidationError(_('Please write the item text *'))
