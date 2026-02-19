@@ -403,6 +403,31 @@ class Bookmark(models.Model):
         return f"{self.user} bookmarked {self.item}"
 
 
+class SearchHistory(models.Model):
+    """История поисковых запросов (только BraiNews). Макс 25 на пользователя."""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="search_history"
+    )
+    search_query = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    results_count = models.PositiveIntegerField(default=0)
+    search_filters = models.JSONField(default=dict, blank=True)
+    was_clicked = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("-created_at",)
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+        ]
+        verbose_name = "Search history"
+        verbose_name_plural = "Search history"
+
+    def __str__(self):
+        return f"{self.user.username}: {self.search_query[:50]}"
+
+
 class Notification(models.Model):
     TYPE_REPLY = "reply"
     TYPE_ITEM_LIKE = "item_like"

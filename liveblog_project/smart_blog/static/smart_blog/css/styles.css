@@ -235,24 +235,25 @@ p,
 
 /* Custom alerts (replace Bootstrap) — auto-dismiss 3s */
 .custom-alert {
-    padding: 0.75rem 1rem;
+    padding: 15px 20px;
     border-radius: 6px;
-    color: #fff;
-    font-weight: 500;
+    color: #ffffff;
+    font-size: .9rem;
     transition: opacity 0.3s ease;
+    font-weight: 500;
 }
 .custom-alert.custom-alert-danger {
-    background-color: rgba(231, 76, 60, 0.88);
+    background-color: rgba(231, 76, 60, 0.66);
     margin-bottom: 0.5rem; /* mb-2 */
 }
 .custom-alert.custom-alert-success {
-    background-color: rgba(39, 174, 96, 0.88);
+    background-color: rgba(39, 174, 96, 0.66);
 }
 .custom-alert.custom-alert-info {
-    background-color: rgba(116, 185, 255, 0.88);
+    background-color: rgba(116, 185, 255, 0.66);
 }
 .custom-alert.custom-alert-warning {
-    background-color: rgba(243, 156, 18, 0.88);
+    background-color: rgba(243, 156, 18, 0.66);
 }
 .custom-alert.custom-alert-dismissed {
     opacity: 0;
@@ -307,6 +308,7 @@ textarea {
 /* Slightly change inner wrapper to sit nicely in container */
 .header-search-inner {
     width: 100%;
+    position: relative;
     /* padding-bottom: 15px; */
 }
 
@@ -319,14 +321,20 @@ textarea {
 .header-search-row {
     position: relative;
     width: 100%;
-    /* padding-bottom: 15px; */
+}
+
+.search-sign{
+    position: absolute;
+    top: 30%;
+    left: 25px;
+    color: #6b7280;
 }
 
 /* Keep the input styling */
 .header-search-input {
     width: 100%;
     height: 60px;
-    padding: 13px 50px 13px 20px;
+    padding: 13px 50px 13px 50px;
     border-radius: 30px;
     font-size: 15px;
     border: 1px solid #e6e6e6;
@@ -376,8 +384,8 @@ textarea {
     bottom: 25px;
     transform: translateX(-50%) translateY(22px);
     z-index: 1200;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -395,7 +403,7 @@ textarea {
         width 600ms cubic-bezier(.2, .9, .3, 1),
         box-shadow 550ms cubic-bezier(.22, .85, .32, 1);
     will-change: opacity, transform, width;
-    font-size: .9rem;
+    font-size: .825rem;
 }
 
 /* видимость кнопки (через JS) */
@@ -411,6 +419,11 @@ textarea {
 ========================= */
 .overlay-search-root.hidden {
     display: none;
+}
+
+.overlay-search-root .search-sign,
+.overlay-search-root .search-history-dropdown {
+    display: none !important;
 }
 
 .overlay-search-root {
@@ -524,7 +537,7 @@ textarea {
 .overlay-close {
     position: fixed;
     top: 20px;
-    right: -5px;
+    right: 5px;
     transform: translateX(-50%);
     border: none;
     background: #273c75;
@@ -533,12 +546,12 @@ textarea {
     z-index: 10000;
     transition: transform .15s ease;
     border-radius: 50%;
-    font-size: 1rem;
+    font-size: .8rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 .overlay-close span {
@@ -569,6 +582,111 @@ textarea {
     gap: 8px;
     align-items: center;
     margin-top: 8px;
+}
+
+/* История поиска — дропдаун под строкой на BraiNews */
+.search-history-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 10px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-height: 296px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.search-history-dropdown.hidden {
+    display: none !important;
+}
+
+.search-history-dropdown .search-history-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    gap: 12px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.search-history-dropdown .search-history-header {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.search-history-dropdown .search-history-clear-btn {
+    margin-left: auto;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    color: #3f4c6c;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .3s ease-in;
+    font-weight: 500;
+}
+
+.search-history-dropdown .search-history-clear-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.search-history-dropdown .search-history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    color: #3f4c6c;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    gap: 10px;
+}
+
+.search-history-dropdown .search-history-item:hover {
+    background: rgba(39, 60, 117, 0.06);
+}
+
+.search-history-dropdown .search-history-item-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-history-dropdown .search-history-item-meta {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.search-history-dropdown .search-history-item-remove {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #9ca3af;
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-history-dropdown .search-history-empty {
+    padding: 16px;
+    font-size: 0.85rem;
+    color: #9ca3af;
 }
 
 /* =========================

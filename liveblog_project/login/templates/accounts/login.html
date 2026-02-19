@@ -9,13 +9,6 @@
         {% csrf_token %}
         <h5 class="mb-3 fw-normal primary_ text-uppercase">Sign in</h5>
         {# GLOBAL / NON-FIELD ERRORS (User not found / Incorrect password) #}
-        {% if form.non_field_errors %}
-          <div class="custom-alert custom-alert-danger mb-2" data-auto-dismiss="3000">
-            {% for err in form.non_field_errors %}
-              {{ err }}{% if not forloop.last %}<br />{% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
 
         {# USERNAME #}
         <div class="form-floating mb-2">
@@ -67,6 +60,16 @@
             <a href="#" class="twitter_btn_login" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
           </div> {% endcomment %}
         </div>
+
+        {% if form.non_field_errors %}
+          <div class="custom-alert custom-alert-danger mt-3" data-auto-dismiss="3000">
+            {% for err in form.non_field_errors %}
+              {{ err }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
       </form>
     </main>
   </div>

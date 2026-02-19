@@ -13,25 +13,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div class="d-flex gap-3 align-items-center">
             <h5 class="m-0 fw-normal text-uppercase primary_">Sign up</h5>
-            <button type="button" class="instruction-btn">
-              <i class="fa fa-question-circle-o" aria-hidden="true"></i>
-            </button>
+            <button type="button" class="instruction-btn"><i class="fa fa-question-circle-o" aria-hidden="true"></i></button>
           </div>
           <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I have account</a></small>
         </div>
-
-        {# Общие ошибки формы + username exists #}
-        {% if form.non_field_errors or form.username.errors %}
-          <div class="custom-alert custom-alert-danger mb-2" data-auto-dismiss="3000">
-            {% for err in form.non_field_errors %}
-              {{ err }}{% if not forloop.last %}<br />{% endif %}
-            {% endfor %}
-            {% for err in form.username.errors %}
-              {% if form.non_field_errors %}<br />{% endif %}{{ err }}
-            {% endfor %}
-          </div>
-        {% endif %}
-
         {# USERNAME (required) #}
         <div class="form-floating mb-2">
           {{ form.username }}
@@ -129,6 +114,21 @@
           </div>
           <small><button type="button" class="text-decoration-none text-muted password-toggle" data-password-toggle="1"></button></small>
         </div>
+        {# Общие ошибки формы + username exists #}
+        {% if form.non_field_errors or form.username.errors %}
+          <div class="custom-alert custom-alert-danger mt-2" data-auto-dismiss="3000">
+            {% for err in form.non_field_errors %}
+              {{ err }}{% if not forloop.last %}
+                <br />
+              {% endif %}
+            {% endfor %}
+            {% for err in form.username.errors %}
+              {% if form.non_field_errors %}
+                <br />
+              {% endif %}{{ err }}
+            {% endfor %}
+          </div>
+        {% endif %}
       </form>
       {% include 'includes/password_generator.html' %}
       {% include 'includes/instruction_modal.html' %}

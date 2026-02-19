@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}
-  Search
+  Searched
 {% endblock %}
 
 {% block content %}
-  <div class="container content_block">
+  <div class="container content_block" data-search-history-url="{% url 'smart_blog:api_search_history_list' %}" data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}" data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}" data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
     {% include 'includes/search_form.html' %}
     {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
     <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-3">
@@ -45,11 +45,12 @@
           </div>
         {% endif %}
       {% else %}
-        <div class="filter-cards-wrapper" data-filter-type="">
+        {% comment %} <div class="filter-cards-wrapper" data-filter-type="">
           <div class="filter-empty-message filter-empty-message--search">No results found.</div>
-        </div>
+        </div> {% endcomment %}
+        <div class="custom-alert custom-alert-info" data-auto-dismiss="3000">No results found!</div>
       {% endif %}
     </div>
-      {% include 'includes/overlay_search.html' %}
+    {% include 'includes/overlay_search.html' %}
   </div>
 {% endblock %}

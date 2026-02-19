@@ -321,6 +321,195 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     })();
 
+    // --- Search history dropdown (BraiNews, search_results, tag_items_list) ---
+    (function initSearchHistory() {
+        const block = document.querySelector('[data-search-history-url]');
+        if (!block) return;
+        const headerInput = document.getElementById('headerSearchInput');
+        const dropdown = document.getElementById('searchHistoryDropdown');
+        if (!headerInput || !dropdown) return;
+
+        const listUrl = block.getAttribute('data-search-history-url');
+        const clickedPattern = block.getAttribute('data-search-history-clicked-pattern');
+        const deletePattern = block.getAttribute('data-search-history-delete-pattern');
+        const clearUrl = block.getAttribute('data-search-history-clear-url');
+        if (!listUrl || !clickedPattern) return;
+
+        function getCSRF() {
+            const m = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
+            return m ? m[2] : '';
+        }
+
+        function buildSearchUrl(item) {
+            const params = new URLSearchParams();
+            params.set('q', item.search_query);
+            const f = item.search_filters || {};
+            if (f.by_title) params.set('by_title', '1');
+            if (f.by_text) params.set('by_text', '1');
+            if (f.by_tags) params.set('by_tags', '1');
+            if (!f.by_title && !f.by_text && !f.by_tags) {
+                params.set('by_title', '1'); params.set('by_text', '1'); params.set('by_tags', '1');
+            }
+            return (window.SEARCH_URL || '/search/') + '?' + params.toString();
+        }
+
+        function formatMeta(item) {
+            const parts = [];
+            if (item.results_count != null) parts.push(item.results_count + ' found');
+            if (item.created_at) {
+                const d = new Date(item.created_at);
+                const now = new Date();
+                const diff = Math.floor((now - d) / 86400000);
+                if (diff === 0) parts.push('Today');
+                else if (diff === 1) parts.push('Yesterday');
+                else if (diff <= 5) parts.push(diff + ' days ago');
+                else parts.push(d.toLocaleDateString());
+            }
+            return parts.join(' · ');
+        }
+
+        function showHistory(items) {
+            dropdown.innerHTML = '';
+            if (!items || items.length === 0) {
+                dropdown.innerHTML = '<div class="search-history-empty">No recent searches</div>';
+            } else {
+                var headerRow = document.createElement('div');
+                headerRow.className = 'search-history-header-row';
+                headerRow.innerHTML = '<span class="search-history-header">Recent requests</span>';
+                if (clearUrl) {
+                    var clearBtn = document.createElement('button');
+                    clearBtn.type = 'button';
+                    clearBtn.className = 'search-history-clear-btn';
+                    clearBtn.textContent = 'Clear history';
+                    clearBtn.setAttribute('aria-label', 'Clear search history');
+                    headerRow.appendChild(clearBtn);
+                }
+                dropdown.appendChild(headerRow);
+                items.forEach(function (item) {
+                    const row = document.createElement('div');
+                    row.className = 'search-history-item';
+                    row.dataset.id = item.id;
+                    row.dataset.url = buildSearchUrl(item);
+                    row.innerHTML = '<span class="search-history-item-text">' + escapeHtml(item.search_query) + '</span><span class="search-history-item-meta">' + escapeHtml(formatMeta(item)) + '</span>' + (deletePattern ? '<button type="button" class="search-history-item-remove" data-id="' + item.id + '" aria-label="Remove from history">×</button>' : '');
+                    dropdown.appendChild(row);
+                });
+            }
+            dropdown.classList.remove('hidden');
+            dropdown.setAttribute('aria-hidden', 'false');
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function hideHistory() {
+            dropdown.classList.add('hidden');
+            dropdown.setAttribute('aria-hidden', 'true');
+        }
+
+        function fetchAndShow() {
+            fetch(listUrl, { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    showHistory(data.items || []);
+                })
+                .catch(function () { dropdown.classList.add('hidden'); });
+        }
+
+        headerInput.addEventListener('focus', function () {
+            fetchAndShow();
+        });
+        headerInput.addEventListener('click', function () {
+            fetchAndShow();
+        });
+
+        function appendFromHistory(url) {
+            const sep = url.indexOf('?') >= 0 ? '&' : '?';
+            return url + sep + 'from_history=1';
+        }
+
+        dropdown.addEventListener('click', function (e) {
+            var removeBtn = e.target.closest('.search-history-item-remove');
+            if (removeBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!deletePattern) return;
+                var row = removeBtn.closest('.search-history-item');
+                var id = removeBtn.dataset.id || (row && row.dataset.id);
+                if (!id) return;
+                var deleteUrl = deletePattern.replace('999999', id);
+                fetch(deleteUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRFToken': getCSRF(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).then(function () {
+                    if (row) row.remove();
+                    var remaining = dropdown.querySelectorAll('.search-history-item');
+                    if (remaining.length === 0) hideHistory();
+                }).catch(function () { });
+                return;
+            }
+            var clearBtn = e.target.closest('.search-history-clear-btn');
+            if (clearBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!clearUrl) return;
+                fetch(clearUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRFToken': getCSRF(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).then(function () {
+                    hideHistory();
+                }).catch(function () { });
+                return;
+            }
+            const historyRow = e.target.closest('.search-history-item');
+            if (!historyRow) return;
+            e.preventDefault();
+            const historyId = historyRow.dataset && historyRow.dataset.id;
+            const historyBaseUrl = historyRow.dataset && historyRow.dataset.url;
+            if (!historyId || !historyBaseUrl) return;
+            const url = appendFromHistory(historyBaseUrl);
+            const clickedUrl = clickedPattern.replace('999999', historyId);
+            try {
+                sessionStorage.setItem('search_clear_next', '1');
+                sessionStorage.removeItem('brainews_filter_active');
+            } catch (err) { }
+            fetch(clickedUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRFToken': getCSRF(),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            }).catch(function () { });
+            window.location.href = url;
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!dropdown.classList.contains('hidden') &&
+                !dropdown.contains(e.target) &&
+                !headerInput.contains(e.target)) {
+                hideHistory();
+            }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
+                hideHistory();
+            }
+        });
+    })();
+
     // Accessibility: basic focus trap while overlay open
     document.addEventListener('focus', function (ev) {
         if (!overlayRoot || overlayRoot.classList.contains('hidden')) return;

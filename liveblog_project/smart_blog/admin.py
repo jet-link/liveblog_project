@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Tag, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification
+from .models import Tag, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 
@@ -30,6 +30,14 @@ admin.site.register(Like)
 admin.site.register(ItemView)
 admin.site.register(Bookmark)
 admin.site.register(Notification)
+
+
+@admin.register(SearchHistory)
+class SearchHistoryAdmin(admin.ModelAdmin):
+    list_display = ("user", "search_query", "results_count", "was_clicked", "created_at")
+    list_filter = ("was_clicked", "created_at")
+    search_fields = ("search_query",)
+    ordering = ("-created_at",)
 @admin.register(ContentReport)
 class ContentReportAdmin(admin.ModelAdmin):
     list_display = ("reason", "reasons_display", "status", "reporter", "item_link", "comment_link", "created_at")

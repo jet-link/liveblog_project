@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification
+from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification, SearchHistory
 from .forms import CommentForm, ItemCreateForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -210,6 +210,40 @@ def search_view(request):
             breadcrumb("Search", reverse("global_search")),
             breadcrumb(q, None),
         )
+        # Сохраняем в историю поиска (только авторизованные, не при клике из списка)
+        if request.user.is_authenticated and not request.GET.get('from_history'):
+            filters_dict = {
+                'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
+            }
+            # Проверяем дубликат: тот же запрос (без учёта регистра) и те же фильтры
+            existing = SearchHistory.objects.filter(
+                user=request.user,
+                search_query__iexact=q,
+                search_filters=filters_dict,
+            ).first()
+            if existing:
+                # Уже есть — удаляем старую и создаём заново (поднимаем в начало, обновляем results_count)
+                was_clicked = existing.was_clicked
+                existing.delete()
+                SearchHistory.objects.create(
+                    user=request.user,
+                    search_query=q,
+                    results_count=items.count(),
+                    search_filters=filters_dict,
+                    was_clicked=was_clicked,
+                )
+            else:
+                SearchHistory.objects.create(
+                    user=request.user,
+                    search_query=q,
+                    results_count=items.count(),
+                    search_filters=filters_dict,
+                    was_clicked=False,
+                )
+            # Ограничение: макс 25 записей, удаляем старые
+            all_ids = list(SearchHistory.objects.filter(user=request.user).order_by('-created_at').values_list('pk', flat=True))
+            if len(all_ids) > 25:
+                SearchHistory.objects.filter(pk__in=all_ids[25:]).delete()
     else:
         breadcrumbs = build_breadcrumbs(
             breadcrumb("Search", None),
@@ -219,6 +253,55 @@ def search_view(request):
     return render(request, 'smart_blog/search_results.html',
                   {'items': items, 'query': q, 'selected_fields': selected_fields, 'breadcrumbs': breadcrumbs})
 
+
+def api_search_history_list(request):
+    """Список последних поисковых запросов пользователя (только GET)."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'items': []})
+    items = list(
+        SearchHistory.objects.filter(user=request.user).order_by('-created_at')[:25].values(
+            'id', 'search_query', 'created_at', 'results_count', 'search_filters', 'was_clicked'
+        )
+    )
+    for it in items:
+        it['created_at'] = it['created_at'].isoformat()
+    return JsonResponse({'items': items})
+
+
+@require_POST
+def api_search_history_clicked(request, pk):
+    """Отметить запись истории как clicked (при клике из дропдауна)."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'ok': False}, status=403)
+    try:
+        rec = SearchHistory.objects.get(pk=pk, user=request.user)
+        rec.was_clicked = True
+        rec.save(update_fields=['was_clicked'])
+        return JsonResponse({'ok': True})
+    except SearchHistory.DoesNotExist:
+        return JsonResponse({'ok': False}, status=404)
+
+
+@require_POST
+def api_search_history_clear(request):
+    """Очистить всю историю поиска пользователя."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'ok': False}, status=403)
+    SearchHistory.objects.filter(user=request.user).delete()
+    return JsonResponse({'ok': True})
+
+
+@require_POST
+def api_search_history_delete(request, pk):
+    """Удалить один запрос из истории."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'ok': False}, status=403)
+    try:
+        rec = SearchHistory.objects.get(pk=pk, user=request.user)
+        rec.delete()
+        return JsonResponse({'ok': True})
+    except SearchHistory.DoesNotExist:
+        return JsonResponse({'ok': False}, status=404)
 
 
 MAX_IMAGES = 10
