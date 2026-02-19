@@ -234,6 +234,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 params.set('by_title', '1'); params.set('by_text', '1'); params.set('by_tags', '1');
             }
             try { sessionStorage.removeItem('brainews_filter_active'); } catch (err) { }
+            if (typeof window.saveGuestSearchHistory === 'function') {
+                var hasAny = (chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked);
+                window.saveGuestSearchHistory(q, {
+                    by_title: hasAny ? !!(chkTitle && chkTitle.checked) : true,
+                    by_text: hasAny ? !!(chkText && chkText.checked) : true,
+                    by_tags: hasAny ? !!(chkTags && chkTags.checked) : true
+                });
+            }
             closeOverlay(function () {
                 window.location.href = '/search/?' + params.toString();
             }, { skipAnimation: true });
@@ -287,6 +295,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 sessionStorage.setItem('search_clear_next', '1');
                 sessionStorage.removeItem('brainews_filter_active');
             } catch (e) { }
+            if (typeof window.saveGuestSearchHistory === 'function') {
+                var hasAny = (chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked);
+                window.saveGuestSearchHistory(q, {
+                    by_title: hasAny ? !!(chkTitle && chkTitle.checked) : true,
+                    by_text: hasAny ? !!(chkText && chkText.checked) : true,
+                    by_tags: hasAny ? !!(chkTags && chkTags.checked) : true
+                });
+            }
             headerInput.value = '';
             const hsClear = document.getElementById('headerSearchClear');
             if (hsClear) hsClear.classList.add('hidden');
@@ -323,17 +339,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Search history dropdown (BraiNews, search_results, tag_items_list) ---
     (function initSearchHistory() {
-        const block = document.querySelector('[data-search-history-url]');
+        const block = document.querySelector('[data-search-history-url], [data-user-authenticated]');
         if (!block) return;
         const headerInput = document.getElementById('headerSearchInput');
         const dropdown = document.getElementById('searchHistoryDropdown');
         if (!headerInput || !dropdown) return;
 
+        const isAuth = block.getAttribute('data-user-authenticated') === '1';
         const listUrl = block.getAttribute('data-search-history-url');
         const clickedPattern = block.getAttribute('data-search-history-clicked-pattern');
         const deletePattern = block.getAttribute('data-search-history-delete-pattern');
         const clearUrl = block.getAttribute('data-search-history-clear-url');
-        if (!listUrl || !clickedPattern) return;
+        if (isAuth && (!listUrl || !clickedPattern)) return;
+
+        var GUEST_STORAGE_KEY = 'brainews_search_history';
+        var GUEST_MAX_ITEMS = 10;
 
         function getCSRF() {
             const m = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
@@ -368,29 +388,33 @@ document.addEventListener('DOMContentLoaded', function () {
             return parts.join(' · ');
         }
 
-        function showHistory(items) {
+        var cachedHistory = [];
+
+        function showHistory(items, isEmptyFilter) {
             dropdown.innerHTML = '';
             if (!items || items.length === 0) {
-                dropdown.innerHTML = '<div class="search-history-empty">No recent searches</div>';
+                dropdown.innerHTML = '<div class="search-history-empty">' + (isEmptyFilter ? 'No matching searches' : 'No recent searches') + '</div>';
             } else {
                 var headerRow = document.createElement('div');
                 headerRow.className = 'search-history-header-row';
                 headerRow.innerHTML = '<span class="search-history-header">Recent requests</span>';
-                if (clearUrl) {
-                    var clearBtn = document.createElement('button');
-                    clearBtn.type = 'button';
-                    clearBtn.className = 'search-history-clear-btn';
-                    clearBtn.textContent = 'Clear history';
-                    clearBtn.setAttribute('aria-label', 'Clear search history');
-                    headerRow.appendChild(clearBtn);
-                }
+                var clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'search-history-clear-btn';
+                clearBtn.textContent = 'Clear history';
+                clearBtn.setAttribute('aria-label', 'Clear search history');
+                headerRow.appendChild(clearBtn);
                 dropdown.appendChild(headerRow);
-                items.forEach(function (item) {
+                items.forEach(function (item, idx) {
                     const row = document.createElement('div');
                     row.className = 'search-history-item';
                     row.dataset.id = item.id;
                     row.dataset.url = buildSearchUrl(item);
-                    row.innerHTML = '<span class="search-history-item-text">' + escapeHtml(item.search_query) + '</span><span class="search-history-item-meta">' + escapeHtml(formatMeta(item)) + '</span>' + (deletePattern ? '<button type="button" class="search-history-item-remove" data-id="' + item.id + '" aria-label="Remove from history">×</button>' : '');
+                    row.dataset.searchQuery = item.search_query || '';
+                    row.dataset.searchFilters = JSON.stringify(item.search_filters || {});
+                    row.dataset.isGuest = isAuth ? '0' : '1';
+                    row.dataset.guestIndex = isAuth ? '' : String(idx);
+                    row.innerHTML = '<span class="search-history-item-text">' + escapeHtml(item.search_query) + '</span><span class="search-history-item-meta">' + escapeHtml(formatMeta(item)) + '</span><button type="button" class="search-history-item-remove" data-id="' + (item.id || ('local-' + idx)) + '" data-guest-index="' + (isAuth ? '' : idx) + '" aria-label="Remove from history">×</button>';
                     dropdown.appendChild(row);
                 });
             }
@@ -410,20 +434,126 @@ document.addEventListener('DOMContentLoaded', function () {
             dropdown.setAttribute('aria-hidden', 'true');
         }
 
-        function fetchAndShow() {
-            fetch(listUrl, { credentials: 'same-origin' })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    showHistory(data.items || []);
-                })
-                .catch(function () { dropdown.classList.add('hidden'); });
+        function getGuestHistory() {
+            try {
+                var raw = localStorage.getItem(GUEST_STORAGE_KEY);
+                if (!raw) return [];
+                var arr = JSON.parse(raw);
+                if (!Array.isArray(arr)) return [];
+                return arr.slice(0, GUEST_MAX_ITEMS).map(function (it, i) {
+                    return {
+                        id: 'local-' + i,
+                        search_query: it.search_query,
+                        search_filters: it.search_filters || {},
+                        created_at: it.created_at,
+                        results_count: it.results_count
+                    };
+                });
+            } catch (e) { return []; }
+        }
+
+        function saveGuestSearchHistory(query, filters) {
+            if (!query || typeof query !== 'string' || (window.USER_AUTHENTICATED === true)) return;
+            try {
+                var q = query.trim();
+                if (!q) return;
+                var f = filters || { by_title: true, by_text: true, by_tags: true };
+                var arr = [];
+                try {
+                    var raw = localStorage.getItem(GUEST_STORAGE_KEY);
+                    if (raw) arr = JSON.parse(raw);
+                    if (!Array.isArray(arr)) arr = [];
+                } catch (e) { arr = []; }
+                var now = new Date().toISOString();
+                var dupIdx = arr.findIndex(function (it) {
+                    return (it.search_query || '').toLowerCase() === q.toLowerCase() &&
+                        JSON.stringify(it.search_filters || {}) === JSON.stringify(f);
+                });
+                if (dupIdx >= 0) arr.splice(dupIdx, 1);
+                arr.unshift({ search_query: q, search_filters: f, created_at: now });
+                if (arr.length > GUEST_MAX_ITEMS) arr.length = GUEST_MAX_ITEMS;
+                localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(arr));
+            } catch (e) { }
+        }
+        window.saveGuestSearchHistory = saveGuestSearchHistory;
+
+        function bumpGuestSearchToTop(query, filters) {
+            if (!query || (window.USER_AUTHENTICATED === true)) return;
+            try {
+                var q = String(query).trim();
+                if (!q) return;
+                var f = filters || { by_title: true, by_text: true, by_tags: true };
+                var arr = [];
+                try {
+                    var raw = localStorage.getItem(GUEST_STORAGE_KEY);
+                    if (raw) arr = JSON.parse(raw);
+                    if (!Array.isArray(arr)) arr = [];
+                } catch (e) { arr = []; }
+                var dupIdx = arr.findIndex(function (it) {
+                    return (it.search_query || '').toLowerCase() === q.toLowerCase() &&
+                        JSON.stringify(it.search_filters || {}) === JSON.stringify(f);
+                });
+                if (dupIdx >= 0) {
+                    var it = arr.splice(dupIdx, 1)[0];
+                    arr.unshift(it);
+                    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(arr));
+                }
+            } catch (e) { }
+        }
+        window.bumpGuestSearchToTop = bumpGuestSearchToTop;
+
+        function fetchAndShow(filterText) {
+            function onLoaded(items) {
+                cachedHistory = items || [];
+                var filtered = filterText ? filterItems(cachedHistory, filterText) : cachedHistory;
+                showHistory(filtered, !!filterText && filtered.length === 0);
+            }
+            if (isAuth) {
+                fetch(listUrl, { credentials: 'same-origin' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        onLoaded(data.items || []);
+                    })
+                    .catch(function () { dropdown.classList.add('hidden'); });
+            } else {
+                onLoaded(getGuestHistory());
+            }
+        }
+
+        function filterItems(items, text) {
+            if (!text || !text.trim()) return items;
+            var lower = text.trim().toLowerCase();
+            return items.filter(function (it) {
+                return (it.search_query || '').toLowerCase().indexOf(lower) >= 0;
+            });
+        }
+
+        function refreshAndFilter() {
+            var val = (headerInput.value || '').trim();
+            if (cachedHistory.length > 0) {
+                var filtered = filterItems(cachedHistory, val);
+                showHistory(filtered, !!val && filtered.length === 0);
+            } else {
+                fetchAndShow(val);
+            }
         }
 
         headerInput.addEventListener('focus', function () {
-            fetchAndShow();
+            fetchAndShow((headerInput.value || '').trim());
         });
         headerInput.addEventListener('click', function () {
-            fetchAndShow();
+            fetchAndShow((headerInput.value || '').trim());
+        });
+        headerInput.addEventListener('input', function () {
+            var val = (headerInput.value || '').trim();
+            if (cachedHistory.length > 0) {
+                var filtered = filterItems(cachedHistory, val);
+                showHistory(filtered, !!val && filtered.length === 0);
+                dropdown.classList.remove('hidden');
+                dropdown.setAttribute('aria-hidden', 'false');
+            } else {
+                fetchAndShow(val);
+            }
         });
 
         function appendFromHistory(url) {
@@ -436,40 +566,62 @@ document.addEventListener('DOMContentLoaded', function () {
             if (removeBtn) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (!deletePattern) return;
                 var row = removeBtn.closest('.search-history-item');
-                var id = removeBtn.dataset.id || (row && row.dataset.id);
-                if (!id) return;
-                var deleteUrl = deletePattern.replace('999999', id);
-                fetch(deleteUrl, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-CSRFToken': getCSRF(),
-                        'X-Requested-With': 'XMLHttpRequest'
+                if (isAuth && deletePattern) {
+                    var id = removeBtn.dataset.id || (row && row.dataset.id);
+                    if (!id) return;
+                    var deleteUrl = deletePattern.replace('999999', id);
+                    fetch(deleteUrl, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRFToken': getCSRF(),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(function () {
+                        if (row) row.remove();
+                        var remaining = dropdown.querySelectorAll('.search-history-item');
+                        if (remaining.length === 0) hideHistory();
+                    }).catch(function () { });
+                } else {
+                    var idx = parseInt(removeBtn.dataset.guestIndex, 10);
+                    if (!isNaN(idx)) {
+                        try {
+                            var arr = JSON.parse(localStorage.getItem(GUEST_STORAGE_KEY) || '[]');
+                            if (Array.isArray(arr) && idx >= 0 && idx < arr.length) {
+                                arr.splice(idx, 1);
+                                localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(arr));
+                                showHistory(arr.map(function (it, i) {
+                                    return { id: 'local-' + i, search_query: it.search_query, search_filters: it.search_filters || {}, created_at: it.created_at };
+                                }));
+                                if (arr.length === 0) hideHistory();
+                            }
+                        } catch (err) { }
                     }
-                }).then(function () {
-                    if (row) row.remove();
-                    var remaining = dropdown.querySelectorAll('.search-history-item');
-                    if (remaining.length === 0) hideHistory();
-                }).catch(function () { });
+                }
                 return;
             }
             var clearBtn = e.target.closest('.search-history-clear-btn');
             if (clearBtn) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (!clearUrl) return;
-                fetch(clearUrl, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-CSRFToken': getCSRF(),
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                }).then(function () {
+                if (isAuth && clearUrl) {
+                    fetch(clearUrl, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRFToken': getCSRF(),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(function () {
+                        hideHistory();
+                    }).catch(function () { });
+                } else {
+                    try {
+                        localStorage.removeItem(GUEST_STORAGE_KEY);
+                    } catch (err) { }
                     hideHistory();
-                }).catch(function () { });
+                }
                 return;
             }
             const historyRow = e.target.closest('.search-history-item');
@@ -477,22 +629,35 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const historyId = historyRow.dataset && historyRow.dataset.id;
             const historyBaseUrl = historyRow.dataset && historyRow.dataset.url;
-            if (!historyId || !historyBaseUrl) return;
+            if (!historyBaseUrl) return;
+            if (!isAuth) {
+                var q = historyRow.dataset && historyRow.dataset.searchQuery;
+                var fStr = historyRow.dataset && historyRow.dataset.searchFilters;
+                if (q && typeof window.bumpGuestSearchToTop === 'function') {
+                    try {
+                        var f = {};
+                        if (fStr) try { f = JSON.parse(fStr); } catch (e) { }
+                        window.bumpGuestSearchToTop(q, f);
+                    } catch (err) { }
+                }
+            }
             const url = appendFromHistory(historyBaseUrl);
-            const clickedUrl = clickedPattern.replace('999999', historyId);
             try {
                 sessionStorage.setItem('search_clear_next', '1');
                 sessionStorage.removeItem('brainews_filter_active');
             } catch (err) { }
-            fetch(clickedUrl, {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'X-CSRFToken': getCSRF(),
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json'
-                }
-            }).catch(function () { });
+            if (isAuth && clickedPattern && historyId) {
+                var clickedUrl = clickedPattern.replace('999999', historyId);
+                fetch(clickedUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRFToken': getCSRF(),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(function () { });
+            }
             window.location.href = url;
         });
 

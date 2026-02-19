@@ -64,7 +64,8 @@
     <script defer src="{% static 'smart_blog/js/image_gallery.js' %}"></script>
     <!-- global search -->
     <script>
-      window.SEARCH_URL = "{% url 'global_search' %}"
+      window.SEARCH_URL = "{% url 'global_search' %}";
+      window.USER_AUTHENTICATED = {% if user.is_authenticated %}true{% else %}false{% endif %};
     </script>
     <script defer src="{% static 'smart_blog/js/search_operate.js' %}"></script>
 

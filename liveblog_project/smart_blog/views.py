@@ -210,40 +210,62 @@ def search_view(request):
             breadcrumb("Search", reverse("global_search")),
             breadcrumb(q, None),
         )
-        # Сохраняем в историю поиска (только авторизованные, не при клике из списка)
-        if request.user.is_authenticated and not request.GET.get('from_history'):
+        # История поиска: авторизованные — БД
+        if request.user.is_authenticated:
             filters_dict = {
                 'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
             }
-            # Проверяем дубликат: тот же запрос (без учёта регистра) и те же фильтры
-            existing = SearchHistory.objects.filter(
-                user=request.user,
-                search_query__iexact=q,
-                search_filters=filters_dict,
-            ).first()
-            if existing:
-                # Уже есть — удаляем старую и создаём заново (поднимаем в начало, обновляем results_count)
-                was_clicked = existing.was_clicked
-                existing.delete()
-                SearchHistory.objects.create(
+            if request.GET.get('from_history'):
+                # Клик из списка — поднимаем запись наверх
+                existing = SearchHistory.objects.filter(
                     user=request.user,
-                    search_query=q,
-                    results_count=items.count(),
+                    search_query__iexact=q,
                     search_filters=filters_dict,
-                    was_clicked=was_clicked,
-                )
+                ).first()
+                if existing:
+                    was_clicked = existing.was_clicked
+                    existing.delete()
+                    SearchHistory.objects.create(
+                        user=request.user,
+                        search_query=existing.search_query or q,
+                        results_count=items.count(),
+                        search_filters=filters_dict,
+                        was_clicked=was_clicked,
+                    )
+                    all_ids = list(SearchHistory.objects.filter(user=request.user).order_by('-created_at').values_list('pk', flat=True))
+                    if len(all_ids) > 25:
+                        SearchHistory.objects.filter(pk__in=all_ids[25:]).delete()
             else:
-                SearchHistory.objects.create(
+                # Новый поиск (Enter) — сохраняем или обновляем
+                filters_dict = {
+                    'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
+                }
+                existing = SearchHistory.objects.filter(
                     user=request.user,
-                    search_query=q,
-                    results_count=items.count(),
+                    search_query__iexact=q,
                     search_filters=filters_dict,
-                    was_clicked=False,
-                )
-            # Ограничение: макс 25 записей, удаляем старые
-            all_ids = list(SearchHistory.objects.filter(user=request.user).order_by('-created_at').values_list('pk', flat=True))
-            if len(all_ids) > 25:
-                SearchHistory.objects.filter(pk__in=all_ids[25:]).delete()
+                ).first()
+                if existing:
+                    was_clicked = existing.was_clicked
+                    existing.delete()
+                    SearchHistory.objects.create(
+                        user=request.user,
+                        search_query=q,
+                        results_count=items.count(),
+                        search_filters=filters_dict,
+                        was_clicked=was_clicked,
+                    )
+                else:
+                    SearchHistory.objects.create(
+                        user=request.user,
+                        search_query=q,
+                        results_count=items.count(),
+                        search_filters=filters_dict,
+                        was_clicked=False,
+                    )
+                all_ids = list(SearchHistory.objects.filter(user=request.user).order_by('-created_at').values_list('pk', flat=True))
+                if len(all_ids) > 25:
+                    SearchHistory.objects.filter(pk__in=all_ids[25:]).delete()
     else:
         breadcrumbs = build_breadcrumbs(
             breadcrumb("Search", None),
