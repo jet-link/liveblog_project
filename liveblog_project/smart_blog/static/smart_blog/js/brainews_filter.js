@@ -72,15 +72,25 @@
         return btn ? btn.dataset.filter : null;
     }
 
-    const FILTER_TITLES = { popular: 'Popular', liked: 'Liked', bookmarked: 'Bookmarked' };
+    const FILTER_TITLES = { popular: 'Popular', liked: 'Liked', bookmarked: 'Marked' };
 
     function setActiveFilter(value) {
         getFilterButtons().forEach(b => {
             b.classList.toggle('is-selected', b.dataset.filter === value);
         });
         const titleEl = document.getElementById('brainewsListingTitle');
+        const ctxBlock = document.getElementById('filterPageContextBlock');
         if (titleEl) {
             titleEl.textContent = value ? (FILTER_TITLES[value] || 'BraiNews') : 'BraiNews';
+            if (ctxBlock) {
+                if (value) {
+                    titleEl.classList.remove('d-none');
+                    titleEl.removeAttribute('aria-hidden');
+                } else {
+                    titleEl.classList.add('d-none');
+                    titleEl.setAttribute('aria-hidden', 'true');
+                }
+            }
         }
     }
 
@@ -89,12 +99,17 @@
             if (el) el.style.display = show ? '' : 'none';
         });
         const ctxBlock = document.getElementById('filterPageContextBlock');
+        const titleEl = document.getElementById('brainewsListingTitle');
         if (ctxBlock) {
             if (show) {
                 ctxBlock.style.display = '';
                 requestAnimationFrame(function () {
                     ctxBlock.classList.remove('filter-context-hidden');
                 });
+                if (titleEl) {
+                    titleEl.classList.add('d-none');
+                    titleEl.setAttribute('aria-hidden', 'true');
+                }
             } else {
                 ctxBlock.classList.add('filter-context-hidden');
                 setTimeout(function () { ctxBlock.style.display = 'none'; }, 350);
@@ -155,11 +170,27 @@
         const key = FILTER_STORAGE_KEY_PREFIX + getPageContextKey();
         const saved = sessionStorage.getItem(key);
         if (!wrapper) return;
-        if (saved) {
-            wrapper.innerHTML = saved;
+        if (!saved) {
+            removeItem(key);
+            if (wrapper.dataset) wrapper.dataset.brainewsOriginalSaved = '';
+            showPagination(true);
+            return;
         }
-        removeItem(key);
-        if (wrapper.dataset) wrapper.dataset.brainewsOriginalSaved = '';
+        wrapper.classList.add('filter-cards-fade-out');
+        const transitionMs = 200;
+        requestAnimationFrame(function () {
+            setTimeout(function () {
+                showPagination(true);
+                wrapper.innerHTML = saved;
+                removeItem(key);
+                if (wrapper.dataset) wrapper.dataset.brainewsOriginalSaved = '';
+                wrapper.classList.remove('filter-cards-fade-out');
+                wrapper.classList.add('filter-cards-fade-in');
+                wrapper.offsetHeight;
+                wrapper.classList.remove('filter-cards-fade-in');
+                if (window.applyListingChanges) window.applyListingChanges();
+            }, transitionMs);
+        });
     }
 
     function applyFilter(filter) {
@@ -170,7 +201,6 @@
             removeItem(FILTER_KEY);
             if (isBraiNewsListing()) {
                 restoreOriginalContent();
-                showPagination(true);
                 showEmptyHint('');
             } else {
                 window.location.href = getBraiNewsUrl();

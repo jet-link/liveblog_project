@@ -4,10 +4,12 @@
 {% endblock %}
 {% block content %}
   <div class="container content_block" data-brainews-listing data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-search-history-url="{% url 'smart_blog:api_search_history_list' %}" data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}" data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}" data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
-    {% include 'includes/search_form.html' %}
-    {% if user.is_authenticated %}
-      {% include 'includes/filter_block.html' %}
-    {% endif %}
+    <div class="search-sticky-block">
+      {% include 'includes/search_form.html' %}
+      {% if user.is_authenticated %}
+        {% include 'includes/filter_block.html' %}
+      {% endif %}
+    </div>
     <h5 id="brainewsListingTitle" class="mt-5 mb-3 text-muted">BraiNews</h5>
     {% if items %}
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
@@ -19,6 +21,9 @@
     {% else %}
       <h5 class="text-muted pt-4">There are not items yet.</h5>
     {% endif %}
+
+    <div class="hidden">
     {% include 'includes/overlay_search.html' %}
+    </div>
   </div>
 {% endblock %}

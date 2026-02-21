@@ -3,7 +3,9 @@ PostgreSQL Full-Text Search and filter utilities.
 - Pure FTS on search_vector (title A, text B, tags C). No OR/icontains/DISTINCT.
 - Popular: uses denormalized likes_count + DB expression.
 - Liked/Bookmarked: use Exists in views.
+- Prefix matching: "universe" matches "universal" etc.
 """
+import re
 from functools import reduce
 from operator import or_
 
@@ -16,10 +18,31 @@ def is_postgresql():
     return connection.vendor == 'postgresql'
 
 
+def _build_fts_query_with_prefix(q):
+    """
+    Build tsquery that matches exact words OR word prefixes (universe -> universal).
+    Words 5+ chars get prefix variant for fuzzy-like matching.
+    Strips special chars to avoid tsquery syntax errors.
+    """
+    safe_q = re.sub(r'[^\w\s]', ' ', q)
+    words = [w.strip() for w in safe_q.split() if w.strip()]
+    if not words:
+        return q
+    parts = []
+    for w in words:
+        if len(w) >= 5:
+            prefix = w[:5] + ':*'
+            parts.append('( ' + w + ' | ' + prefix + ' )')
+        else:
+            parts.append(w)
+    return ' & '.join(parts)
+
+
 def build_search_filter(qs, q, by_title, by_text, by_tags):
     """
     Pure PostgreSQL FTS on search_vector (no OR with icontains, no DISTINCT, no tag JOIN).
     search_vector contains: title(A) + text(B) + tags(C).
+    Adds prefix matching so "universe" matches "universal" etc.
     """
     if not q or not (by_title or by_text or by_tags):
         return qs
@@ -30,11 +53,19 @@ def build_search_filter(qs, q, by_title, by_text, by_tags):
         except ImportError:
             return _search_icontains(qs, q, by_title, by_text, by_tags)
 
-        query = SearchQuery(q, config='simple', search_type='websearch')
-        qs = qs.annotate(
-            rank=SearchRank(F('search_vector'), query),
-        )
-        qs = qs.filter(search_vector=query)
+        raw_query = _build_fts_query_with_prefix(q)
+        try:
+            query = SearchQuery(raw_query, config='simple', search_type='raw')
+            qs = qs.annotate(
+                rank=SearchRank(F('search_vector'), query),
+            )
+            qs = qs.filter(search_vector=query)
+        except Exception:
+            query = SearchQuery(q, config='simple', search_type='websearch')
+            qs = qs.annotate(
+                rank=SearchRank(F('search_vector'), query),
+            )
+            qs = qs.filter(search_vector=query)
         qs = qs.order_by(
             Coalesce('rank', Value(0.0), output_field=FloatField()).desc(nulls_last=True),
             '-published_date',
@@ -46,14 +77,20 @@ def build_search_filter(qs, q, by_title, by_text, by_tags):
 
 
 def _search_icontains(qs, q, by_title, by_text, by_tags):
-    """SQLite fallback."""
+    """SQLite fallback. Adds prefix match (universe -> universal) for queries 5+ chars."""
     queries = []
     if by_title:
         queries.append(Q(title__icontains=q))
+        if len(q) >= 5:
+            queries.append(Q(title__icontains=q[:5]))
     if by_text:
         queries.append(Q(text__icontains=q))
+        if len(q) >= 5:
+            queries.append(Q(text__icontains=q[:5]))
     if by_tags:
         queries.append(Q(tags__tag_name__icontains=q))
+        if len(q) >= 5:
+            queries.append(Q(tags__tag_name__icontains=q[:5]))
     if not queries:
         return qs
     return qs.filter(reduce(or_, queries)).distinct()

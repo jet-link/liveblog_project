@@ -681,6 +681,9 @@ def edit_item(request, slug):
             if old_tag_ids != new_tag_ids:
                 item.edited = True
 
+            if delete_ids or files:
+                item.edited = True
+
             item.save()
 
             if delete_ids:
@@ -754,6 +757,8 @@ def delete_item_image(request, pk):
             logger.exception("Failed to delete image file for ItemImage %s", pk)
 
         img.delete()
+        item.edited = True
+        item.save(update_fields=["edited"])
     except Exception as e:
         logger.exception("Failed to delete ItemImage %s", pk)
         return JsonResponse({"success": False, "error": "Delete failed."}, status=500)

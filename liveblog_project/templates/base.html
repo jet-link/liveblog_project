@@ -47,6 +47,8 @@
     </footer>
     {% comment %} {% endcache %} {% endcomment %}
 
+    {% include 'includes/back_to_top.html' %}
+
     <!-- Bootstrap JS + Popper + CKEditor5 + Custom JS files -->
     <script defer src="{% static 'ckeditor/ckeditor_main.js' %}"></script>
     <script defer src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
@@ -68,6 +70,7 @@
       window.USER_AUTHENTICATED = {% if user.is_authenticated %}true{% else %}false{% endif %};
     </script>
     <script defer src="{% static 'smart_blog/js/search_operate.js' %}"></script>
+    <script defer src="{% static 'smart_blog/js/back_to_top.js' %}"></script>
 
     <script defer src="{% static 'login/js/password_gen_switcher.js' %}"></script>
     <script defer src="{% static 'login/js/password_generator.js' %}"></script>

@@ -1,11 +1,9 @@
 {% if user.is_authenticated %}
   <div class="filter-block d-flex flex-wrap gap-2 align-items-center" data-filter-url="{% url 'smart_blog:items_filtered' %}">
-    {% comment %} <span class="filter-block-label">Filter by</span> {% endcomment %}
     <div class="filter-select d-flex flex-wrap gap-1" id="filterReasonList">
       <button type="button" class="filter-reason-btn" data-filter="popular"><i class="fa fa-fire me-2"></i>Popular</button>
       <button type="button" class="filter-reason-btn" data-filter="liked"><i class="fa fa-heart me-2"></i>Liked</button>
-      <button type="button" class="filter-reason-btn" data-filter="bookmarked"><i class="fa fa-bookmark me-2"></i>Bookmarked</button>
+      <button type="button" class="filter-reason-btn" data-filter="bookmarked"><i class="fa fa-bookmark me-2"></i>Marked</button>
     </div>
-    {% comment %} <div class="filter-empty-hint hidden" id="filterEmptyHint" aria-live="polite"></div> {% endcomment %}
   </div>
 {% endif %}

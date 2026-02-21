@@ -4,14 +4,19 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container content_block" data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-search-history-url="{% url 'smart_blog:api_search_history_list' %}" data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}" data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}" data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
+  <div class="container content_block"
+    data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+    data-search-history-url="{% url 'smart_blog:api_search_history_list' %}"
+    data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}"
+    data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}"
+    data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
     {% include 'includes/search_form.html' %}
-    {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
+    <h5 id="brainewsListingTitle" class="mt-5 mb-3 text-muted d-none" aria-hidden="true">BraiNews</h5>
     <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-3">
       <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex flex-wrap align-items-center">
+        <div class="d-flex gap-1 flex-wrap align-items-center">
           <h6 class="text-muted m-0">Search results for</h6>
-          <span class="primary_ ms-1 me-3 py-2 text-decoration-underline">{{ query }}</span>
+          <span class="primary_">{{ query }}...</span>
         </div>
         <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
       </div>
@@ -19,7 +24,6 @@
       <div class="d-flex gap-2 text-muted small align-items-center">
         <span>Total</span>
         <span>found</span>
-        <span>-</span>
         <span class="custom_badge badge_primary">{{ items.count }}</span>
         {% if items.count != 1 %}
           <span>posts</span>
@@ -51,6 +55,8 @@
         <div class="custom-alert custom-alert-info" data-auto-dismiss="3000">No results found!</div>
       {% endif %}
     </div>
-    {% include 'includes/overlay_search.html' %}
+    <div class="hidden">
+      {% include 'includes/overlay_search.html' %}
+    </div>
   </div>
 {% endblock %}
