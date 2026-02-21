@@ -295,7 +295,7 @@ textarea {
 
 /* Чтобы контент не прыгал */
 .header-spacer {
-    height: var(--top-header-height, 120px);
+    height: var(--top-header-height, 130px);
 }
 
 .header-search-overlay {
@@ -340,16 +340,17 @@ textarea {
 .search-sign{
     position: absolute;
     top: 30%;
-    left: 20px;
-    color: #6b7280;
+    left: 19px;
+    color: #273c75;
+    font-size: 1.1rem;
 }
 
 /* Keep the input styling */
 .header-search-input {
     width: 100%;
-    height: 65px;
+    height: 67px;
     padding: 15px 50px;
-    border-radius: 10px;
+    border-radius: 0 !important;
     font-size: .9rem;
     border: 1px solid #e6e6e6;
     color: #3f4c6c !important;
@@ -373,7 +374,7 @@ textarea {
     justify-content: center;
     z-index: 5;
     padding: 0;
-    border-radius: 8px;
+    border-radius: 20px;
     text-decoration: none;
 }
 
@@ -698,7 +699,7 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 15px 20px;
     gap: 12px;
     border-bottom: 1px solid #e6e6e6;
     background: #fff;
@@ -799,7 +800,7 @@ textarea {
 .filter-select {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 8px;
 }
 
 .filter-reason-btn {
@@ -811,12 +812,14 @@ textarea {
     font-size: .725rem;
     cursor: pointer;
     font-weight: 500;
+    transition: .2s ease-in-out;
 }
 
 .filter-reason-btn.is-selected {
     border-color: #273c75;
     color: #ffffff;
     background: #273c75;
+    transform: scale(1.1);
 }
 
 .filter-empty-hint {
