@@ -91,6 +91,78 @@ document.addEventListener('DOMContentLoaded', function () {
         io.observe(originalInner);
     }
 
+    // ------------- sticky search bar: липнет при скролле вниз, возвращается на место при скролле вверх -------------
+    (function initStickySearchBar() {
+        const searchOverlay = document.getElementById('headerSearchOverlay');
+        if (!searchOverlay || searchOverlay.closest('#overlaySearchRoot')) return;
+
+        const container = searchOverlay.closest('.container');
+        let placeholder = null;
+        let stickThreshold = 0;
+        let rafId = null;
+
+        function updateStickThreshold() {
+            const rect = searchOverlay.getBoundingClientRect();
+            stickThreshold = rect.top + window.scrollY;
+        }
+
+        function updateStuckState() {
+            const scrollY = window.scrollY || window.pageYOffset;
+            if (scrollY > stickThreshold) {
+                if (!searchOverlay.classList.contains('header-search-stuck')) {
+                    var rect = searchOverlay.getBoundingClientRect();
+                    if (!placeholder) {
+                        placeholder = document.createElement('div');
+                        placeholder.className = 'header-search-placeholder';
+                        searchOverlay.parentNode.insertBefore(placeholder, searchOverlay);
+                    }
+                    placeholder.style.height = rect.height + 'px';
+                    placeholder.style.display = 'block';
+                    searchOverlay.style.setProperty('--stuck-left', rect.left + 'px');
+                    searchOverlay.style.setProperty('--stuck-width', rect.width + 'px');
+                    searchOverlay.classList.add('header-search-stuck');
+                }
+            } else {
+                if (searchOverlay.classList.contains('header-search-stuck')) {
+                    searchOverlay.classList.remove('header-search-stuck');
+                    searchOverlay.style.removeProperty('--stuck-left');
+                    searchOverlay.style.removeProperty('--stuck-width');
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            }
+        }
+
+        function onScroll() {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(function () {
+                rafId = null;
+                updateStuckState();
+            });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', function () {
+            updateStickThreshold();
+            if (searchOverlay.classList.contains('header-search-stuck') && placeholder) {
+                placeholder.style.display = 'none';
+                searchOverlay.classList.remove('header-search-stuck');
+                requestAnimationFrame(function () {
+                    var rect = searchOverlay.getBoundingClientRect();
+                    placeholder.style.height = rect.height + 'px';
+                    searchOverlay.style.setProperty('--stuck-left', rect.left + 'px');
+                    searchOverlay.style.setProperty('--stuck-width', rect.width + 'px');
+                    searchOverlay.classList.add('header-search-stuck');
+                    placeholder.style.display = 'block';
+                });
+            }
+        });
+
+        setTimeout(function () {
+            updateStickThreshold();
+            updateStuckState();
+        }, 100);
+    })();
+
     // ------------- overlay open/close, cloning with unique IDs -------------
     function makeUniqueClone(srcEl) {
         // deep clone

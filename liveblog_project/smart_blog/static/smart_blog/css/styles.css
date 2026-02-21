@@ -299,12 +299,24 @@ textarea {
 }
 
 .header-search-overlay {
-    position: relative !important;
+    position: relative;
     pointer-events: auto;
     overflow: visible;
-    background: transparent;
-    box-shadow: none;
-    /* padding-top: 20px; */
+}
+
+.header-search-overlay.header-search-stuck {
+    position: fixed;
+    top: 0;
+    left: var(--stuck-left, 0);
+    width: var(--stuck-width, 100%);
+    max-width: var(--stuck-width, 100%);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+
+.header-search-placeholder {
+    display: none;
 }
 
 /* Slightly change inner wrapper to sit nicely in container */
@@ -328,24 +340,25 @@ textarea {
 .search-sign{
     position: absolute;
     top: 30%;
-    left: 25px;
+    left: 20px;
     color: #6b7280;
 }
 
 /* Keep the input styling */
 .header-search-input {
     width: 100%;
-    height: 60px;
-    padding: 13px 50px 13px 50px;
-    border-radius: 30px;
-    font-size: 15px;
+    height: 65px;
+    padding: 15px 50px;
+    border-radius: 10px;
+    font-size: .9rem;
     border: 1px solid #e6e6e6;
     color: #3f4c6c !important;
+    box-shadow: 0 3px 13px rgba(0, 0, 0, 0.07);
 }
 
 .field-clear {
     position: absolute;
-    right: 13px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     border: none;
@@ -360,7 +373,7 @@ textarea {
     justify-content: center;
     z-index: 5;
     padding: 0;
-    border-radius: 30px;
+    border-radius: 8px;
     text-decoration: none;
 }
 
@@ -774,7 +787,7 @@ textarea {
    BRAINEWS FILTER BLOCK
 ========================= */
 .filter-block {
-    padding-top: 15px;
+    padding-top: 20px;
 }
 
 .filter-block-label {
@@ -793,17 +806,17 @@ textarea {
     border: 1px solid #dfe4ea;
     background: #fff;
     color: #4b5a68;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 10px 23px;
+    border-radius: 30px;
     font-size: .725rem;
     cursor: pointer;
     font-weight: 500;
 }
 
 .filter-reason-btn.is-selected {
-    border-color: #ED4C67;
+    border-color: #273c75;
     color: #ffffff;
-    background: #ED4C67;
+    background: #273c75;
 }
 
 .filter-empty-hint {
