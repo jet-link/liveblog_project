@@ -749,7 +749,7 @@ function renderReplyErrors(container, messages) {
     container.appendChild(box);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function initFilterCardsPagination() {
     const STEP = 10;
 
     const wrapper = document.getElementById('showMoreWrapper');
@@ -768,8 +768,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const total = items.length;
     let shown = 0;
 
-    function update(withAnimation = false, fromIndex = 0) {
-        items.forEach((item, index) => {
+    function update(withAnimation, fromIndex) {
+        if (typeof withAnimation === 'undefined') withAnimation = false;
+        if (typeof fromIndex === 'undefined') fromIndex = 0;
+        items.forEach(function (item, index) {
             if (index < shown) {
                 if (item.classList.contains('listing-hidden')) {
                     item.classList.remove('listing-hidden');
@@ -784,18 +786,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.classList.remove('listing-animate');
             }
         });
-        counter.textContent = `${shown} / ${total}`;
+        counter.textContent = shown + ' / ' + total;
         btn.style.display = shown >= total ? 'none' : '';
     }
 
     shown = Math.min(STEP, total);
     update(false);
 
-    btn.addEventListener('click', function () {
+    btn.onclick = function () {
         const prev = shown;
         shown = Math.min(shown + STEP, total);
         update(true, prev);
-    });
+    };
+}
+
+window.initFilterCardsPagination = initFilterCardsPagination;
+
+document.addEventListener('DOMContentLoaded', function () {
+    initFilterCardsPagination();
 });
 
 

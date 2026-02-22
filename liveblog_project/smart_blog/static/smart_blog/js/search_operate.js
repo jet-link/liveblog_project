@@ -96,18 +96,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const searchOverlay = document.getElementById('headerSearchOverlay');
         if (!searchOverlay || searchOverlay.closest('#overlaySearchRoot')) return;
 
-        const container = searchOverlay.closest('.container');
         let placeholder = null;
         let stickThreshold = 0;
         let rafId = null;
+        let lastScrollY = -1;
 
         function updateStickThreshold() {
-            const rect = searchOverlay.getBoundingClientRect();
-            stickThreshold = rect.top + window.scrollY;
+            if (!searchOverlay.classList.contains('header-search-stuck')) {
+                var rect = searchOverlay.getBoundingClientRect();
+                stickThreshold = rect.top + (window.scrollY || window.pageYOffset);
+            }
         }
 
         function updateStuckState() {
-            const scrollY = window.scrollY || window.pageYOffset;
+            var scrollY = window.scrollY || window.pageYOffset;
             if (scrollY > stickThreshold) {
                 if (!searchOverlay.classList.contains('header-search-stuck')) {
                     var rect = searchOverlay.getBoundingClientRect();
@@ -129,7 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     searchOverlay.style.removeProperty('--stuck-width');
                     if (placeholder) placeholder.style.display = 'none';
                 }
+                updateStickThreshold();
             }
+            lastScrollY = scrollY;
         }
 
         function onScroll() {
@@ -147,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 placeholder.style.display = 'none';
                 searchOverlay.classList.remove('header-search-stuck');
                 requestAnimationFrame(function () {
+                    updateStickThreshold();
                     var rect = searchOverlay.getBoundingClientRect();
                     placeholder.style.height = rect.height + 'px';
                     searchOverlay.style.setProperty('--stuck-left', rect.left + 'px');
@@ -157,10 +162,26 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted) {
+                lastScrollY = -1;
+                if (searchOverlay.classList.contains('header-search-stuck')) {
+                    searchOverlay.classList.remove('header-search-stuck');
+                    searchOverlay.style.removeProperty('--stuck-left');
+                    searchOverlay.style.removeProperty('--stuck-width');
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+                setTimeout(function () {
+                    updateStickThreshold();
+                    updateStuckState();
+                }, 150);
+            }
+        });
+
         setTimeout(function () {
             updateStickThreshold();
             updateStuckState();
-        }, 100);
+        }, 200);
     })();
 
     // ------------- overlay open/close, cloning with unique IDs -------------

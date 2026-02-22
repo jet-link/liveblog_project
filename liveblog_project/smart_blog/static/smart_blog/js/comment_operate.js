@@ -431,7 +431,7 @@
     initClearCommentButton(textarea, clearBtn);
     updateCommentButtonCooldown(btn, itemId);
     textarea.addEventListener('input', () => {
-      if (!textarea.value.trim()) {
+      if (textarea.value.trim()) {
         clearFieldError(textarea);
       }
       enforceCommentLimit(textarea);
@@ -521,12 +521,7 @@
       }
     });
 
-    document.addEventListener('click', (e) => {
-      const clickedInForm = e.target.closest?.('#commentForm');
-      if (!clickedInForm) {
-        clearFieldError(textarea);
-      }
-    });
+    // "Please write a text" исчезает только при вводе в поле, не при клике вне формы
   }
 
 

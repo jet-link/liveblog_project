@@ -151,6 +151,7 @@
                 wrapper.classList.add('filter-cards-fade-in');
                 wrapper.offsetHeight; // reflow
                 wrapper.classList.remove('filter-cards-fade-in');
+                if (window.initFilterCardsPagination) window.initFilterCardsPagination();
             });
         });
     }
@@ -189,6 +190,7 @@
                 wrapper.offsetHeight;
                 wrapper.classList.remove('filter-cards-fade-in');
                 if (window.applyListingChanges) window.applyListingChanges();
+                if (window.initFilterCardsPagination) window.initFilterCardsPagination();
             }, transitionMs);
         });
     }

@@ -84,6 +84,12 @@
         </div>
       {% endfor %}
     </div>
+    {% if items|length > 10 %}
+      <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
+        <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
+        <span id="shownCounter" class="small text-muted">10 / {{ items|length }}</span>
+      </div>
+    {% endif %}
   {% else %}
     <div class="filter-empty-message" data-filter-type="{{ filter_type }}">{{ empty_msg }}</div>
   {% endif %}

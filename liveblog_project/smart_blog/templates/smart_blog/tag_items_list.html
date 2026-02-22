@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-  Posts by tag
+  Tag posts
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,6 @@
       <div class="d-flex gap-2 text-muted align-items-center small">
         <span>Total</span>
         <span>found</span>
-        <span>-</span>
         <span class="custom_badge badge_primary">{{ tag.items.count }}</span>
         {% if tag.items.count != 1 %}
           <span>posts</span>
