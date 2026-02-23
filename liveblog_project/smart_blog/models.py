@@ -195,14 +195,42 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     """Хранит одно изображение, связанное с публикацией.
-       Это позволяет иметь несколько изображений для Item."""
+       Поддерживает responsive: thumbnail (~300px), medium (~800px), large (~1600px).
+       image — основное (large); image_thumbnail, image_medium — для списков и srcset."""
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="items/%Y/%m/%d/")
+    image_thumbnail = models.ImageField(upload_to="items/", blank=True, null=True)
+    image_medium = models.ImageField(upload_to="items/", blank=True, null=True)
+    width = models.PositiveIntegerField(blank=True, null=True)
+    height = models.PositiveIntegerField(blank=True, null=True)
     alt_text = models.CharField(max_length=255, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Image for {self.item_id}"
+
+    def get_thumbnail_url(self):
+        """URL для превью (списки, карточки). Fallback на image."""
+        if self.image_thumbnail:
+            return self.image_thumbnail.url
+        return self.image.url if self.image else ""
+
+    def get_medium_url(self):
+        """URL для medium (srcset). Fallback на image."""
+        if self.image_medium:
+            return self.image_medium.url
+        return self.image.url if self.image else ""
+
+    def get_srcset(self):
+        """Строка srcset для responsive img (thumbnail 300w, medium 800w, large 1600w)."""
+        parts = []
+        if self.image_thumbnail:
+            parts.append(f"{self.image_thumbnail.url} 300w")
+        if self.image_medium:
+            parts.append(f"{self.image_medium.url} 800w")
+        if self.image:
+            parts.append(f"{self.image.url} {self.width or 1600}w")
+        return ", ".join(parts) if parts else ""
 
 
 class Comment(models.Model):

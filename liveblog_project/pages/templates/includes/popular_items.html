@@ -4,7 +4,7 @@
   {% for item in popular_items %}
     <article class="hero-card">
       {% if item.images.first %}
-        <img src="{{ item.images.first.image.url }}" alt="thumbnail" />
+        <img src="{{ item.images.first.get_thumbnail_url }}" alt="thumbnail" loading="lazy" width="300" height="200" />
       {% else %}
         <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" />
       {% endif %}

@@ -57,7 +57,7 @@
 
                 <div class="item_thumbnail">
                   {% if item.images.first %}
-                    <img src="{{ item.images.first.image.url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
+                    <img src="{{ item.images.first.get_thumbnail_url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
                   {% else %}
                     <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
                   {% endif %}

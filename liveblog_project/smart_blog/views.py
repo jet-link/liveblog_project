@@ -17,6 +17,7 @@ from django.db.models import Exists, OuterRef, Count, Q, Subquery
 from django.db.models import Prefetch
 from .utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 from .search_utils import build_search_filter, apply_popular_filter
+from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging
 import os
 from django.conf import settings
@@ -42,6 +43,7 @@ def items_list(request):
         Item.objects
         .with_counters()
         .order_by('-published_date')
+        .prefetch_related("images")
     )
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
@@ -113,7 +115,7 @@ def items_filtered(request):
             user_bookmark_date=Subquery(bookmark_date_subq)
         ).order_by('-user_bookmark_date')
         empty_msg = 'Nothing was bookmarked'
-    items = list(qs)
+    items = list(qs.prefetch_related("images"))
     if search_q:
         listing_source = 'search'
         listing_query = search_q
@@ -157,6 +159,7 @@ def tag_list(request, slug):
         tag.items
         .with_counters()
         .order_by('-published_date')
+        .prefetch_related("images")
     )
     items = annotate_user_liked(items, request.user)
 
@@ -200,6 +203,7 @@ def search_view(request):
             Item.objects
             .with_counters()
             .filter(is_published=True)
+            .prefetch_related("images")
         )
         items = build_search_filter(items, q, by_title, by_text, by_tags)
         items = annotate_user_liked(items, request.user)
@@ -327,7 +331,7 @@ def api_search_history_delete(request, pk):
 
 
 MAX_IMAGES = 10
-ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/jpg", "image/webp"}
+ALLOWED_CONTENT_TYPES = IMAGE_ALLOWED_MIME
 logger = logging.getLogger(__name__)
 
 def find_existing_media_path(filename, subdir=None):
@@ -360,13 +364,20 @@ def create_item(request):
         form = ItemCreateForm(request.POST)
         files = request.FILES.getlist("images")
 
-        # --- CHANGED: server-side validation for file count & types
+        # --- server-side validation: count, types, size
         if len(files) > MAX_IMAGES:
             form.add_error(None, f"Maximum {MAX_IMAGES} images allowed.")
         else:
-            bad = [f.name for f in files if f.content_type not in ALLOWED_CONTENT_TYPES]
+            bad = [f.name for f in files if (f.content_type or "").lower().strip() not in ALLOWED_CONTENT_TYPES]
             if bad:
                 form.add_error(None, f"Unsupported file types: {', '.join(bad)}")
+            for f in files:
+                f.seek(0, 2)
+                sz = f.tell()
+                f.seek(0)
+                if sz > MAX_FILE_SIZE_BYTES:
+                    form.add_error(None, f"File {f.name} too large ({sz / (1024*1024):.1f} MB). Max {MAX_FILE_SIZE_BYTES / (1024*1024):.0f} MB.")
+                    break
 
         # Enforce: either 0 images OR at least 2 images
         if files and (len(files) == 1):
@@ -385,9 +396,16 @@ def create_item(request):
                     item.tags.add(tag_obj)
 
             for f in files[:MAX_IMAGES]:
-                existing_path = find_existing_media_path(f.name, subdir="items")
-                if existing_path:
-                    ItemImage.objects.create(item=item, image=existing_path)
+                processed = process_image_legacy_safe(f, item.pk)
+                if processed:
+                    ItemImage.objects.create(
+                        item=item,
+                        image=processed["image"],
+                        image_thumbnail=processed["image_thumbnail"],
+                        image_medium=processed["image_medium"],
+                        width=processed.get("width"),
+                        height=processed.get("height"),
+                    )
                 else:
                     ItemImage.objects.create(item=item, image=f)
 
@@ -437,11 +455,12 @@ def item_detail(request, slug):
     # 1️⃣ РЕГИСТРИРУЕМ ПРОСМОТР
     register_item_view(request, item)
 
-    # 2️⃣ ЗАНОВО ПОЛУЧАЕМ item С КОРРЕКТНЫМИ СЧЁТЧИКАМИ
+    # 2️⃣ ЗАНОВО ПОЛУЧАЕМ item С КОРРЕКТНЫМИ СЧЁТЧИКАМИ + prefetch images
     item = (
         Item.objects
         .with_counters()
         .annotate(reports_count=Count('reports', distinct=True))
+        .prefetch_related("images")
         .get(pk=item.pk)
     )
 
@@ -641,13 +660,20 @@ def edit_item(request, slug):
         files = request.FILES.getlist("images")
         delete_ids = request.POST.getlist("delete_images")  # ids user marked to delete in UI
 
-        # ---- CHANGED: server-side validation for new images types/count ----
+        # ---- server-side validation: count, types, size ----
         if len(files) > MAX_IMAGES:
             form.add_error(None, f"Maximum {MAX_IMAGES} images allowed.")
         else:
-            wrong = [f.name for f in files if f.content_type not in ALLOWED_CONTENT_TYPES]
+            wrong = [f.name for f in files if (f.content_type or "").lower().strip() not in ALLOWED_CONTENT_TYPES]
             if wrong:
                 form.add_error(None, f"Unsupported file types: {', '.join(wrong)}")
+            for f in files:
+                f.seek(0, 2)
+                sz = f.tell()
+                f.seek(0)
+                if sz > MAX_FILE_SIZE_BYTES:
+                    form.add_error(None, f"File {f.name} too large ({sz / (1024*1024):.1f} MB). Max {MAX_FILE_SIZE_BYTES / (1024*1024):.0f} MB.")
+                    break
 
         # compute counts after applying delete_ids
         existing_count = existing_images.count()
@@ -691,20 +717,29 @@ def edit_item(request, slug):
                 for sid in delete_ids:
                     try:
                         img = ItemImage.objects.get(pk=sid, item=item)
-                        try:
-                            if img.image:
-                                img.image.delete(save=False)
-                        except Exception:
-                            pass
+                        for fn in ("image", "image_thumbnail", "image_medium"):
+                            try:
+                                f = getattr(img, fn, None)
+                                if f and getattr(f, "name", None):
+                                    f.delete(save=False)
+                            except Exception:
+                                pass
                         img.delete()
                     except ItemImage.DoesNotExist:
                         pass
 
-            # ---- ДОБАВЛЯЕМ новые изображения ----
+            # ---- ДОБАВЛЯЕМ новые изображения (обработка + WebP + responsive) ----
             for f in files[:MAX_IMAGES]:
-                existing_path = find_existing_media_path(f.name, subdir="items")
-                if existing_path:
-                    ItemImage.objects.create(item=item, image=existing_path)
+                processed = process_image_legacy_safe(f, item.pk)
+                if processed:
+                    ItemImage.objects.create(
+                        item=item,
+                        image=processed["image"],
+                        image_thumbnail=processed["image_thumbnail"],
+                        image_medium=processed["image_medium"],
+                        width=processed.get("width"),
+                        height=processed.get("height"),
+                    )
                 else:
                     ItemImage.objects.create(item=item, image=f)
 
@@ -749,13 +784,14 @@ def delete_item_image(request, pk):
         return JsonResponse({"success": False, "error": "Permission denied."}, status=403)
 
     try:
-        # удалить файл из storage (если есть)
-        try:
-            if getattr(img, 'image', None) and getattr(img.image, 'name', None):
-                img.image.delete(save=False)
-        except Exception as e:
-            # не фейлим операцию из-за ошибок storage — логируем
-            logger.exception("Failed to delete image file for ItemImage %s", pk)
+        # удалить все файлы из storage (image, image_thumbnail, image_medium)
+        for field_name in ("image", "image_thumbnail", "image_medium"):
+            try:
+                field = getattr(img, field_name, None)
+                if field and getattr(field, "name", None):
+                    field.delete(save=False)
+            except Exception:
+                logger.exception("Failed to delete %s file for ItemImage %s", field_name, pk)
 
         img.delete()
         item.edited = True

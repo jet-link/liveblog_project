@@ -1,18 +1,29 @@
-{# templates/includes/gallery.html #}
+{# templates/includes/gallery.html — responsive, lazy, placeholder #}
 {% load static %}
 <div class="item-gallery js-gallery" data-count="{{ item.images.all|length }}">
   <div class="gallery-grid js-gallery-grid">
     {% for img in item.images.all %}
       <div class="gallery-cell">
-        <img class="gallery-img" src="{{ img.image.url }}" data-src="{{ img.image.url }}" loading="lazy" alt="{{ img.alt_text|default:item.title }}" width="600" height="400" data-index="{{ forloop.counter0 }}" />
+        <img class="gallery-img"
+          src="{{ img.get_thumbnail_url }}"
+          {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}
+          {% if img.get_srcset %}srcset="{{ img.get_srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"{% endif %}
+          data-full="{{ img.image.url }}"
+          decoding="async"
+          alt="{{ img.alt_text|default:item.title }}"
+          width="{{ img.width|default:600 }}"
+          height="{{ img.height|default:400 }}"
+          style="aspect-ratio: {{ img.width|default:600 }} / {{ img.height|default:400 }};"
+          data-index="{{ forloop.counter0 }}"
+        />
       </div>
     {% endfor %}
   </div>
 
   <div class="gallery-slideshow js-gallery-slideshow" aria-hidden="true" style="display: none;">
     {% for img in item.images.all %}
-      <div class="gallery-slide" data-index="{{ forloop.counter0 }}">
-        <img src="{{ img.image.url }}" loading="lazy" alt="{{ img.alt_text|default:item.title }}" class="gallery-slide-img" />
+      <div class="gallery-slide" data-index="{{ forloop.counter0 }}" data-src="{{ img.image.url }}" data-alt="{{ img.alt_text|default:item.title }}">
+        <div class="gallery-slide-placeholder"></div>
       </div>
     {% endfor %}
   </div>

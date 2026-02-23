@@ -88,11 +88,30 @@
             }
         }
         function clearAutoplay() { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } }
+
+        function preloadAdjacent() {
+            var n = currentSrcs.length;
+            if (!n) return;
+            var prevIdx = (curIndex - 1 + n) % n, nextIdx = (curIndex + 1) % n;
+            var prevSrc = currentSrcs[prevIdx], nextSrc = currentSrcs[nextIdx];
+            if (prevSrc) { var i = new Image(); i.src = prevSrc; }
+            if (nextSrc && nextIdx !== prevIdx) { var j = new Image(); j.src = nextSrc; }
+        }
+
         function nav(dir) {
             if (!currentSrcs.length) return;
-            curIndex = (curIndex + dir + currentSrcs.length) % currentSrcs.length;
-            // swap src — browser will start downloading the image; we don't preload whole set
-            imgEl.src = currentSrcs[curIndex];
+            imgEl.classList.add('gallery-overlay-loading');
+            var nextIdx = (curIndex + dir + currentSrcs.length) % currentSrcs.length;
+            curIndex = nextIdx;
+            var src = currentSrcs[curIndex];
+            requestAnimationFrame(function () {
+                imgEl.onload = function () { imgEl.classList.remove('gallery-overlay-loading'); };
+                imgEl.src = src;
+                if (imgEl.complete && imgEl.naturalWidth) {
+                    imgEl.classList.remove('gallery-overlay-loading');
+                }
+                preloadAdjacent();
+            });
         }
 
         function hideOverlay() {
@@ -105,8 +124,8 @@
 
         closeBtn.addEventListener('click', function (e) { e.stopPropagation(); hideOverlay(); });
         overlay.addEventListener('click', function (e) { if (e.target === overlay) hideOverlay(); });
-        prevBtn.addEventListener('click', function (e) { e.stopPropagation(); nav(-1); clearAutoplay(); });
-        nextBtn.addEventListener('click', function (e) { e.stopPropagation(); nav(1); clearAutoplay(); });
+        prevBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); nav(-1); clearAutoplay(); }, { passive: false });
+        nextBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); nav(1); clearAutoplay(); }, { passive: false });
 
         document.addEventListener('keydown', function (e) {
             if (!overlay.classList.contains('is-visible')) return;
@@ -140,6 +159,7 @@
 
             overlay.classList.add('is-visible');
             document.documentElement.style.overflow = 'hidden';
+            preloadAdjacent();
             startAutoplayIfNeeded();
             try { closeBtn.focus(); } catch (err) { }
         };
@@ -148,7 +168,7 @@
     }
 
     function openOverlayAt(index, galleryRoot) {
-        const nodes = Array.from(galleryRoot.querySelectorAll('.gallery-img, .gallery-slide-img'));
+        const nodes = Array.from(galleryRoot.querySelectorAll('.gallery-img, .gallery-slide-img, .gallery-slide[data-src]'));
         const srcs = [];
         nodes.forEach(n => {
             const s = n.dataset.full || n.dataset.src || n.src;
