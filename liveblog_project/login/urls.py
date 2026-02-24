@@ -4,6 +4,8 @@ from . import views
 app_name = "login_app"
 
 urlpatterns = [
+    path('vanished/', views.vanished_generic_view, name='vanished'),
+    path('vanished/created/', views.vanished_created_view, name='vanished-created'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),

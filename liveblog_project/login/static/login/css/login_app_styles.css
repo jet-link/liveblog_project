@@ -89,13 +89,29 @@
 }
 
 /* аватар */
-.avatar-wrapper img {
+.avatar-wrapper img,
+.vanished-avatar-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
     pointer-events: none;
     object-position: 50% 50%;
+}
+
+/* vanished user avatar — такой же идеальный круг как personal_avatar, адаптивный */
+.vanished-avatar-wrap {
+    position: relative;
+    width: clamp(180px, 90vw, 500px);
+    aspect-ratio: 1 / 1;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    clip-path: circle(50% at 50% 50%);
+    -webkit-clip-path: circle(50% at 50% 50%);
 }
 
 /* 🔻 нижний сегмент */
@@ -304,6 +320,9 @@ img.avatar-load-failed {
     transform: scale(1.1);
 }
 
+.rounded{
+    border-radius: 50%;
+}
 
 .avatar-lightbox-overlay[style*="display: flex"] {
     pointer-events: auto;

@@ -8,7 +8,7 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-flex justify-content-between align-items-center pb-4">
+    <div class="d-flex justify-content-between align-items-center">
       <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
       {% if user_obj.is_staff and user.username == user_obj.username %}
         <a href="/admin" class="text-decoration-none text-muted small">Administration</a>

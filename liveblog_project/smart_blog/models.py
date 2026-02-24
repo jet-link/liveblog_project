@@ -304,7 +304,7 @@ class Comment(models.Model):
 
 class CommentLike(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="likes")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_likes")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="comment_likes")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -314,7 +314,7 @@ class CommentLike(models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"{self.user} likes comment {self.comment_id}"
+        return f"{self.user or 'Vanished'} likes comment {self.comment_id}"
     
     @property
     def likes_count(self):
@@ -329,7 +329,7 @@ class CommentLike(models.Model):
 class Like(models.Model):
     """Лайк для самой публикации — один лайк от одного пользователя на одну публикацию."""
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="likes")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="likes")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -339,7 +339,7 @@ class Like(models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"{self.user} likes {self.item}"
+        return f"{self.user or 'Vanished'} likes {self.item}"
     
     
 class ContentReport(models.Model):

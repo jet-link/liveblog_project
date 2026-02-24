@@ -40,9 +40,9 @@
                     </div>
                   </div>
                 {% else %}
-                  <div class="d-flex gap-2 VLB small">
-                    <span class="danger_ fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                    <span class="text-muted">Likes</span>
+                  <div class="d-flex gap-2 align-items-center VLB small danger_">
+                    <span class="fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                    <i class="fa fa-heart"></i>
                   </div>
                 {% endif %}
               </div>

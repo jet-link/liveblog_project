@@ -1639,6 +1639,7 @@ textarea {
     line-height: 1.25rem;
     word-wrap: break-word;
     font-size: .8rem;
+    font-weight: 500;
 }
 
 .existing-image.marked-for-delete {

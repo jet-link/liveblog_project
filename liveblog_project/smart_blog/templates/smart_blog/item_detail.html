@@ -18,9 +18,6 @@
         {% endif %}
       </div>
     </div>
-    {% comment %} {% if user != item.author and not user.is_staff and user.is_authenticated %}
-      <span id="item-reported-label" class="reported-label-item mb-2{% if not user_reported_item %} d-none{% endif %}">Reported</span>
-    {% endif %} {% endcomment %}
     <hr />
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
@@ -39,26 +36,29 @@
           <small class="primary_">It's your item</small>
         {% else %}
           <div>
-            <a href="{% url 'login_app:profile' item.author %}" class="d-flex align-items-center gap-1 text-decoration-none" title="Item author">
-              <small class="custom_badge badge_primary">{{ item.author }}</small>
-
+            <a href="{% url 'login_app:profile' item.author.username %}" class="d-flex align-items-center gap-1 text-decoration-none" title="{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}">
+              <small class="custom_badge badge_primary">{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}</small>
               <div class="little-avatar">
-                {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                  <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                {% if item.author.is_active %}
+                  {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
+                    <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% else %}
+                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% endif %}
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
                 {% endif %}
               </div>
             </a>
           </div>
         {% endif %}
       {% else %}
-        <div class="d-flex align-items-center gap-2">
-          <small class="text-muted">Vanished user</small>
+        <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Vanished user">
+          <small class="text-muted fw-semibold">Vanished user</small>
           <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
           </div>
-        </div>
+        </a>
       {% endif %}
     </div>
     <div class="d-inline-flex gap-2 align-items-center small">
@@ -141,12 +141,20 @@
         <div class="liked-users-stack mt-1">
           {% for like in liked_users|slice:':5' %}
             {% if like.user %}
-              <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
-                {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+              <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
+                {% if like.user.is_active %}
+                  {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                    <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% else %}
+                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% endif %}
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
                 {% endif %}
+              </a>
+            {% else %}
+              <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user">
+                <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
               </a>
             {% endif %}
           {% endfor %}

@@ -35,6 +35,121 @@ def build_profile_field(value, field_type, is_owner=False):
         "is_empty": is_empty,
     }
 
+
+def _vanished_items_qs():
+    """Публикации удалённого пользователя (author=None)."""
+    return (
+        Item.objects
+        .with_counters()
+        .filter(author__isnull=True)
+        .order_by('-published_date')
+        .prefetch_related("images")
+    )
+
+
+def vanished_generic_view(request):
+    """Страница для author=None: аватар, Vanished user, карточки публикаций."""
+    qs = _vanished_items_qs()
+    qs = annotate_user_liked(qs, request.user)
+    SECTION_LIMIT = 10
+    created_items = list(qs[:SECTION_LIMIT])
+    all_count = qs.count()
+
+    def apply_human_counts(items):
+        for item in items:
+            item.views_count_human = count_convert(item.views_count)
+            item.likes_count_human = count_convert(item.likes_count)
+            item.bookmarks_count_human = count_convert(item.bookmarks_count)
+            item.comments_count_human = count_convert(item.comments_count)
+
+    apply_human_counts(created_items)
+
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb("Vanished user", None),
+    )
+    context = {
+        "created_items": created_items,
+        "all_count": all_count,
+        "view_all_url": reverse("login_app:vanished-created"),
+        "listing_source": "vanished",
+        "breadcrumbs": breadcrumbs,
+    }
+    return render(request, "includes/vanished.html", context)
+
+
+def vanished_created_view(request):
+    """Полный список публикаций с author=None."""
+    qs = _vanished_items_qs()
+    qs = annotate_user_liked(qs, request.user)
+    paginator = Paginator(qs, 50)
+    page_obj = paginator.get_page(request.GET.get('page', 1))
+    page_range = paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1)
+    for item in page_obj:
+        item.views_count_human = count_convert(item.views_count)
+        item.likes_count_human = count_convert(item.likes_count)
+        item.bookmarks_count_human = count_convert(item.bookmarks_count)
+        item.comments_count_human = count_convert(item.comments_count)
+
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb("Vanished user", reverse("login_app:vanished")),
+        breadcrumb("Created", None),
+    )
+    return render(request, "includes/vanished_created.html", {
+        "items": page_obj,
+        "page_obj": page_obj,
+        "page_range": page_range,
+        "breadcrumbs": breadcrumbs,
+    })
+
+
+def user_not_found_view(request, user_obj):
+    """Страница удалённого пользователя: аватар, Vanished user, список публикаций."""
+    user_items_qs = (
+        Item.objects
+        .with_counters()
+        .filter(author=user_obj)
+        .order_by('-published_date')
+        .prefetch_related("images")
+    )
+    user_items_qs = annotate_user_liked(user_items_qs, request.user)
+
+    SECTION_LIMIT = 10
+    created_items = list(user_items_qs[:SECTION_LIMIT])
+    all_count = user_items_qs.count()
+
+    def apply_human_counts(items):
+        for item in items:
+            item.views_count_human = count_convert(item.views_count)
+            item.likes_count_human = count_convert(item.likes_count)
+            item.bookmarks_count_human = count_convert(item.bookmarks_count)
+            item.comments_count_human = count_convert(item.comments_count)
+
+    apply_human_counts(created_items)
+
+    view_all_url = reverse("login_app:profile-section", kwargs={
+        "username": user_obj.username,
+        "section": "created",
+    })
+
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb("Vanished user", None),
+    )
+
+    context = {
+        "created_items": created_items,
+        "all_count": all_count,
+        "view_all_url": view_all_url,
+        "listing_source": "profile",
+        "listing_user": user_obj.username,
+        "listing_section": "created",
+        "breadcrumbs": breadcrumbs,
+    }
+    return render(request, "includes/vanished.html", context)
+
+
 # Авторизация пользователя
 def login_view(request):
     if request.user.is_authenticated:
@@ -116,9 +231,13 @@ MAIN_COMMENTS_ANNOTATION = {
 
 # detail profile view
 def profile_view(request, username):
-    user_obj = get_object_or_404(User, username=username)
-    is_owner = request.user.is_authenticated and request.user == user_obj
+    user_obj = User._base_manager.filter(username__iexact=username).first()
+    if not user_obj:
+        raise Http404
+    if not user_obj.is_active:
+        return user_not_found_view(request, user_obj)
 
+    is_owner = request.user.is_authenticated and request.user == user_obj
 
     # --- базовые queryset'ы ---
     user_items_qs = (
@@ -171,8 +290,11 @@ def profile_view(request, username):
 
 
 def profile_section_view(request, username, section):
-    user_obj = get_object_or_404(User, username=username)
-
+    user_obj = User._base_manager.filter(username__iexact=username).first()
+    if not user_obj:
+        raise Http404
+    if not user_obj.is_active:
+        pass
     user_items_qs = (
         Item.objects
         .with_counters()
@@ -205,7 +327,7 @@ def profile_section_view(request, username, section):
         item.comments_count_human = count_convert(item.comments_count)
 
     breadcrumbs = build_breadcrumbs(
-        breadcrumb(user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
+        breadcrumb("Vanished user" if not user_obj.is_active else user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
         breadcrumb(section_title, None),
     )
 

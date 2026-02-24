@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load counters %}
+{% block title %}
+  Vanished user
+{% endblock %}
+
+{% block content %}
+  <div class="container content_block">
+    {% include 'includes/breadcrumbs.html' %}
+
+    <div class="text-center py-5">
+      <div class="vanished-avatar-wrap">
+        <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" loading="eager" decoding="async" />
+      </div>
+      <h4 class="text-muted m-0">Vanished user</h4>
+      <p class="text-muted small mt-2">User has been removed.</p>
+    </div>
+
+    {% if created_items %}
+      <div class="d-flex align-items-center gap-2 mb-4">
+        <h6 class="text-muted m-0">Created posts</h6>
+        <span class="primary_ fw-semibold">[{{ all_count }}]</span>
+      </div>
+      {% include 'includes/all_cards.html' with items=created_items listing_source=listing_source listing_user=listing_user listing_section=listing_section %}
+      {% if all_count|add:0 > 10 and view_all_url %}
+        <div class="d-flex justify-content-start align-items-center mt-4 small">
+          <a href="{{ view_all_url }}" class="text-decoration-none text-muted d-flex gap-2">
+            <span>View all created posts</span>
+            <span>→</span>
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="fw-semibold text-muted">No posts by this user.</div>
+    {% endif %}
+  </div>
+{% endblock %}

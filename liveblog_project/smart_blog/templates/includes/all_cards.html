@@ -40,17 +40,12 @@
                     {% endif %}
                   </button>
                 </div>
-
-                {% comment %} <div class="stat">
-                  <!-- Иконка bookmark — даём уникальный id, и span для количества -->
-                  <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
-                  <i class="fa fa-bookmark primary_" aria-hidden="true"></i>
-                </div> {% endcomment %}
               </div>
             {% else %}
-              <div class="d-flex gap-2 VLB small">
-                <span class="danger_ fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                <span class="text-muted">Likes</span>
+              <div class="d-flex gap-2 align-items-center VLB small danger_">
+                <span class="fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                {% comment %} <span class="text-muted">Likes</span> {% endcomment %}
+                <i class="fa fa-heart"></i>
               </div>
             {% endif %}
           </div>
