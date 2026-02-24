@@ -574,7 +574,7 @@ def item_detail(request, slug):
         if not tag_url and source_tag_slug:
             tag_url = reverse("smart_blog:tag_list", kwargs={"slug": source_tag_slug})
         breadcrumbs = build_breadcrumbs(
-            breadcrumb(f"Tag {source_tag}", tag_url or reverse("smart_blog:items_list")),
+            breadcrumb(f"Tag - {source_tag}", tag_url or reverse("smart_blog:items_list")),
             breadcrumb(item.title, None),
         )
     elif source == "home":
