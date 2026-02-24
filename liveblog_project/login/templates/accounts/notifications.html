@@ -59,7 +59,7 @@
                   {% if n.actor_name %}
                     <a href="{% url 'login_app:profile' n.actor_name %}" class="custom_badge badge_primary">{{ n.actor_name }}</a>
                   {% else %}
-                    <span class="fw-semibold text-decoration-underline">Vanished user</span>
+                    <a href="{% url 'login_app:vanished' %}" class="fw-bold text-muted text-decoration-none">Vanished user</a>
                   {% endif %}
                   <span>{{ n.header_text }}</span>
                   {% if n.notif_type == 'item_like' %}
