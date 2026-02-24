@@ -237,23 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return { ok: true, query: s };
     }
 
-    function showSearchHint(msg, container) {
-        var el = document.createElement('div');
-        el.className = 'search-hint text-danger';
-        el.textContent = msg;
-        el.setAttribute('data-auto-dismiss', '2000');
-        var parent = container || document.querySelector('.content_block') || document.querySelector('main');
-        if (parent) {
-            var filterBlock = parent.querySelector('.filter-block');
-            if (filterBlock && filterBlock.parentNode === parent) {
-                parent.insertBefore(el, filterBlock.nextSibling);
-            } else {
-                parent.insertBefore(el, parent.firstChild);
-            }
-            if (typeof window.initAutoDismiss === 'function') window.initAutoDismiss(el);
-        }
-    }
-
     function buildSearchUrlForItem(item) {
         var params = new URLSearchParams();
         params.set('q', item.search_query || '');
@@ -515,10 +498,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var raw = (inputEl && inputEl.value || '').trim();
             if (!raw) return;
             var norm = normalizeSearchQuery(raw);
-            if (!norm.ok) {
-                showSearchHint('Enter at least ' + SEARCH_MIN_CHARS + ' characters', container);
-                return;
-            }
+            if (!norm.ok) return;
             const q = norm.query;
             const params = new URLSearchParams();
             params.set('q', q);
@@ -576,10 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var raw = (headerInput.value || '').trim();
             if (!raw) return;
             var norm = normalizeSearchQuery(raw);
-            if (!norm.ok) {
-                showSearchHint('Enter at least ' + SEARCH_MIN_CHARS + ' characters');
-                return;
-            }
+            if (!norm.ok) return;
             const q = norm.query;
             const params = new URLSearchParams();
             params.set('q', q);

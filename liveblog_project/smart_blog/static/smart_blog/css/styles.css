@@ -1,10 +1,74 @@
+/* ========== Fonts & Base ========== */
+:root {
+    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Space Grotesk', sans-serif;
+    --gap: 13px;
+    --card-radius: 0.5rem;
+    --card-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    --overlay-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    --overlay-bg: rgba(15, 15, 15, 0.8);
+    --btn-bg: rgba(8, 8, 8, 0.52);
+    --btn-bg-hover: rgba(8, 8, 8, 0.70);
+    --btn-radius: 8px;
+}
+
 body,
 html {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     overflow-x: hidden;
-    /* scroll-behavior: auto !important; */
+}
+
+body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 1.8rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+p {
+    font-size: 1rem;
+}
+
+button,
+.btn,
+input,
+textarea {
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.item-text {
+    font-size: 1.05rem;
+    line-height: 1.75;
 }
 
 .main {
@@ -147,29 +211,6 @@ html {
     color: #2980b9;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-    white-space: normal;
-    /* разрешаем перенос строк */
-    overflow-wrap: anywhere;
-    /* перенос в удобном месте (поддержка современных браузеров) */
-    /* fallbacks: */
-    overflow-wrap: break-word;
-    /* старый, но полезный fallback */
-    word-break: break-word;
-    /* дополнительная защита (не везде стандартизовано) */
-    hyphens: auto;
-    /* если нужно — ставит переносы для поддерживаемых языков */
-    max-width: 100%;
-    /* не даст шире своего контейнера */
-    box-sizing: border-box;
-}
-
 /* Убираем крестик очистки */
 input::-webkit-search-cancel-button {
     display: none !important;
@@ -215,11 +256,6 @@ input::-webkit-search-decoration {
 .excerpt-html p {
     line-height: 1.4rem !important;
     margin-bottom: 0.6rem;
-}
-
-p,
-.item-text {
-    line-height: 2.2rem !important;
 }
 
 .ck-editor__editable_inline {
@@ -546,16 +582,6 @@ textarea {
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
-}
-
-/* Search validation hint — out of flow */
-.search-hint {
-    position: absolute;
-    top: -35px;
-    left: 20px;
-    right: 0;
-    font-size: 0.875rem;
-    z-index: 10;
 }
 
 /* Filter block inside overlay */
@@ -1195,8 +1221,7 @@ textarea {
 
 /* тело comment */
 .comment-body>.comment-text {
-    border-left: 3px solid rgba(41, 128, 185, 0.25);
-    border-left-color: #2980b9;
+    border-left: 3px solid #2980b9;
 }
 
 /* ===============================
@@ -1462,8 +1487,9 @@ textarea {
 }
 
 .card-text {
-    min-height: 2.6rem;
-    font-size: .9rem;
+    min-height: 2.6rem !important;
+    font-size: .9rem !important;
+    line-height: 2.2rem !important;
 }
 
 
@@ -1648,19 +1674,6 @@ textarea {
     transform: scale(.995);
 }
 
-
-/* Общие */
-/* ========== Variables ========== */
-:root {
-    --gap: 13px;
-    --card-radius: 0.5rem;
-    --card-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-    --overlay-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
-    --overlay-bg: rgba(15, 15, 15, 0.8);
-    --btn-bg: rgba(8, 8, 8, 0.52);
-    --btn-bg-hover: rgba(8, 8, 8, 0.70);
-    --btn-radius: 8px;
-}
 
 /* blockquote {
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
@@ -1994,12 +2007,10 @@ textarea {
 /* 1) Не трогаем все элементы (*) — только контейнер, параграфы и блок-элементы. */
 .item-text.ck-content,
 .ck-content {
-    /* наследуем базовые переменные Bootstrap (в большинстве шаблонов они доступны) */
-    font-family: var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
-    font-size: var(--bs-body-font-size, 1rem);
-    line-height: var(--bs-body-line-height, 1.6);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
     color: inherit;
-    /* не применять !important глобально — мешает наследованию и таблицам */
 }
 
 /* обычные текстовые блоки */

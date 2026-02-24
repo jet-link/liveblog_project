@@ -83,7 +83,6 @@
         <div class="d-flex gap-2 align-items-center text-muted VLB">
           <span id="comment-likes-count-{{ comment.pk }}" class="fw-semibold">{{ comment.likes_count|default:comment.likes.count }}</span>
           <span>Likes</span>
-          {% comment %} <i class="fa fa-thumbs-up fs-6"></i> {% endcomment %}
         </div>
       {% endif %}
     </div>

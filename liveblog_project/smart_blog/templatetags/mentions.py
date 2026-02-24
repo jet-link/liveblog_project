@@ -16,16 +16,22 @@ def render_mentions(text, parent_comment_id=None):
 
     def repl(match):
         user_id = match.group(1)
+        anchor = f'#comment-anchor-{parent_comment_id}' if parent_comment_id else '#'
         try:
-            user = User.objects.get(pk=user_id)
+            user = User._base_manager.get(pk=user_id)
             return (
-                f'<a href="#comment-{parent_comment_id}" '
+                f'<a href="{anchor}" '
                 f'class="mention-link" '
-                f'data-parent-id="{parent_comment_id}">'
+                f'data-parent-id="{parent_comment_id or ""}">'
                 f'@{escape(user.username)}</a>'
             )
         except User.DoesNotExist:
-            return '<span class="mention-deleted">@deleted-user</span>'
+            return (
+                f'<a href="{anchor}" '
+                f'class="mention-link" '
+                f'data-parent-id="{parent_comment_id or ""}">'
+                f'@vanished-user</a>'
+            )
 
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     text = MENTION_RE.sub(repl, text)
