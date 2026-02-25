@@ -175,12 +175,9 @@ textarea {
     color: #5c5c60;
 }
 
-/* switched (dark): thumb right covers moon, sun visible on left (можно без цвета) */
-.ios-toggle.active .ios-toggle-sun {
-    color: #5c5c60;
-}
-
-.ios-toggle.active .ios-toggle-moon {
+/* switched (dark): thumb right covers moon, sun visible on left */
+html[data-theme="dark"] .ios-toggle-sun,
+html[data-theme="dark"] .ios-toggle-moon {
     color: #5c5c60;
 }
 
@@ -191,16 +188,17 @@ textarea {
     transform: translateY(-50%);
     width: 24px;
     height: 24px;
-    background: #fff;
+    background: #ffffff;
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: left 0.2s ease;
+    transition: left 0.2s ease, background 0.2s ease;
     z-index: 2;
 }
 
-/* switched: thumb moves right, covers sun */
-.ios-toggle.active .ios-toggle-thumb {
+/* dark mode: thumb right, thumb bg #2f3640 */
+html[data-theme="dark"] .ios-toggle-thumb {
     left: 30px;
+    background: #2f3640;
 }
 
 .header-actions {

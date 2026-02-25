@@ -3,19 +3,11 @@
 
   var STORAGE_KEY = 'themeToggle';
   var ACTIVE_VAL = 'sun';
-  var INACTIVE_VAL = 'moon';
 
-  function isActive() {
+  function setTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     try {
-      return localStorage.getItem(STORAGE_KEY) === ACTIVE_VAL;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function setActive(active) {
-    try {
-      localStorage.setItem(STORAGE_KEY, active ? ACTIVE_VAL : INACTIVE_VAL);
+      localStorage.setItem(STORAGE_KEY, dark ? ACTIVE_VAL : 'moon');
     } catch (e) {}
   }
 
@@ -23,13 +15,9 @@
     var btn = document.getElementById('themeToggle');
     if (!btn) return;
 
-    if (isActive()) {
-      btn.classList.add('active');
-    }
-
     btn.addEventListener('click', function () {
-      btn.classList.toggle('active');
-      setActive(btn.classList.contains('active'));
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setTheme(!isDark);
     });
   });
 })();
