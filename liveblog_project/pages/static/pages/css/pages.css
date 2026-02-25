@@ -251,5 +251,6 @@ h6 {
 
 
 .accordion-button {
-    font-weight: 500 !important;
+    font-weight:500 !important;
+    color: #ff7675;
 }
