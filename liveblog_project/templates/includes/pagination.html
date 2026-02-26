@@ -4,11 +4,13 @@
       {# Previous #}
       {% if page_obj.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">←</a>
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+          {% comment %} <a class="page-link" href="?page={{ page_obj.previous_page_number }}">←</a> {% endcomment %}
         </li>
       {% else %}
         <li class="page-item disabled">
-          <span class="page-link text-muted">←</span>
+          <span class="page-link text-muted">Prev</span>
+          {% comment %} <span class="page-link text-muted">←</span> {% endcomment %}
         </li>
       {% endif %}
 
@@ -32,11 +34,13 @@
       {# Next #}
       {% if page_obj.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">→</a>
+          {% comment %} <a class="page-link" href="?page={{ page_obj.next_page_number }}">→</a> {% endcomment %}
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
         </li>
       {% else %}
         <li class="page-item disabled">
-          <span class="page-link text-muted">→</span>
+          {% comment %} <span class="page-link text-muted">→</span> {% endcomment %}
+          <span class="page-link text-muted">Next</span>
         </li>
       {% endif %}
     </ul>

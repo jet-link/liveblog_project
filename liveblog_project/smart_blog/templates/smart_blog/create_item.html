@@ -28,7 +28,7 @@
 
         <div class="form-floating mb-3">
           {{ form.title }}
-          <div class="form-text text-small">Max. 40 symbols</div>
+          <div class="form-text text-small text-muted">Max. 40 symbols</div>
           <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
         </div>
         {% for err in form.title.errors %}

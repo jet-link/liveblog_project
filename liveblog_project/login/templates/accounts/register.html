@@ -15,12 +15,12 @@
             <h5 class="m-0 fw-normal text-uppercase primary_">Sign up</h5>
             {% comment %} <button type="button" class="instruction-btn"><i class="fa fa-question-circle-o" aria-hidden="true"></i></button> {% endcomment %}
           </div>
-          <small><a href="{% url 'login_app:login' %}" class="text-muted link-underline-light">I have account</a></small>
+          <small><a href="{% url 'login_app:login' %}" class="text-muted text-decoration-none">I have account</a></small>
         </div>
         {# USERNAME (required) #}
         <div class="form-floating mb-2">
           {{ form.username }}
-          <label for="floatingUsername">Username <span class="danger_">*</span></label>
+          <label for="floatingUsername" class="text-muted">Username <span class="danger_">*</span></label>
           {% if form.username.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.username.errors %}
@@ -33,7 +33,7 @@
         {# FIRST NAME (optional) #}
         <div class="form-floating mb-2">
           {{ form.first_name }}
-          <label for="floatingFirst">First name (optional)</label>
+          <label for="floatingFirst" class="text-muted">First name (optional)</label>
           {% if form.first_name.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.first_name.errors %}
@@ -46,7 +46,7 @@
         {# SURNAME (optional) #}
         <div class="form-floating mb-2">
           {{ form.last_name }}
-          <label for="floatingLast">Surname (optional)</label>
+          <label for="floatingLast" class="text-muted">Surname (optional)</label>
           {% if form.last_name.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.last_name.errors %}
@@ -59,7 +59,7 @@
         {# EMAIL (optional) #}
         <div class="form-floating mb-2">
           {{ form.email }}
-          <label for="floatingEmail">E-mail (optional)</label>
+          <label for="floatingEmail" class="text-muted">Email (optional)</label>
           {% if form.email.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.email.errors %}
@@ -71,7 +71,7 @@
 
         <div class="form-floating mb-2">
           {{ form.avatar_url }}
-          <label for="floatingAvatar">Avatar URL (optional)</label>
+          <label for="floatingAvatar" class="text-muted">Avatar URL (optional)</label>
           {% if form.avatar_url.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.avatar_url.errors %}
@@ -84,7 +84,7 @@
         {# PASSWORD #}
         <div class="form-floating mb-2">
           {{ form.password1 }}
-          <label for="floatingPass1">Password <span class="danger_">*</span></label>
+          <label for="floatingPass1" class="text-muted">Password <span class="danger_">*</span></label>
           {% if form.password1.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.password1.errors %}
@@ -95,9 +95,9 @@
         </div>
 
         {# PASSWORD CONFIRMATION #}
-        <div class="form-floating pb-5">
+        <div class="form-floating mb-2">
           {{ form.password2 }}
-          <label for="floatingPass2">Password again <span class="danger_">*</span></label>
+          <label for="floatingPass2" class="text-muted">Password again <span class="danger_">*</span></label>
           {% if form.password2.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.password2.errors %}
@@ -106,6 +106,23 @@
             </div>
           {% endif %}
         </div>
+        {# Общие ошибки формы + username exists #}
+        {% comment %} <div class="errors-block">
+          {% if form.non_field_errors or form.username.errors %}
+            <div class="custom-alert custom-alert-danger mt-2" data-auto-dismiss="3000">
+              {% for err in form.non_field_errors %}
+                {{ err }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+              {% for err in form.username.errors %}
+                {% if form.non_field_errors %}
+                  <br />
+                {% endif %}{{ err }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div> {% endcomment %}
 
         <div class="d-flex justify-content-between align-items-center mt-3">
           <div>
@@ -114,21 +131,6 @@
           </div>
           <small><button type="button" class="text-decoration-none text-muted password-toggle" data-password-toggle="1"></button></small>
         </div>
-        {# Общие ошибки формы + username exists #}
-        {% if form.non_field_errors or form.username.errors %}
-          <div class="custom-alert custom-alert-danger mt-2" data-auto-dismiss="3000">
-            {% for err in form.non_field_errors %}
-              {{ err }}{% if not forloop.last %}
-                <br />
-              {% endif %}
-            {% endfor %}
-            {% for err in form.username.errors %}
-              {% if form.non_field_errors %}
-                <br />
-              {% endif %}{{ err }}
-            {% endfor %}
-          </div>
-        {% endif %}
       </form>
       {% include 'includes/password_generator.html' %}
       {% include 'includes/instruction_modal.html' %}

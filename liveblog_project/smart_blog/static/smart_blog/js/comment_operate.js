@@ -585,12 +585,6 @@
 
           bootstrap.Modal.getInstance(modal)?.hide();
 
-          const placeholder = document.createElement('div');
-          placeholder.className = 'comment-deleted-placeholder pb-3 pt-2';
-          placeholder.setAttribute('data-auto-dismiss', '3000');
-          placeholder.innerHTML = '<span class="comment-deleted-text">Comment was deleted</span>';
-          deleted.replaceWith(placeholder);
-
           function doCleanup() {
             if (data.parent_id) {
               const parentComment = document.getElementById('comment-' + data.parent_id);
@@ -640,8 +634,8 @@
             updateCommentsHeader(count);
           }
 
-          if (window.initAutoDismiss) window.initAutoDismiss(placeholder, doCleanup);
-          else setTimeout(doCleanup, 3300);
+          deleted.remove();
+          doCleanup();
         }
         // closeAllReplyForms();
 

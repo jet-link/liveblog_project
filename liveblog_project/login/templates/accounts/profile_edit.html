@@ -27,7 +27,7 @@
 
             <div class="form-floating mb-2">
               {{ form.username }}
-              <label for="floatingUsernameProfile">{{ form.username.label }} <span class="danger_">*</span></label>
+              <label for="floatingUsernameProfile" class="text-muted">{{ form.username.label }} <span class="danger_">*</span></label>
               {% if form.username.errors %}
                 <div class="text-danger small mt-1">
                   {% for err in form.username.errors %}
@@ -39,7 +39,7 @@
 
             <div class="form-floating mb-2">
               {{ form.first_name }}
-              <label for="floatingFirstNameProfile">{{ form.first_name.label }} (optional)</label>
+              <label for="floatingFirstNameProfile" class="text-muted">{{ form.first_name.label }} (optional)</label>
               {% if form.first_name.errors %}
                 <div class="text-danger small mt-1">
                   {% for err in form.first_name.errors %}
@@ -51,7 +51,7 @@
 
             <div class="form-floating mb-2">
               {{ form.last_name }}
-              <label for="floatingLastNameProfile">{{ form.last_name.label }} (optional)</label>
+              <label for="floatingLastNameProfile" class="text-muted">{{ form.last_name.label }} (optional)</label>
               {% if form.last_name.errors %}
                 <div class="text-danger small mt-1">
                   {% for err in form.last_name.errors %}
@@ -63,7 +63,7 @@
 
             <div class="form-floating mb-3">
               {{ form.email }}
-              <label for="floatingEmailProfile">{{ form.email.label }} (optional)</label>
+              <label for="floatingEmailProfile" class="text-muted">{{ form.email.label }} (optional)</label>
               {% if form.email.errors %}
                 <div class="text-danger small mt-1">
                   {% for err in form.email.errors %}
@@ -76,7 +76,7 @@
             <div class="avatar-url-row mb-2">
               <div class="form-floating flex-grow-1">
                 {{ form.avatar_url }}
-                <label for="floatingAvatarProfile">Avatar URL (optional)</label>
+                <label for="floatingAvatarProfile" class="text-muted">Avatar URL (optional)</label>
               </div>
               <!-- кнопка выбора файла -->
               <button type="button" class="cstm-btn custom-primary-btn avatar-file-trigger" title="Upload image file"><i class="fa fa-folder-open"></i></button>

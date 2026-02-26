@@ -99,7 +99,7 @@ class ItemCreateForm(forms.ModelForm):
     new_tags = forms.CharField(
         required=False,
         label="Enter tag (optional)",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Tag name..."}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag (optional)"}),
     )
 
     class Meta:
@@ -107,7 +107,7 @@ class ItemCreateForm(forms.ModelForm):
         fields = ["title", "text", "tags", "new_tags"]
         labels = {"title": "Enter title", "text": "Item text"}
         widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title...", "required": True}),
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title", "required": True}),
             "text": forms.Textarea(attrs={
                 "class": "form-control editor-container__editor ckeditor",
                 # "id": "editor",
@@ -231,11 +231,11 @@ class CommentForm(forms.ModelForm):
                 "required": True,
             })
         }
-        error_messages = {
-            "text": {
-                "required": _("Please write a comment *")
-            }
-        }
+        # error_messages = {
+        #     "text": {
+        #         "required": _("Please write a comment *")
+        #     }
+        # }
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

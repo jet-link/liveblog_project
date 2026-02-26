@@ -13,8 +13,7 @@
         {# USERNAME #}
         <div class="form-floating mb-2">
           {{ form.username }}
-          <label for="floatingInput">Username...</label>
-
+          <label for="floatingInput" class="text-muted">Username...</label>
           {% if form.username.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.username.errors %}
@@ -25,10 +24,9 @@
         </div>
 
         {# PASSWORD #}
-        <div class="form-floating pb-5">
+        <div class="form-floating mb-2">
           {{ form.password }}
-          <label for="floatingPassword">Password...</label>
-
+          <label for="floatingPassword" class="text-muted">Password...</label>
           {% if form.password.errors %}
             <div class="text-danger small mt-1">
               {% for err in form.password.errors %}
@@ -37,7 +35,18 @@
             </div>
           {% endif %}
         </div>
-
+        
+        <div class="errors-block">
+          {% if form.non_field_errors %}
+            <div class="custom-alert custom-alert-danger mt-3" data-auto-dismiss="3000">
+              {% for err in form.non_field_errors %}
+                {{ err }}{% if not forloop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
         {# REMEMBER ME #}
         <div class="d-flex justify-content-between align-items-center">
           <div class="form-check text-start my-3">
@@ -60,16 +69,6 @@
             <a href="#" class="twitter_btn_login" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Sign in by twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
           </div> {% endcomment %}
         </div>
-
-        {% if form.non_field_errors %}
-          <div class="custom-alert custom-alert-danger mt-3" data-auto-dismiss="3000">
-            {% for err in form.non_field_errors %}
-              {{ err }}{% if not forloop.last %}
-                <br />
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
       </form>
     </main>
   </div>

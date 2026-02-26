@@ -18,13 +18,13 @@
                     <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                   {% endif %}
                 </div>
-                <small class="d-inline-block text-primary-emphasis fw-semibold">{{ item.author }}</small>
+                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
               {% else %}
                 {% comment %} <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i> {% endcomment %}
                 <div class="little-avatar">
                   <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
                 </div>
-                <small class="d-inline-block text-primary-emphasis fw-semibold">Vanished user</small>
+                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
               {% endif %}
             </div>
 
@@ -49,7 +49,7 @@
               </div>
             {% endif %}
           </div>
-          <hr />
+          <hr class="text-muted" />
           <!-- Заголовок -->
           <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
             <div class="text-muted">
@@ -71,7 +71,7 @@
 
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-        <hr />
+        <hr class="text-muted" />
           <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->
           <div class="d-flex justify-content-between align-items-center py-2">
             <!-- ! важно: добавил класс item-link и data-item-id (тот же id) -->
@@ -88,7 +88,7 @@
             {% endif %}
 
             <div class="d-flex gap-2 item-stats">
-              <span id="comments-count-{{ item.pk }}">{{ item.comments_count|human }}</span>
+              <span id="comments-count-{{ item.pk }}" class="text-muted">{{ item.comments_count|human }}</span>
               <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
             </div>
           </div>

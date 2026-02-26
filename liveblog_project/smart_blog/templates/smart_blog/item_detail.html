@@ -37,7 +37,7 @@
         {% else %}
           <div>
             <a href="{% url 'login_app:profile' item.author.username %}" class="d-flex align-items-center gap-1 text-decoration-none" title="{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}">
-              <small class="custom_badge badge_primary">{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}</small>
+              {% comment %} <small class="custom_badge replied-badge">{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}</small> {% endcomment %}
               <div class="little-avatar">
                 {% if item.author.is_active %}
                   {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
@@ -54,7 +54,7 @@
         {% endif %}
       {% else %}
         <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Vanished user">
-          <small class="text-muted fw-semibold">Vanished user</small>
+          {% comment %} <small class="text-muted fw-semibold">Vanished user</small> {% endcomment %}
           <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
           </div>

@@ -41,9 +41,9 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         label=_('Username'),
         widget=forms.TextInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingUsername',
-            'placeholder': 'Username',
+            'placeholder': ' ',
             'autocomplete': 'username',
             'maxlength': '15',
             "required": True
@@ -60,9 +60,9 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         label=_('First name'),
         widget=forms.TextInput(attrs={
-            'class': 'form-control text-muted', 
+            'class': 'form-control',
             'id': 'floatingFirst',
-            'placeholder': 'First name...',
+            'placeholder': ' ',
             'autocomplete': 'given-name',
             }),
     )
@@ -71,9 +71,9 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         label=_('Surname'),
         widget=forms.TextInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingLast',
-            'placeholder': 'Second name...',
+            'placeholder': ' ',
             'autocomplete': 'family-name',
             }),
     )
@@ -81,9 +81,9 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         label=_('E-mail'),
         widget=forms.EmailInput(attrs={
-            'class': 'form-control text-muted',
-            'id': 'floatingEmail', 
-            'placeholder': 'you@example.com...',
+            'class': 'form-control',
+            'id': 'floatingEmail',
+            'placeholder': ' ',
             'autocomplete': 'email',
             }),
         error_messages={'invalid': _('Enter correct e-mail (example_profile@mail.com)')},
@@ -93,9 +93,9 @@ class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(
         label=_('Password'),
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingPass1',
-            'placeholder': 'Password',
+            'placeholder': ' ',
             'autocomplete': 'new-password',
             "required": True
         }),
@@ -104,9 +104,9 @@ class CustomUserCreationForm(UserCreationForm):
     password2 = forms.CharField(
         label=_('Password again'),
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingPass2',
-            'placeholder': 'Password again',
+            'placeholder': ' ',
             'autocomplete': 'new-password',
             "required": True
         }),
@@ -117,8 +117,8 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         label=('Avatar (image URL)'),
         widget=forms.URLInput(attrs={
-            'class': 'form-control text-muted',
-            'placeholder': 'Avatar URL https:// (optional)',
+            'class': 'form-control',
+            'placeholder': ' ',
             'id': 'floatingAvatar'
         }),
         help_text=_('Optional. If empty, default avatar will be used.')
@@ -169,9 +169,9 @@ class LoginForm(forms.Form):
         required=True,
         label=_('Username *'),
         widget=forms.TextInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingInput',
-            'placeholder': 'Username',
+            'placeholder': ' ',
             'autocomplete': 'username',
             "required": True
         }),
@@ -179,9 +179,9 @@ class LoginForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingPassword',
-            'placeholder': 'Password',
+            'placeholder': ' ',
             'autocomplete': 'current-password',
             "required": True
         }),
@@ -205,10 +205,10 @@ class UserEditForm(forms.ModelForm):
         required=True,
         label=_('Username'),
         widget=forms.TextInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingUsernameProfile',
             'autocomplete': 'username',
-            'placeholder': 'Username',
+            'placeholder': ' ',
             'maxlength': '15',
             "required": True
         }),
@@ -218,9 +218,9 @@ class UserEditForm(forms.ModelForm):
         required=False,
         label=_('Avatar (image URL)'),
         widget=forms.URLInput(attrs={
-            'class': 'form-control text-muted',
+            'class': 'form-control',
             'id': 'floatingAvatarProfile',
-            'placeholder': 'https://... (optional)',
+            'placeholder': ' ',
         }),
         help_text=_('Optional: link to your avatar image.')
     )
@@ -241,22 +241,22 @@ class UserEditForm(forms.ModelForm):
 
         widgets = {
             'first_name': forms.TextInput(attrs={
-                'class': 'form-control text-muted',
+                'class': 'form-control',
                 'id': 'floatingFirstNameProfile',
                 'autocomplete': 'given-name',
-                'placeholder': 'First name'
+                'placeholder': ' '
             }),
             'last_name': forms.TextInput(attrs={
-                'class': 'form-control text-muted',
+                'class': 'form-control',
                 'id': 'floatingLastNameProfile',
                 'autocomplete': 'family-name',
-                'placeholder': 'Last name'
+                'placeholder': ' '
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'form-control text-muted',
+                'class': 'form-control',
                 'id': 'floatingEmailProfile',
                 'autocomplete': 'email',
-                'placeholder': 'you@example.com'
+                'placeholder': ' '
             }),
             # avatar_url виджет объявлен отдельно над классом Meta, поэтому не требуется здесь
         }
@@ -389,20 +389,20 @@ class PasswordChangeSimpleForm(forms.Form):
     new_password1 = forms.CharField(
         label='New password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control', 
-            'placeholder': 'Enter password',
+            'class': 'form-control',
+            'placeholder': ' ',
             "required": True,
             "id": "id_new_password1"
-            })
+        })
     )
     new_password2 = forms.CharField(
         label='Confirm password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control', 
-            'placeholder': 'Enter password again',
+            'class': 'form-control',
+            'placeholder': ' ',
             "required": True,
             "id": "id_new_password2"
-            })
+        })
     )
 
     def clean(self):
