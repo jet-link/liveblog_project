@@ -1,0 +1,25 @@
+
+              {% comment %} <small class="custom_badge replied-badge">
+                {% if item.author.is_active %}
+                  {{ item.author }}
+                {% else %}
+                  Vanished user
+                {% endif %}
+              </small> {% endcomment %}
+
+                      {% comment %} <div class="stat">
+          <span id="commentsCount">{{ item.comments_count|human }}</span>
+          <i class="fa fa-comment stat-comment"></i>
+        </div> {% endcomment %}
+
+
+                    {% comment %} <a class="edit_btn manipulate"
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
+              <i class="fa fa-pencil text-center"></i>
+            </a> {% endcomment %}
+
+            {% comment %} <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}"><i class="fa fa-trash"></i></button> {% endcomment %}
+
+                        {% comment %} <small class="text-muted">Edit is expired</small> {% endcomment %}
+
+            {% comment %} <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove expired"><i class="fa fa-trash-o"></i></span> {% endcomment %}

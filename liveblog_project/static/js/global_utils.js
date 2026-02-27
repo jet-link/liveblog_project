@@ -48,39 +48,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const STALE_MS = 90000;
 
-    function updateBellCountFromStorage() {
+    function updateBellCountFromStorage(forceCount) {
         const btn = document.querySelector('.notification-btn');
         if (!btn) return;
 
-        let stored = null;
-        let updatedAt = null;
-        try {
-            stored = localStorage.getItem('notification_unread_count');
-            updatedAt = localStorage.getItem('notification_count_updated_at');
-        } catch (err) {}
-
-        const serverRaw = btn.dataset?.notificationsCount;
-        const serverCount = serverRaw !== undefined && serverRaw !== null && serverRaw !== ''
-            ? parseInt(serverRaw, 10)
-            : NaN;
-        const storedCount = stored !== null ? parseInt(stored, 10) : NaN;
-
-        let count;
-        if (!Number.isNaN(serverCount) && !Number.isNaN(storedCount)) {
-            const ts = updatedAt ? parseInt(updatedAt, 10) : 0;
-            const isRecent = ts && (Date.now() - ts) < STALE_MS;
-            count = isRecent ? Math.min(serverCount, storedCount) : serverCount;
-        } else if (!Number.isNaN(serverCount)) {
-            count = serverCount;
-        } else if (!Number.isNaN(storedCount)) {
-            count = storedCount;
-        } else {
+        if (typeof forceCount !== 'number' && document.getElementById('notificationsState')) {
             return;
         }
 
-        try {
-            localStorage.setItem('notification_unread_count', String(count));
-        } catch (err) {}
+        let count;
+        if (typeof forceCount === 'number' && !Number.isNaN(forceCount)) {
+            count = Math.max(0, Math.floor(forceCount));
+            try {
+                localStorage.setItem('notification_unread_count', String(count));
+                localStorage.setItem('notification_count_updated_at', String(Date.now()));
+            } catch (err) {}
+        } else {
+            let stored = null;
+            let updatedAt = null;
+            try {
+                stored = localStorage.getItem('notification_unread_count');
+                updatedAt = localStorage.getItem('notification_count_updated_at');
+            } catch (err) {}
+
+            const serverRaw = btn.dataset?.notificationsCount;
+            const serverCount = serverRaw !== undefined && serverRaw !== null && serverRaw !== ''
+                ? parseInt(serverRaw, 10)
+                : NaN;
+            const storedCount = stored !== null ? parseInt(stored, 10) : NaN;
+
+            if (!Number.isNaN(serverCount) && !Number.isNaN(storedCount)) {
+                const ts = updatedAt ? parseInt(updatedAt, 10) : 0;
+                const isRecent = ts && (Date.now() - ts) < STALE_MS;
+                if (storedCount === 0 && serverCount > 0) {
+                    count = serverCount;
+                } else {
+                    count = isRecent ? Math.min(serverCount, storedCount) : serverCount;
+                }
+            } else if (!Number.isNaN(serverCount)) {
+                count = serverCount;
+            } else if (!Number.isNaN(storedCount)) {
+                count = storedCount;
+            } else {
+                return;
+            }
+
+            try {
+                localStorage.setItem('notification_unread_count', String(count));
+            } catch (err) {}
+        }
 
         let badge = document.querySelector('.notifications-count');
         if (count <= 0) {

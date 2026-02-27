@@ -256,6 +256,11 @@ html[data-theme="dark"] .form-wrapper .form-floating > .form-control:not(:placeh
     color: var(--text-muted-alt);
 }
 
+html[data-theme="dark"] .block-quote {
+    background: var(--card-bg);
+    color: var(--text-default);
+}
+
 .avatar-file-trigger {
     /* width: 46px; */
     min-width: 46px;
@@ -725,10 +730,10 @@ html[data-theme="dark"] .form-wrapper .form-floating > .form-control:not(:placeh
 }
 
 .notification-row {
-    padding: 15px;
+    padding: 20px;
     border: 1px solid #ececec;
     border-radius: 12px;
-    background: #fff;
+    background: transparent;
     transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -884,7 +889,7 @@ html[data-theme="dark"] .form-wrapper .form-floating > .form-control:not(:placeh
 }
 
 .notification-row.is-seen {
-    border-color: #ececec;
+    border-color: var(--border-default);
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -1001,16 +1006,16 @@ html[data-theme="dark"] .form-wrapper .form-floating > .form-control:not(:placeh
     align-items: center;
     justify-content: center;
     line-height: 1;
-    border: 2px solid #fff;
+    border: 2px solid transparent;
 }
 
 .block-quote {
-    margin: .6rem 0;
-    padding: 17px;
+    padding: 15px 20px;
     background: #f5f6fa;
-    color: #2d3436;
-    border-radius: 8px;
-    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 7px;
+    font-size: .820rem;
+    /* box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); */
 }
 
 .bordered{
@@ -1030,7 +1035,7 @@ html[data-theme="dark"] .form-wrapper .form-floating > .form-control:not(:placeh
 .notification-divider {
     height: 1px;
     background: #e6e9ef;
-    margin: 8px 0 12px;
+    margin: 12px 0;
 }
 
 /* нижний блок */

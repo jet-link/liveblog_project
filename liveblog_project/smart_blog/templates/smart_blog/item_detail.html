@@ -30,14 +30,19 @@
           {% endif %}
         </small>
       </div>
-      
+
       {% if item.author %}
         {% if user == item.author %}
           <small class="primary_">It's your item</small>
         {% else %}
           <div>
-            <a href="{% url 'login_app:profile' item.author.username %}" class="d-flex align-items-center gap-1 text-decoration-none" title="{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}">
-              {% comment %} <small class="custom_badge replied-badge">{% if item.author.is_active %}{{ item.author }}{% else %}Vanished user{% endif %}</small> {% endcomment %}
+            <a href="{% url 'login_app:profile' item.author.username %}"
+              class="d-flex align-items-center gap-1 text-decoration-none"
+              title="{% if item.author.is_active %}
+                {{ item.author }}
+              {% else %}
+                Vanished user
+              {% endif %}">
               <div class="little-avatar">
                 {% if item.author.is_active %}
                   {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
@@ -54,14 +59,13 @@
         {% endif %}
       {% else %}
         <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Vanished user">
-          {% comment %} <small class="text-muted fw-semibold">Vanished user</small> {% endcomment %}
           <div class="little-avatar">
             <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
           </div>
         </a>
       {% endif %}
     </div>
-    <div class="d-inline-flex gap-2 align-items-center small">
+    <div class="d-inline-flex gap-2 align-items-center VLB">
       <i class="fa fa-eye" style="color:#0984e3;"></i>
       <span id="viewsCount">{{ item.views_count|human }}</span>
     </div>
@@ -82,11 +86,6 @@
           <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
           <i class="fa fa-bookmark primary_"></i>
         </div>
-
-        <div class="stat">
-          <span id="commentsCount">{{ item.comments_count|human }}</span>
-          <i class="fa fa-comment stat-comment"></i>
-        </div>
       </div>
 
       <div class="d-flex gap-1 action-block">
@@ -97,19 +96,13 @@
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="edit_btn manipulate"
+            <a class="text-muted text-decoration-none small"
               href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
-              <i class="fa fa-pencil text-center"></i>
+              <i class="fa fa-cog me-1"></i>
+              Edit post
             </a>
-
-            {% comment %} <button type="button" class="delete_btn manipulate" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" data-editable-until="{{ editable_until_iso }}"><i class="fa fa-trash"></i></button> {% endcomment %}
           {% elif user == item.author and not is_editable %}
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired">
-              <i class="fa fa-pencil"></i>
-            </span>
-            {% comment %} <small class="text-muted">Edit is expired</small> {% endcomment %}
-
-            {% comment %} <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove expired"><i class="fa fa-trash-o"></i></span> {% endcomment %}
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
           {% endif %}
         {% else %}
           <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
@@ -144,7 +137,13 @@
         <div class="liked-users-stack mt-1">
           {% for like in liked_users|slice:':5' %}
             {% if like.user %}
-              <a href="{% url 'login_app:profile' like.user.username %}" class="liked-user-avatar little-avatar" title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
+              <a href="{% url 'login_app:profile' like.user.username %}"
+                class="liked-user-avatar little-avatar"
+                title="{% if like.user.is_active %}
+                  {{ like.user.username }}
+                {% else %}
+                  Vanished user
+                {% endif %}">
                 {% if like.user.is_active %}
                   {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
                     <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
@@ -156,9 +155,7 @@
                 {% endif %}
               </a>
             {% else %}
-              <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user">
-                <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
-              </a>
+              <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></a>
             {% endif %}
           {% endfor %}
         </div>
@@ -185,14 +182,17 @@
 
     <!-- ===== Форма комментариев ===== -->
     {% include 'includes/comment_form.html' %}
-    <div id="commentsHeader" class="d-inline-flex">
+    <div id="commentsHeader" class="pb-2 pt-3 d-inline-flex gap-3 align-items-center">
       {% if comments %}
-        <h5 class="pt-4 pb-2 m-0 text-muted">Comments</h5>
+        <h5 class="m-0 text-muted">Comments</h5>
+        <div class="d-flex gap-2 align-items-center small VLB">
+          <span id="commentsCount">{{ item.comments_count|human }}</span>
+          <i class="fa fa-comment stat-comment"></i>
+        </div>
       {% else %}
-        <h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet<i class="fa fa-frown-o ms-2"></i></h5>
+        <h5 class="m-0 text-muted">There are not comments yet</h5>
       {% endif %}
     </div>
-    
 
     <!-- ===== Список комментариев ===== -->
     <div id="commentsList">

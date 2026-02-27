@@ -54,6 +54,7 @@
   const legend = document.getElementById('notificationsLegend');
   const legendToggleBtn = document.querySelector('.notification-dropdown-info-btn');
   let unreadCount = parseInt(stateEl?.dataset?.unread || '0', 10);
+  let initialSyncDone = false;
 
   function renderReadBadge(container) {
     const badge = document.createElement('span');
@@ -89,14 +90,21 @@
   }
 
   function syncUnreadCount() {
-    unreadCount = document.querySelectorAll('.notification-row[data-is-read="0"]').length;
+    const domCount = document.querySelectorAll('.notification-row[data-is-read="0"]').length;
+    const serverCount = stateEl ? parseInt(stateEl.dataset.unread || '0', 10) : 0;
+    if (!initialSyncDone) {
+      unreadCount = Math.max(domCount, serverCount);
+      initialSyncDone = true;
+    } else {
+      unreadCount = domCount;
+    }
     updateHeaderCount(unreadCount);
     updateReadAllButton();
     try {
       localStorage.setItem('notification_unread_count', String(unreadCount));
       localStorage.setItem('notification_count_updated_at', String(Date.now()));
       if (typeof window.updateBellCountFromStorage === 'function') {
-        window.updateBellCountFromStorage();
+        window.updateBellCountFromStorage(unreadCount);
       }
     } catch (err) {}
   }
@@ -162,9 +170,11 @@
     document.querySelectorAll('.notification-target-link').forEach(link => {
       if (link.dataset.seenInit) return;
       link.dataset.seenInit = '1';
-      link.addEventListener('click', () => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
         const id = link.dataset.notificationId;
         markSeen(id, true);
+        window.location.href = link.href;
       });
     });
   }

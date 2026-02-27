@@ -5,9 +5,9 @@
       <form method="post" action="{% url 'smart_blog:delete_item' item.slug %}" data-delete-item="1">
         {% csrf_token %}
         <input type="hidden" name="redirect_to" class="delete-redirect" value="" />
-        <div class="modal-header">
+        <div class="modal-header d-flex align-items-center justify-content-between">
           <h5 class="modal-title text-muted" id="confirmDeleteModalLabel-{{ item.pk }}">Removing...</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">×</button>
         </div>
 
         <div class="modal-body">

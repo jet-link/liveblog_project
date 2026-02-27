@@ -68,23 +68,41 @@
   /* ===============================
      UI HELPERS
   =============================== */
+  function humanCount(n) {
+    n = Number(n);
+    if (n < 1000) return String(n);
+    if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
+  }
+
   function updateDetailCounter(count) {
     const el = document.getElementById('commentsCount');
-    if (el) el.textContent = count;
+    if (el) el.textContent = humanCount(count);
   }
 
   function updateCardCounter(itemId, count) {
     const el = document.getElementById('comments-count-' + itemId);
-    if (el) el.textContent = count;
+    if (el) el.textContent = humanCount(count);
   }
 
   function updateCommentsHeader(count) {
     const header = document.getElementById('commentsHeader');
     if (!header) return;
 
-    header.innerHTML = Number(count) > 0
-      ? `<h5 class="pt-4 pb-2 m-0 text-muted">Comments</h5>`
-      : `<h5 class="pt-4 pb-2 m-0 text-muted">There are not comments yet<i class="fa fa-frown-o ms-2"></i></h5>`;
+    const n = Number(count);
+    if (n > 0) {
+      header.innerHTML = `
+        <h5 class="m-0 text-muted">Comments</h5>
+        <div class="d-flex gap-2 align-items-center small VLB">
+          <span id="commentsCount">${humanCount(n)}</span>
+          <i class="fa fa-comment stat-comment"></i>
+        </div>
+      `;
+    } else {
+      header.innerHTML = `<h5 class="m-0 text-muted">There are not comments yet</h5>`;
+    }
   }
 
   function getThreadLinkCount(link) {

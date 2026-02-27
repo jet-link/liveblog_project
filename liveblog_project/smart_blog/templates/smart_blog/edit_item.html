@@ -38,7 +38,6 @@
         <!-- TEXT -->
         <div class="py-3">
           {{ form.text }}
-          {% comment %} <label for="{{ form.text.id_for_label }}">{{ form.text.label }}</label> {% endcomment %}
         </div>
         {% for err in form.text.errors %}
           <div class="text-danger small mb-2">{{ err }}</div>

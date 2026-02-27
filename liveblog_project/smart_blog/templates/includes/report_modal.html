@@ -1,9 +1,9 @@
 <div class="modal fade report-modal" id="reportModal" tabindex="-1" aria-hidden="true" data-report-url="{% url 'smart_blog:submit_report' %}">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header d-flex align-items-center justify-content-between">
         <h5 class="modal-title text-muted">Report</h5>
-        <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
         <div class="d-flex flex-wrap gap-1 mb-3" id="reportReasonList">

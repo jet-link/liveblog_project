@@ -43,6 +43,7 @@
     --btn-secondary-fg: var(--text-primary);
     --btn-secondary-hover-bg: var(--bg-subtle);
     --btn-radius: 8px;
+    --orange-color: #e67e22;
 
     /* Light theme — cards & surfaces */
     --card-bg: #ffffff;
@@ -286,9 +287,9 @@ textarea {
     color: var(--text-link) !important;
 }
 
-/* .form-control::placeholder {
-    transition: opacity 0.1s ease;
-} */
+.form-control:focus{
+    box-shadow: none !important;
+}
 
 .form-floating .form-control:focus::placeholder {
     opacity: 0;
@@ -297,6 +298,10 @@ textarea {
 .form-floating > textarea:focus ~ label::after,
 .form-floating > .form-control:focus ~ label::after {
     background: transparent !important;
+}
+
+.form-floating>label{
+    border: none !important;
 }
 
 /* Dark theme — form-floating labels */
@@ -327,8 +332,48 @@ html[data-theme="dark"] .form-floating > textarea:not(:placeholder-shown) ~ labe
     color: var(--btn-primary-fg);
 }
 
+.modal .modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 0.25rem;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.modal .modal-close-btn:hover {
+    opacity: 1;
+}
+
+.modal .modal-close-btn .fa {
+    color: inherit;
+}
+
 .modal-footer>*{
     margin: 0 2px;
+}
+
+.modal-body{
+    color: var(--text-muted);
+}
+
+.bg-secondary{
+    border: 1px solid var(--text-muted);
+    background-color: transparent !important;
+    color: var(--text-muted);
+}
+
+#imagesHelp{
+    color: var(--text-muted);
+    margin-top: 10px;
 }
 
 .header {
@@ -1642,8 +1687,8 @@ textarea {
     border-radius: 7px;
 }
 
-.item_share_btn {
-    border: 2px solid var(--text-link);
+.item_share_btn{
+    border: 1px solid var(--text-link);
     background-color: transparent;
     color: var(--text-link);
     padding: 0;
@@ -1657,9 +1702,9 @@ textarea {
 }
 
 .item_report_btn {
-    border: 2px solid #e74c3c;
+    border: 1px solid var(--danger-fg);
     background-color: transparent;
-    color: #e74c3c;
+    color: var(--danger-fg);
     padding: 0;
     width: 35px;
     height: 35px;
@@ -1671,7 +1716,7 @@ textarea {
 }
 
 .reported-label-item {
-    color: #e74c3c;
+    color: var(--danger-fg);
     font-weight: 500;
     font-size: .8rem;
 }
@@ -1682,7 +1727,7 @@ textarea {
 
 .cstm-btn {
     padding: 10px 15px;
-    border-radius: 6px;
+    border-radius: 5px;
     transition: .2s ease-in-out;
     font-size: .9rem;
     text-decoration: none;
@@ -1693,6 +1738,8 @@ textarea {
     justify-content: center;
     line-height: 1;
     vertical-align: middle;
+    border: 1px solid;
+    background: transparent;
 }
 
 .cstm-btn-sm {
@@ -1707,37 +1754,35 @@ textarea {
     justify-content: center;
     line-height: 1;
     vertical-align: middle;
+    border: 1px solid;
+    background: transparent;
 }
 
 .custom-secondary-btn {
-    color: #ffffff;
-    background-color: #8f8f8f;
-    border: none;
+    color: var(--text-muted);
+    border-color: var(--text-muted);
 }
 
 .custom-success-btn {
-    color: #ffffff;
-    background-color: #27ae60;
-    border: none;
+    color: var(--success-bg);
+    border-color: var(--success-bg);
 }
 
 .custom-danger-btn {
-    color: #ffffff;
-    background-color: #e74c3c;
-    border: none;
+    color: var(--danger-fg);
+    border-color: var(--danger-fg);
 }
 
 .custom-primary-btn {
-    color: #ffffff;
-    background-color: var(--text-link);
-    border: none;
+    color: var(--text-link);
+    border-color: var(--text-link);
 }
 
 .comment-btn.is-blocked {
-    background-color: #e74c3c;
-    color: #ffffff;
+    border-color: var(--danger-fg);
+    color: var(--danger-fg);
     cursor: auto;
-    border: none;
+    /* border: none; */
 }
 
 .liked-users-close {
@@ -2381,28 +2426,31 @@ textarea {
     outline: none;
 }
 
-
 .custom_badge,
 .replied-badge {
-    padding: 4px 12px;
+    padding: 3px 12px;
     border-radius: 20px;
     text-decoration: none;
     font-size: .7rem;
     border: 1px solid transparent;
     font-weight: 500;
     color: #ffffff;
+    background-color: transparent;
 }
 
 .badge_danger {
-    background-color: #ff6b6b;
+    border-color: var(--danger-fg);
+    color: var(--danger-fg);
 }
 
 .badge_primary {
-    background-color: var(--text-link);
+    border-color: var(--text-link);
+    color: var(--text-link);
 }
 
 .badge_success {
-    background-color: #01a3a4;
+    border-color: var(--success-bg);
+    color: var(--success-bg);
 }
 
 .replied-badge {

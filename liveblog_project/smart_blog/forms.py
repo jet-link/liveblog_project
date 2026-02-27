@@ -226,7 +226,7 @@ class CommentForm(forms.ModelForm):
             "text": forms.Textarea(attrs={
                 "class": "form-control auto-grow",
                 "id": "id_comment_text",
-                "placeholder": "Comment text",
+                "placeholder": " ",
                 "rows": 1,          # стартовая высота
                 "required": True,
             })
