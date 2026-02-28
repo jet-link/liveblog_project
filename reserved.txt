@@ -23,3 +23,12 @@
                         {% comment %} <small class="text-muted">Edit is expired</small> {% endcomment %}
 
             {% comment %} <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove expired"><i class="fa fa-trash-o"></i></span> {% endcomment %}
+
+
+                                     <a class="text-muted text-decoration-none small"
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}
+                ?{{ request.GET.urlencode }}
+              {% endif %}">
+              {% comment %} <i class="fa fa-cog me-1"></i> {% endcomment %}
+              {% comment %}Edit post{% endcomment %}
+            </a>

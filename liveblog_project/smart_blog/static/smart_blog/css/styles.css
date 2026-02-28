@@ -110,6 +110,11 @@ html[data-theme="dark"] {
     --toggle-thumb: var(--toggle-thumb-dark);
 }
 
+html[data-theme="dark"] .ck.ck-list__item .ck-button.ck-on:focus,
+html[data-theme="dark"] .ck.ck-button:focus{
+    box-shadow: none;
+    background-color: transparent;
+}
 
 /* Dark theme — element overrides (Bootstrap, etc.) */
 html[data-theme="dark"] .card,
@@ -130,6 +135,11 @@ html[data-theme="dark"] .form-select {
     border-color: var(--border-default);
     color: var(--text-default);
 }
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .form-select:focus{
+    border-color: var(--text-muted);
+}
+
 
 html[data-theme="dark"] .form-control::placeholder {
     color: var(--text-muted-alt);
@@ -212,6 +222,11 @@ html[data-theme="dark"] #commentsBackToTop {
     border: 1px solid var(--btn-primary-fg);
     color: var(--btn-primary-fg);
     background: transparent;
+}
+
+.form-check-input:focus,
+.form-select:focus{
+    box-shadow: none;
 }
 
 body,
@@ -314,6 +329,172 @@ html[data-theme="dark"] .form-floating > .form-control:not(:placeholder-shown) ~
 html[data-theme="dark"] .form-floating > textarea:focus ~ label,
 html[data-theme="dark"] .form-floating > textarea:not(:placeholder-shown) ~ label {
     color: var(--text-muted-alt);
+}
+
+/* ========== CKEditor dark theme (create_item, edit_item) ========== */
+html[data-theme="dark"] .ck-editor,
+html[data-theme="dark"] .ck.ck-editor {
+    --ck-color-base-background: var(--bg-muted);
+    --ck-color-base-foreground: var(--text-default);
+    --ck-color-base-border: var(--border-default);
+    --ck-color-text: var(--text-default);
+    --ck-color-focus-border: var(--text-link);
+    --ck-color-shadow-drop: rgba(0, 0, 0, 0.4);
+    --ck-color-shadow-inner: rgba(0, 0, 0, 0.2);
+    --ck-content-font-color: var(--text-default);
+
+    --ck-color-button-default-hover-background: var(--bg-subtle);
+    --ck-color-button-default-active-background: var(--border-strong);
+    --ck-color-button-default-active-shadow: var(--border-default);
+    --ck-color-button-on-background: var(--bg-subtle);
+    --ck-color-button-on-hover-background: var(--border-strong);
+    --ck-color-button-on-active-background: var(--border-default);
+    --ck-color-button-on-active-shadow: var(--border-strong);
+    --ck-color-button-on-disabled-background: var(--bg-subtle);
+
+    --ck-color-toolbar-background: var(--bg-muted);
+    --ck-color-toolbar-border: var(--border-default);
+    --ck-color-dropdown-panel-border: var(--border-default);
+    --ck-color-input-border: var(--border-default);
+    --ck-color-input-text: var(--text-default);
+    --ck-color-input-disabled-background: var(--bg-default);
+    --ck-color-input-disabled-border: var(--border-muted);
+    --ck-color-input-disabled-text: var(--text-muted);
+    --ck-color-panel-border: var(--border-default);
+    --ck-color-tooltip-background: var(--bg-subtle);
+    --ck-color-tooltip-text: var(--text-default);
+    --ck-color-link-default: var(--text-link);
+}
+
+html[data-theme="dark"] .ck-toolbar,
+html[data-theme="dark"] .ck.ck-toolbar {
+    background: var(--bg-muted) !important;
+    border-color: var(--border-default) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-button,
+html[data-theme="dark"] .ck-toolbar .ck.ck-button {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-button:hover,
+html[data-theme="dark"] .ck-toolbar .ck.ck-button:hover {
+    color: var(--text-default) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-button .ck-icon,
+html[data-theme="dark"] .ck-toolbar .ck.ck-button .ck-icon,
+html[data-theme="dark"] .ck-toolbar .ck-dropdown__button .ck-icon,
+html[data-theme="dark"] .ck-toolbar .ck-icon * {
+    color: var(--text-muted) !important;
+    fill: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-dropdown__button,
+html[data-theme="dark"] .ck-toolbar .ck.ck-dropdown__button {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-dropdown__button .ck-button__label {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .ck-editor__top,
+html[data-theme="dark"] .ck.ck-editor__top {
+    background: var(--bg-muted) !important;
+    border-color: var(--border-default) !important;
+}
+
+html[data-theme="dark"] .ck-toolbar .ck-toolbar__separator {
+    background: var(--border-default) !important;
+}
+
+html[data-theme="dark"] .ck-dropdown__panel,
+html[data-theme="dark"] .ck.ck-dropdown__panel,
+html[data-theme="dark"] .ck.ck-reset.ck-dropdown__panel,
+html[data-theme="dark"] .ck-dropdown__panel.ck-dropdown__panel_se,
+html[data-theme="dark"] .ck-dropdown__panel.ck-dropdown__panel-visible,
+html[data-theme="dark"] .ck-balloon-panel {
+    background: var(--bg-muted) !important;
+    border-color: var(--border-default) !important;
+}
+
+html[data-theme="dark"] .ck-dropdown__panel .ck-list,
+html[data-theme="dark"] .ck-dropdown__panel .ck.ck-list {
+    background: var(--bg-muted) !important;
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .ck-list__item .ck-button,
+html[data-theme="dark"] .ck-list .ck-button {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .ck-list__item .ck-button:hover,
+html[data-theme="dark"] .ck-list .ck-button:hover {
+    color: var(--text-default) !important;
+    background: var(--bg-subtle) !important;
+}
+
+html[data-theme="dark"] .ck-editor__editable,
+html[data-theme="dark"] .ck.ck-editor__editable {
+    background: var(--bg-muted) !important;
+    border-color: var(--border-default) !important;
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .ck-editor__editable a,
+html[data-theme="dark"] .ck.ck-editor__editable a {
+    color: var(--text-link);
+}
+
+html[data-theme="dark"] .ck-editor .ck-content pre {
+    background-color: var(--bg-default);
+    border-color: var(--border-default);
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .ck-editor .ck-content code {
+    background-color: var(--bg-subtle);
+    color: var(--text-default);
+    border: 1px solid var(--border-default);
+}
+
+html[data-theme="dark"] .ck-editor .ck-content blockquote {
+    border-left-color: var(--border-strong);
+    color: var(--text-muted);
+}
+
+html[data-theme="dark"] .ck-editor .ck-content th,
+html[data-theme="dark"] .ck-editor .ck-content td {
+    border-color: var(--border-default);
+    background-color: var(--bg-muted);
+    color: var(--text-default);
+}
+
+/* CKEditor content display (item_detail) — dark theme */
+html[data-theme="dark"] .item-text.ck-content pre {
+    background-color: var(--bg-default);
+    border-color: var(--border-default);
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .item-text.ck-content code {
+    background-color: var(--bg-subtle);
+    color: var(--text-default);
+    border: 1px solid var(--border-default);
+}
+
+html[data-theme="dark"] .item-text.ck-content blockquote {
+    border-left-color: var(--border-strong);
+    color: var(--text-muted);
+}
+
+html[data-theme="dark"] .item-text.ck-content th,
+html[data-theme="dark"] .item-text.ck-content td {
+    border-color: var(--border-default);
+    background-color: var(--bg-muted);
+    color: var(--text-default);
 }
 
 .pagination-sm{
@@ -1863,6 +2044,11 @@ textarea {
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
+html[data-theme="dark"] .form-wrapper{
+    box-shadow: none;
+    border: 1px solid var(--border-muted);
+}
+
 
 
 /* кнопка плюсика (скрывается по умолчанию, JS управляет display) */
@@ -1873,10 +2059,10 @@ textarea {
     display: none;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
-    color: #ffffff;
-    background-color: var(--text-link);
-    border: none;
+    border-radius: 20px;
+    color: var(--text-link);
+    background-color: transparent;
+    border: 1px solid var(--text-link);
     font-size: .9rem;
 }
 
@@ -1974,16 +2160,16 @@ textarea {
 }
 
 .comment-text {
-    padding: 17px;
+    padding: 20px;
     background-color: var(--card-bg);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     color: #5e5e5e;
-    border-radius: 7px;
+    border-radius: 10px;
     position: relative;
     z-index: 1;
     line-height: 1.25rem;
     word-wrap: break-word;
-    font-size: .8rem;
+    font-size: .850rem;
     font-weight: 500;
 }
 
@@ -2010,6 +2196,12 @@ textarea {
     box-shadow: var(--card-shadow);
     background: var(--bg-default);
     border-radius: 8px;
+}
+
+html[data-theme="dark"] .published_block,
+html[data-theme="dark"] .tags_block{
+    box-shadow: none;
+    border: 1px solid var(--border-muted);
 }
 
 
@@ -2438,6 +2630,11 @@ textarea {
     background-color: transparent;
 }
 
+.badge{
+    font-weight: 600 !important;
+    padding: 5px 10px;
+}
+
 .badge_danger {
     border-color: var(--danger-fg);
     color: var(--danger-fg);
@@ -2547,7 +2744,7 @@ textarea {
 
 .expired_edit_delete {
     position: relative;
-    border: 2px solid #bdc3c7;
+    border: 1px solid #bdc3c7;
 }
 
 /* .expired_edit_delete i {
@@ -2830,7 +3027,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
     padding: 0 10px;
     position: relative;
 }

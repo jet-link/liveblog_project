@@ -8,7 +8,6 @@
     font-size: 1.1rem;
     border-radius: 50%;
     transition: .3s;
-    background-color: var(--bg-default);
 }
 
 
@@ -23,12 +22,12 @@
 }
 
 .apple_btn {
-    color: #2d3436;
-    border: 2px solid #2d3436;
+    color: #555657;
+    border: 2px solid #555657;
 }
 
 .apple_btn:hover {
-    background-color: #2d3436;
+    background-color: #3f3f3f;
     color: #FFFFFF;
 }
 
@@ -650,32 +649,17 @@ html[data-theme="dark"] .block-quote {
 /* tooltip */
 .user-tooltip {
     position: absolute;
-    top: calc(100% + 13px);
-    right: -32px;
+    top: calc(100% + 21px);
+    right: -84px;
     min-width: 170px;
-    background: #fff;
-    border-radius: 10px;
+    background: var(--card-bg);
     box-shadow: 3px 12px 25px rgba(0, 0, 0, .2);
-    padding: 8px 0;
     opacity: 0;
     transform: translateY(-6px);
     pointer-events: none;
     transition: opacity .18s ease, transform .18s ease;
     z-index: 2000;
 }
-
-/* стрелка */
-/* .user-tooltip::before {
-    content: "";
-    position: absolute;
-    top: -5px;
-    right: 43px;
-    width: 12px;
-    height: 12px;
-    background: #fff;
-    transform: rotate(45deg);
-    z-index: -1;
-} */
 
 .user-menu .user-tooltip {
     opacity: 0;
@@ -693,7 +677,7 @@ html[data-theme="dark"] .block-quote {
 /* ссылки */
 .user-tooltip a {
     display: block;
-    padding: 12px 16px;
+    padding: 15px 25px;
     font-size: .85rem;
     color: #111;
     text-decoration: none;
@@ -709,11 +693,11 @@ html[data-theme="dark"] .block-quote {
 }
 
 /* разделитель */
-.user-tooltip .divider {
+/* .user-tooltip .divider {
     height: 1px;
     margin: 6px 0;
     background: #eee;
-}
+} */
 
 @media (max-width: 768px) {
     .user-tooltip {
@@ -1010,12 +994,11 @@ html[data-theme="dark"] .block-quote {
 }
 
 .block-quote {
-    padding: 15px 20px;
+    padding: 20px;
     background: #f5f6fa;
     color: var(--text-muted);
-    border-radius: 7px;
-    font-size: .820rem;
-    /* box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); */
+    border-radius: 10px;
+    font-size: .850rem;
 }
 
 .bordered{

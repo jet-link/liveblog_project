@@ -26,7 +26,7 @@
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
-            <span class="primary_ fw-semibold">Edited</span>
+            <span class="primary_">Edited</span>
           {% endif %}
         </small>
       </div>
@@ -35,14 +35,9 @@
         {% if user == item.author %}
           <small class="primary_">It's your item</small>
         {% else %}
-          <div>
             <a href="{% url 'login_app:profile' item.author.username %}"
               class="d-flex align-items-center gap-1 text-decoration-none"
-              title="{% if item.author.is_active %}
-                {{ item.author }}
-              {% else %}
-                Vanished user
-              {% endif %}">
+              title="{{ item.author }}">
               <div class="little-avatar">
                 {% if item.author.is_active %}
                   {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
@@ -55,7 +50,6 @@
                 {% endif %}
               </div>
             </a>
-          </div>
         {% endif %}
       {% else %}
         <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Vanished user">
@@ -96,9 +90,7 @@
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="text-muted text-decoration-none small"
-              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
-              <i class="fa fa-cog me-1"></i>
+            <a class="text-muted text-decoration-none small" href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
               Edit post
             </a>
           {% elif user == item.author and not is_editable %}
