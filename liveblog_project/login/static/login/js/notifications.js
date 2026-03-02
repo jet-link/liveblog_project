@@ -77,7 +77,12 @@
       if (!btn) return;
       badge = document.createElement('span');
       badge.className = 'notifications-count custom_badge badge_danger';
-      btn.insertBefore(badge, btn.querySelector('i'));
+      const wrap = btn.querySelector('.notification-bell-wrap');
+      if (wrap) {
+        wrap.appendChild(badge);
+      } else {
+        btn.insertBefore(badge, btn.querySelector('i'));
+      }
     }
     badge.textContent = count >= 10 ? '10+' : String(count);
   }

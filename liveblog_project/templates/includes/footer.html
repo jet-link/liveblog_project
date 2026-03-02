@@ -1,69 +1,37 @@
 <div class="container">
-  <div class="row">
-    <div class="col-6 col-md-2 mb-3">
-      <h5>Space</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-          <a href="/" class="nav-link p-0 text-body-secondary">BrainStorm</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Features</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Job</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Vacations</a>
-        </li>
-      </ul>
+  <div class="footer-blocks d-flex flex-column flex-md-row flex-md-nowrap align-items-stretch align-items-md-end justify-content-between gap-5 pt-5 pb-3">
+    <div class="footer-links d-flex flex-column flex-sm-row gap-4 gap-sm-4">
+      <div class="footer-block">
+        <a href="{% url 'pages:home' %}" class="text-decoration-none text-muted">BrainStorm</a>
+      </div>
+      <div class="footer-block">
+        <a href="#" class="text-decoration-none text-muted">Sitemap</a>
+      </div>
+      <div class="footer-block">
+        <a href="{% url 'pages:faq' %}" class="text-decoration-none text-muted">FAQ</a>
+      </div>
+       <div class="footer-block">
+        <a href="{% url 'pages:page' 'about' %}" class="text-decoration-none text-muted">About</a>
+      </div>
+       <div class="footer-block">
+        <a href="{% url 'pages:page' 'contacts' %}" class="text-decoration-none text-muted">Contacts</a>
+      </div>
     </div>
-    <div class="col-6 col-md-2 mb-3">
-      <h5>Socials</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Twitter</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Facebook</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Instagram</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link p-0 text-body-secondary">Telegram</a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-6 col-md-2 mb-3">
-      <h5>Sitemap</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-          <a href="{% url 'smart_blog:items_list' %}" class="nav-link p-0 text-body-secondary">BraiNews</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="{% url 'pages:page' 'faq' %}" class="nav-link p-0 text-body-secondary">FAQ</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="{% url 'pages:page' 'contacts' %}" class="nav-link p-0 text-body-secondary">Contacts</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="{% url 'pages:page' 'about' %}" class="nav-link p-0 text-body-secondary">About</a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-md-5 offset-md-1 mb-3">
-      <form class="pb-3" method="post">
-        <h5>Subscribe to our newsletter</h5>
-        <p>Monthly digest of what's new and exciting from us.</p>
-        <div class="d-flex flex-column flex-sm-row w-100 gap-2">
-          <label for="newsletter1" class="visually-hidden">Email address</label>
-          <input id="newsletter1" type="email" class="form-control" placeholder="Email address" />
-          <button class="cstm-btn custom-primary-btn" type="button">Subscribe</button>
-        </div>
+    <div class="footer-subscribe-wrap flex-shrink-0 gap-2">
+      <h5 class="footer-subscribe-title text-muted mb-2">Subscribe to the newsletter</h5>
+      <form class="footer-subscribe d-flex flex-column flex-sm-row gap-2 align-items-stretch" action="#" method="post" novalidate>
+        {% csrf_token %}
+        <input type="email" name="email" class="form-control footer-subscribe-input" placeholder="Enter your email..." required aria-label="Email for newsletter" autocomplete="email" />
+        <button type="submit" class="cstm-btn-sm custom-primary-btn ">Subscribe</button>
       </form>
     </div>
   </div>
-  <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-    <p>&copy; 2025 BrainStorm, Inc. All rights reserved.</p>
+  <hr />
+  <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between pb-5 pt-3">
+    <p class="text-muted small mb-0">&copy; 2025 BrainStorm, Inc. All rights reserved.</p>
+    <div class="d-flex align-items-center">
+      {% comment %} <span>→</span> {% endcomment %}
+      <a href="#" class="text-muted text-decoration-none small mt-2">Policy and rights</a>
+    </div>
   </div>
 </div>

@@ -145,6 +145,17 @@ html[data-theme="dark"] .form-control::placeholder {
     color: var(--text-muted-alt);
 }
 
+/* html[data-theme="dark"] .footer-subscribe-input {
+    background: transparent !important;
+    border-bottom-color: var(--border-strong) !important;
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .footer-subscribe-input:focus {
+    border-bottom-color: var(--text-link) !important;
+    box-shadow: 0 2px 0 0 var(--text-link);
+} */
+
 html[data-theme="dark"] .modal-header,
 html[data-theme="dark"] .modal-footer {
     border-color: var(--border-default);
@@ -672,6 +683,29 @@ html[data-theme="dark"] .ios-toggle-thumb {
     line-height: 0;
 }
 
+.user-tooltip .notification-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    line-height: 1.5;
+    padding: 6px 0;
+}
+
+/* При непрочитанных — только счётчик, колокольчик скрыт */
+.user-tooltip .notification-btn:has(.notifications-count) .fa-bell {
+    display: none !important;
+}
+/* При нуле — колокольчик видим */
+.user-tooltip .notification-btn .fa-bell {
+    display: inline-block;
+}
+.user-tooltip .notification-btn .notifications-count {
+    position: static;
+    margin-right: 1rem;
+}
+
+
 @media (max-width: 992px) {
     .header-nav {
         grid-template-columns: 1fr auto;
@@ -707,6 +741,64 @@ html[data-theme="dark"] .ios-toggle-thumb {
     flex-shrink: 0;
     border-top: 1px solid var(--border-subtle);
     background: var(--bg-default);
+}
+
+.footer-blocks {
+    flex-wrap: wrap;
+}
+
+.footer-block a:hover {
+    color: var(--text-link) !important;
+}
+
+.footer-subscribe {
+    min-width: 0;
+}
+
+.footer-subscribe-title {
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.footer-subscribe-input {
+    font-size: .8rem;
+    min-width: 180px;
+    max-width: 100%;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: inherit;
+    padding: 10px 15px;
+    /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
+}
+
+.footer-subscribe-input::placeholder {
+    color: var(--text-muted);
+}
+
+.footer-subscribe-input:focus {
+    outline: none !important;
+    border-color: #86b7fe !important;
+    box-shadow: 0 2px 0 0 var(--text-link);
+}
+
+.footer-subscribe {
+    align-items: flex-end;
+}
+
+@media (min-width: 576px) {
+    .footer-subscribe-input {
+        width: 220px;
+    }
+}
+
+@media (min-width: 785px) {
+    .footer-subscribe-input {
+        width: 240px;
+    }
 }
 
 .tooltip .bs-tooltip-top {
@@ -1672,6 +1764,27 @@ textarea {
     margin-top: 7px;
 }
 
+.replies-circle{
+    position: relative;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #60a3bc;
+    margin-right: 5px;
+}
+
+.replies-circle::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;   /* диаметр бублика */
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #60a3bc; /* толщина кольца */
+    transform: translate(-50%, -50%);
+}
+
 /* вертикальная линия - идет вниз от родителя */
 .replies::before {
     content: "";
@@ -1688,11 +1801,11 @@ textarea {
     position: relative;
     border: none;
     border-radius: 0;
-    padding: 8px 0;
+    /* padding: 8px 0; */
     margin-top: 0;
     margin-bottom: 0;
     background: transparent;
-    padding-left: 0;
+    /* padding-left: 0; */
 }
 
 /* горизонтальная линия от каждого reply к вертикальной линии */
@@ -1759,7 +1872,7 @@ textarea {
     border: 1px solid #bdc3c7;
     color: #454545;
     border-radius: 25px;
-    padding: 7px 20px;
+    padding: 7px 15px;
     font-size: .7rem;
     cursor: pointer;
     text-decoration: none;
@@ -1910,7 +2023,7 @@ textarea {
     padding: 10px 15px;
     border-radius: 5px;
     transition: .2s ease-in-out;
-    font-size: .9rem;
+    font-size: 1rem;
     text-decoration: none;
     text-align: center;
     font-weight: 500;
@@ -1926,7 +2039,7 @@ textarea {
 .cstm-btn-sm {
     padding: 9px 10px;
     transition: .2s ease-in-out;
-    font-size: .790rem;
+    font-size: .8rem;
     font-weight: 500;
     text-decoration: none;
     border-radius: 5px;
@@ -1979,6 +2092,11 @@ textarea {
 
 .danger_ {
     color: #e74c3c;
+}
+
+.success_{
+    color: #60a3bc;
+    font-weight: 600;
 }
 
 .delete_btn:active,
@@ -2446,7 +2564,7 @@ html[data-theme="dark"] .tags_block{
 .gclose {
     position: absolute;
     border: none;
-    background: var(--btn-bg);
+    background: #1c1b1b;
     color: #fff;
     padding: 10px 12px;
     border-radius: var(--btn-radius);
@@ -2485,9 +2603,9 @@ html[data-theme="dark"] .tags_block{
     z-index: 10000;
 }
 
-.gbtn:hover {
+/* .gbtn:hover {
     background: var(--btn-bg-hover);
-}
+} */
 
 .gclose:hover {
     transform: scale(1.1);
@@ -2667,7 +2785,6 @@ html[data-theme="dark"] .tags_block{
 
 /* Немного уменьшенный input, чтобы красиво смотрелось внутри modal */
 #shareLinkInput {
-    background-color: #f8f9fa;
     border: 1px solid var(--border-default);
 }
 
@@ -2816,10 +2933,9 @@ pre {
     background: var(--btn-primary-bg);
     color: #fff;
     font-size: .9rem;
-
+    font-weight: bold;
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease;
@@ -2851,7 +2967,7 @@ pre {
     background: var(--btn-primary-bg);
     color: #fff;
     font-size: .9rem;
-    /* font-weight: bold; */
+    font-weight: bold;
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     opacity: 0;
@@ -3027,7 +3143,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 10px;
     padding: 0 10px;
     position: relative;
 }

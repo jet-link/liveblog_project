@@ -135,7 +135,7 @@
       'd-flex',
       'gap-2',
       'align-items-center',
-      'text-muted'
+      'success_',
     );
   }
 
@@ -146,14 +146,17 @@
   function renderThreadLinkContents(link, count) {
     if (!link) return;
     link.textContent = '';
+    const circle = document.createElement('span');
+    circle.className = 'replies-circle';
     const label = document.createElement('span');
     label.textContent = 'View deep replies';
-    const icon = document.createElement('i');
-    icon.textContent = '→';
+    const arrow = document.createElement('span');
+    arrow.className = 'replies-arrow';
+    arrow.textContent = '→';
     const badge = document.createElement('span');
     badge.className = 'replies-count';
     badge.textContent = formatRepliesCountLabel(count);
-    link.append(label, icon, badge);
+    link.append(circle, label, arrow, badge);
   }
 
   function buildThreadLink(parentId, threadUrl, count) {
@@ -191,14 +194,12 @@
     }
     link.dataset.count = String(next);
     applyThreadLinkClasses(link);
-    const label = link.querySelector('span:not(.replies-count)');
-    const icon = link.querySelector('i');
-    let span = link.querySelector('.replies-count');
-    if (!label || !icon || !span) {
+    const badge = link.querySelector('.replies-count');
+    if (!link.querySelector('.replies-circle') || !badge) {
       renderThreadLinkContents(link, next);
       return;
     }
-    span.textContent = formatRepliesCountLabel(next);
+    badge.textContent = formatRepliesCountLabel(next);
   }
 
   function adjustThreadLinkCount(parentId, delta) {

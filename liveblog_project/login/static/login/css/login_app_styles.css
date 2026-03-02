@@ -544,7 +544,7 @@ html[data-theme="dark"] .block-quote {
     position: absolute;
     left: 0;
     right: 0;
-    top: 23%;
+    top: 27%;
 }
 
 .password-toggle {
@@ -616,7 +616,7 @@ html[data-theme="dark"] .block-quote {
 
 /* небольшой helpful spacing для кнопки Change password */
 .btn-change {
-    min-width: 140px;
+    min-width: 100px;
 }
 
 /* ===== плавное удаление карточки ===== */
@@ -650,7 +650,7 @@ html[data-theme="dark"] .block-quote {
 .user-tooltip {
     position: absolute;
     top: calc(100% + 21px);
-    right: -84px;
+    right: -100px;
     min-width: 170px;
     background: var(--card-bg);
     box-shadow: 3px 12px 25px rgba(0, 0, 0, .2);
@@ -926,6 +926,17 @@ html[data-theme="dark"] .block-quote {
     background: #2980b9;
 }
 
+html[data-theme="dark"] .report-reason-btn{
+    background: transparent;
+    border-color: #6e7072;
+    color: #6e7072;
+}
+
+html[data-theme="dark"] .report-reason-btn.is-selected{
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
 .report-modal .modal-dialog {
     max-width: 640px;
 }
@@ -975,11 +986,10 @@ html[data-theme="dark"] .block-quote {
 
 .notifications-count {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    left: auto;
-    min-width: 18px;
-    height: 18px;
+    top: 66%;
+    left: 22px;
+    min-width: 20px;
+    height: 20px;
     padding: 0 5px;
     font-size: .6rem;
     background-color: #ff6b6b;
