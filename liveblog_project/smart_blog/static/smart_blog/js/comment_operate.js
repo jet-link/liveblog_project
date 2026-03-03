@@ -94,7 +94,7 @@
     const n = Number(count);
     if (n > 0) {
       header.innerHTML = `
-        <h5 class="m-0 text-muted">Comments</h5>
+        <h5 class="m-0 text-muted ">Comments</h5>
         <div class="d-flex gap-2 align-items-center small VLB">
           <span id="commentsCount">${humanCount(n)}</span>
           <i class="fa fa-comment stat-comment"></i>

@@ -35,21 +35,19 @@
         {% if user == item.author %}
           <small class="primary_">It's your item</small>
         {% else %}
-            <a href="{% url 'login_app:profile' item.author.username %}"
-              class="d-flex align-items-center gap-1 text-decoration-none"
-              title="{{ item.author }}">
-              <div class="little-avatar">
-                {% if item.author.is_active %}
-                  {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                    <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
-                  {% else %}
-                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
-                  {% endif %}
+          <a href="{% url 'login_app:profile' item.author.username %}" class="d-flex align-items-center gap-1 text-decoration-none" title="{{ item.author }}">
+            <div class="little-avatar">
+              {% if item.author.is_active %}
+                {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
+                  <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% else %}
-                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
                 {% endif %}
-              </div>
-            </a>
+              {% else %}
+                <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+              {% endif %}
+            </div>
+          </a>
         {% endif %}
       {% else %}
         <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center gap-2 text-decoration-none" title="Vanished user">
@@ -90,7 +88,8 @@
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="text-muted text-decoration-none small" href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
+            <a class="text-muted text-decoration-none small"
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
               Edit post
             </a>
           {% elif user == item.author and not is_editable %}
@@ -134,7 +133,9 @@
                 title="{% if like.user.is_active %}
                   {{ like.user.username }}
                 {% else %}
+                  
                   Vanished user
+
                 {% endif %}">
                 {% if like.user.is_active %}
                   {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
@@ -174,7 +175,7 @@
 
     <!-- ===== Форма комментариев ===== -->
     {% include 'includes/comment_form.html' %}
-    <div id="commentsHeader" class="pb-2 pt-3 d-inline-flex gap-3 align-items-center">
+    <div id="commentsHeader" class="pt-5 d-flex gap-3 align-items-center justify-content-between">
       {% if comments %}
         <h5 class="m-0 text-muted">Comments</h5>
         <div class="d-flex gap-2 align-items-center small VLB">
@@ -185,6 +186,7 @@
         <h5 class="m-0 text-muted">There are not comments yet</h5>
       {% endif %}
     </div>
+    <hr class="text-muted" />
 
     <!-- ===== Список комментариев ===== -->
     <div id="commentsList">

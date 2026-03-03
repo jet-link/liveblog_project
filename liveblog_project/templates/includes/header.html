@@ -35,7 +35,7 @@
               <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create post</a>
 
               <a href="{% url 'login_app:notifications' user.username %}" class="text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}">
-                <i class="fa fa-bell" aria-hidden="true"></i>
+                <i class="fa fa-bell me-2" aria-hidden="true"></i>
                 Notifications
               </a>
 

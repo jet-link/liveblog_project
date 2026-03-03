@@ -1025,26 +1025,26 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
     line-height: 0;
 } */
 
-.user-tooltip .notification-btn {
+/* .user-tooltip .notification-btn {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 100%;
+    width: 100%; */
     /* line-height: 1.5; */
     /* padding: 6px 0; */
-}
+/* } */
 
 /* Колокольчик: при непрочитанных — анимация звона; при нуле — цвет #e84393, без анимации */
 @keyframes bell-ring {
     0% { transform: rotate(0deg); }
     10% { transform: rotate(-12deg); }
     20% { transform: rotate(12deg); }
-    30% { transform: rotate(-12deg); }
-    40% { transform: rotate(12deg); }
+    /* 30% { transform: rotate(-12deg); } */
+    /* 40% { transform: rotate(12deg); } */
     50% { transform: rotate(-8deg); }
     60% { transform: rotate(8deg); }
-    70% { transform: rotate(-4deg); }
-    80% { transform: rotate(4deg); }
+    /* 70% { transform: rotate(-4deg); } */
+    /* 80% { transform: rotate(4deg); } */
     100% { transform: rotate(0deg); }
 }
 
@@ -1057,6 +1057,7 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
 /* При непрочитанных — колокольчик трясётся */
 .user-tooltip .notification-btn.has-unread .fa-bell {
     animation: bell-ring 0.5s ease-in-out infinite;
+    color: #e74c3c;
 }
 
 /* При нуле — без анимации, цвет #e84393 */
