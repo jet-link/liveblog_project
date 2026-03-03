@@ -20,14 +20,13 @@
 
       <div class="d-flex align-items-center gap-3 header-actions">
         {% if user.is_authenticated %}
-
           {% comment %} <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn" data-notifications-count="{{ notifications_count }}">
             {% if notifications_count_label %}
               <span class="notifications-count">{{ notifications_count_label }}</span>
             {% endif %}
             <i class="fa fa-bell-o" aria-hidden="true"></i>
           </a> {% endcomment %}
-          
+
           <div class="user-menu" id="userMenu">
             <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
             <div class="user-tooltip">
@@ -35,11 +34,8 @@
               <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
               <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create post</a>
 
-              <a href="{% url 'login_app:notifications' user.username %}" class="text-muted" data-notifications-count="{{ notifications_count }}">
-                {% if notifications_count_label %}
-                  <span class="notifications-count">{{ notifications_count_label }}</span>
-                {% endif %}
-                <i class="fa fa-bell me-3" aria-hidden="true"></i>
+              <a href="{% url 'login_app:notifications' user.username %}" class="text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}">
+                <i class="fa fa-bell" aria-hidden="true"></i>
                 Notifications
               </a>
 

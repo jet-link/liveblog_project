@@ -98,17 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (err) {}
         }
 
-        let badge = document.querySelector('.notifications-count');
-        if (count <= 0) {
-            if (badge) badge.remove();
-            return;
+        if (count > 0) {
+            btn.classList.add('has-unread');
+        } else {
+            btn.classList.remove('has-unread');
         }
-        if (!badge) {
-            badge = document.createElement('span');
-            badge.className = 'notifications-count custom_badge badge_danger';
-            btn.insertBefore(badge, btn.querySelector('i'));
-        }
-        badge.textContent = count >= 10 ? '10+' : String(count);
     }
 
     window.updateBellCountFromStorage = updateBellCountFromStorage;

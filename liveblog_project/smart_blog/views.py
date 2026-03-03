@@ -489,7 +489,11 @@ def item_detail(request, slug):
     replies_qs = (
         Comment.objects
         .filter(parent__isnull=False)
-        .annotate(reports_count=Count('reports', distinct=True))
+        .annotate(
+            user_liked=Exists(likes_subq),
+            likes_count=Count('likes', distinct=True),
+            reports_count=Count('reports', distinct=True),
+        )
         .order_by('-created')   # 🔥 СВЕЖИЕ СВЕРХУ
         )
 
@@ -606,13 +610,27 @@ def item_detail(request, slug):
 def comment_thread(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
+    if request.user.is_authenticated:
+        thread_likes_subq = CommentLike.objects.filter(
+            comment=OuterRef('pk'),
+            user=request.user
+        )
+    else:
+        thread_likes_subq = CommentLike.objects.none()
+
     replies_qs = Comment.objects.annotate(
-        reports_count=Count('reports', distinct=True)
+        user_liked=Exists(thread_likes_subq),
+        likes_count=Count('likes', distinct=True),
+        reports_count=Count('reports', distinct=True),
     ).order_by('-created')
     comment = (
         Comment.objects
         .filter(pk=comment.pk)
-        .annotate(reports_count=Count('reports', distinct=True))
+        .annotate(
+            user_liked=Exists(thread_likes_subq),
+            likes_count=Count('likes', distinct=True),
+            reports_count=Count('reports', distinct=True),
+        )
         .prefetch_related(
             Prefetch('replies', queryset=replies_qs),
             Prefetch('replies__replies', queryset=replies_qs),
@@ -1115,36 +1133,36 @@ def toggle_bookmark(request, slug):
 def toggle_comment_like(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
-    # ЗАПРЕТ лайков для reply
-    if comment.parent_id is not None:
-        return JsonResponse(
-            {"success": False, "error": "Replies cannot be liked"},
-            status=400
-        )
-
     user = request.user
     like_qs = CommentLike.objects.filter(comment=comment, user=user)
     if like_qs.exists():
         like_qs.delete()
         liked = False
-        Notification.objects.filter(
-            recipient=comment.author,
-            actor=request.user,
-            notif_type=Notification.TYPE_COMMENT_LIKE,
-            item=comment.item,
-            parent_comment=comment
-        ).delete()
+        notif_filter = {
+            "recipient": comment.author,
+            "actor": request.user,
+            "notif_type": Notification.TYPE_COMMENT_LIKE,
+            "item": comment.item,
+        }
+        if comment.parent_id:
+            Notification.objects.filter(**notif_filter, reply_comment=comment).delete()
+        else:
+            Notification.objects.filter(**notif_filter, parent_comment=comment).delete()
     else:
         CommentLike.objects.create(comment=comment, user=user)
         liked = True
         if comment.author and comment.author != request.user:
-            Notification.objects.create(
-                recipient=comment.author,
-                actor=request.user,
-                notif_type=Notification.TYPE_COMMENT_LIKE,
-                item=comment.item,
-                parent_comment=comment
-            )
+            kwargs = {
+                "recipient": comment.author,
+                "actor": request.user,
+                "notif_type": Notification.TYPE_COMMENT_LIKE,
+                "item": comment.item,
+            }
+            if comment.parent_id:
+                kwargs["reply_comment"] = comment
+            else:
+                kwargs["parent_comment"] = comment
+            Notification.objects.create(**kwargs)
 
     return JsonResponse({
         "success": True,

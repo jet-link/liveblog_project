@@ -984,7 +984,7 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
     position: relative;
 }
 
-.notifications-count {
+/* .notifications-count {
     position: absolute;
     top: 66%;
     left: 22px;
@@ -1001,7 +1001,69 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
     justify-content: center;
     line-height: 1;
     border: 2px solid transparent;
+} */
+
+.notifications-count{
+    min-width: 25px;
+    height: 25px;
+    padding: 0 7px;
+    font-size: .7rem;
+    background-color: #ff6b6b;
+    color: #ffffff;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 600;
 }
+/* 
+.notification-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+} */
+
+.user-tooltip .notification-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    /* line-height: 1.5; */
+    /* padding: 6px 0; */
+}
+
+/* Колокольчик: при непрочитанных — анимация звона; при нуле — цвет #e84393, без анимации */
+@keyframes bell-ring {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(-12deg); }
+    20% { transform: rotate(12deg); }
+    30% { transform: rotate(-12deg); }
+    40% { transform: rotate(12deg); }
+    50% { transform: rotate(-8deg); }
+    60% { transform: rotate(8deg); }
+    70% { transform: rotate(-4deg); }
+    80% { transform: rotate(4deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.user-tooltip .notification-btn .fa-bell {
+    display: inline-block;
+    transform-origin: top center;
+    margin-right: 14px;
+}
+
+/* При непрочитанных — колокольчик трясётся */
+.user-tooltip .notification-btn.has-unread .fa-bell {
+    animation: bell-ring 0.5s ease-in-out infinite;
+}
+
+/* При нуле — без анимации, цвет #e84393 */
+/* .user-tooltip .notification-btn:not(.has-unread) .fa-bell {
+    animation: none;
+    color: #e84393;
+} */
 
 .block-quote {
     padding: 20px;

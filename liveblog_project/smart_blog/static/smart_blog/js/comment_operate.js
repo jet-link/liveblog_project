@@ -1134,10 +1134,7 @@
 
   function init() {
     const buttons = Array.from(
-      document.querySelectorAll(
-        // 🔥 только кнопки внутри main comments
-        'div[id^="comment-"]:not([data-parent]) .btn-comment-like'
-      )
+      document.querySelectorAll('.btn-comment-like')
     );
 
     buttons.forEach(btn => {

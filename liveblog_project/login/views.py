@@ -363,7 +363,7 @@ def notifications_view(request, username):
         Q(item__isnull=True) |
         Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
         Q(notif_type=Notification.TYPE_REPLY, parent_comment__isnull=True) |
-        Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
+        Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True, reply_comment__isnull=True)
     )
     Notification.objects.filter(recipient=request.user).filter(invalid_q).delete()
 
@@ -374,7 +374,7 @@ def notifications_view(request, username):
         .exclude(
             Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
             Q(notif_type=Notification.TYPE_REPLY, parent_comment__isnull=True) |
-            Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
+            Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True, reply_comment__isnull=True)
         )
         .select_related("item", "reply_comment", "parent_comment", "reply_comment__author")
         .order_by("-created_at")
@@ -386,7 +386,8 @@ def notifications_view(request, username):
             notif.body_text = strip_mention_tokens(getattr(notif.reply_comment, "text", ""))
         elif notif.notif_type == Notification.TYPE_COMMENT_LIKE:
             notif.header_text = "liked your comment in the post"
-            notif.body_text = strip_mention_tokens(getattr(notif.parent_comment, "text", ""))
+            liked_comment = notif.parent_comment or notif.reply_comment
+            notif.body_text = strip_mention_tokens(getattr(liked_comment, "text", ""))
         else:
             notif.header_text = "liked your post."
             notif.body_text = ""

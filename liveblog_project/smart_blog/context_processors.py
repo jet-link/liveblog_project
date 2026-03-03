@@ -14,7 +14,7 @@ def notifications_context(request):
         .exclude(
             Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
             Q(notif_type=Notification.TYPE_REPLY, parent_comment__isnull=True) |
-            Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True)
+            Q(notif_type=Notification.TYPE_COMMENT_LIKE, parent_comment__isnull=True, reply_comment__isnull=True)
         )
         .count()
     )

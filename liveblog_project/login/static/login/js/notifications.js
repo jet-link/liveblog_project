@@ -67,24 +67,28 @@
   }
 
   function updateHeaderCount(count) {
-    let badge = document.querySelector('.notifications-count');
-    if (count <= 0) {
-      if (badge) badge.remove();
-      return;
-    }
-    if (!badge) {
-      const btn = document.querySelector('.notification-btn');
-      if (!btn) return;
-      badge = document.createElement('span');
-      badge.className = 'notifications-count custom_badge badge_danger';
-      const wrap = btn.querySelector('.notification-bell-wrap');
-      if (wrap) {
-        wrap.appendChild(badge);
+    const btn = document.querySelector('.notification-btn');
+    if (btn) {
+      if (count > 0) {
+        btn.classList.add('has-unread');
       } else {
-        btn.insertBefore(badge, btn.querySelector('i'));
+        btn.classList.remove('has-unread');
       }
     }
-    badge.textContent = count >= 10 ? '10+' : String(count);
+    // Badge возле заголовка "Notifications" на странице notifications.html
+    const pageBadgeWrap = document.getElementById('notificationsPageBadgeWrap');
+    if (!pageBadgeWrap) return;
+    let badge = pageBadgeWrap.querySelector('.notifications-count');
+    if (count <= 0) {
+      if (badge) badge.remove();
+    } else {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'notifications-count';
+        pageBadgeWrap.appendChild(badge);
+      }
+      badge.textContent = count >= 10 ? '10+' : String(count);
+    }
   }
 
   function updateReadAllButton() {

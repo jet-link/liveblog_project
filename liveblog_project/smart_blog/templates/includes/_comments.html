@@ -78,13 +78,6 @@
           <button type="button" class="comment-menu-action custom_badge badge_primary" data-action="share" data-comment-id="{{ comment.pk }}">{% if comment.author.is_active %}{{ comment.author }}{% else %}Vanished user{% endif %}</button>
         {% endif %}
       </div>
-
-      {% if comment.parent is None %}
-        <div class="d-flex gap-2 align-items-center text-muted VLB">
-          <span id="comment-likes-count-{{ comment.pk }}" class="fw-semibold">{{ comment.likes_count|default:comment.likes.count }}</span>
-          <span>Likes</span>
-        </div>
-      {% endif %}
     </div>
   {% else %}
     <div class="d-flex gap-1 align-items-center">
@@ -126,6 +119,11 @@
   {% endif %}
   <!-- comment body -->
   <div class="comment-body my-3">
+    <div class="comment-text-wrapper position-relative">
+      <div class="VLB VLB-reply-badge d-flex align-items-center gap-2 text-muted">
+        <span id="comment-likes-count-{{ comment.pk }}" class="fw-semibold">{{ comment.likes_count|default:comment.likes.count }}</span>
+        <span>Likes</span>
+      </div>
     <div class="comment-text">
       {% if no_mentions %}
         {{ comment.text|linebreaksbr }}
@@ -136,6 +134,7 @@
           {{ comment.text|render_mentions:comment.parent_id }}
         {% endif %}
       {% endif %}
+    </div>
     </div>
   </div>
 
@@ -160,7 +159,7 @@
     </div>
     {% if user.is_authenticated and user != comment.author and comment.author %}
       <div class="d-flex gap-1 align-items-center">
-        {% if comment.parent is None and user.is_active %}
+        {% if user.is_active %}
           <button type="button" class="thumb_btn btn-comment-like" data-url="{% url 'smart_blog:toggle_comment_like' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-pressed="{{ comment.user_liked|yesno:'true,false' }}"><i id="comment-like-icon-{{ comment.pk }}" class="fa fa-{{ comment.user_liked|yesno:'thumbs-up,thumbs-o-up' }}"></i></button>
         {% endif %}
       </div>
