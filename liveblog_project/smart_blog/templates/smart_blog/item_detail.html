@@ -57,7 +57,7 @@
         </a>
       {% endif %}
     </div>
-    <div class="d-inline-flex gap-2 align-items-center VLB">
+    <div class="d-inline-flex gap-2 align-items-center">
       <i class="fa fa-eye" style="color:#0984e3;"></i>
       <span id="viewsCount">{{ item.views_count|human }}</span>
     </div>
@@ -178,7 +178,7 @@
     <div id="commentsHeader" class="pt-5 d-flex gap-3 align-items-center justify-content-between">
       {% if comments %}
         <h5 class="m-0 text-muted">Comments</h5>
-        <div class="d-flex gap-2 align-items-center small VLB">
+        <div class="d-flex gap-2 align-items-center small">
           <span id="commentsCount">{{ item.comments_count|human }}</span>
           <i class="fa fa-comment stat-comment"></i>
         </div>
