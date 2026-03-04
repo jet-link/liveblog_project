@@ -1585,10 +1585,6 @@ textarea {
     background-color: #f1f2f3;
 }
 
-.social-block span {
-    border-bottom: 1px solid #F1F2F3;
-}
-
 .social-nav {
     display: flex;
     justify-content: space-between;
@@ -1802,9 +1798,9 @@ textarea {
 }
 
 /* тело comment */
-.comment-body>.comment-text {
+/* .comment-body>.comment-text {
     border-left: 3px solid var(--text-link);
-}
+} */
 
 /* ===============================
    ROOT COMMENT HIGHLIGHT (MENTION)
@@ -2264,6 +2260,7 @@ html[data-theme="dark"] .form-wrapper{
     word-wrap: break-word;
     font-size: .850rem;
     font-weight: 500;
+    border-left: 4px solid var(--text-link)
 }
 
 .existing-image.marked-for-delete {
@@ -2309,12 +2306,12 @@ html[data-theme="dark"] .tags_block{
 
 .VLB-reply-badge {
     position: absolute;
-    top: -16px;
+    top: -20px;
     right: 20px;
     z-index: 2;
-    color: #dedede;
-    /* border: 1px solid #c4c4c4; */
-    background-color: #747d8c;
+    color: #747d8c;
+    border: 1px solid #c4c4c4;
+    /* background-color: #747d8c; */
 
 }
 
@@ -3233,3 +3230,13 @@ pre {
     position: relative;
 }
 
+/* .search-btn{
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */

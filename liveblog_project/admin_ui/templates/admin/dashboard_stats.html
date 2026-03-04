@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="dashboard-stats">
+  <div class="stat-card">
+    <span class="stat-value">{% if users_count %}{{ users_count }}{% else %}0{% endif %}</span>
+    <span class="stat-label">{% translate 'Users' %}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{% if posts_count %}{{ posts_count }}{% else %}0{% endif %}</span>
+    <span class="stat-label">{% translate 'Posts' %}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{% if comments_count %}{{ comments_count }}{% else %}0{% endif %}</span>
+    <span class="stat-label">{% translate 'Comments' %}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{% if reports_count %}{{ reports_count }}{% else %}0{% endif %}</span>
+    <span class="stat-label">{% translate 'Reports' %}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{% if likes_count %}{{ likes_count }}{% else %}0{% endif %}</span>
+    <span class="stat-label">{% translate 'Likes' %}</span>
+  </div>
+</div>

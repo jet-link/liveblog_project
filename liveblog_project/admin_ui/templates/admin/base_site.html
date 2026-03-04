@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Admin') }}{% endblock %}
+
+{% block branding %}
+<span class="admin-logo-text">{{ site_header|default:_('Admin') }}</span>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

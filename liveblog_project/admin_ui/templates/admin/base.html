@@ -1,0 +1,133 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'smart_blog/vendor/fontawesome/css/font-awesome.css' %}">
+  <link rel="stylesheet" href="{% static 'admin_ui/css/admin.css' %}">
+  <script src="{% static 'admin_ui/js/admin.js' %}" defer></script>
+  {% block extrastyle %}{% endblock %}
+  {% block extrahead %}{% endblock %}
+</head>
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+  {% if not is_popup %}
+  {% if has_permission %}
+  <!-- Sidebar (only for authenticated staff) -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <a href="{% url 'admin:index' %}" class="admin-logo">
+      <i class="fa fa-cog admin-logo-icon" aria-hidden="true"></i>
+      {% block branding %}<span class="admin-logo-text">{{ site_header|default:'Admin' }}</span>{% endblock %}
+    </a>
+    <nav class="admin-nav">
+      <a href="{% url 'admin:index' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+        <i class="fa fa-dashboard admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Dashboard' %}</span>
+      </a>
+      <a href="{% url 'admin:smart_blog_item_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'item' %}active{% endif %}">
+        <i class="fa fa-file-text-o admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Posts' %}</span>
+      </a>
+      <a href="{% url 'admin:smart_blog_comment_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'comment' %}active{% endif %}">
+        <i class="fa fa-comments-o admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Comments' %}</span>
+      </a>
+      <a href="{% url 'admin:auth_user_changelist' %}" class="admin-nav-item {% if opts and opts.app_label == 'auth' and opts.model_name == 'user' %}active{% endif %}">
+        <i class="fa fa-users admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Users' %}</span>
+      </a>
+      <a href="{% url 'admin:smart_blog_contentreport_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'contentreport' %}active{% endif %}">
+        <i class="fa fa-flag-o admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Reports' %}</span>
+      </a>
+      <a href="{% url 'admin:smart_blog_tag_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'tag' %}active{% endif %}">
+        <i class="fa fa-tags admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Tags' %}</span>
+      </a>
+      <a href="{% url 'admin:pages_faqitem_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'faqitem' %}active{% endif %}">
+        <i class="fa fa-question-circle admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'FAQ' %}</span>
+      </a>
+    </nav>
+  </aside>
+  {% endif %}
+
+  <div class="admin-wrapper{% if not has_permission %} admin-no-sidebar{% endif %}">
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      {% if has_permission %}
+      <button class="admin-sidebar-toggle" id="toggle-sidebar" aria-label="{% translate 'Toggle menu' %}">
+        <span></span><span></span><span></span>
+      </button>
+      {% endif %}
+      <h1 class="admin-topbar-title">{{ site_title|default:'Admin' }}</h1>
+      <div class="admin-topbar-search">
+        <form action="" method="get" role="search" id="admin-search-form">
+          <input type="search" name="q" value="{{ request.GET.q }}" placeholder="{% translate 'Search…' %}" aria-label="{% translate 'Search' %}">
+        </form>
+      </div>
+      <div class="admin-topbar-actions">
+        {% if has_permission %}
+        <a href="{{ site_url }}" class="admin-topbar-link">{% translate 'View site' %}</a>
+        {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}" class="admin-topbar-link">{% translate 'Password' %}</a>
+        {% endif %}
+        <form method="post" action="{% url 'admin:logout' %}" class="admin-logout-form">
+          {% csrf_token %}
+          <button type="submit" class="admin-btn admin-btn-secondary admin-btn-sm">{% translate 'Log out' %}</button>
+        </form>
+        <span class="admin-topbar-user">{% firstof user.get_short_name user.get_username %}</span>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="admin-content">
+      {% block nav-breadcrumbs %}
+      <nav class="admin-breadcrumbs" aria-label="{% translate 'Breadcrumbs' %}">
+        {% block breadcrumbs %}
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+        {% if title %} / {{ title }}{% endif %}
+        {% endblock %}
+      </nav>
+      {% endblock %}
+
+      {% block messages %}
+      {% if messages %}
+      <ul class="admin-messages">
+        {% for message in messages %}
+        <li class="admin-message admin-message-{{ message.tags|default:'info' }}">{{ message|capfirst }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endblock %}
+
+      <div class="admin-content-inner {% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1 class="admin-page-title">{{ title }}</h1>{% endif %}{% endblock %}
+        {% block content_subtitle %}{% if subtitle %}<h2 class="admin-page-subtitle">{{ subtitle }}</h2>{% endif %}{% endblock %}
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear">
+      </div>
+    </main>
+  </div>
+  {% else %}
+  <main class="admin-content admin-content-popup">
+    <div class="admin-content-inner">
+      {{ content }}
+    </div>
+  </main>
+  {% endif %}
+
+  {% block extrabody %}{% endblock %}
+</body>
+</html>

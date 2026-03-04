@@ -17,7 +17,6 @@
         <a href="#" class="header-menu-item text-decoration-none text-muted">Popular</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">Vacations</a>
       </div> {% endcomment %}
-
       <div class="d-flex align-items-center gap-3 header-actions">
         {% if user.is_authenticated %}
           {% comment %} <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn" data-notifications-count="{{ notifications_count }}">
@@ -26,7 +25,6 @@
             {% endif %}
             <i class="fa fa-bell-o" aria-hidden="true"></i>
           </a> {% endcomment %}
-
           <div class="user-menu" id="userMenu">
             <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
             <div class="user-tooltip">

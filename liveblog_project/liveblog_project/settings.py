@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     # Local apps
+    'admin_ui',
     'smart_blog.apps.SmartBlogConfig',
     'login',
     'pages',
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'liveblog_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],   # <-- добавляем
+        'DIRS': [BASE_DIR / "admin_ui" / "templates", BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,7 +118,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / "static",
+    BASE_DIR / "admin_ui" / "static",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"

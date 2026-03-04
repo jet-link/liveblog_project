@@ -1056,7 +1056,7 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
 
 /* При непрочитанных — колокольчик трясётся */
 .user-tooltip .notification-btn.has-unread .fa-bell {
-    animation: bell-ring 0.5s ease-in-out infinite;
+    animation: bell-ring 0.8s ease-in-out infinite;
     color: #e74c3c;
 }
 
