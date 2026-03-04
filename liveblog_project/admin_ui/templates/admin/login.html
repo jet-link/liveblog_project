@@ -1,0 +1,104 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  body.login .admin-wrapper { margin-left: 0; }
+  body.login .admin-content { max-width: 420px; margin: 4rem auto; padding: 2rem; }
+  body.login .admin-breadcrumbs { display: none; }
+  body.login .admin-page-header { display: none; }
+  body.login .admin-topbar-title { margin: 0 auto; }
+  #login-main {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: var(--admin-shadow);
+    padding: 2.5rem;
+  }
+  #login-main .form-row { margin-bottom: 1.25rem; }
+  #login-main .form-row label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+  #login-main .form-row input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-sizing: border-box;
+  }
+  #login-main .form-row input:focus { outline: none; border-color: var(--admin-text); }
+  #login-main .submit-row { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--admin-border); }
+  #login-main .submit-row input[type="submit"] {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    background: var(--admin-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--admin-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  #login-main .submit-row input[type="submit"]:hover { background: var(--admin-primary-hover); }
+  #login-main .password-reset-link { margin-top: 1rem; font-size: 0.9rem; }
+  #login-main .password-reset-link a { color: var(--admin-primary); text-decoration: none; }
+  #login-main .password-reset-link a:hover { text-decoration: underline; }
+  #login-main .errorlist { color: var(--admin-danger); font-size: 0.85rem; margin: 0.25rem 0 0; }
+</style>
+{{ form.media }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors %}
+<p class="errornote">
+{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">{{ error }}</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+{% if user.is_authenticated %}
+<p class="errornote">
+{% blocktranslate trimmed %}
+  You are authenticated as {{ username }}, but are not authorized to
+  access this page. Would you like to login to a different account?
+{% endblocktranslate %}
+</p>
+{% endif %}
+
+<div id="login-main">
+<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+  <div class="form-row">
+    {{ form.username.errors }}
+    {{ form.username.label_tag }}
+    {{ form.username }}
+  </div>
+  <div class="form-row">
+    {{ form.password.errors }}
+    {{ form.password.label_tag }}
+    {{ form.password }}
+    <input type="hidden" name="next" value="{{ next }}">
+  </div>
+  {% url 'admin_password_reset' as password_reset_url %}
+  {% if password_reset_url %}
+  <div class="password-reset-link">
+    <a href="{{ password_reset_url }}">{% translate 'Forgotten your login credentials?' %}</a>
+  </div>
+  {% endif %}
+  <div class="submit-row">
+    <input type="submit" value="{% translate 'Log in' %}">
+  </div>
+</form>
+</div>
+</div>
+{% endblock %}

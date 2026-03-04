@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n mentions %}
 <div class="dashboard-latest">
   <div class="latest-card">
     <h3>{% translate 'Latest users' %}</h3>
@@ -29,7 +29,7 @@
     {% if latest_comments %}
     <ul class="latest-list">
       {% for c in latest_comments %}
-      <li><a href="{% url 'admin:smart_blog_comment_change' c.pk %}">{{ c.text|truncatechars:25 }}</a> <span class="muted">{{ c.created|timesince }} ago</span></li>
+      <li><a href="{% url 'admin:smart_blog_comment_change' c.pk %}">{{ c.text|mention_names|truncatechars:25 }}</a> <span class="muted">{{ c.created|timesince }} ago</span></li>
       {% endfor %}
     </ul>
     {% else %}

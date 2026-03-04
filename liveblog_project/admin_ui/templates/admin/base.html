@@ -66,11 +66,6 @@
       </button>
       {% endif %}
       <h1 class="admin-topbar-title">{{ site_title|default:'Admin' }}</h1>
-      <div class="admin-topbar-search">
-        <form action="" method="get" role="search" id="admin-search-form">
-          <input type="search" name="q" value="{{ request.GET.q }}" placeholder="{% translate 'Search…' %}" aria-label="{% translate 'Search' %}">
-        </form>
-      </div>
       <div class="admin-topbar-actions">
         {% if has_permission %}
         <a href="{{ site_url }}" class="admin-topbar-link">{% translate 'View site' %}</a>
@@ -81,7 +76,7 @@
           {% csrf_token %}
           <button type="submit" class="admin-btn admin-btn-secondary admin-btn-sm">{% translate 'Log out' %}</button>
         </form>
-        <span class="admin-topbar-user">{% firstof user.get_short_name user.get_username %}</span>
+        {% comment %} <span class="admin-topbar-user">{% firstof user.get_short_name user.get_username %}</span> {% endcomment %}
         {% endif %}
       </div>
     </header>
@@ -109,12 +104,12 @@
 
       <div class="admin-content-inner {% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}
-        {% block content_title %}{% if title %}<h1 class="admin-page-title">{{ title }}</h1>{% endif %}{% endblock %}
+        <div class="admin-page-header">
+          {% block content_title %}{% if title %}<h1 class="admin-page-title">{{ title }}</h1>{% endif %}{% endblock %}
+          {% block object-tools %}{% endblock %}
+        </div>
         {% block content_subtitle %}{% if subtitle %}<h2 class="admin-page-subtitle">{{ subtitle }}</h2>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
+        {% block content %}{{ content }}{% endblock %}
         {% block sidebar %}{% endblock %}
         <br class="clear">
       </div>

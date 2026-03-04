@@ -37,3 +37,21 @@ def render_mentions(text, parent_comment_id=None):
     text = MENTION_RE.sub(repl, text)
     text = text.replace('\n', '<br>')
     return mark_safe(text)
+
+
+@register.filter
+def mention_names(text):
+    """Replace @[user:ID] with @username (plain text, no HTML). Use for truncation-friendly display."""
+    if not text:
+        return ""
+
+    def repl(match):
+        user_id = match.group(1)
+        try:
+            user = User._base_manager.get(pk=user_id)
+            return f'@{user.username}'
+        except User.DoesNotExist:
+            return '@vanished-user'
+
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+    return MENTION_RE.sub(repl, text)
