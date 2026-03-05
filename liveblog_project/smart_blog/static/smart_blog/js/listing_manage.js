@@ -447,13 +447,15 @@
             try { window.profileSectionsActivate(section.id); } catch { }
         }
 
-        requestAnimationFrame(() => {
-            if (anchorId && String(anchorId).startsWith('item-')) {
-                el.classList.remove('back-highlight');
-                void el.offsetWidth;
-                el.classList.add('back-highlight');
-            }
-        });
+        if (anchorId && String(anchorId).startsWith('item-')) {
+            const cardEl = el.closest?.('.item-card') || el;
+            cardEl.classList.remove('back-highlight');
+            setTimeout(() => {
+                void cardEl.offsetWidth;
+                cardEl.classList.add('back-highlight');
+                setTimeout(() => cardEl.classList.remove('back-highlight'), 1300);
+            }, 100);
+        }
     }
 
     window.addEventListener('pageshow', restoreListingPosition);

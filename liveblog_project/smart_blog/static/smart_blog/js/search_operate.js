@@ -632,6 +632,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var GUEST_STORAGE_KEY = 'brainews_search_history';
         var GUEST_MAX_ITEMS = 10;
+        var GUEST_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
         function getCSRF() {
             const m = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
@@ -716,14 +717,25 @@ document.addEventListener('DOMContentLoaded', function () {
             dropdown.setAttribute('aria-hidden', 'true');
         }
 
+        function isGuestItemExpired(item) {
+            try {
+                var ts = item && item.created_at ? new Date(item.created_at).getTime() : 0;
+                return !ts || (Date.now() - ts > GUEST_TTL_MS);
+            } catch (e) { return true; }
+        }
+
         function getGuestHistory(maxItems) {
             try {
                 var raw = localStorage.getItem(GUEST_STORAGE_KEY);
                 if (!raw) return [];
                 var arr = JSON.parse(raw);
                 if (!Array.isArray(arr)) return [];
+                var valid = arr.filter(function (it) { return !isGuestItemExpired(it); });
+                if (valid.length < arr.length) {
+                    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(valid));
+                }
                 var limit = (maxItems != null && maxItems > 0) ? maxItems : GUEST_MAX_ITEMS;
-                return arr.slice(0, limit).map(function (it, i) {
+                return valid.slice(0, limit).map(function (it, i) {
                     return {
                         id: 'local-' + i,
                         search_query: it.search_query,
@@ -748,6 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (raw) arr = JSON.parse(raw);
                     if (!Array.isArray(arr)) arr = [];
                 } catch (e) { arr = []; }
+                arr = arr.filter(function (it) { return !isGuestItemExpired(it); });
                 var now = new Date().toISOString();
                 var dupIdx = arr.findIndex(function (it) {
                     return (it.search_query || '').toLowerCase() === q.toLowerCase() &&
@@ -773,6 +786,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (raw) arr = JSON.parse(raw);
                     if (!Array.isArray(arr)) arr = [];
                 } catch (e) { arr = []; }
+                arr = arr.filter(function (it) { return !isGuestItemExpired(it); });
                 var dupIdx = arr.findIndex(function (it) {
                     return (it.search_query || '').toLowerCase() === q.toLowerCase() &&
                         JSON.stringify(it.search_filters || {}) === JSON.stringify(f);

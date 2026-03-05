@@ -1,48 +1,29 @@
 {% if page_obj.has_other_pages %}
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-start pagination-sm">
-      {# Previous #}
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
-          {% comment %} <a class="page-link" href="?page={{ page_obj.previous_page_number }}">←</a> {% endcomment %}
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          <span class="page-link text-muted">Prev</span>
-          {% comment %} <span class="page-link text-muted">←</span> {% endcomment %}
-        </li>
-      {% endif %}
+<nav class="paginator-nav" aria-label="Page navigation">
+  <div class="paginator-inner">
+    {% if page_obj.has_previous %}
+      <a class="paginator-btn paginator-prev" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+    {% else %}
+      <span class="paginator-btn paginator-prev paginator-disabled">Prev</span>
+    {% endif %}
 
-      {# Page numbers #}
+    <div class="paginator-pages">
       {% for p in page_range %}
         {% if p == '…' %}
-          <li class="page-item disabled">
-            <span class="page-link">…</span>
-          </li>
+          <span class="paginator-ellipsis" aria-hidden="true">…</span>
         {% elif p == page_obj.number %}
-          <li class="page-item active">
-            <span class="page-link">{{ p }}</span>
-          </li>
+          <span class="paginator-page paginator-current" aria-current="page">{{ p }}</span>
         {% else %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
-          </li>
+          <a class="paginator-page" href="?page={{ p }}">{{ p }}</a>
         {% endif %}
       {% endfor %}
+    </div>
 
-      {# Next #}
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          {% comment %} <a class="page-link" href="?page={{ page_obj.next_page_number }}">→</a> {% endcomment %}
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          {% comment %} <span class="page-link text-muted">→</span> {% endcomment %}
-          <span class="page-link text-muted">Next</span>
-        </li>
-      {% endif %}
-    </ul>
-  </nav>
+    {% if page_obj.has_next %}
+      <a class="paginator-btn paginator-next" href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% else %}
+      <span class="paginator-btn paginator-next paginator-disabled">Next</span>
+    {% endif %}
+  </div>
+</nav>
 {% endif %}

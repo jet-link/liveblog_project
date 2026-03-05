@@ -14,18 +14,18 @@
           <i class="fa fa-angle-down notification-legend-icon notification-legend-icon-open" aria-hidden="true"></i>
           <i class="fa fa-angle-up notification-legend-icon notification-legend-icon-close" aria-hidden="true"></i>
         </button>
-        <span id="notificationsPageBadgeWrap">
-          {% if notifications_count_label %}
-            <span class="notifications-count">{{ notifications_count_label }}</span>
-          {% endif %}
-        </span>
       </div>
       {% if notifications %}
         <div id="notificationsActions" class="d-flex align-items-center gap-2">
+          <span id="notificationsPageBadgeWrap">
+            {% if notifications_count_label %}
+              <span class="notifications-count">{{ notifications_count_label }}</span>
+            {% endif %}
+          </span>
           {% if unread_count > 0 %}
-            <button id="notificationsReadAll" type="button" class="read-all-btn text-muted">Read all</button>
+            <button id="notificationsReadAll" type="button" class="read-all-btn d-flex align-items-center">Read all</button>
           {% endif %}
-          <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm ms-2"><i class="fa fa-trash-o fs-5"></i></button>
+          <button id="notificationsDelete" type="button" class="text-muted btn btn-link text-decoration-none p-0 btn-sm ps-1"><i class="fa fa-trash-o fs-5"></i></button>
         </div>
       {% endif %}
     </div>

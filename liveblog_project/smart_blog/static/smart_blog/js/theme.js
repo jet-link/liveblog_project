@@ -12,12 +12,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.getElementById('themeToggle');
-    if (!btn) return;
-
-    btn.addEventListener('click', function () {
-      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      setTheme(!isDark);
+    var btns = document.querySelectorAll('#themeToggle, .ios-toggle-overlay');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setTheme(!isDark);
+      });
     });
   });
 })();
