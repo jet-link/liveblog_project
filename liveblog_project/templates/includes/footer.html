@@ -18,12 +18,13 @@
       </div>
     </div>
     <div class="footer-subscribe-wrap flex-shrink-0 gap-2">
-      <h5 class="footer-subscribe-title text-muted mb-2">Subscribe to the newsletter</h5>
+      {% comment %} <h5 class="footer-subscribe-title text-muted mb-2">Subscribe to the newsletter</h5>
       <form class="footer-subscribe d-flex flex-column flex-sm-row gap-2 align-items-stretch" action="#" method="post" novalidate>
         {% csrf_token %}
         <input type="email" name="email" class="form-control footer-subscribe-input" placeholder="Enter your email..." required aria-label="Email for newsletter" autocomplete="email" />
         <button type="submit" class="cstm-btn-sm custom-primary-btn ">Subscribe</button>
-      </form>
+      </form> {% endcomment %}
+      <a href="#" class="text-muted text-decoration-none">Language<i class="fa fa-angle-down ms-2"></i></a>
     </div>
   </div>
   <hr />

@@ -1,0 +1,6 @@
+{% extends "admin/index.html" %}
+{% load i18n admin_ui_tags %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ app_label }}{% endblock %}

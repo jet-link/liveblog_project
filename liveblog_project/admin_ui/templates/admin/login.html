@@ -9,7 +9,8 @@
   body.login .admin-content { max-width: 420px; margin: 4rem auto; padding: 2rem; }
   body.login .admin-breadcrumbs { display: none; }
   body.login .admin-page-header { display: none; }
-  body.login .admin-topbar-title { margin: 0 auto; }
+  body.login .admin-topbar { justify-content: center; }
+  body.login .admin-topbar-title { margin: 0; text-align: center; }
   #login-main {
     background: var(--admin-card-bg);
     border: 1px solid var(--admin-border);
@@ -46,6 +47,14 @@
   #login-main .password-reset-link a:hover { text-decoration: underline; }
   #login-main .errorlist { color: var(--admin-danger); font-size: 0.85rem; margin: 0.25rem 0 0; }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var u = document.querySelector('#login-form input[name="username"]');
+  var p = document.querySelector('#login-form input[name="password"]');
+  if (u) u.setAttribute('placeholder', '{% translate "Enter username" %}');
+  if (p) p.setAttribute('placeholder', '{% translate "Enter password" %}');
+});
+</script>
 {{ form.media }}
 {% endblock %}
 

@@ -718,6 +718,7 @@ body:not(.popup) { display: flex; }
   padding: 1.5rem 0;
   margin-top: 1.5rem;
   border-top: 1px solid var(--admin-border);
+  gap: 0 !important;
 }
 
 .submit-row input[type="submit"],
@@ -743,6 +744,53 @@ body:not(.popup) { display: flex; }
 .submit-row .deletelink { background: var(--admin-danger); color: #fff; }
 .submit-row .deletelink:hover { background: #dc2626; }
 
+/* Delete confirmation page (single & bulk) */
+body.delete-confirmation form input[type="submit"],
+body.delete-selected-confirmation form input[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  background: var(--admin-danger);
+  color: #fff;
+  border: none;
+  border-radius: var(--admin-radius);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+body.delete-confirmation form input[type="submit"]:hover,
+body.delete-selected-confirmation form input[type="submit"]:hover {
+  background: #dc2626;
+}
+
+body.delete-confirmation .cancel-link,
+body.delete-selected-confirmation .cancel-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+body.delete-confirmation .cancel-link:hover,
+body.delete-selected-confirmation .cancel-link:hover {
+  background: var(--admin-border);
+  border-color: var(--admin-text);
+  color: var(--admin-primary);
+}
+
 /* ========== Pagination ========== */
 .pagination { margin: 1rem 0; display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .pagination a, .pagination span {
@@ -764,6 +812,88 @@ body:not(.popup) { display: flex; }
   background: var(--admin-primary);
   color: #fff;
   border-color: var(--admin-primary);
+}
+
+/* Changelist footer: paginator + Save button (formset) */
+#changelist .paginator {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  margin: 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--admin-border);
+  background: #fafafa;
+  font-size: 0.9rem;
+  color: var(--admin-text-muted);
+}
+
+#changelist .paginator a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--admin-radius);
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#changelist .paginator a:hover {
+  background: var(--admin-bg);
+  border-color: var(--admin-text);
+  color: var(--admin-primary);
+}
+
+#changelist .paginator a.showall {
+  background: none;
+  border: none;
+  color: var(--admin-primary);
+  min-width: auto;
+}
+
+#changelist .paginator a.showall:hover {
+  background: none;
+  color: var(--admin-primary-hover);
+  text-decoration: underline;
+}
+
+#changelist .paginator .this-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--admin-radius);
+  background: var(--admin-primary);
+  color: #fff;
+  border: 1px solid var(--admin-primary);
+  font-weight: 600;
+}
+
+#changelist .paginator input[type="submit"],
+#changelist .paginator input[type="submit"].default {
+  margin-left: auto;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  background: var(--admin-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--admin-radius);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#changelist .paginator input[type="submit"]:hover,
+#changelist .paginator input[type="submit"].default:hover {
+  background: var(--admin-primary-hover);
 }
 
 /* ========== ColMS layout ========== */
@@ -811,6 +941,64 @@ body:not(.popup) { display: flex; }
   .admin-page-header { flex-direction: column; align-items: flex-start; }
 }
 
+/* ========== Admin widget alignment (icons vertical center) ========== */
+.form-row .flex-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.related-widget-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+}
+
+.related-widget-wrapper-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selector .selector-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selector .selector-filter label,
+.selector .selector-filter .search-label-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.selector ul.selector-chooser {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  transform: none;
+}
+
+.selector-chooser li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selector .help-icon,
+.selector .selector-chosen .help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .clear { clear: both; height: 0; }
 .visually-hidden {
   position: absolute;
@@ -830,4 +1018,9 @@ body.popup .admin-content {
   margin: 0;
   max-width: none;
   padding: 1rem;
+}
+
+
+#changelist .paginator {
+  gap: 0.5rem;
 }

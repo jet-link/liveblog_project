@@ -15,7 +15,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q, Subquery
 from django.db.models import Prefetch
-from .utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
+from .utils import count_convert, build_breadcrumbs, breadcrumb
 from .search_utils import build_search_filter, apply_popular_filter
 from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging

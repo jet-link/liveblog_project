@@ -901,6 +901,7 @@ textarea {
     overflow: visible;
 }
 
+/* Временно отключено прилипание поиска — оставляем обычное поведение
 .header-search-overlay.header-search-stuck {
     position: fixed;
     top: 0;
@@ -910,9 +911,9 @@ textarea {
     box-sizing: border-box;
     z-index: 100;
     background-color: var(--bg-default);
-    /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); */
     transition: box-shadow 0.2s ease, opacity 0.2s ease;
 }
+*/
 
 .header-search-placeholder {
     display: none;
@@ -951,7 +952,7 @@ textarea {
     width: 100%;
     height: 67px;
     padding: 15px 50px;
-    border-radius: 0 !important;
+    border-radius: 7px;
     font-size: .925rem;
     border: 1px solid var(--border-default);
     color: var(--text-primary) !important;

@@ -321,7 +321,7 @@ html[data-theme="dark"] .block-quote {
 .avatar-lightbox-close {
     position: absolute;
     border: none;
-    background: var(--btn-bg);
+    background: #1c1b1b;;
     color: #fff;
     padding: 10px 12px;
     border-radius: var(--btn-radius);
@@ -329,10 +329,15 @@ html[data-theme="dark"] .block-quote {
     -webkit-tap-highlight-color: transparent;
     transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-    /* backdrop-filter: blur(6px); */
     font-weight: 600;
     font-size: 18px;
 }
+
+
+/* html[data-theme="dark"] .avatar-lightbox-close{
+    background: #cccccc;
+    color: #111;
+} */
 
 .avatar-lightbox-close:hover {
     transform: scale(1.1);
