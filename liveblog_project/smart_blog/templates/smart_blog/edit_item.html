@@ -98,8 +98,8 @@
           <small class="text-muted text-small">First image will be thumbnail.</small>
         </div>
         <div class="d-flex gap-1 align-items-center mt-2">
-          <button class="cstm-btn custom-primary-btn" type="submit">Edit item</button>
-          <a href="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="cstm-btn custom-secondary-btn">Cancel</a>
+          <button class="cstm-btn-sm custom-primary-btn" type="submit">Edit item</button>
+          <a href="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="cstm-btn-sm custom-secondary-btn">Cancel</a>
         </div>
       </form>
     </main>

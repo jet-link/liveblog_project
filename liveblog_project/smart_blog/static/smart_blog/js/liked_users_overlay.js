@@ -2,6 +2,8 @@
   'use strict';
 
   const btn = document.getElementById('likedUsersBtn');
+  const noLikesYet = document.getElementById('noLikesYet');
+  const likedUsersContainer = document.getElementById('likedUsersContainer');
   const overlay = document.getElementById('likedUsersOverlay');
   const closeBtn = document.getElementById('likedUsersClose');
   const backdrop = overlay?.querySelector('.liked-users-backdrop');
@@ -132,13 +134,19 @@
   }
 
   function updateButtonVisibility(likesCount) {
-    if (!btn) return;
-    if (likesCount >= 1) {
-      btn.classList.remove('is-hidden');
-      btn.disabled = false;
-    } else {
-      btn.classList.add('is-hidden');
-      btn.disabled = true;
+    const hasLikes = likesCount >= 1;
+    if (noLikesYet) {
+      noLikesYet.style.display = hasLikes ? 'none' : '';
+    }
+    if (likedUsersContainer) {
+      likedUsersContainer.style.display = hasLikes ? '' : 'none';
+    }
+    if (btn) {
+      btn.classList.toggle('is-hidden', !hasLikes);
+      btn.disabled = !hasLikes;
+    }
+    if (!hasLikes && overlay && !overlay.classList.contains('hidden')) {
+      closeOverlay();
     }
   }
 

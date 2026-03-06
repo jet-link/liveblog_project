@@ -21,8 +21,9 @@
     <div class="d-flex align-items-end justify-content-between mt-4">
       {% if item.category %}
         <div class="d-inline-flex align-items-center gap-2">
-          <small class="text-muted fw-semibold">Category:</small>
-          <span class="item-category-badge">{{ item.category.name }}</span>
+          {% comment %} <i class="fa fa-folder-o" aria-hidden="true"></i> {% endcomment %}
+          {% comment %} <small class="text-muted fw-semibold">Category</small> {% endcomment %}
+          <span class="item-category-badge" title="Category">{{ item.category.name }}</span>
         </div>
       {% else %}
         <small class="primary_ fw-semibold">No category</small>
@@ -32,12 +33,12 @@
         <div class="item-stats text-muted d-inline-flex align-items-center">
           <div class="stat">
             <span id="likesCount">{{ item.likes_count|human }}</span>
-            <i class="fa fa-heart danger_"></i>
+            <i class="fa fa-heart text-muted"></i>
           </div>
 
           <div class="stat">
             <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
-            <i class="fa fa-bookmark primary_"></i>
+            <i class="fa fa-bookmark text-muted"></i>
           </div>
 
           <div class="stat">
@@ -56,13 +57,13 @@
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
-            <span class="primary_">Edited</span>
+            <span class="primary_ fw-semibold">Post was edited</span>
           {% endif %}
         </small>
       </div>
       {% if item.author %}
         {% if user == item.author %}
-          <small class="primary_">It's your item</small>
+          <small class="primary_ fw-semibold">Your post</small>
         {% else %}
           <a href="{% url 'login_app:profile' item.author.username %}" class="d-flex align-items-center gap-1 text-decoration-none" title="{{ item.author }}">
             <div class="little-avatar">
@@ -91,55 +92,52 @@
     {% if item.images.all %}
       {% include 'includes/image_gallery.html' %}
     {% endif %}
-    <!-- === Likes, bookmarks, comments count === -->
+    <!-- === published_block: слева — liked users, справа — like/bookmark кнопки === -->
     <div class="d-flex justify-content-between align-items-center published_block my-4">
-      <!-- Liked users — под блоком тегов -->
-      <div class="liked-users-block">
-        {% if item.likes_count|add:0 < 1 %}
-          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none is-hidden" disabled>Liked users</button>
-        {% else %}
-          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none mb-2">Liked users</button>
-        {% endif %}
-        <div class="liked-users-stack">
-          {% for like in liked_users|slice:':5' %}
-            {% if like.user %}
-              <a href="{% url 'login_app:profile' like.user.username %}"
-                class="liked-user-avatar little-avatar"
-                title="{% if like.user.is_active %}
-                  {{ like.user.username }}
-                {% else %}
-                  Vanished user
-                {% endif %}">
-                {% if like.user.is_active %}
-                  {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                    <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+      <div class="liked-users-block d-flex align-items-center">
+        <span id="noLikesYet" class="small text-muted" {% if item.likes_count|add:0 >= 1 %}style="display:none"{% endif %}>No likes yet</span>
+        <div id="likedUsersContainer" class="d-flex align-items-center gap-1" {% if item.likes_count|add:0 < 1 %}style="display:none"{% endif %}>
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none border-0 bg-transparent p-0">Likes</button>
+          <div class="liked-users-stack d-flex align-items-center">
+            {% for like in liked_users|slice:':5' %}
+              {% if like.user %}
+                <a href="{% url 'login_app:profile' like.user.username %}"
+                  class="liked-user-avatar little-avatar"
+                  title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
+                  {% if like.user.is_active %}
+                    {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                      <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                    {% else %}
+                      <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                    {% endif %}
                   {% else %}
-                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                    <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
                   {% endif %}
-                {% else %}
-                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
-                {% endif %}
-              </a>
-            {% else %}
-              <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></a>
-            {% endif %}
-          {% endfor %}
+                </a>
+              {% else %}
+                <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></a>
+              {% endif %}
+            {% endfor %}
+          </div>
         </div>
       </div>
       <div class="d-flex gap-1 action-block">
         {% if user.is_authenticated %}
           {% if user != item.author %}
             <button class="like-btn fs-6 round" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like item"><i class="fa fa-{{ user_liked|yesno:'heart,heart-o' }}"></i></button>
-
             <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
           {% endif %}
           {% if user == item.author and is_editable %}
-            <a class="text-muted text-decoration-none small" href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Edit post</a>
+            <a class="edit_btn manipulate"
+              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
+              <i class="fa fa-pencil"></i>
+            </a>
           {% elif user == item.author and not is_editable %}
             <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
           {% endif %}
         {% else %}
-          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
+          {% comment %} <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small> {% endcomment %}
+          <small class="text-muted">Please, <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">sign in</a></small>
         {% endif %}
       </div>
     </div>
@@ -147,7 +145,7 @@
     <div class="mb-4 tags_block">
       <div class="tag-list w-100">
         {% if item.tags.all %}
-          <small class="text-muted"><i class="fa fa-tags me-2"></i>Tags</small>
+          <small class="text-muted fw-semibold"><i class="fa fa-tags me-2"></i>Tags</small>
           <div class="d-flex flex-wrap gap-1 mt-2">
             {% for tag in item.tags.all %}
               <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>

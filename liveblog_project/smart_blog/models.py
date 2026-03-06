@@ -30,7 +30,7 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if self.name:
-            self.name = self.name.strip().title()
+            self.name = self.name.strip()
         super().save(*args, **kwargs)
 
 

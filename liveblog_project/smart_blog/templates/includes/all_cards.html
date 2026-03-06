@@ -20,15 +20,13 @@
                 </div>
                 <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
               {% else %}
-                {% comment %} <i class="fa fa-frown-o text-primary-emphasis" aria-hidden="true"></i> {% endcomment %}
                 <div class="little-avatar">
                   <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
                 </div>
                 <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
               {% endif %}
             </div>
-
-            {% if user != item.author and user.is_authenticated %}
+            {% comment %} {% if user != item.author and user.is_authenticated %}
               <div class="item-stats text-muted d-inline-flex align-items-center position-relative" style="z-index: 2">
                 <div class="stat p-0 d-inline-flex align-items-center">
                   <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
@@ -42,11 +40,17 @@
                 </div>
               </div>
             {% else %}
-              <div class="d-flex gap-2 align-items-center VLB small danger_ hidden">
-                <span class="fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                {% comment %} <span class="text-muted">Likes</span> {% endcomment %}
-                <i class="fa fa-heart"></i>
+              <small class="text-muted fw-semibold">Your post</small>
+            {% endif %} {% endcomment %}
+
+            {% if item.category %}
+              <div class="d-inline-flex align-items-center gap-2">
+                {% comment %} <i class="fa fa-folder-o" aria-hidden="true"></i> {% endcomment %}
+                {% comment %} <small class="text-muted fw-semibold">Category</small> {% endcomment %}
+                <span class="item-category-badge">{{ item.category.name }}</span>
               </div>
+            {% else %}
+              <small class="primary_ fw-semibold">No category</small>
             {% endif %}
           </div>
           <hr class="text-muted" />
@@ -54,15 +58,11 @@
           <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
             <div class="text-muted">
               <h4 class="mb-2">{{ item.title }}</h4>
-              <!-- Published + Category -->
+              <!-- Published -->
               <div class="small d-inline-flex align-items-center gap-2 flex-wrap">
                 <small>{{ item.human_published }}</small>
-                {% comment %} {% if item.category %}
-                  <span class="item-category-badge">{{ item.category.name }}</span>
-                {% endif %} {% endcomment %}
               </div>
             </div>
-
             <div class="item_thumbnail">
               {% if item.images.first %}
                 <img src="{{ item.images.first.get_thumbnail_url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
@@ -71,7 +71,6 @@
               {% endif %}
             </div>
           </div>
-
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
           <hr class="text-muted" />
@@ -89,10 +88,27 @@
             {% else %}
               <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
             {% endif %}
-
-            <div class="d-flex gap-2 item-stats">
+            {% comment %} <div class="d-flex gap-2 item-stats">
               <span id="comments-count-{{ item.pk }}" class="text-muted">{{ item.comments_count|human }}</span>
               <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
+            </div> {% endcomment %}
+            <div class="d-flex align-items-center VLB">
+              <div class="item-stats text-muted d-inline-flex align-items-center">
+                <div class="stat">
+                  <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                  <i class="fa fa-heart text-muted"></i>
+                </div>
+
+                <div class="stat">
+                  <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
+                  <i class="fa fa-bookmark text-muted"></i>
+                </div>
+
+                <div class="stat">
+                  <span id="views-count-{{ item.pk }}">{{ item.views_count|human }}</span>
+                  <i class="fa fa-eye text-muted"></i>
+                </div>
+              </div>
             </div>
           </div>
         </div> <!-- /.card-body -->

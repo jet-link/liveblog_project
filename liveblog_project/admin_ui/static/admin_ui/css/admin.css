@@ -693,7 +693,7 @@ body.dashboard .admin-content {
 .form-row { margin-bottom: 1.25rem; }
 .form-row label {
   display: block;
-  margin-bottom: 0.375rem;
+  margin: 1rem 0;
   font-weight: 500;
   font-size: 0.9rem;
 }

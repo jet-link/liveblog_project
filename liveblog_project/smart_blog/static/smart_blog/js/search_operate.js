@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     row.dataset.guestIndex = isAuth ? '' : String(idx);
                     var metaHtml = isAuth ? '<span class="search-history-item-meta">' + escapeHtml(formatMeta(item)) + '</span>' : '';
                     var removeHtml = isAuth ? '<button type="button" class="search-history-item-remove" data-id="' + (item.id || ('local-' + idx)) + '" data-guest-index="' + idx + '" aria-label="Remove from history">×</button>' : '';
-                    row.innerHTML = '<span class="search-history-item-text">' + escapeHtml(item.search_query) + '</span>' + metaHtml + removeHtml;
+                    row.innerHTML = '<span class="search-history-item-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span><span class="search-history-item-text">' + escapeHtml(item.search_query) + '</span>' + metaHtml + removeHtml;
                     dropdown.appendChild(row);
                 });
             }

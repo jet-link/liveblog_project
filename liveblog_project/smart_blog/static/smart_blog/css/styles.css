@@ -287,13 +287,14 @@ html[data-theme="dark"] .custom-select-category:focus {
 }
 
 .tag-badge-option.tag-badge-selected {
-    background-color: var(--bg-overlay) !important;
+    background-color: var(--text-muted) !important;
     color: #fff !important;
 }
 
 html[data-theme="dark"] .tag-badge-option.tag-badge-selected {
-    background-color: var(--bg-overlay) !important;
+    background-color: transparent !important;
     color: #ffffff !important;
+    border-color: #ffffff;
 }
 
 .btn-tag-select-all {
@@ -307,7 +308,7 @@ html[data-theme="dark"] .tag-badge-option.tag-badge-selected {
 /* ===== Category badge on cards and detail ===== */
 .item-category-badge {
     display: inline-block;
-    padding: 0.15rem 0.5rem;
+    padding: 3px 13px;
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-link);
@@ -1519,6 +1520,13 @@ textarea {
     background: var(--bg-muted);
 }
 
+.search-history-dropdown .search-history-item-icon {
+    flex-shrink: 0;
+    margin-right: 10px;
+    color: var(--text-muted-alt);
+    font-size: 1rem;
+}
+
 .search-history-dropdown .search-history-item-text {
     flex: 1;
     white-space: nowrap;
@@ -2045,10 +2053,6 @@ textarea {
     color: var(--text-primary);
 }
 
-/* .show-more-btn-toggle:hover {
-    background: #f6f6f6;
-} */
-
 /* Ссылка @mention */
 .mention-link {
     color: var(--text-link);
@@ -2474,6 +2478,26 @@ html[data-theme="dark"] .form-wrapper{
     border-radius: 8px;
 }
 
+/* published_block: слева liked-users, справа like/bookmark */
+.published_block {
+    flex-wrap: nowrap;
+    gap: 1rem;
+}
+.published_block .liked-users-block {
+    min-width: 0;
+    flex: 0 1 auto;
+}
+.published_block .action-block {
+    flex-shrink: 0;
+}
+.liked-users-link {
+    cursor: pointer;
+    font-size: inherit;
+}
+.liked-users-link:hover {
+    text-decoration: underline !important;
+}
+
 html[data-theme="dark"] .published_block,
 html[data-theme="dark"] .tags_block{
     box-shadow: none;
@@ -2483,22 +2507,25 @@ html[data-theme="dark"] .tags_block{
 
 /* Views Comments Likes Bookmart */
 .VLB {
-    padding: 12px 10px;
+    padding: 10px;
     box-shadow: var(--card-shadow);
     border-radius: 8px;
-    font-size: .775rem;
+    font-size: .7rem;
     font-weight: 600;
 }
 
-.VLB-reply-badge {
+.comment_likes_badge{
     position: absolute;
-    top: -25px;
+    top: -18px;
     right: 20px;
     z-index: 2;
     color: #747d8c;
     border: 1px solid #c4c4c4;
-    /* background-color: #747d8c; */
-
+    padding: 7px 15px;
+    border-radius: 6px;
+    box-shadow: var(--card-shadow);
+    font-size: .7rem;
+    font-weight: 600;
 }
 
 .comment-count,
@@ -2919,7 +2946,8 @@ html[data-theme="dark"] .tags_block{
 
 .badge{
     font-weight: 600 !important;
-    padding: 5px 10px;
+    padding: 6px 12px;
+    border-radius: 6px !important;
 }
 
 .badge_danger {
@@ -3326,7 +3354,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 0 7px;
     position: relative;
 }

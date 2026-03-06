@@ -93,7 +93,7 @@ class ItemCreateForm(forms.ModelForm):
     new_tags = forms.CharField(
         required=False,
         label="Enter tag (optional)",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag separate tags with spaces (optional)"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag/s separate with spaces (optional)"}),
     )
 
     category = forms.ModelChoiceField(

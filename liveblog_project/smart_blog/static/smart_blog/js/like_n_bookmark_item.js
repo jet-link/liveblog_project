@@ -64,6 +64,7 @@
         changes[itemId].likes_count = data.likes_count;
         changes[itemId].liked = data.liked;
         changes[itemId].user_id = document.body.dataset.userId || '';
+        if (typeof data.views_count === 'number') changes[itemId].views_count = data.views_count;
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
         try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }
@@ -160,6 +161,7 @@
         changes[itemId].bookmarks_count = data.bookmarks_count;
         changes[itemId].bookmarked = data.bookmarked;
         changes[itemId].user_id = document.body.dataset.userId || '';
+        if (typeof data.views_count === 'number') changes[itemId].views_count = data.views_count;
         sessionStorage.setItem(key, JSON.stringify(changes));
         try { localStorage.setItem('brainews_filter_refresh_needed', '1'); } catch (e) { }
         try { document.dispatchEvent(new CustomEvent('brainews-filter-refresh')); } catch (e) { }

@@ -115,6 +115,23 @@
         }
     }
 
+    /* =====================================================
+       Save views_count to listing_changes when on item_detail
+       (user just viewed → count increased → cards will show it on return)
+    ===================================================== */
+    function saveItemDetailViewsToListingChanges() {
+        const itemId = document.body.dataset?.itemId;
+        const viewsCount = document.body.dataset?.viewsCount;
+        if (!itemId || viewsCount === undefined || viewsCount === '') return;
+        try {
+            const key = 'listing_changes';
+            const changes = JSON.parse(sessionStorage.getItem(key) || '{}');
+            changes[itemId] = changes[itemId] || {};
+            changes[itemId].views_count = viewsCount;
+            sessionStorage.setItem(key, JSON.stringify(changes));
+        } catch { }
+    }
+
     let profileRefreshInProgress = false;
 
     async function refreshProfileListing() {
@@ -244,6 +261,25 @@
             tabs.scrollIntoView({ behavior: 'auto', block: 'start' });
         }
     }
+
+    /* =====================================================
+       0) SAVE VIEWS_COUNT ON ITEM DETAIL LOAD (for instant card updates on back)
+    ===================================================== */
+    function saveItemDetailViewsToListingChanges() {
+        const itemId = document.body.dataset?.itemId;
+        const viewsCount = document.body.dataset?.viewsCount;
+        if (!itemId || viewsCount == null || viewsCount === '') return;
+        try {
+            const key = 'listing_changes';
+            const changes = JSON.parse(sessionStorage.getItem(key) || '{}');
+            changes[itemId] = changes[itemId] || {};
+            changes[itemId].views_count = parseInt(viewsCount, 10);
+            if (!Number.isNaN(changes[itemId].views_count)) {
+                sessionStorage.setItem(key, JSON.stringify(changes));
+            }
+        } catch { }
+    }
+    document.addEventListener('DOMContentLoaded', saveItemDetailViewsToListingChanges);
 
     /* =====================================================
        1) SAVE LISTING STATE ON CARD CLICK
