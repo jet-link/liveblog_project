@@ -1,0 +1,56 @@
+<div class="tags-badge-select mb-3">
+  <fieldset class="border-0 p-0 m-0">
+    <legend class="form-label text-muted mb-1 d-flex justify-content-between align-items-center" style="width:100%;float:none;">
+      <small>{{ form.tags.label }}</small>
+      {% comment %} <button type="button" class="btn-tag-select-all small text-muted text-decoration-none border-0 bg-transparent" data-action="select">Select all</button> {% endcomment %}
+    </legend>
+  <div class="tags-badge-wrap d-flex flex-wrap gap-1" data-field-name="{{ form.tags.html_name }}">
+    {% for tag in form.tags.field.queryset %}
+      <label class="badge bg-secondary tag-badge-option text-decoration-none mb-0 cursor-pointer{% if tag.pk in selected_tag_ids %} tag-badge-selected{% endif %}">
+        <input type="checkbox" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="tag-badge-checkbox d-none"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
+        {{ tag.tag_name }}
+      </label>
+    {% empty %}
+      <span class="small text-muted">No existing tags. Add new ones below.</span>
+    {% endfor %}
+  </div>
+  </fieldset>
+</div>
+<script>
+(function() {
+  var wrap = document.querySelector('.tags-badge-select');
+  if (!wrap) return;
+  var labels = wrap.querySelectorAll('.tag-badge-option');
+  var toggleBtn = wrap.querySelector('.btn-tag-select-all');
+  function updateToggleBtn() {
+    var checkboxes = wrap.querySelectorAll('.tag-badge-checkbox');
+    var anyUnchecked = Array.from(checkboxes).some(function(c) { return !c.checked; });
+    if (toggleBtn) toggleBtn.textContent = anyUnchecked ? 'Select all' : 'Deselect all';
+  }
+  updateToggleBtn();
+  labels.forEach(function(lbl) {
+    lbl.addEventListener('click', function(e) {
+      e.preventDefault();
+      var cb = lbl.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      cb.checked = !cb.checked;
+      lbl.classList.toggle('tag-badge-selected', cb.checked);
+      updateToggleBtn();
+    });
+  });
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      var checkboxes = wrap.querySelectorAll('.tag-badge-checkbox');
+      var anyUnchecked = Array.from(checkboxes).some(function(c) { return !c.checked; });
+      checkboxes.forEach(function(cb) {
+        cb.checked = anyUnchecked;
+      });
+      labels.forEach(function(lbl) {
+        var cb = lbl.querySelector('input[type="checkbox"]');
+        lbl.classList.toggle('tag-badge-selected', cb ? cb.checked : false);
+      });
+      updateToggleBtn();
+    });
+  }
+})();
+</script>

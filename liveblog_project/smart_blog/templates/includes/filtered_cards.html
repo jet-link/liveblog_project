@@ -50,8 +50,11 @@
               <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
                 <div class="text-muted">
                   <h4 class="mb-2">{{ item.title }}</h4>
-                  <div class="small d-inline-flex align-items-center gap-2">
+                  <div class="small d-inline-flex align-items-center gap-2 flex-wrap">
                     <small>{{ item.human_published }}</small>
+                    {% comment %} {% if item.category %}
+                      <span class="item-category-badge">{{ item.category.name }}</span>
+                    {% endif %} {% endcomment %}
                   </div>
                 </div>
 
@@ -85,10 +88,10 @@
         </div>
       {% endfor %}
     </div>
-    {% if items|length > 10 %}
+    {% if items|length > 20 %}
       <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
         <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-        <span id="shownCounter" class="small text-muted">10 / {{ items|length }}</span>
+        <span id="shownCounter" class="small text-muted">20 / {{ items|length }}</span>
       </div>
     {% endif %}
   {% else %}

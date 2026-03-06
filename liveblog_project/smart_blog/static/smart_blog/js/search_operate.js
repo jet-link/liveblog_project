@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (diff === 0) parts.push('Today');
                 else if (diff === 1) parts.push('Yesterday');
                 else if (diff <= 5) parts.push(diff + ' days ago');
-                else parts.push(d.toLocaleDateString());
+                else parts.push(d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
             }
             return parts.join(' · ');
         }

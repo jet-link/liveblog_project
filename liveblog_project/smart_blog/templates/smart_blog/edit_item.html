@@ -42,16 +42,29 @@
         {% for err in form.text.errors %}
           <div class="text-danger small mb-2">{{ err }}</div>
         {% endfor %}
-        <!-- EXISTING TAGS -->
-        {% if form.tags.field.queryset.exists %}
-          <div class="mb-3">
-            <label for="{{ form.tags.id_for_label }}" class="form-label text-muted">{{ form.tags.label }}</label>
-            {{ form.tags }}
-            {% if form.tags.help_text %}
-              <div class="form-text">{{ form.tags.help_text }}</div>
-            {% endif %}
+
+        <!-- Category -->
+        <div class="mb-3">
+          <label for="{{ form.category.id_for_label }}" class="form-label text-muted">{{ form.category.label }}</label>
+          <div class="custom-select-wrap">
+            {{ form.category }}
           </div>
-        {% endif %}
+          {% for err in form.category.errors %}
+            <div class="text-danger small mb-2">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- New tags (space-separated) -->
+        <div class="form-floating mb-3">
+          {{ form.new_tags }}
+          <label for="{{ form.new_tags.id_for_label }}">{{ form.new_tags.label }}</label>
+        </div>
+
+        <!-- Existing tags (badge-style selection) -->
+        {% include 'includes/tag_badge_select.html' with form=form selected_tag_ids=selected_tag_ids %}
+        {% for err in form.tags.errors %}
+          <div class="text-danger small mb-2">{{ err }}</div>
+        {% endfor %}
 
         {# existing images (server side) #}
         {% if existing_images %}

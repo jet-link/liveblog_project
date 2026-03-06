@@ -8,7 +8,7 @@
     {% include 'includes/breadcrumbs.html' %}
 
     <!-- ===== Заголовок + изображения + лайки + просмотры + закладки ===== -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center">
       <h2 class="text-muted m-0">{{ item.title }}</h2>
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
@@ -18,6 +18,36 @@
         {% endif %}
       </div>
     </div>
+    <div class="d-flex align-items-end justify-content-between mt-4">
+      {% if item.category %}
+        <div class="d-inline-flex align-items-center gap-2">
+          <small class="text-muted fw-semibold">Category:</small>
+          <span class="item-category-badge">{{ item.category.name }}</span>
+        </div>
+      {% else %}
+        <small class="primary_ fw-semibold">No category</small>
+      {% endif %}
+
+      <div class="d-flex align-items-center VLB">
+        <div class="item-stats text-muted d-inline-flex align-items-center">
+          <div class="stat">
+            <span id="likesCount">{{ item.likes_count|human }}</span>
+            <i class="fa fa-heart danger_"></i>
+          </div>
+
+          <div class="stat">
+            <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
+            <i class="fa fa-bookmark primary_"></i>
+          </div>
+
+          <div class="stat">
+            <span id="viewsCount">{{ item.views_count|human }}</span>
+            <i class="fa fa-eye text-muted"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <hr />
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="text-muted d-flex align-items-center">
@@ -30,7 +60,6 @@
           {% endif %}
         </small>
       </div>
-
       {% if item.author %}
         {% if user == item.author %}
           <small class="primary_">It's your item</small>
@@ -57,10 +86,6 @@
         </a>
       {% endif %}
     </div>
-    <div class="d-inline-flex gap-2 align-items-center VLB">
-      <i class="fa fa-eye" style="color:#0984e3;"></i>
-      <span id="viewsCount">{{ item.views_count|human }}</span>
-    </div>
     <!-- ===== Текст ===== -->
     <div class="item-text ck-content my-5">{{ item.text|safe }}</div>
     {% if item.images.all %}
@@ -68,64 +93,14 @@
     {% endif %}
     <!-- === Likes, bookmarks, comments count === -->
     <div class="d-flex justify-content-between align-items-center published_block my-4">
-      <div class="item-stats text-muted d-inline-flex align-items-center">
-        <div class="stat">
-          <span id="likesCount">{{ item.likes_count|human }}</span>
-          <i class="fa fa-heart danger_"></i>
-        </div>
-
-        <div class="stat">
-          <span id="bookmarkCount">{{ item.bookmarks_count|human }}</span>
-          <i class="fa fa-bookmark primary_"></i>
-        </div>
-      </div>
-
-      <div class="d-flex gap-1 action-block">
-        {% if user.is_authenticated %}
-          {% if user != item.author %}
-            <button class="like-btn fs-6 round" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like item"><i class="fa fa-{{ user_liked|yesno:'heart,heart-o' }}"></i></button>
-
-            <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
-          {% endif %}
-          {% if user == item.author and is_editable %}
-            <a class="text-muted text-decoration-none small"
-              href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
-              Edit post
-            </a>
-          {% elif user == item.author and not is_editable %}
-            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
-          {% endif %}
-        {% else %}
-          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
-        {% endif %}
-      </div>
-    </div>
-    <!-- ===== Теги ===== -->
-    <div class="mb-4 tags_block d-flex align-items-center justify-content-between">
-      <!-- левая часть: теги — растёт и переносит элементы -->
-      <div class="flex-grow-1 tag-list">
-        {% if item.tags.all %}
-          <small class="text-muted"><i class="fa fa-tags me-2"></i>Tags</small>
-          <div class="d-flex flex-wrap gap-1 mt-2">
-            {% for tag in item.tags.all %}
-              <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="d-inline-flex primary_ text-decoration-underline">
-            <small>Without tags</small>
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- правая часть: liked users -->
-      <div class="liked-users-block text-end">
+      <!-- Liked users — под блоком тегов -->
+      <div class="liked-users-block">
         {% if item.likes_count|add:0 < 1 %}
           <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none is-hidden" disabled>Liked users</button>
         {% else %}
-          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none">Liked users</button>
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none mb-2">Liked users</button>
         {% endif %}
-        <div class="liked-users-stack mt-1">
+        <div class="liked-users-stack">
           {% for like in liked_users|slice:':5' %}
             {% if like.user %}
               <a href="{% url 'login_app:profile' like.user.username %}"
@@ -133,9 +108,7 @@
                 title="{% if like.user.is_active %}
                   {{ like.user.username }}
                 {% else %}
-                  
                   Vanished user
-
                 {% endif %}">
                 {% if like.user.is_active %}
                   {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
@@ -152,6 +125,39 @@
             {% endif %}
           {% endfor %}
         </div>
+      </div>
+      <div class="d-flex gap-1 action-block">
+        {% if user.is_authenticated %}
+          {% if user != item.author %}
+            <button class="like-btn fs-6 round" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like item"><i class="fa fa-{{ user_liked|yesno:'heart,heart-o' }}"></i></button>
+
+            <button class="bookmark-btn fs-6 round" data-url="{% url 'smart_blog:toggle_bookmark' item.slug %}" data-item-id="{{ item.pk }}" title="Bookmark item"><i class="fa fa-{{ user_bookmarked|yesno:'bookmark,bookmark-o' }}"></i></button>
+          {% endif %}
+          {% if user == item.author and is_editable %}
+            <a class="text-muted text-decoration-none small" href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Edit post</a>
+          {% elif user == item.author and not is_editable %}
+            <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
+          {% endif %}
+        {% else %}
+          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
+        {% endif %}
+      </div>
+    </div>
+    <!-- ===== Теги ===== -->
+    <div class="mb-4 tags_block">
+      <div class="tag-list w-100">
+        {% if item.tags.all %}
+          <small class="text-muted"><i class="fa fa-tags me-2"></i>Tags</small>
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for tag in item.tags.all %}
+              <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="d-inline-flex primary_ text-decoration-underline">
+            <small>Without tags</small>
+          </div>
+        {% endif %}
       </div>
     </div>
 
@@ -178,7 +184,7 @@
     <div id="commentsHeader" class="pt-5 d-flex gap-3 align-items-center justify-content-between">
       {% if comments %}
         <h5 class="m-0 text-muted">Comments</h5>
-        <div class="d-flex gap-2 align-items-center small">
+        <div class="d-inline-flex align-items-center gap-2 small">
           <span id="commentsCount">{{ item.comments_count|human }}</span>
           <i class="fa fa-comment stat-comment"></i>
         </div>

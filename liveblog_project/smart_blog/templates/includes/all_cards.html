@@ -42,7 +42,7 @@
                 </div>
               </div>
             {% else %}
-              <div class="d-flex gap-2 align-items-center VLB small danger_">
+              <div class="d-flex gap-2 align-items-center VLB small danger_ hidden">
                 <span class="fw-semibold" id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
                 {% comment %} <span class="text-muted">Likes</span> {% endcomment %}
                 <i class="fa fa-heart"></i>
@@ -54,9 +54,12 @@
           <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
             <div class="text-muted">
               <h4 class="mb-2">{{ item.title }}</h4>
-              <!-- Published -->
-              <div class="small d-inline-flex align-items-center gap-2">
+              <!-- Published + Category -->
+              <div class="small d-inline-flex align-items-center gap-2 flex-wrap">
                 <small>{{ item.human_published }}</small>
+                {% comment %} {% if item.category %}
+                  <span class="item-category-badge">{{ item.category.name }}</span>
+                {% endif %} {% endcomment %}
               </div>
             </div>
 
@@ -71,7 +74,7 @@
 
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-        <hr class="text-muted" />
+          <hr class="text-muted" />
           <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->
           <div class="d-flex justify-content-between align-items-center py-2">
             <!-- ! важно: добавил класс item-link и data-item-id (тот же id) -->

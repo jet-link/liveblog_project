@@ -11,13 +11,14 @@ User = get_user_model()
 @register.inclusion_tag('admin/dashboard_stats.html')
 def get_dashboard_stats():
     """Dashboard statistics for admin panel."""
-    from smart_blog.models import Item, Comment, ContentReport, Like
+    from smart_blog.models import Item, Comment, ContentReport, Like, Category
     return {
         'users_count': User.objects.count(),
         'posts_count': Item.objects.count(),
         'comments_count': Comment.objects.count(),
         'reports_count': ContentReport.objects.count(),
         'likes_count': Like.objects.count(),
+        'categories_count': Category.objects.count(),
     }
 
 

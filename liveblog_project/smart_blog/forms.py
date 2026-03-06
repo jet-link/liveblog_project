@@ -5,7 +5,7 @@ import bleach
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Item, Tag, Comment
+from .models import Item, Tag, Category, Comment
 from .widgets import MultiFileInput
 from .utils import normalize_comment_text
 
@@ -84,27 +84,29 @@ class ItemCreateForm(forms.ModelForm):
     )
 
     tags = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
+        queryset=Tag.objects.all().order_by("tag_name"),
         required=False,
         label="Existing tags",
-        widget=forms.SelectMultiple(
-            attrs={
-                "class": "form-select auto-size-select",
-                "data-auto-size": "1",
-                "data-max-size": "12",  
-            }
-        ),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "tag-badge-checkbox"}),
     )
 
     new_tags = forms.CharField(
         required=False,
         label="Enter tag (optional)",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag (optional)"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag separate tags with spaces (optional)"}),
+    )
+
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all().order_by("name"),
+        required=False,
+        label="Category",
+        empty_label="— Select category —",
+        widget=forms.Select(attrs={"class": "custom-select-category"}),
     )
 
     class Meta:
         model = Item
-        fields = ["title", "text", "tags", "new_tags"]
+        fields = ["title", "text", "category", "tags", "new_tags"]
         labels = {"title": "Enter title", "text": "Item text"}
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title", "required": True}),

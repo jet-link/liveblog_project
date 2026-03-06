@@ -36,12 +36,12 @@
     <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="search">
       {% if items %}
         {% include 'includes/all_cards.html' with listing_source='search' listing_source_url=request.get_full_path listing_query=query %}
-        {% if items.count > 10 %}
+        {% if items.count > 20 %}
           <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
             <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
             <span id="shownCounter" class="small text-muted">
-              {% if items|length > 10 %}
-                10
+              {% if items|length > 20 %}
+                20
               {% else %}
                 {{ items|length }}
               {% endif %}/ {{ items|length }}

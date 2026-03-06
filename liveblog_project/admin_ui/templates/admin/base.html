@@ -50,6 +50,10 @@
         <i class="fa fa-tags admin-nav-icon" aria-hidden="true"></i>
         <span>{% translate 'Tags' %}</span>
       </a>
+      <a href="{% url 'admin:smart_blog_category_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'category' %}active{% endif %}">
+        <i class="fa fa-folder-o admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Categories' %}</span>
+      </a>
       <a href="{% url 'admin:pages_faqitem_changelist' %}" class="admin-nav-item {% if opts and opts.model_name == 'faqitem' %}active{% endif %}">
         <i class="fa fa-question-circle admin-nav-icon" aria-hidden="true"></i>
         <span>{% translate 'FAQ' %}</span>

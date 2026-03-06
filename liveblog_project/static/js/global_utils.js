@@ -760,7 +760,7 @@ function renderReplyErrors(container, messages) {
 }
 
 function initFilterCardsPagination() {
-    const STEP = 10;
+    const STEP = 20;
 
     const wrapper = document.getElementById('showMoreWrapper');
     if (!wrapper) return;

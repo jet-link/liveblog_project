@@ -16,6 +16,24 @@ from django.db.models import Q, Count
 
 User = get_user_model()
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name.strip().title()
+        super().save(*args, **kwargs)
+
+
 class ItemQuerySet(models.QuerySet):
     def with_counters(self):
         return self.annotate(
@@ -75,6 +93,13 @@ class Item(models.Model):
     )
     title = models.CharField(max_length=255)
     text = models.TextField()
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="items",
+    )
     tags = models.ManyToManyField(Tag, related_name="items", blank=True)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
     search_vector = SearchVectorField(editable=False, null=True)  # PostgreSQL FTS, filled by DB

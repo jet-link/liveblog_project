@@ -20,6 +20,7 @@ from .search_utils import build_search_filter, apply_popular_filter
 from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging
 import os
+import re
 from django.conf import settings
 from django.core.files.storage import default_storage
 
@@ -42,6 +43,7 @@ def items_list(request):
     qs = (
         Item.objects
         .with_counters()
+        .select_related("category")
         .order_by('-published_date')
         .prefetch_related("images")
     )
@@ -115,7 +117,7 @@ def items_filtered(request):
             user_bookmark_date=Subquery(bookmark_date_subq)
         ).order_by('-user_bookmark_date')
         empty_msg = 'Nothing was bookmarked'
-    items = list(qs.prefetch_related("images"))
+    items = list(qs.select_related("category").prefetch_related("images"))
     if search_q:
         listing_source = 'search'
         listing_query = search_q
@@ -158,6 +160,7 @@ def tag_list(request, slug):
     items = (
         tag.items
         .with_counters()
+        .select_related("category")
         .order_by('-published_date')
         .prefetch_related("images")
     )
@@ -202,6 +205,7 @@ def search_view(request):
         items = (
             Item.objects
             .with_counters()
+            .select_related("category")
             .filter(is_published=True)
             .prefetch_related("images")
         )
@@ -391,8 +395,8 @@ def create_item(request):
 
             new_tags_raw = form.cleaned_data.get('new_tags', '')
             if new_tags_raw:
-                for tg in [t.strip() for t in new_tags_raw.split(',') if t.strip()]:
-                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg.capitalize())
+                for tg in [t for t in re.split(r'\s+', new_tags_raw.strip()) if t]:
+                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg)
                     item.tags.add(tag_obj)
 
             for f in files[:MAX_IMAGES]:
@@ -422,9 +426,11 @@ def create_item(request):
                     errors[k] = v.get_json_data() if hasattr(v, 'get_json_data') else form.errors[k]
                 simple = {k: [str(x) for x in v] for k, v in form.errors.items()}
                 return JsonResponse({"success": False, "errors": simple}, status=400)
+            selected_tag_ids = [int(x) for x in request.POST.getlist("tags") if x.isdigit()]
     else:
         form = ItemCreateForm()
-    return render(request, "smart_blog/create_item.html", {"form": form})
+        selected_tag_ids = []
+    return render(request, "smart_blog/create_item.html", {"form": form, "selected_tag_ids": selected_tag_ids})
 
 
 def register_item_view(request, item):
@@ -459,6 +465,7 @@ def item_detail(request, slug):
     item = (
         Item.objects
         .with_counters()
+        .select_related("category")
         .annotate(reports_count=Count('reports', distinct=True))
         .prefetch_related("images")
         .get(pk=item.pk)
@@ -710,6 +717,14 @@ def edit_item(request, slug):
             item.title = form.cleaned_data["title"]
             item.text = form.cleaned_data["text"]
 
+            # сравниваем категорию до изменений (для Edited badge)
+            new_category = form.cleaned_data.get("category")
+            new_category_id = new_category.pk if new_category else None
+            if item.category_id != new_category_id:
+                item.edited = True
+
+            item.category = new_category
+
             # сравниваем теги до изменений (для Edited badge)
             old_tag_ids = set(item.tags.values_list("pk", flat=True))
 
@@ -717,8 +732,8 @@ def edit_item(request, slug):
             new_tags_from_form = list(form.cleaned_data["tags"])
             new_tags_raw = form.cleaned_data.get("new_tags", "")
             if new_tags_raw:
-                for tg in [t.strip() for t in new_tags_raw.split(",") if t.strip()]:
-                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg.capitalize())
+                for tg in [t for t in re.split(r'\s+', new_tags_raw.strip()) if t]:
+                    tag_obj, _ = Tag.objects.get_or_create(tag_name=tg)
                     new_tags_from_form.append(tag_obj)
 
             item.tags.set(new_tags_from_form)
@@ -770,19 +785,24 @@ def edit_item(request, slug):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 simple = {k: [str(x) for x in v] for k, v in form.errors.items()}
                 return JsonResponse({"success": False, "errors": simple}, status=400)
+            selected_tag_ids = [int(x) for x in request.POST.getlist("tags") if x.isdigit()]
     else:
         # предварительное заполнение формы текущими данными
         form = ItemCreateForm(initial={
             "title": item.title,
             "text": item.text,
+            "category": item.category_id,
             "tags": item.tags.all(),
         })
+        selected_tag_ids = list(item.tags.values_list("pk", flat=True))
 
     return render(request, "smart_blog/edit_item.html", {
         "form": form,
         "item": item,
         "existing_images": existing_images,
+        "selected_tag_ids": selected_tag_ids,
     })
+
 
 
 logger = logging.getLogger(__name__)

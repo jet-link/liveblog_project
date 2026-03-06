@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Tag, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory
+from .models import Tag, Category, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 
@@ -9,10 +9,15 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('tag_name', 'slug')
     prepopulated_fields = {"slug": ("tag_name",)}
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ("title", "author", "published_date", "is_published")
-    list_filter = ("is_published", "published_date")
+    list_display = ("title", "author", "category", "published_date", "is_published")
+    list_filter = ("is_published", "category", "published_date")
     search_fields = ("title", "text")
     filter_horizontal = ("tags",)
 
