@@ -22,10 +22,7 @@ python manage.py create_backup --schedule monthly
                       {% comment %} <div class="stat">
           <span id="commentsCount">{{ item.comments_count|human }}</span>
           <i class="fa fa-comment stat-comment"></i>
-        </div> {% endcomment %}
-
-
-                    {% comment %} <a class="edit_btn manipulate"
+{% comment %} <a class="edit_btn manipulate"
               href="{% url 'smart_blog:edit_item' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
               <i class="fa fa-pencil text-center"></i>
             </a> {% endcomment %}
@@ -44,3 +41,33 @@ python manage.py create_backup --schedule monthly
               {% comment %} <i class="fa fa-cog me-1"></i> {% endcomment %}
               {% comment %}Edit post{% endcomment %}
             </a>
+
+
+
+<div class="liked-users-block d-flex align-items-center">
+        <span id="noLikesYet" class="small text-muted" {% if item.likes_count|add:0 >= 1 %}style="display:none"{% endif %}>No likes yet</span>
+        <div id="likedUsersContainer" class="d-flex align-items-center gap-1" {% if item.likes_count|add:0 < 1 %}style="display:none"{% endif %}>
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none border-0 bg-transparent p-0">Liked users</button>
+          <div class="liked-users-stack d-flex align-items-center">
+            {% for like in liked_users|slice:':5' %}
+              {% if like.user %}
+                <a href="{% url 'login_app:profile' like.user.username %}"
+                  class="liked-user-avatar little-avatar"
+                  title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
+                  {% if like.user.is_active %}
+                    {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                      <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                    {% else %}
+                      <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                    {% endif %}
+                  {% else %}
+                    <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
+                  {% endif %}
+                </a>
+              {% else %}
+                <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>

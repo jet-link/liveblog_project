@@ -26,7 +26,6 @@ logger = logging.getLogger('backups')
 class BackupAdmin(admin.ModelAdmin):
     list_display = ('name', 'schedule_type', 'created_at', 'file_size_display', 'status', 'created_by', 'actions_column')
     list_filter = ('status', 'schedule_type', 'created_at')
-    search_fields = ('name',)
     readonly_fields = ('name', 'schedule_type', 'created_at', 'file_size', 'file_path', 'status', 'error_message', 'created_by')
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'

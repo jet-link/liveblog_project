@@ -278,6 +278,33 @@ fieldset,
   min-width: 0;
 }
 
+/* All admin forms: label above input, full-width fields (Add/Edit/Delete/Password/etc.) */
+.admin-content form .aligned .form-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.admin-content form .aligned .form-row > div:first-child {
+  margin-bottom: 0.5rem;
+}
+.admin-content form .aligned .form-row .flex-container {
+  width: 100%;
+  max-width: 100%;
+}
+/* Override Django's label width — label above, full width */
+.admin-content form .aligned label {
+  margin: 0;
+  width: auto;
+  min-width: 0;
+}
+/* Reset margin-left on help, radiolist, etc. */
+.admin-content form .aligned ul,
+.admin-content form .aligned p.help,
+.admin-content form .aligned div.help {
+  margin-left: 0;
+  padding-left: 0;
+}
+
 /* Selector (filter_horizontal): contain at desktop, flex to share space */
 .selector {
   max-width: 100%;
@@ -913,6 +940,22 @@ body.app-smart_blog.model-comment #changelist .actions span.clear {
   font-size: 0.9rem;
 }
 
+/* All admin forms: label above input, full-width fields */
+body.change-form .aligned .form-row,
+body.add-form .aligned .form-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+body.change-form .aligned .form-row > div:first-child,
+body.add-form .aligned .form-row > div:first-child {
+  margin-bottom: 0.5rem;
+}
+body.change-form .aligned .form-row label,
+body.add-form .aligned .form-row label {
+  margin: 0;
+}
+
 .form-row { margin-bottom: 1.25rem; }
 .form-row label {
   display: block;
@@ -933,7 +976,7 @@ body.app-smart_blog.model-comment #changelist .actions span.clear {
 .form-row select,
 .form-row textarea {
   width: 100%;
-  max-width: 500px;
+  max-width: 100%;
   min-width: 0;
   padding: 0.75rem 1rem;
   font-size: 1rem;
@@ -968,12 +1011,12 @@ body.app-smart_blog.model-comment #changelist .actions span.clear {
 .form-row .errorlist { color: var(--admin-danger); font-size: 0.85rem; margin-top: 0.25rem; }
 
 .submit-row {
-  padding: 1.5rem 0;
-  margin-top: 1.5rem;
+  padding: 0 !important;
+  margin-bottom: 0 o !important;
   border-top: 1px solid var(--admin-border);
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-wrap: nowrap;
+  gap: 5px !important;
   align-items: center;
 }
 
@@ -998,7 +1041,7 @@ body.app-smart_blog.model-comment #changelist .actions span.clear {
 .submit-row input[type="submit"] { background: var(--admin-primary); color: #fff; }
 .submit-row input.default:hover,
 .submit-row input[type="submit"]:hover { background: var(--admin-primary-hover); }
-.submit-row .deletelink { background: var(--admin-danger); color: #fff; }
+.submit-row .deletelink { background: var(--admin-danger); color: #fff; display: flex !important; padding: 0 !important;}
 .submit-row .deletelink:hover { background: #dc2626; }
 
 /* Delete confirmation page (single & bulk) */
@@ -1297,7 +1340,7 @@ body.delete-selected-confirmation .cancel-link:hover {
 /* ========== Admin widget alignment (icons vertical center) ========== */
 .form-row .flex-container {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   flex-wrap: wrap;
   gap: 0.5rem;
 }
@@ -1376,4 +1419,14 @@ body.popup .admin-content {
 
 #changelist .paginator {
   gap: 0.5rem;
+}
+
+form .aligned div.help {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  padding-top: 10px;
+}
+
+.toplinks{
+  display: none !important;
 }

@@ -7,11 +7,13 @@ from django import forms
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('tag_name', 'slug')
+    search_fields = ('tag_name', 'slug')
     prepopulated_fields = {"slug": ("tag_name",)}
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "description")
+    search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -29,7 +31,6 @@ class ItemImageAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ("item", "author", "created")
-    search_fields = ("text",)
     actions = ["delete_selected"]
 
 admin.site.register(CommentLike)
@@ -49,7 +50,6 @@ class SearchHistoryAdmin(admin.ModelAdmin):
 class ContentReportAdmin(admin.ModelAdmin):
     list_display = ("reason", "reasons_display", "status", "reporter", "item_link", "comment_link", "created_at")
     list_filter = ("reason", "status", "created_at")
-    search_fields = ("details", "reporter__username", "item__title", "comment__text")
     readonly_fields = ("item_link", "comment_link", "created_at")
     fields = ("reporter", "item", "item_link", "comment", "comment_link", "reason", "reasons", "details", "status", "created_at")
 
