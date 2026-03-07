@@ -135,6 +135,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Отдельная папка для архивов, не путать с приложением backups/
 BACKUPS_ROOT = BASE_DIR / "backup_archives"
 BACKUP_MAX_COUNT = 20
+BACKUP_DAILY_COUNT = 7
+BACKUP_WEEKLY_COUNT = 4
+BACKUP_MONTHLY_COUNT = 12
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

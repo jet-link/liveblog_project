@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Confirm Restore" %} | {{ site_title|default:_('Admin') }}{% endblock %}
+
+{% block content %}
+<div class="module">
+  <h2>{% translate "Restore from backup" %}</h2>
+  <p><strong>{{ backup.name }}</strong> ({{ backup.file_size_human }})</p>
+  <p class="errornote">
+    {% blocktranslate %}
+    This will OVERWRITE the current database and media files. All current data will be replaced.
+    It is recommended to restart the server after restore.
+    {% endblocktranslate %}
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="confirm" value="yes">
+    <div class="submit-row">
+      <a href="{% url 'admin:backups_backup_changelist' %}" class="button">{% translate "Cancel" %}</a>
+      <input type="submit" value="{% translate 'Yes, restore' %}" class="default">
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -783,6 +783,56 @@ body.dashboard .admin-content {
   font-weight: 500;
   cursor: pointer;
 }
+
+/* Backup actions dropdown */
+.backup-actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.backup-actions-dropdown summary {
+  padding: 0.5rem 1rem;
+  background: var(--admin-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--admin-radius);
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.backup-actions-dropdown summary::-webkit-details-marker { display: none; }
+/* .backup-actions-dropdown summary::after { content: ' ▾'; opacity: 0.9; } */
+.backup-actions-dropdown[open] summary {
+  border-radius: var(--admin-radius) var(--admin-radius) 0 0;
+}
+.backup-actions-dropdown .backup-actions-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 140px;
+  margin: 0;
+  padding: 0.25rem 0;
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  border-top: none;
+  border-radius: 0 0 var(--admin-radius) var(--admin-radius);
+  box-shadow: var(--admin-shadow);
+  list-style: none;
+  z-index: 100;
+}
+.backup-actions-dropdown .backup-actions-menu li { margin: 0; }
+.backup-actions-dropdown .backup-actions-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--admin-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.backup-actions-dropdown .backup-actions-menu a:hover {
+  background: var(--admin-bg);
+  color: var(--admin-primary);
+}
+
 #changelist .actions .action-counter {
   font-size: 0.875rem;
   color: var(--admin-text-muted);

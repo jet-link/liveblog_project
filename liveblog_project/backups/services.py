@@ -19,6 +19,9 @@ logger = logging.getLogger('backups')
 
 BACKUPS_ROOT = getattr(settings, 'BACKUPS_ROOT', None) or (Path(settings.BASE_DIR) / 'backups')
 MAX_BACKUPS = getattr(settings, 'BACKUP_MAX_COUNT', 20)
+BACKUP_DAILY_COUNT = getattr(settings, 'BACKUP_DAILY_COUNT', 7)
+BACKUP_WEEKLY_COUNT = getattr(settings, 'BACKUP_WEEKLY_COUNT', 4)
+BACKUP_MONTHLY_COUNT = getattr(settings, 'BACKUP_MONTHLY_COUNT', 12)
 
 
 def _ensure_backups_dir():
@@ -79,7 +82,9 @@ def _create_backup_archive(backup_obj):
         # 3. Создаём tar.gz
         _ensure_backups_dir()
         timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
-        archive_name = f'backup_{timestamp}.tar.gz'
+        schedule = getattr(backup_obj, 'schedule_type', 'manual')
+        suffix = f'_{schedule}' if schedule != 'manual' else ''
+        archive_name = f'backup{suffix}_{timestamp}.tar.gz'
         archive_path = BACKUPS_ROOT / archive_name
 
         with tarfile.open(archive_path, 'w:gz') as tar:
@@ -96,8 +101,8 @@ def _create_backup_archive(backup_obj):
 
         logger.info('Backup completed: %s, size: %s', backup_obj.name, backup_obj.file_size_human)
 
-        # 5. Очистка старых backup (max 20)
-        _cleanup_old_backups()
+        # 5. Очистка старых backup (по лимитам для каждого типа)
+        _cleanup_old_backups(backup_obj.schedule_type)
 
     except Exception as e:
         logger.exception('Backup failed: %s', e)
@@ -109,16 +114,27 @@ def _create_backup_archive(backup_obj):
             shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-def _cleanup_old_backups(exclude_pk=None):
-    """Удаляет самые старые backup, оставляя максимум MAX_BACKUPS."""
+def _cleanup_old_backups(schedule_type=None, exclude_pk=None):
+    """Удаляет самые старые backup по лимитам: daily=7, weekly=4, monthly=12, manual=20."""
     from backups.models import Backup
 
-    qs = Backup.objects.filter(status=Backup.STATUS_COMPLETED).order_by('created_at')
+    limits = {
+        Backup.SCHEDULE_DAILY: BACKUP_DAILY_COUNT,
+        Backup.SCHEDULE_WEEKLY: BACKUP_WEEKLY_COUNT,
+        Backup.SCHEDULE_MONTHLY: BACKUP_MONTHLY_COUNT,
+        Backup.SCHEDULE_MANUAL: MAX_BACKUPS,
+    }
+    st = schedule_type or Backup.SCHEDULE_MANUAL
+    limit = limits.get(st, MAX_BACKUPS)
+    qs = Backup.objects.filter(
+        status=Backup.STATUS_COMPLETED,
+        schedule_type=st,
+    ).order_by('created_at')
     if exclude_pk:
         qs = qs.exclude(pk=exclude_pk)
     count = qs.count()
-    if count > MAX_BACKUPS:
-        to_remove = list(qs[: count - MAX_BACKUPS])
+    if count > limit:
+        to_remove = list(qs[: count - limit])
     else:
         to_remove = []
     for b in to_remove:
@@ -132,22 +148,32 @@ def _cleanup_old_backups(exclude_pk=None):
         logger.info('Old backup record deleted: %s', b.name)
 
 
-def create_backup_async(user=None):
+def create_backup_scheduled(schedule='manual', user=None):
     """
-    Создаёт backup асинхронно в отдельном потоке.
-    Возвращает созданный объект Backup.
+    Создаёт backup по расписанию (daily/weekly/monthly) или вручную.
+    Запускается асинхронно в отдельном потоке.
     """
     from backups.models import Backup
 
+    suffix = f' ({schedule})' if schedule != Backup.SCHEDULE_MANUAL else ''
     backup = Backup.objects.create(
-        name=f'Backup {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}',
+        name=f'Backup {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}{suffix}',
+        schedule_type=schedule,
         status=Backup.STATUS_PENDING,
         created_by=user,
     )
     logger.info('Backup created (pending): %s by %s', backup.name, user)
-
     thread = threading.Thread(target=_create_backup_archive, args=(backup,))
     thread.daemon = True
     thread.start()
-
     return backup
+
+
+def create_backup_async(user=None):
+    """
+    Создаёт backup асинхронно в отдельном потоке (ручное создание из админки).
+    Возвращает созданный объект Backup.
+    """
+    return create_backup_scheduled(schedule='manual', user=user)
+
+

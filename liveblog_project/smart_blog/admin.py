@@ -11,7 +11,8 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "slug", "description")
+    prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Item)

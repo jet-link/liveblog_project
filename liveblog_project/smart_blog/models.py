@@ -18,7 +18,9 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    description = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Category"
@@ -29,8 +31,11 @@ class Category(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.name:
-            self.name = self.name.strip()
+        self.name = self.name.strip()
+
+        if not self.slug:
+            self.slug = slugify(self.name)
+
         super().save(*args, **kwargs)
 
 

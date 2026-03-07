@@ -70,14 +70,20 @@ def restore_backup(archive_path):
 
         logger.info('Database restored successfully')
 
-        # 3. Восстановить media
+        # 3. Восстановить media (сначала очистить, затем скопировать из архива)
         if media_src.exists():
+            # Очистить текущую media для полного восстановления
+            if media_root.exists():
+                for item in media_root.iterdir():
+                    if item.is_dir():
+                        shutil.rmtree(item)
+                    else:
+                        item.unlink()
+                logger.info('Media cleared before restore')
             media_root.mkdir(parents=True, exist_ok=True)
             for item in media_src.iterdir():
                 dest = media_root / item.name
                 if item.is_dir():
-                    if dest.exists():
-                        shutil.rmtree(dest)
                     shutil.copytree(item, dest)
                 else:
                     shutil.copy2(item, dest)

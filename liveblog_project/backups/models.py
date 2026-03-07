@@ -16,7 +16,24 @@ class Backup(models.Model):
         (STATUS_FAILED, 'Failed'),
     ]
 
+    SCHEDULE_MANUAL = 'manual'
+    SCHEDULE_DAILY = 'daily'
+    SCHEDULE_WEEKLY = 'weekly'
+    SCHEDULE_MONTHLY = 'monthly'
+    SCHEDULE_CHOICES = [
+        (SCHEDULE_MANUAL, 'Manual'),
+        (SCHEDULE_DAILY, 'Daily'),
+        (SCHEDULE_WEEKLY, 'Weekly'),
+        (SCHEDULE_MONTHLY, 'Monthly'),
+    ]
+
     name = models.CharField(max_length=255, verbose_name='Backup name')
+    schedule_type = models.CharField(
+        max_length=20,
+        choices=SCHEDULE_CHOICES,
+        default=SCHEDULE_MANUAL,
+        verbose_name='Schedule',
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     file_size = models.BigIntegerField(default=0, verbose_name='File size (bytes)')
     file_path = models.CharField(max_length=500, blank=True, verbose_name='File path')

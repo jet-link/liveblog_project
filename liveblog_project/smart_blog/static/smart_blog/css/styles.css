@@ -738,6 +738,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     position: static;
     width: 100%;
     z-index: 1050;
+    /* background: #f1f2f6; */
     background: var(--bg-default);
     padding: 20px 0;
     transform: none;
@@ -891,6 +892,7 @@ html[data-theme="dark"] .ios-toggle-thumb {
     flex-shrink: 0;
     border-top: 1px solid var(--border-subtle);
     background: var(--bg-default);
+    /* background: #f1f2f6; */
 }
 
 .footer-blocks {
@@ -2953,7 +2955,8 @@ html[data-theme="dark"] .tags_block{
 
 .badge_danger {
     border-color: var(--danger-fg);
-    color: var(--danger-fg);
+    background-color: var(--danger-fg);
+    color: var(--bg-default);
 }
 
 .badge_primary {
@@ -2966,7 +2969,7 @@ html[data-theme="dark"] .tags_block{
     color: var(--success-bg);
 }
 
-.badge_reserved{
+.badge_reserved {
     border-color: var(--badge-reserve-color);
     color: var(--bg-default);
     background-color: var(--badge-reserve-color);

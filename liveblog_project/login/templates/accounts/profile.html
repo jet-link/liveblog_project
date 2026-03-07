@@ -15,11 +15,11 @@
           <a href="/admin" class="cstm-btn-sm custom-secondary-btn">Administration</a>
         {% endif %}
       </div>
-      {% if is_online %}
+      {% comment %} {% if is_online %}
         <span id="profileOnlineBadge" class="custom_badge badge_reserved">Online</span>
       {% else %}
         <span class="custom_badge badge_danger">Offline</span>
-      {% endif %}
+      {% endif %} {% endcomment %}
     </div>
     {% include 'includes/personal_info.html' %}
     <div class="mt-5">
