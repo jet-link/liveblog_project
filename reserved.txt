@@ -1,3 +1,6 @@
+python manage.py restore_backup /path/to/backup.tar.gz #backup command in terminal
+
+
 
               {% comment %} <small class="custom_badge replied-badge">
                 {% if item.author.is_active %}

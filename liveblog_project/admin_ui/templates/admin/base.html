@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'smart_blog/vendor/fontawesome/css/font-awesome.css' %}">
   <link rel="stylesheet" href="{% static 'admin_ui/css/admin.css' %}">
+  <link rel="stylesheet" href="{% static 'admin_ui/css/admin_responsive.css' %}">
   <script src="{% static 'admin_ui/js/admin.js' %}" defer></script>
   {% block extrastyle %}{% endblock %}
   {% block extrahead %}{% endblock %}
@@ -58,6 +59,12 @@
         <i class="fa fa-question-circle admin-nav-icon" aria-hidden="true"></i>
         <span>{% translate 'FAQ' %}</span>
       </a>
+      {% if user.is_superuser %}
+      <a href="{% url 'admin:backups_backup_changelist' %}" class="admin-nav-item {% if opts and opts.app_label == 'backups' %}active{% endif %}">
+        <i class="fa fa-database admin-nav-icon" aria-hidden="true"></i>
+        <span>{% translate 'Backups' %}</span>
+      </a>
+      {% endif %}
     </nav>
   </aside>
   {% endif %}

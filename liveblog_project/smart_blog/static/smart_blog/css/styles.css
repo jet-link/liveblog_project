@@ -44,6 +44,7 @@
     --btn-secondary-hover-bg: var(--bg-subtle);
     --btn-radius: 8px;
     --orange-color: #e67e22;
+    --badge-reserve-color: #82ccdd;
 
     /* Light theme — cards & surfaces */
     --card-bg: #ffffff;
@@ -52,11 +53,11 @@
     --excerpt-fade: rgba(255, 255, 255, 0.85);
 
     /* Light theme — alerts & states */
-    --danger-bg: rgba(231, 76, 60, 0.66);
+    --danger-bg: rgba(231, 76, 60, 0.7);
     --danger-fg: #ED4C67;
-    --success-bg: rgba(39, 174, 96, 0.66);
-    --info-bg: rgba(116, 185, 255, 0.66);
-    --warning-bg: rgba(243, 156, 18, 0.66);
+    --success-bg: rgb(39, 174, 96, 0.7);
+    --info-bg: rgba(116, 185, 255, 0.7);
+    --warning-bg: rgba(243, 156, 18, 0.7);
     --warning-fg: #856404;
 
     /* Toggle */
@@ -69,7 +70,7 @@
 html[data-theme="dark"] {
     color-scheme: dark;
     --bg-overlay: rgba(0, 0, 0, 0.8);
-    --overlay-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+    --overlay-shadow: 0 12px 28px rgba(0, 0, 0, 0.7);
     --bg-default: #0d1117;
     --bg-muted: #161b22;
     --bg-subtle: #21262d;
@@ -2965,6 +2966,12 @@ html[data-theme="dark"] .tags_block{
     color: var(--success-bg);
 }
 
+.badge_reserved{
+    border-color: var(--badge-reserve-color);
+    color: var(--bg-default);
+    background-color: var(--badge-reserve-color);
+}
+
 .replied-badge {
     color: var(--text-link);
     background-color: var(--card-bg);
@@ -3346,7 +3353,7 @@ pre {
 }
 
 .item-stats {
-    gap: 15px;
+    gap: 10px;
     font-size: 13px;
     font-weight: 500;
 }
@@ -3354,7 +3361,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
     padding: 0 7px;
     position: relative;
 }

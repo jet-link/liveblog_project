@@ -29,7 +29,7 @@
         <small class="primary_ fw-semibold">No category</small>
       {% endif %}
 
-      <div class="d-flex align-items-center VLB">
+      <div class="d-flex align-items-center">
         <div class="item-stats text-muted d-inline-flex align-items-center">
           <div class="stat">
             <span id="likesCount">{{ item.likes_count|human }}</span>
@@ -97,7 +97,7 @@
       <div class="liked-users-block d-flex align-items-center">
         <span id="noLikesYet" class="small text-muted" {% if item.likes_count|add:0 >= 1 %}style="display:none"{% endif %}>No likes yet</span>
         <div id="likedUsersContainer" class="d-flex align-items-center gap-1" {% if item.likes_count|add:0 < 1 %}style="display:none"{% endif %}>
-          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none border-0 bg-transparent p-0">Likes</button>
+          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none border-0 bg-transparent p-0">Liked users</button>
           <div class="liked-users-stack d-flex align-items-center">
             {% for like in liked_users|slice:':5' %}
               {% if like.user %}

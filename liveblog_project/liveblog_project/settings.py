@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'smart_blog.apps.SmartBlogConfig',
     'login',
     'pages',
+    'backups',
 ]
 
 
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'login.middleware.UserOnlineMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -129,5 +131,34 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Backups (outside media/static, not publicly accessible)
+# Отдельная папка для архивов, не путать с приложением backups/
+BACKUPS_ROOT = BASE_DIR / "backup_archives"
+BACKUP_MAX_COUNT = 20
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'backups': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
 

@@ -8,10 +8,17 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-inline-flex align-items-center gap-3">
-      <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
-      {% if user_obj.is_staff and user.username == user_obj.username %}
-        <a href="/admin" class="cstm-btn-sm custom-secondary-btn">Administration</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-inline-flex align-items-center gap-3">
+        <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
+        {% if user_obj.is_staff and user.username == user_obj.username %}
+          <a href="/admin" class="cstm-btn-sm custom-secondary-btn">Administration</a>
+        {% endif %}
+      </div>
+      {% if is_online %}
+        <span id="profileOnlineBadge" class="custom_badge badge_reserved">Online</span>
+      {% else %}
+        <span class="custom_badge badge_danger">Offline</span>
       {% endif %}
     </div>
     {% include 'includes/personal_info.html' %}
@@ -19,22 +26,43 @@
       {% if created_items %}
         <div class="d-flex align-items-center gap-2 mb-4">
           <h6 class="text-muted m-0">Created posts</h6>
-          <span class="primary_ fw-semibold">[{{ all_count }}]</span>
+          <span class="primary_ fw-semibold">{{ all_count }}</span>
         </div>
         {% include 'includes/all_cards.html' with items=created_items listing_source='profile' listing_user=user_obj.username listing_section='created' %}
         {% if all_count|add:0 > 10 %}
           <div class="d-flex justify-content-start align-items-center mt-4 small">
-            <a href="{{ profile_created_url }}" class="text-decoration-none text-muted d-flex gap-2 ">
+            <a href="{{ profile_created_url }}" class="text-decoration-none text-muted d-flex gap-2">
               <span>View all created posts</span>
               <span>→</span>
             </a>
           </div>
         {% endif %}
       {% else %}
-        <div class="fw-semibold text-muted">
-          There are no items yet!
-        </div>
+        <div class="fw-semibold text-muted">There are no items yet!</div>
       {% endif %}
     </div>
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% if not is_owner and is_online %}
+    <script>
+      ;(function () {
+        var badge = document.getElementById('profileOnlineBadge')
+        if (!badge) return
+        var url = "{% url 'login_app:profile-online-status' user_obj.username %}"
+        function checkOnline() {
+          fetch(url, { headers: { Accept: 'application/json' } })
+            .then(function (r) {
+              return r.json()
+            })
+            .then(function (data) {
+              if (!data.online && badge) badge.style.display = 'none'
+            })
+            .catch(function () {})
+        }
+        setInterval(checkOnline, 30000)
+      })()
+    </script>
+  {% endif %}
 {% endblock %}

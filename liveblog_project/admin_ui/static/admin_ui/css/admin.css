@@ -118,6 +118,8 @@ body:not(.popup) { display: flex; }
   display: flex;
   flex-direction: column;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .admin-wrapper.admin-no-sidebar { margin-left: 0; }
@@ -194,6 +196,101 @@ body:not(.popup) { display: flex; }
   max-width: var(--admin-content-max);
   margin: 0 auto;
   width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.admin-content-inner {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Form pages: prevent blocks from overflowing */
+#content-main {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+#content-main form,
+#content-main .module,
+body.change-form .module,
+body.add-form .module,
+fieldset.module {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* ColMS layout: prevent overflow when sidebar + main */
+.colMS { max-width: 100%; overflow-x: hidden; }
+.colMS #content-main { max-width: 100%; }
+
+body.change-form .form-row input[type="text"],
+body.change-form .form-row input[type="password"],
+body.change-form .form-row input[type="email"],
+body.change-form .form-row input[type="number"],
+body.change-form .form-row input[type="url"],
+body.change-form .form-row select,
+body.change-form .form-row textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fieldset, inline groups: prevent overflow */
+body.change-form fieldset,
+body.change-form .inline-group,
+body.change-form .form-row {
+  max-width: 100%;
+  min-width: 0;
+}
+body.change-form fieldset .module { max-width: 100%; }
+
+/* CKEditor / rich text: contain width */
+body.change-form .form-row .django-ckeditor-widget,
+body.change-form .form-row .cke,
+body.change-form .form-row [data-ckeditor] {
+  max-width: 100% !important;
+}
+
+body.change-form .selector,
+body.add-form .selector {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* ColMS layout: prevent overflow when sidebar + main */
+.colMS {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.colMS #content-main,
+.colMS #content-related {
+  max-width: 100%;
+}
+
+/* Fieldset, aligned rows: contain width */
+fieldset,
+.aligned,
+.form-row {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Selector (filter_horizontal): contain at desktop, flex to share space */
+.selector {
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.selector .selector-available,
+.selector .selector-chosen {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .admin-breadcrumbs {
@@ -277,6 +374,8 @@ body:not(.popup) { display: flex; }
 .object-tools a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   padding: 0.5rem 1.25rem;
   background: var(--admin-primary);
   color: #fff !important;
@@ -513,6 +612,7 @@ body.dashboard .admin-content {
   border-radius: var(--admin-radius);
   margin-bottom: 1.5rem;
   box-shadow: var(--admin-shadow);
+  padding: 10px 15px;
 }
 
 .module h2, .module h3 {
@@ -549,7 +649,7 @@ body.dashboard .admin-content {
   overflow: hidden;
 }
 
-/* Toolbar: search form */
+/* Toolbar: search form — always one line, no wrap */
 #changelist #toolbar {
   margin-bottom: 1rem;
   padding: 0.75rem 0;
@@ -558,26 +658,91 @@ body.dashboard .admin-content {
 }
 
 #changelist #toolbar form {
-  display: flex;
-  flex-wrap: wrap;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
   align-items: center;
   gap: 0.5rem;
   max-width: 100%;
-}
-
-#changelist #toolbar label,
-#changelist #toolbar input[type="text"],
-#changelist #toolbar input[type="submit"] {
-  flex-shrink: 0;
-}
-
-#changelist #changelist-search input[type="text"] {
   min-width: 0;
-  max-width: 320px;
+}
+
+#changelist #changelist-search {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Inner div (Django wraps input+button in a div) — keep in one line */
+#changelist #changelist-search > div {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  max-width: none !important; /* Override Django responsive max-width: 480px */
+}
+
+/* Hide search icon to save space and keep layout clean */
+#changelist #changelist-search img {
+  display: none !important;
+}
+
+#changelist #toolbar label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+#changelist #changelist-search input[type="text"],
+#changelist #changelist-search #searchbar {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
   padding: 0.5rem 1rem;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
   font-size: 0.9rem;
+}
+
+#changelist #toolbar input[type="submit"] {
+  flex-shrink: 0;
+}
+
+/* Search bar: always one line on all pages, hide icon to save space */
+#changelist #toolbar form {
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+#changelist #changelist-search {
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+#changelist #changelist-search > div {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+#changelist #changelist-search img {
+  display: none;
+}
+#changelist #changelist-search input[type="text"],
+#changelist #changelist-search #searchbar {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+}
+#changelist #changelist-search input[type="submit"] {
+  flex-shrink: 0;
 }
 
 #changelist #changelist-search input[type="submit"] {
@@ -588,6 +753,7 @@ body.dashboard .admin-content {
   border-radius: var(--admin-radius);
   font-weight: 500;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 /* Actions bar (Action dropdown, Go, selection counter) */
@@ -620,6 +786,13 @@ body.dashboard .admin-content {
 #changelist .actions .action-counter {
   font-size: 0.875rem;
   color: var(--admin-text-muted);
+}
+
+/* Comments: hide inactive action links (all, question, clear) */
+body.app-smart_blog.model-comment #changelist .actions span.all,
+body.app-smart_blog.model-comment #changelist .actions span.question,
+body.app-smart_blog.model-comment #changelist .actions span.clear {
+  display: none !important;
 }
 
 /* Table: sticky header + horizontal scroll */
@@ -711,6 +884,7 @@ body.dashboard .admin-content {
 .form-row textarea {
   width: 100%;
   max-width: 500px;
+  min-width: 0;
   padding: 0.75rem 1rem;
   font-size: 1rem;
   font-family: inherit;
@@ -719,7 +893,19 @@ body.dashboard .admin-content {
   background: var(--admin-card-bg);
   color: var(--admin-text);
   transition: border-color 0.15s;
+  box-sizing: border-box;
 }
+
+/* CKEditor / rich text - full width on small screens */
+.form-row .django-ckeditor-widget,
+.form-row .cke {
+  max-width: 100% !important;
+}
+.form-row .django-ckeditor-widget textarea {
+  max-width: 100% !important;
+}
+
+/* Form inputs: full width on small screens - see Responsive section */
 
 .form-row input:focus,
 .form-row select:focus,
@@ -735,7 +921,10 @@ body.dashboard .admin-content {
   padding: 1.5rem 0;
   margin-top: 1.5rem;
   border-top: 1px solid var(--admin-border);
-  gap: 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .submit-row input[type="submit"],
@@ -743,8 +932,9 @@ body.dashboard .admin-content {
 .submit-row a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 0.5rem 1.25rem;
-  margin-right: 0.5rem;
+  min-height: 44px;
   font-size: 0.9rem;
   font-weight: 500;
   border-radius: var(--admin-radius);
@@ -914,10 +1104,16 @@ body.delete-selected-confirmation .cancel-link:hover {
 }
 
 /* ========== ColMS layout ========== */
-.colMS #content-main { float: left; width: 100%; }
+.colMS {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+.colMS #content-main { float: left; width: 100%; max-width: 100%; min-width: 0; overflow-x: hidden; }
 .colMS #content-related {
   float: right;
   width: 300px;
+  max-width: 100%;
   margin-left: 1.5rem;
 }
 
@@ -929,6 +1125,14 @@ body.delete-selected-confirmation .cancel-link:hover {
   .admin-content { padding: 1.5rem; }
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
   .dashboard-latest { grid-template-columns: 1fr 1fr; }
+  .form-row input[type="text"],
+  .form-row input[type="password"],
+  .form-row input[type="email"],
+  .form-row input[type="number"],
+  .form-row input[type="url"],
+  .form-row select,
+  .form-row textarea { max-width: none; }
+  .colMS #content-related { width: 260px; }
 }
 
 @media (max-width: 768px) {
@@ -936,26 +1140,108 @@ body.delete-selected-confirmation .cancel-link:hover {
     transform: translateX(-100%);
     box-shadow: 4px 0 20px rgba(0,0,0,0.15);
   }
-
   .admin-sidebar.is-open { transform: translateX(0); }
-
   .admin-wrapper { margin-left: 0; }
-
   .admin-sidebar-toggle { display: flex; }
-
-
+  .admin-content { padding: 1.25rem; }
   .admin-topbar-actions .admin-topbar-link { display: none; }
-
   .dashboard-stats { grid-template-columns: 1fr; }
   .dashboard-latest { grid-template-columns: 1fr; }
 
-  .colMS #content-related { float: none; width: 100%; margin-left: 0; margin-top: 1rem; }
+  /* ColMS: stack content-related below */
+  .colMS #content-main { float: none; width: 100%; }
+  .colMS #content-related { float: none; width: 100%; margin-left: 0; margin-top: 1.5rem; }
+
+  /* Changelist with filter: stack filter below table */
+  .filtered #changelist .changelist-form-container { display: flex; flex-direction: column; }
+  .filtered #changelist-filter {
+    order: 1;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--admin-border);
+    margin-top: 1rem;
+  }
+  .filtered #changelist .results { order: 0; }
+
+  /* Form inputs full width */
+  .form-row input[type="text"],
+  .form-row input[type="password"],
+  .form-row input[type="email"],
+  .form-row input[type="number"],
+  .form-row input[type="url"],
+  .form-row select,
+  .form-row textarea { max-width: none; }
+
+  /* Selector (filter_horizontal): stack vertically */
+  .selector { display: flex; flex-direction: column; gap: 0.75rem; }
+  .selector .selector-available,
+  .selector .selector-chosen { width: 100% !important; max-width: none; }
+  .selector .selector-chooser { flex-direction: row; justify-content: center; }
+
+  /* Inline formset tables: horizontal scroll */
+  .inline-group { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .inline-group table { min-width: 400px; }
+
+  /* Module: reduce padding */
+  .module { padding: 0.75rem 1rem; }
+  .module h2, .module h3 { padding: 0.75rem 1rem; font-size: 0.95rem; }
+
+  /* Submit row: wrap buttons */
+  .submit-row { flex-wrap: wrap; gap: 0.5rem; }
 }
 
 @media (max-width: 480px) {
   .admin-content { padding: 1rem; }
-  .admin-topbar { padding: 0.5rem 1rem; flex-wrap: wrap; }
-  .admin-page-header { flex-direction: column; align-items: flex-start; }
+  .admin-topbar { padding: 0.5rem 1rem; flex-wrap: wrap; min-height: 52px; }
+  .admin-page-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .admin-content-inner { min-width: 0; overflow-x: hidden; }
+
+  /* Submit row: full-width buttons, touch-friendly */
+  .submit-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem 0;
+  }
+  .submit-row input[type="submit"],
+  .submit-row input[type="button"],
+  .submit-row a {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+  }
+
+  /* Object tools (Add, etc) */
+  .object-tools { width: 100%; }
+  .object-tools a {
+    min-height: 44px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Delete confirmation buttons */
+  body.delete-confirmation form input[type="submit"],
+  body.delete-selected-confirmation form input[type="submit"],
+  body.delete-confirmation .cancel-link,
+  body.delete-selected-confirmation .cancel-link {
+    min-height: 48px;
+    width: 100%;
+  }
+  body.delete-confirmation form,
+  body.delete-selected-confirmation form { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  /* Changelist: keep search bar on one line (input flexes, button stays) */
+  #changelist #toolbar form { flex-direction: row; flex-wrap: nowrap; align-items: center; }
+  #changelist #changelist-search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
+  #changelist #changelist-search input[type="text"] { flex: 1; min-width: 0; max-width: none; }
+  #changelist #toolbar input[type="submit"] { flex-shrink: 0; }
+  #changelist .actions { flex-direction: column; align-items: stretch; }
+  #changelist .actions select { width: 100%; min-width: 0; }
+
+  /* Module & table: compact */
+  .module { padding: 0.5rem 0.75rem; }
+  .module h2, .module h3 { padding: 0.625rem 0.75rem; font-size: 0.9rem; }
+  .module th, .module td { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
 }
 
 /* ========== Admin widget alignment (icons vertical center) ========== */

@@ -17,6 +17,7 @@ from django.db.models import Count, Q, Max, Exists, OuterRef
 from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 from smart_blog.models import Notification
 from django.core.exceptions import PermissionDenied
+from login.middleware import is_user_online, clear_user_online
 
 
 def annotate_user_liked(qs, user):
@@ -279,14 +280,25 @@ def profile_view(request, username):
         is_owner=request.user == user_obj,
     )
 
+    is_online = is_user_online(user_obj) if user_obj else False
+
     context = {
         'fields': fields,
         'user_obj': user_obj,
         'created_items': created_items,
         'is_owner': is_owner,
+        'is_online': is_online,
         **counts,
     }
     return render(request, 'accounts/profile.html', context)
+
+
+def profile_online_status(request, username):
+    """API: возвращает online статус пользователя для polling."""
+    user_obj = User._base_manager.filter(username__iexact=username).first()
+    if not user_obj:
+        return JsonResponse({"online": False})
+    return JsonResponse({"online": is_user_online(user_obj)})
 
 
 def profile_section_view(request, username, section):
@@ -349,6 +361,8 @@ def profile_section_view(request, username, section):
 
 # Выход из профиля
 def logout_view(request):
+    if request.user.is_authenticated:
+        clear_user_online(request.user)
     logout(request)
     #messages.info(request, 'You were logged out.')
     return redirect('login_app:login')

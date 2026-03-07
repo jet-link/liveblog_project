@@ -13,6 +13,7 @@ env/
 db.sqlite3
 /media/
 /staticfiles/
+/backup_archives/
 .env
 .env.local
 

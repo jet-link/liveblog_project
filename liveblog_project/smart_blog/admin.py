@@ -29,6 +29,7 @@ class ItemImageAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ("item", "author", "created")
     search_fields = ("text",)
+    actions = ["delete_selected"]
 
 admin.site.register(CommentLike)
 admin.site.register(Like)

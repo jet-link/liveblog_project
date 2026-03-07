@@ -4,8 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from smart_blog import views as smart_views
 
-admin.site.site_header = 'Admin'
-admin.site.site_title = 'Admin'
+admin.site.site_header = 'Admin panel'
+admin.site.site_title = 'Admin panel'
 admin.site.index_title = 'Dashboard'
 
 urlpatterns = [
