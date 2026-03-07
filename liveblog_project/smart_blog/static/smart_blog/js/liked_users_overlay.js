@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const btn = document.getElementById('likedUsersBtn');
+  const stackTrigger = document.getElementById('likedUsersStackTrigger') || document.querySelector('.liked-users-stack');
   const noLikesYet = document.getElementById('noLikesYet');
   const likedUsersContainer = document.getElementById('likedUsersContainer');
   const overlay = document.getElementById('likedUsersOverlay');
@@ -42,15 +42,22 @@
     }
     overlay.classList.add('hidden');
     overlay.setAttribute('aria-hidden', 'true');
-    btn?.focus({ preventScroll: true });
+    stackTrigger?.focus({ preventScroll: true });
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
   }
 
-  btn?.addEventListener('click', (e) => {
-    if (btn.disabled || btn.classList.contains('is-hidden')) return;
+  function openOnClick(e) {
     e.preventDefault();
+    if (!likedUsersContainer || likedUsersContainer.style.display === 'none') return;
     openOverlay();
+  }
+  stackTrigger?.addEventListener('click', openOnClick);
+  stackTrigger?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openOnClick(e);
+    }
   });
   closeBtn?.addEventListener('click', closeOverlay);
   backdrop?.addEventListener('click', closeOverlay);
@@ -108,12 +115,10 @@
     stack.innerHTML = '';
     items.forEach((row) => {
       const username = row.dataset.likeUser;
-      const href = row.getAttribute('href') || '#';
       const sourceImg = row.querySelector('img');
-      const link = document.createElement('a');
-      link.href = href;
-      link.className = 'liked-user-avatar little-avatar';
-      link.title = username;
+      const span = document.createElement('span');
+      span.className = 'liked-user-avatar little-avatar';
+      span.title = username;
       const img = document.createElement('img');
       if (sourceImg?.classList.contains('avatar-load-failed')) {
         img.classList.add('avatar-load-failed');
@@ -128,8 +133,8 @@
       img.decoding = 'async';
       img.loading = 'lazy';
       img.onerror = function () { this.onerror = null; this.classList.add('avatar-load-failed'); };
-      link.appendChild(img);
-      stack.appendChild(link);
+      span.appendChild(img);
+      stack.appendChild(span);
     });
   }
 
@@ -140,10 +145,6 @@
     }
     if (likedUsersContainer) {
       likedUsersContainer.style.display = hasLikes ? '' : 'none';
-    }
-    if (btn) {
-      btn.classList.toggle('is-hidden', !hasLikes);
-      btn.disabled = !hasLikes;
     }
     if (!hasLikes && overlay && !overlay.classList.contains('hidden')) {
       closeOverlay();

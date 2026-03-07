@@ -29,7 +29,7 @@
         <small class="primary_ fw-semibold">No category</small>
       {% endif %}
 
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-cente VLB">
         <div class="item-stats text-muted d-inline-flex align-items-center">
           <div class="stat">
             <span id="likesCount">{{ item.likes_count|human }}</span>
@@ -97,13 +97,10 @@
       <div class="liked-users-block d-flex align-items-center">
         <span id="noLikesYet" class="small text-muted" {% if item.likes_count|add:0 >= 1 %}style="display:none"{% endif %}>No likes yet</span>
         <div id="likedUsersContainer" class="d-flex align-items-center gap-1" {% if item.likes_count|add:0 < 1 %}style="display:none"{% endif %}>
-          <button id="likedUsersBtn" type="button" class="liked-users-link text-decoration-none border-0 bg-transparent p-0">Liked users</button>
-          <div class="liked-users-stack d-flex align-items-center">
+          <div id="likedUsersStackTrigger" class="liked-users-stack d-flex align-items-center" role="button" tabindex="0" title="View liked users">
             {% for like in liked_users|slice:':5' %}
               {% if like.user %}
-                <a href="{% url 'login_app:profile' like.user.username %}"
-                  class="liked-user-avatar little-avatar"
-                  title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
+                <span class="liked-user-avatar little-avatar" title="{% if like.user.is_active %}{{ like.user.username }}{% else %}Vanished user{% endif %}">
                   {% if like.user.is_active %}
                     {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
                       <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
@@ -113,9 +110,9 @@
                   {% else %}
                     <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
                   {% endif %}
-                </a>
+                </span>
               {% else %}
-                <a href="{% url 'login_app:vanished' %}" class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></a>
+                <span class="liked-user-avatar little-avatar" title="Vanished user"><img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" /></span>
               {% endif %}
             {% endfor %}
           </div>

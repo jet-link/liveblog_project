@@ -461,6 +461,12 @@ html[data-theme="dark"] .block-quote {
     justify-content: flex-start;
     align-items: center;
     min-height: 32px;
+    cursor: pointer;
+}
+.liked-users-stack:focus,
+.liked-users-stack:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .liked-user-avatar {
