@@ -18,19 +18,23 @@
         {% endif %}
       </div>
     </div>
-    <div class="d-flex align-items-end justify-content-between mt-4">
+    <div class="d-flex align-items-end justify-content-between mt-5">
       {% if item.category %}
         <div class="d-inline-flex align-items-center gap-2">
-          {% comment %} <i class="fa fa-folder-o" aria-hidden="true"></i> {% endcomment %}
-          {% comment %} <small class="text-muted fw-semibold">Category</small> {% endcomment %}
           <span class="item-category-badge" title="Category">{{ item.category.name }}</span>
         </div>
       {% else %}
         <small class="primary_ fw-semibold">No category</small>
       {% endif %}
 
-      <div class="d-flex align-items-cente VLB">
+      <div class="d-flex align-items-center">
         <div class="item-stats text-muted d-inline-flex align-items-center">
+
+          <div class="stat">
+            <span id="viewsCount">{{ item.views_count|human }}</span>
+            <i class="fa fa-eye text-muted"></i>
+          </div>
+
           <div class="stat">
             <span id="likesCount">{{ item.likes_count|human }}</span>
             <i class="fa fa-heart text-muted"></i>
@@ -42,9 +46,10 @@
           </div>
 
           <div class="stat">
-            <span id="viewsCount">{{ item.views_count|human }}</span>
-            <i class="fa fa-eye text-muted"></i>
+            <span id="repostCount">{{ item.reposts_count|human }}</span>
+            <i class="fa fa-retweet" aria-hidden="true"></i>
           </div>
+
         </div>
       </div>
     </div>
@@ -57,7 +62,7 @@
           <span>{{ item.human_published }}</span>
           {% if item.is_edited %}
             <span>/</span>
-            <span class="primary_ fw-semibold">Post was edited</span>
+            <span class="success_ fw-semibold">Post was edited</span>
           {% endif %}
         </small>
       </div>
@@ -133,8 +138,8 @@
             <span class="text-muted manipulate expired_edit_delete" aria-label="Edit item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit expired"><i class="fa fa-pencil"></i></span>
           {% endif %}
         {% else %}
-          {% comment %} <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small> {% endcomment %}
-          <small class="text-muted">Please, <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">sign in</a></small>
+          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
+          {% comment %} <small class="text-muted">Please, <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">sign in</a></small> {% endcomment %}
         {% endif %}
       </div>
     </div>
@@ -149,7 +154,7 @@
             {% endfor %}
           </div>
         {% else %}
-          <div class="d-inline-flex primary_ text-decoration-underline">
+          <div class="d-inline-flex primary_ fw-semibold">
             <small>Without tags</small>
           </div>
         {% endif %}

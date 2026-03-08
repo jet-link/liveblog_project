@@ -2,6 +2,16 @@
 (function () {
   'use strict';
 
+  function humanCount(n) {
+    n = Number(n);
+    if (isNaN(n) || n < 0) return '0';
+    if (n < 1000) return String(n);
+    if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
+  }
+
   function getCookie(name) {
     return document.cookie
       .split('; ')
@@ -72,11 +82,11 @@
 
       const detailLikes = document.getElementById('likesCount');
       if (detailLikes && data.likes_count != null) {
-        detailLikes.textContent = data.likes_count;
+        detailLikes.textContent = humanCount(data.likes_count);
       }
       const cardLikes = document.getElementById('likes-count-' + itemId);
       if (cardLikes && data.likes_count != null) {
-        cardLikes.textContent = data.likes_count;
+        cardLikes.textContent = humanCount(data.likes_count);
       }
       if (window.updateLikedUsersUI) {
         window.updateLikedUsersUI(data);
@@ -94,6 +104,16 @@
 // static/js/bookmark.js
 (function () {
   'use strict';
+
+  function humanCount(n) {
+    n = Number(n);
+    if (isNaN(n) || n < 0) return '0';
+    if (n < 1000) return String(n);
+    if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
+  }
 
   function getCookie(name) {
     return document.cookie
@@ -170,7 +190,11 @@
       // instant detail update
       const detailBookmarks = document.getElementById('bookmarkCount');
       if (detailBookmarks && data.bookmarks_count != null) {
-        detailBookmarks.textContent = data.bookmarks_count;
+        detailBookmarks.textContent = humanCount(data.bookmarks_count);
+      }
+      const cardBookmarks = document.getElementById('bookmark-count-' + itemId);
+      if (cardBookmarks && data.bookmarks_count != null) {
+        cardBookmarks.textContent = humanCount(data.bookmarks_count);
       }
 
     } finally {

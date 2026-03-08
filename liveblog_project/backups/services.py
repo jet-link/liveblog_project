@@ -50,6 +50,18 @@ def _run_pg_dump(db_settings, output_path):
         raise RuntimeError(f'pg_dump failed: {result.stderr or result.stdout}')
 
 
+def _verify_tar_integrity(archive_path):
+    """Проверяет целостность tar.gz архива."""
+    try:
+        result = subprocess.run(
+            ['tar', '-tzf', str(archive_path)],
+            capture_output=True, timeout=60, cwd=str(archive_path.parent),
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
 def _create_backup_archive(backup_obj):
     """
     Создаёт backup: database.sql + media/ в tar.gz.
@@ -57,8 +69,15 @@ def _create_backup_archive(backup_obj):
     """
     from backups.models import Backup
 
+    import time
+    start_time = time.time()
+
     backup_obj.status = Backup.STATUS_RUNNING
-    backup_obj.save(update_fields=['status'])
+    if backup_obj.backup_type in (Backup.BACKUP_TYPE_MANUAL, ''):
+        backup_obj.backup_type = 'manual' if backup_obj.schedule_type == Backup.SCHEDULE_MANUAL else 'auto'
+    if not getattr(backup_obj, 'content_type', None):
+        backup_obj.content_type = Backup.CONTENT_DATABASE_MEDIA
+    backup_obj.save(update_fields=['status', 'backup_type', 'content_type'])
 
     tmpdir = None
     try:
@@ -92,12 +111,19 @@ def _create_backup_archive(backup_obj):
         logger.info('Archive created: %s', archive_path)
 
         # 4. Обновляем модель
+        duration = time.time() - start_time
         file_size = archive_path.stat().st_size
+        integrity = Backup.INTEGRITY_VERIFIED if _verify_tar_integrity(archive_path) else Backup.INTEGRITY_UNKNOWN
         backup_obj.status = Backup.STATUS_COMPLETED
         backup_obj.file_path = str(archive_path)
         backup_obj.file_size = file_size
+        backup_obj.duration_seconds = round(duration, 1)
+        backup_obj.integrity_status = integrity
         backup_obj.error_message = ''
-        backup_obj.save(update_fields=['status', 'file_path', 'file_size', 'error_message'])
+        backup_obj.save(update_fields=[
+            'status', 'file_path', 'file_size', 'duration_seconds',
+            'integrity_status', 'error_message',
+        ])
 
         logger.info('Backup completed: %s, size: %s', backup_obj.name, backup_obj.file_size_human)
 
@@ -175,5 +201,27 @@ def create_backup_async(user=None):
     Возвращает созданный объект Backup.
     """
     return create_backup_scheduled(schedule='manual', user=user)
+
+
+def create_backup_sync(backup_type='pre_restore', user=None, timeout=3600):
+    """
+    Создаёт backup синхронно (ждёт завершения).
+    Используется для "backup before restore" — safety backup перед восстановлением.
+    """
+    from backups.models import Backup
+
+    backup = Backup.objects.create(
+        name=f'Safety backup before restore {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}',
+        schedule_type=Backup.SCHEDULE_MANUAL,
+        backup_type=backup_type,
+        status=Backup.STATUS_PENDING,
+        created_by=user,
+    )
+    logger.info('Safety backup started (sync): %s', backup.name)
+    _create_backup_archive(backup)
+    backup.refresh_from_db()
+    if backup.status != Backup.STATUS_COMPLETED:
+        raise RuntimeError(f'Safety backup failed: {backup.error_message}')
+    return backup
 
 

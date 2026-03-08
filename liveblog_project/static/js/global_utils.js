@@ -395,19 +395,65 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Copy to clipboard
+    // Repost API: send repost event, update counter
+    function humanCount(n) {
+        n = Number(n);
+        if (isNaN(n) || n < 0) return '0';
+        if (n < 1000) return String(n);
+        if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return String(n);
+    }
+    function getCookie(name) {
+        return document.cookie.split('; ').find(c => c.startsWith(name + '='))?.split('=')[1];
+    }
+    async function sendRepost(platform) {
+        const itemId = document.body.dataset.itemId;
+        if (!itemId) return null;
+        const apiUrl = (modalEl && modalEl.dataset.repostApi) || '/blog/api/repost/';
+        try {
+            const r = await fetch(apiUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ post_id: itemId, platform })
+            });
+            const data = await r.json().catch(() => ({}));
+            const count = data.reposts_count;
+            if (typeof count === 'number') {
+                const repostEl = document.getElementById('repostCount');
+                if (repostEl) repostEl.textContent = humanCount(count);
+                const cardEl = document.getElementById('reposts-count-' + itemId);
+                if (cardEl) cardEl.textContent = humanCount(count);
+                try {
+                    const changes = JSON.parse(sessionStorage.getItem('listing_changes') || '{}');
+                    changes[itemId] = changes[itemId] || {};
+                    changes[itemId].reposts_count = count;
+                    sessionStorage.setItem('listing_changes', JSON.stringify(changes));
+                } catch (e) { }
+                return count;
+            }
+        } catch (e) { console.warn('Repost API error', e); }
+        return null;
+    }
+
+    // Copy to clipboard + repost
     if (copyBtn && linkInput) {
         copyBtn.addEventListener('click', async function (e) {
             e.preventDefault();
             const text = linkInput.value || '';
             if (!text) return;
-
-            // Try modern API
+            await sendRepost('copy_link');
             try {
                 await navigator.clipboard.writeText(text);
                 showFeedback();
             } catch (err) {
-                // Fallback: select + execCommand
                 try {
                     linkInput.select();
                     document.execCommand('copy');
@@ -426,17 +472,24 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () { feedback.style.display = 'none'; }, 3000);
     }
 
-    // Share to social networks
+    // Share to social networks: repost first, then open
     const url = linkInput ? encodeURIComponent(linkInput.value) : encodeURIComponent(window.location.href);
     const shareMap = {
         twitter: () => {
+            sendRepost('twitter');
             const text = encodeURIComponent(document.title);
             window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'noopener');
         },
         telegram: () => {
+            sendRepost('telegram');
             window.open(`https://t.me/share/url?url=${url}`, '_blank', 'noopener');
         },
+        facebook: () => {
+            sendRepost('facebook');
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'noopener');
+        },
         whatsapp: () => {
+            sendRepost('other');
             const base = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'whatsapp://' : 'https://api.whatsapp.com';
             window.open(`${base}/send?text=${url}`, '_blank', 'noopener');
         }
@@ -444,10 +497,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const btnTwitter = document.getElementById('shareTwitter');
     const btnTelegram = document.getElementById('shareTelegram');
+    const btnFacebook = document.getElementById('shareFacebook');
     const btnWhatsapp = document.getElementById('shareWhatsapp');
 
     if (btnTwitter) btnTwitter.addEventListener('click', shareMap.twitter);
     if (btnTelegram) btnTelegram.addEventListener('click', shareMap.telegram);
+    if (btnFacebook) btnFacebook.addEventListener('click', shareMap.facebook);
     if (btnWhatsapp) btnWhatsapp.addEventListener('click', shareMap.whatsapp);
 
     // Manage focus return to trigger (accessibility)

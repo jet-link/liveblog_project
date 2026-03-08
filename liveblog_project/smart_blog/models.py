@@ -41,13 +41,8 @@ class Category(models.Model):
 
 class ItemQuerySet(models.QuerySet):
     def with_counters(self):
+        """Annotate comments_count. views_count and bookmarks_count use denormalized model fields."""
         return self.annotate(
-            views_count=Count(
-                'views',
-                filter=Q(views__user__isnull=False),
-                distinct=True
-            ),
-            bookmarks_count=Count('bookmarked_by', distinct=True),
             comments_count=Count(
                 'comments',
                 filter=Q(comments__parent__isnull=True),
@@ -109,6 +104,9 @@ class Item(models.Model):
     slug = models.SlugField(max_length=300, unique=True, blank=True)
     search_vector = SearchVectorField(editable=False, null=True)  # PostgreSQL FTS, filled by DB
     likes_count = models.PositiveIntegerField(default=0, db_index=True)  # Denormalized for Popular filter
+    views_count = models.PositiveIntegerField(default=0, db_index=True)  # Denormalized, synced from ItemView (user not null)
+    bookmarks_count = models.PositiveIntegerField(default=0, db_index=True)  # Denormalized, synced from Bookmark
+    reposts_count = models.PositiveIntegerField(default=0, db_index=True)  # Denormalized, synced from PostRepost
     published_date = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -484,6 +482,48 @@ class SearchHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username}: {self.search_query[:50]}"
+
+
+class PostRepost(models.Model):
+    """История репостов публикаций. Событие = нажатие Share, отправка в соцсеть, копирование ссылки."""
+    PLATFORM_TELEGRAM = 'telegram'
+    PLATFORM_TWITTER = 'twitter'
+    PLATFORM_FACEBOOK = 'facebook'
+    PLATFORM_LINKEDIN = 'linkedin'
+    PLATFORM_COPY_LINK = 'copy_link'
+    PLATFORM_OTHER = 'other'
+    PLATFORM_CHOICES = [
+        (PLATFORM_TELEGRAM, 'Telegram'),
+        (PLATFORM_TWITTER, 'Twitter'),
+        (PLATFORM_FACEBOOK, 'Facebook'),
+        (PLATFORM_LINKEDIN, 'LinkedIn'),
+        (PLATFORM_COPY_LINK, 'Copy link'),
+        (PLATFORM_OTHER, 'Other'),
+    ]
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='reposts')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reposts',
+    )
+    ip_address = models.GenericIPAddressField(null=True, blank=True, db_index=True)
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, db_index=True)
+    user_agent = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        indexes = [
+            models.Index(fields=['item', 'created_at']),
+            models.Index(fields=['ip_address', 'created_at']),
+        ]
+        verbose_name = 'Post repost'
+        verbose_name_plural = 'Post reposts'
+
+    def __str__(self):
+        return f'{self.item_id} repost via {self.platform}'
 
 
 class Notification(models.Model):

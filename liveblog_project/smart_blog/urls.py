@@ -23,6 +23,7 @@ urlpatterns = [
     path("report/", views.submit_report, name="submit_report"),
     # browser back button action
     path("api/item/<int:item_id>/counters/", views.item_counters, name="item_counters"),
+    path("api/repost/", views.api_repost, name="api_repost"),
     path("api/search-history/", views.api_search_history_list, name="api_search_history_list"),
     path("api/search-history/<int:pk>/clicked/", views.api_search_history_clicked, name="api_search_history_clicked"),
     path("api/search-history/clear/", views.api_search_history_clear, name="api_search_history_clear"),

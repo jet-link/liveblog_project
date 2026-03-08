@@ -1877,6 +1877,51 @@ textarea {
     /* скрываем настоящий input */
 }
 
+/* Item images file input — кастомная кнопка как в edit_profile */
+.item-images-upload {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.item-images-file-trigger {
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.item-images-file-trigger:hover {
+    background-color: var(--text-link);
+    color: #fff !important;
+    border-color: var(--text-link);
+}
+
+.item-images-file-trigger:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+
+.item-images-file-trigger i {
+    font-size: 1.1rem;
+}
+
+/* Dark theme */
+html[data-theme="dark"] .item-images-file-trigger {
+    color: var(--text-link);
+    border-color: var(--text-link);
+}
+
+html[data-theme="dark"] .item-images-file-trigger:hover {
+    background-color: var(--text-link);
+    color: #fff !important;
+    border-color: var(--text-link);
+}
+
 .file-btn {
     background: var(--text-link);
     color: white;
@@ -2390,8 +2435,7 @@ html[data-theme="dark"] .form-wrapper{
 .card-body {
     display: flex;
     flex-direction: column;
-    padding: 1.2rem;
-    /* можно подстроить */
+    padding: 2rem 1rem;
 }
 
 /* Превью карточек — aspect-ratio для CLS */
@@ -2475,7 +2519,7 @@ html[data-theme="dark"] .form-wrapper{
 
 .published_block,
 .tags_block {
-    padding: 20px;
+    padding: 15px 25px;
     box-shadow: var(--card-shadow);
     background: var(--bg-default);
     border-radius: 8px;
@@ -2510,10 +2554,10 @@ html[data-theme="dark"] .tags_block{
 
 /* Views Comments Likes Bookmart */
 .VLB {
-    padding: 10px;
+    padding: 12px 8px;
     box-shadow: var(--card-shadow);
     border-radius: 8px;
-    font-size: .7rem;
+    font-size: .9rem;
     font-weight: 600;
 }
 
@@ -3041,6 +3085,11 @@ html[data-theme="dark"] .tags_block{
     border: 2px solid #3498db;
 }
 
+.facebook_btn {
+    color: #1877f2;
+    border: 2px solid #1877f2;
+}
+
 .whatsup_btn {
     color: #27ae60;
     border: 2px solid #27ae60;
@@ -3054,6 +3103,11 @@ html[data-theme="dark"] .tags_block{
 .telegram_btn:hover {
     color: #ffffff;
     background-color: #3498db;
+}
+
+.facebook_btn:hover {
+    color: #ffffff;
+    background-color: #1877f2;
 }
 
 .whatsup_btn:hover {
@@ -3356,7 +3410,7 @@ pre {
 }
 
 .item-stats {
-    gap: 10px;
+    gap: 20px;
     font-size: 13px;
     font-weight: 500;
 }
@@ -3364,23 +3418,10 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 0 7px;
+    gap: 8px;
+    /* padding: 0 7px; */
     position: relative;
 }
-
-/* вертикальная линия между элементами */
-/* .item-stats .stat:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 20px;
-    width: 1px;
-    border-radius: 8px;
-    background-color: #afa9a9;
-} */
 
 /* цвет иконки комментариев */
 .stat-comment {

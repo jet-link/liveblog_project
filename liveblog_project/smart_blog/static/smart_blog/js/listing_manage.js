@@ -507,6 +507,17 @@
         }
     }
 
+    /* humanCount: match Python count_convert (1K, 100K, 1.5M, etc.) */
+    function humanCount(n) {
+        n = Number(n);
+        if (isNaN(n) || n < 0) return '0';
+        if (n < 1000) return String(n);
+        if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return String(n);
+    }
+
     /* =====================================================
        3) APPLY listing_changes (likes / bookmarks / views / comments)
     ===================================================== */
@@ -526,22 +537,27 @@
 
             if (data.likes_count != null) {
                 const n = document.getElementById('likes-count-' + itemId);
-                if (n) n.textContent = data.likes_count;
+                if (n) n.textContent = humanCount(data.likes_count);
             }
 
             if (data.bookmarks_count != null) {
                 const n = document.getElementById('bookmark-count-' + itemId);
-                if (n) n.textContent = data.bookmarks_count;
+                if (n) n.textContent = humanCount(data.bookmarks_count);
             }
 
             if (data.comments_count != null) {
                 const n = document.getElementById('comments-count-' + itemId);
-                if (n) n.textContent = data.comments_count;
+                if (n) n.textContent = humanCount(data.comments_count);
             }
 
             if (data.views_count != null) {
                 const n = document.getElementById('views-count-' + itemId);
-                if (n) n.textContent = data.views_count;
+                if (n) n.textContent = humanCount(data.views_count);
+            }
+
+            if (data.reposts_count != null) {
+                const n = document.getElementById('reposts-count-' + itemId);
+                if (n) n.textContent = humanCount(data.reposts_count);
             }
 
             if (data.bookmarked != null && isSameUser) {

@@ -98,15 +98,21 @@ def _search_icontains(qs, q, by_title, by_text, by_tags):
 
 def get_popularity_queryset(qs, min_likes=None):
     """
-    Order by time-decayed popularity: likes_count / (hours + 2)^1.5.
-    Uses denormalized likes_count, no subquery.
-    Optionally filter min_likes (e.g. 6 for Popular filter, 1 for home).
+    Order by time-decayed popularity:
+    (views*0.1 + likes + comments*3 + bookmarks*4 + reposts*5) / (age_hours + 2)^1.5
     """
     if is_postgresql():
         qs = qs.extra(
             select={
                 'popularity_score': """
-                    smart_blog_item.likes_count::float
+                    (
+                        COALESCE(smart_blog_item.views_count, 0) * 0.1 +
+                        COALESCE(smart_blog_item.likes_count, 0) +
+                        (SELECT COUNT(*) FROM smart_blog_comment c 
+                         WHERE c.item_id = smart_blog_item.id AND c.parent_id IS NULL) * 3 +
+                        COALESCE(smart_blog_item.bookmarks_count, 0) * 4 +
+                        COALESCE(smart_blog_item.reposts_count, 0) * 5
+                    )
                     / NULLIF(
                         POWER(
                             GREATEST(0, EXTRACT(EPOCH FROM (now() - smart_blog_item.published_date)) / 3600.0) + 2,

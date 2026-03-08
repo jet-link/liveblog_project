@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+import time
 from pathlib import Path
 
 from django.conf import settings
@@ -25,10 +26,16 @@ def restore_backup(archive_path):
     """
     Восстанавливает backup из .tar.gz архива.
     Структура: backup/database.sql, backup/media/
+    Возвращает dict с log, tables_count, media_count, duration_seconds.
     """
     archive_path = Path(archive_path)
     if not archive_path.exists():
         raise FileNotFoundError(f'Backup file not found: {archive_path}')
+
+    start_time = time.time()
+    log_lines = []
+    tables_count = 0
+    media_count = 0
 
     db_settings = settings.DATABASES['default']
     media_root = Path(settings.MEDIA_ROOT)
@@ -48,8 +55,13 @@ def restore_backup(archive_path):
         if not db_sql.exists():
             raise ValueError('Invalid backup: missing backup/database.sql')
 
+        # Count tables in SQL (approximate)
+        sql_content = db_sql.read_text(errors='ignore')
+        tables_count = sql_content.count('CREATE TABLE') or sql_content.count('create table')
+
         # 1. Закрыть соединения Django
         connection.close()
+        log_lines.append('Database connections closed.')
 
         # 2. Восстановить БД
         env = os.environ.copy()
@@ -68,6 +80,7 @@ def restore_backup(archive_path):
             logger.error('psql restore failed: %s', result.stderr or result.stdout)
             raise RuntimeError(f'Database restore failed: {result.stderr or result.stdout}')
 
+        log_lines.append(f'Database restored. Tables: {tables_count}')
         logger.info('Database restored successfully')
 
         # 3. Восстановить media (сначала очистить, затем скопировать из архива)
@@ -79,17 +92,29 @@ def restore_backup(archive_path):
                         shutil.rmtree(item)
                     else:
                         item.unlink()
-                logger.info('Media cleared before restore')
+                log_lines.append('Media cleared before restore.')
             media_root.mkdir(parents=True, exist_ok=True)
+            media_count = sum(1 for _ in media_src.rglob('*') if _.is_file())
             for item in media_src.iterdir():
                 dest = media_root / item.name
                 if item.is_dir():
                     shutil.copytree(item, dest)
                 else:
                     shutil.copy2(item, dest)
+            log_lines.append(f'Media restored: {media_count} files')
             logger.info('Media restored to %s', media_root)
         else:
+            log_lines.append('No media directory in backup.')
             logger.warning('No media directory in backup')
+
+    duration = round(time.time() - start_time, 1)
+    log_lines.append(f'Duration: {duration}s')
+    return {
+        'log': '\n'.join(log_lines),
+        'tables_count': tables_count,
+        'media_count': media_count,
+        'duration_seconds': duration,
+    }
 
 
 class Command(BaseCommand):
@@ -122,8 +147,11 @@ class Command(BaseCommand):
                 return
 
         try:
-            restore_backup(archive_path)
+            result = restore_backup(archive_path)
             self.stdout.write(self.style.SUCCESS('Restore completed successfully.'))
+            self.stdout.write(f'Tables restored: {result["tables_count"]}')
+            self.stdout.write(f'Media restored: {result["media_count"]} files')
+            self.stdout.write(f'Duration: {result["duration_seconds"]}s')
         except Exception as e:
             logger.exception('Restore failed: %s', e)
             self.stderr.write(self.style.ERROR(f'Restore failed: {e}'))

@@ -9,12 +9,12 @@
               <span class="empty-field">Empty field</span>
             {% elif field.type == 'email' %}
               {% if field.is_owner %}
-                <span id="emailValue">{{ field.value }}</span>
+                <span id="emailValue" class="success_ fw-semibold">{{ field.value }}</span>
               {% else %}
                 <a href="mailto:{{ field.value }}" class="custom_link_danger">{{ field.value }}</a>
               {% endif %}
             {% else %}
-              <span class="fw-semibold">{{ field.value }}</span>
+              <span class="fw-semibold text-muted">{{ field.value }}</span>
             {% endif %}
           </span>
         </li>

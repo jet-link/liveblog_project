@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification, SearchHistory
+from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification, SearchHistory, PostRepost
 from .forms import CommentForm, ItemCreateForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -1119,7 +1119,7 @@ def toggle_like(request, slug):
         "item_id": item.pk,
         "liked": liked,
         "likes_count": item.likes_count,
-        "views_count": item.views.filter(user__isnull=False).count(),
+        "views_count": item.views_count,
     })
 
 
@@ -1139,12 +1139,13 @@ def toggle_bookmark(request, slug):
         Bookmark.objects.create(user=user, item=item)
         bookmarked = True
 
+    item.refresh_from_db()
     return JsonResponse({
         "success": True,
         "item_id": item.pk,
         "bookmarked": bookmarked,
-        "bookmarks_count": Bookmark.objects.filter(item=item).count(),
-        "views_count": item.views.filter(user__isnull=False).count(),
+        "bookmarks_count": item.bookmarks_count,
+        "views_count": item.views_count,
     })
 
 
@@ -1194,11 +1195,81 @@ def toggle_comment_like(request, pk):
 
 
 def item_counters(request, item_id):
-    item = get_object_or_404(Item, pk=item_id)
-
+    item = get_object_or_404(Item.objects.with_counters(), pk=item_id)
     return JsonResponse({
-        "views": item.views_count.filter(user__isnull=False),
+        "views": item.views_count,
         "likes": item.likes_count,
         "bookmarks": item.bookmarks_count,
-        "comments": item.comments_count.filter(parent__isnull=True),
+        "comments": item.comments_count,
+        "reposts": item.reposts_count,
     })
+
+
+def _get_client_ip(request):
+    xff = request.META.get('HTTP_X_FORWARDED_FOR')
+    if xff:
+        return xff.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+@require_POST
+def api_repost(request):
+    """
+    POST /api/repost
+    Body: {"post_id": int, "platform": "telegram"|"twitter"|"facebook"|"linkedin"|"copy_link"|"other"}
+    Rate limits: IP 10s/post, User 5s, copy_link 15s
+    """
+    try:
+        data = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        data = request.POST.dict()
+    post_id = data.get('post_id') or data.get('item_id')
+    platform = (data.get('platform') or 'other').strip().lower()
+    valid_platforms = ['telegram', 'twitter', 'facebook', 'linkedin', 'copy_link', 'other']
+    if platform not in valid_platforms:
+        return JsonResponse({'error': 'Invalid platform'}, status=400)
+    if not post_id:
+        return JsonResponse({'error': 'post_id required'}, status=400)
+    try:
+        post_id = int(post_id)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid post_id'}, status=400)
+
+    item = get_object_or_404(Item.objects.filter(is_published=True), pk=post_id)
+    ip = _get_client_ip(request)
+    user = request.user if request.user.is_authenticated else None
+    ua = (request.META.get('HTTP_USER_AGENT') or '')[:500]
+
+    now = timezone.now()
+    ip_window = timedelta(seconds=10)
+    user_window = timedelta(seconds=5)
+    copy_link_window = timedelta(seconds=15)
+
+    if ip:
+        recent_ip = PostRepost.objects.filter(
+            item=item, ip_address=ip, created_at__gte=now - ip_window
+        ).exists()
+        if recent_ip:
+            item.refresh_from_db()
+            return JsonResponse({'reposts_count': item.reposts_count, 'rate_limited': True}, status=429)
+    if user:
+        recent_user = PostRepost.objects.filter(
+            item=item, user=user, created_at__gte=now - user_window
+        ).exists()
+        if recent_user:
+            item.refresh_from_db()
+            return JsonResponse({'reposts_count': item.reposts_count, 'rate_limited': True}, status=429)
+    if platform == PostRepost.PLATFORM_COPY_LINK and ip:
+        recent_copy = PostRepost.objects.filter(
+            item=item, platform=PostRepost.PLATFORM_COPY_LINK,
+            ip_address=ip, created_at__gte=now - copy_link_window
+        ).exists()
+        if recent_copy:
+            item.refresh_from_db()
+            return JsonResponse({'reposts_count': item.reposts_count, 'rate_limited': True}, status=429)
+
+    PostRepost.objects.create(
+        item=item, user=user, ip_address=ip or None, platform=platform, user_agent=ua,
+    )
+    item.refresh_from_db()
+    return JsonResponse({'reposts_count': item.reposts_count, 'success': True})

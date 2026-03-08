@@ -36,7 +36,7 @@
     {% endblock %}
   </head>
 
-  <body data-item-slug="{% if item %}{{ item.slug }}{% endif %}"{% if item %} data-item-id="{{ item.pk }}" data-views-count="{{ item.views_count }}"{% endif %} data-user-id="{% if user.is_authenticated %}{{ user.pk }}{% endif %}">
+  <body data-item-slug="{% if item %}{{ item.slug }}{% endif %}"{% if item %} data-item-id="{{ item.pk }}" data-views-count="{{ item.views_count }}" data-reposts-count="{{ item.reposts_count }}"{% endif %} data-user-id="{% if user.is_authenticated %}{{ user.pk }}{% endif %}">
     {% include 'includes/header.html' %}
     <div class="container">
       {% include 'includes/messages.html' %}

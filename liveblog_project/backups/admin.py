@@ -17,16 +17,23 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import Backup
-from .services import create_backup_async
+from .services import create_backup_async, create_backup_sync
 
 logger = logging.getLogger('backups')
 
 
 @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'schedule_type', 'created_at', 'file_size_display', 'status', 'created_by', 'actions_column')
-    list_filter = ('status', 'schedule_type', 'created_at')
-    readonly_fields = ('name', 'schedule_type', 'created_at', 'file_size', 'file_path', 'status', 'error_message', 'created_by')
+    list_display = (
+        'name', 'backup_type', 'created_at', 'file_size_display', 'duration_display',
+        'content_type_display', 'status_display', 'integrity_display', 'actions_column',
+    )
+    list_filter = ('status', 'schedule_type', 'backup_type', 'created_at')
+    readonly_fields = (
+        'name', 'schedule_type', 'backup_type', 'content_type', 'created_at',
+        'file_size', 'file_path_display', 'status', 'duration_seconds', 'integrity_status',
+        'error_message', 'restore_log', 'created_by',
+    )
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'
 
@@ -68,20 +75,67 @@ class BackupAdmin(admin.ModelAdmin):
 
     file_size_display.short_description = 'Size'
 
-    def actions_column(self, obj):
-        if obj.status != Backup.STATUS_COMPLETED or not obj.file_path or not Path(obj.file_path).exists():
+    def duration_display(self, obj):
+        return obj.duration_human if hasattr(obj, 'duration_human') else '-'
+
+    duration_display.short_description = 'Duration'
+
+    def content_type_display(self, obj):
+        ct = getattr(obj, 'content_type', None)
+        if ct and hasattr(obj, 'get_content_type_display'):
+            return obj.get_content_type_display()
+        return 'Database + Media'
+
+    content_type_display.short_description = 'Content'
+
+    def status_display(self, obj):
+        status = obj.status
+        label = dict(Backup.STATUS_CHOICES).get(status, status)
+        if status == Backup.STATUS_RUNNING:
+            label = 'Running...'
+        css = {'pending': 'pending', 'running': 'running', 'completed': 'completed', 'failed': 'failed'}.get(status, '')
+        return format_html('<span class="backup-status backup-status-{}">{}</span>', css, label)
+
+    status_display.short_description = 'Status'
+
+    def integrity_display(self, obj):
+        status = getattr(obj, 'integrity_status', None) or ''
+        if not status or status == 'unknown':
             return '-'
+        label = dict(Backup.INTEGRITY_CHOICES).get(status, status)
+        css = {'unknown': '', 'verified': 'verified', 'corrupted': 'corrupted'}.get(status, '')
+        if css:
+            return format_html('<span class="backup-integrity backup-integrity-{}">{}</span>', css, label)
+        return label
+
+    integrity_display.short_description = 'Integrity'
+
+    def file_path_display(self, obj):
+        if not obj.file_path:
+            return '-'
+        return obj.filename_display
+
+    file_path_display.short_description = 'File'
+
+    def actions_column(self, obj):
         download_url = reverse('admin:backups_backup_download', args=[obj.pk])
         restore_url = reverse('admin:backups_backup_restore', args=[obj.pk])
+        delete_url = reverse('admin:backups_backup_delete', args=[obj.pk])
+        can_restore = obj.status == Backup.STATUS_COMPLETED and obj.file_path and Path(obj.file_path).exists()
+        can_download = can_restore
+        parts = []
+        if can_download:
+            parts.append(format_html('<li><a href="{}">Download</a></li>', download_url))
+        if can_restore:
+            parts.append(format_html('<li><a href="{}">Restore</a></li>', restore_url))
+        parts.append(format_html('<li><a href="{}" class="delete-link">Delete</a></li>', delete_url))
+        menu = mark_safe(''.join(str(p) for p in parts))
         return format_html(
             '<details class="backup-actions-dropdown">'
             '<summary class="button">Actions ▾</summary>'
-            '<ul class="backup-actions-menu">'
-            '<li><a href="{}">Download</a></li>'
-            '<li><a href="{}">Restore</a></li>'
-            '</ul>'
+            '<ul class="backup-actions-menu">{}</ul>'
             '</details>',
-            download_url, restore_url
+            menu,
         )
 
     actions_column.short_description = 'Actions'
@@ -138,14 +192,32 @@ class BackupAdmin(admin.ModelAdmin):
         if not path.exists():
             raise Http404('Backup file not found')
 
-        if request.method == 'POST' and request.POST.get('confirm') == 'yes':
+        confirm_ok = (
+            request.method == 'POST'
+            and request.POST.get('confirm') == 'yes'
+            and request.POST.get('confirm_text', '').strip().upper() == 'RESTORE'
+        )
+        if confirm_ok:
+            # Safety backup before restore (optional)
+            if request.POST.get('backup_before_restore') == 'yes':
+                try:
+                    safety = create_backup_sync(backup_type='pre_restore', user=request.user)
+                    messages.info(request, f'Safety backup created: {safety.name}')
+                except Exception as e:
+                    logger.exception('Safety backup failed: %s', e)
+                    messages.error(request, f'Cannot create safety backup: {e}. Restore cancelled.')
+                    return HttpResponseRedirect(reverse('admin:backups_backup_restore', args=[pk]))
+
             manage_py = Path(settings.BASE_DIR) / 'manage.py'
             cmd = [sys.executable, str(manage_py), 'restore_backup', str(path.resolve()), '--no-input']
             try:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=3600, cwd=str(settings.BASE_DIR))
                 if result.returncode == 0:
                     logger.info('Restore completed by %s: %s', request.user, backup.name)
-                    messages.success(request, 'Restore completed. Restart the server to use the restored data.')
+                    msg = 'Restore completed. Restart the server to use the restored data.'
+                    if result.stdout.strip():
+                        msg += f' Log: {result.stdout.strip()}'
+                    messages.success(request, msg)
                 else:
                     logger.error('Restore failed: %s', result.stderr or result.stdout)
                     messages.error(request, f'Restore failed: {result.stderr or result.stdout}')
@@ -159,6 +231,7 @@ class BackupAdmin(admin.ModelAdmin):
         context = {
             'title': 'Confirm Restore',
             'backup': backup,
+            'backup_before_restore': True,
             'opts': self.model._meta,
         }
         return render(request, 'admin/backups/backup/restore_confirm.html', context)

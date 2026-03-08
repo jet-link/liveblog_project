@@ -278,32 +278,48 @@ fieldset,
   min-width: 0;
 }
 
-/* All admin forms: label above input, full-width fields (Add/Edit/Delete/Password/etc.) */
-.admin-content form .aligned .form-row {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+/* All admin forms: label ALWAYS above input (Posts, Comments, Reports, FAQ, etc.) */
+form .aligned .form-row,
+.admin-content form .aligned .form-row,
+body.change-form .aligned .form-row,
+body.add-form .aligned .form-row,
+.inline-group .aligned .form-row {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
 }
-.admin-content form .aligned .form-row > div:first-child {
+form .aligned .form-row > div:first-child,
+.admin-content form .aligned .form-row > div:first-child,
+body.change-form .aligned .form-row > div:first-child,
+.inline-group .aligned .form-row > div:first-child {
   margin-bottom: 0.5rem;
 }
-.admin-content form .aligned .form-row .flex-container {
+form .aligned .form-row .flex-container,
+.admin-content form .aligned .form-row .flex-container,
+body.change-form .aligned .form-row .flex-container {
   width: 100%;
   max-width: 100%;
 }
-/* Override Django's label width — label above, full width */
-.admin-content form .aligned label {
-  margin: 0;
-  width: auto;
-  min-width: 0;
-}
-/* Reset margin-left on help, radiolist, etc. */
+/* Override Django label width — label above, full width */
+/* form .aligned label,
+.admin-content form .aligned label,
+body.change-form .aligned label,
+.inline-group .aligned label {
+  margin: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+} */
+/* Reset margin-left on help, radiolist */
+form .aligned ul,
+form .aligned p.help,
+form .aligned div.help,
 .admin-content form .aligned ul,
-.admin-content form .aligned p.help,
 .admin-content form .aligned div.help {
-  margin-left: 0;
-  padding-left: 0;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
+
+
 
 /* Selector (filter_horizontal): contain at desktop, flex to share space */
 .selector {
@@ -815,6 +831,10 @@ body.dashboard .admin-content {
 .backup-actions-dropdown {
   position: relative;
   display: inline-block;
+  z-index: 1;
+}
+.backup-actions-dropdown[open] {
+  z-index: 1000;
 }
 .backup-actions-dropdown summary {
   padding: 0.5rem 1rem;
@@ -845,7 +865,17 @@ body.dashboard .admin-content {
   border-radius: 0 0 var(--admin-radius) var(--admin-radius);
   box-shadow: var(--admin-shadow);
   list-style: none;
-  z-index: 100;
+  z-index: 10001;
+}
+/* When positioned via JS to escape overflow clipping */
+.backup-actions-dropdown .backup-actions-menu.is-positioned-fixed {
+  border-top: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+}
+.backup-actions-dropdown .backup-actions-menu.is-positioned-fixed.opens-upward {
+  border-top: none;
+  border-bottom: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius) var(--admin-radius) 0 0;
 }
 .backup-actions-dropdown .backup-actions-menu li { margin: 0; }
 .backup-actions-dropdown .backup-actions-menu a {
@@ -859,6 +889,56 @@ body.dashboard .admin-content {
   background: var(--admin-bg);
   color: var(--admin-primary);
 }
+.backup-actions-dropdown .backup-actions-menu a.delete-link:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Backup status colors */
+.backup-status.backup-status-pending { color: var(--admin-text-muted); }
+.backup-status.backup-status-running {
+  color: #ca8a04;
+  font-weight: 500;
+}
+.backup-status.backup-status-running::after {
+  content: '';
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-left: 0.3em;
+  border: 2px solid #ca8a04;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: backup-spinner 0.8s linear infinite;
+  vertical-align: 0.15em;
+}
+@keyframes backup-spinner {
+  to { transform: rotate(360deg); }
+}
+.backup-status.backup-status-completed { color: #16a34a; font-weight: 500; }
+.backup-status.backup-status-failed { color: #dc2626; font-weight: 500; }
+
+/* Backup integrity */
+.backup-integrity.backup-integrity-verified { color: #16a34a; }
+.backup-integrity.backup-integrity-corrupted { color: #dc2626; }
+
+/* Restore confirm form */
+.backup-restore-confirm .backup-restore-name { font-size: 1.1rem; margin: 0.5rem 0; }
+.backup-restore-confirm .backup-restore-meta { color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+.backup-restore-confirm .backup-confirm-type-restore { margin: 1.5rem 0; }
+.backup-restore-confirm .backup-confirm-input {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  font-family: monospace;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+.backup-restore-confirm .backup-confirm-hint { display: block; font-size: 0.85rem; margin-top: 0.25rem; }
+.backup-restore-confirm .backup-confirm-hint.error { color: #dc2626; }
+.backup-restore-confirm .backup-checkbox-row { margin: 1rem 0; }
 
 #changelist .actions .action-counter {
   font-size: 0.875rem;
@@ -938,22 +1018,6 @@ body.app-smart_blog.model-comment #changelist .actions span.clear {
   border-radius: var(--admin-radius);
   margin-bottom: 1rem;
   font-size: 0.9rem;
-}
-
-/* All admin forms: label above input, full-width fields */
-body.change-form .aligned .form-row,
-body.add-form .aligned .form-row {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-body.change-form .aligned .form-row > div:first-child,
-body.add-form .aligned .form-row > div:first-child {
-  margin-bottom: 0.5rem;
-}
-body.change-form .aligned .form-row label,
-body.add-form .aligned .form-row label {
-  margin: 0;
 }
 
 .form-row { margin-bottom: 1.25rem; }
@@ -1339,10 +1403,7 @@ body.delete-selected-confirmation .cancel-link:hover {
 
 /* ========== Admin widget alignment (icons vertical center) ========== */
 .form-row .flex-container {
-  display: flex;
-  /* align-items: center; */
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  display: block;
 }
 
 .related-widget-wrapper {
@@ -1351,6 +1412,10 @@ body.delete-selected-confirmation .cancel-link:hover {
   flex-wrap: wrap;
   gap: 0 0.5rem;
 }
+
+/* label{
+  margin-bottom: 10px !important;
+} */
 
 .related-widget-wrapper-link {
   display: inline-flex;
@@ -1429,4 +1494,21 @@ form .aligned div.help {
 
 .toplinks{
   display: none !important;
+}
+
+
+.vLargeTextField{
+  min-width: 100% !important;
+}
+
+.help-tooltip search-label-icon{
+  display: none !important;
+}
+
+
+.aligned .form-row input,
+.aligned .form-row textarea,
+.aligned .form-row select{
+  margin-bottom: 15px !important;
+  resize: none !important;
 }

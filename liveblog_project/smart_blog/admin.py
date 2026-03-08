@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Tag, Category, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory
+from .models import Tag, Category, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory, PostRepost
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 
@@ -19,10 +19,12 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ("title", "author", "category", "published_date", "is_published")
+    list_display = ("title", "author", "category", "published_date", "is_published", "likes_count", "views_count", "bookmarks_count", "reposts_count")
     list_filter = ("is_published", "category", "published_date")
     search_fields = ("title", "text")
     filter_horizontal = ("tags",)
+    fields = ("author", "title", "text", "category", "tags", "slug", "likes_count", "views_count", "bookmarks_count", "reposts_count",
+              "published_date", "edited", "is_published")
 
 @admin.register(ItemImage)
 class ItemImageAdmin(admin.ModelAdmin):
@@ -38,6 +40,15 @@ admin.site.register(Like)
 admin.site.register(ItemView)
 admin.site.register(Bookmark)
 admin.site.register(Notification)
+
+
+@admin.register(PostRepost)
+class PostRepostAdmin(admin.ModelAdmin):
+    list_display = ('item', 'platform', 'user', 'ip_address', 'created_at')
+    list_filter = ('platform', 'created_at')
+    search_fields = ('item__title', 'ip_address')
+    readonly_fields = ('item', 'user', 'ip_address', 'platform', 'user_agent', 'created_at')
+    ordering = ('-created_at',)
 
 
 @admin.register(SearchHistory)

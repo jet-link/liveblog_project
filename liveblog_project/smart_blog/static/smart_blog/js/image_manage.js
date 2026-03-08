@@ -34,6 +34,13 @@
             return;
         }
 
+        const fileTrigger = document.querySelector('.item-images-file-trigger');
+        if (fileTrigger && mainInput) {
+            fileTrigger.addEventListener('click', function () {
+                mainInput.click();
+            });
+        }
+
         // ----- helpers -----
         function setInfo(text, isWarning) {
             if (!infoNode) return;

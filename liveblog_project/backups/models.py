@@ -27,6 +27,37 @@ class Backup(models.Model):
         (SCHEDULE_MONTHLY, 'Monthly'),
     ]
 
+    BACKUP_TYPE_MANUAL = 'manual'
+    BACKUP_TYPE_AUTO = 'auto'
+    BACKUP_TYPE_PRE_DEPLOY = 'pre_deploy'
+    BACKUP_TYPE_PRE_RESTORE = 'pre_restore'
+    BACKUP_TYPE_CHOICES = [
+        (BACKUP_TYPE_MANUAL, 'Manual'),
+        (BACKUP_TYPE_AUTO, 'Auto'),
+        (BACKUP_TYPE_PRE_DEPLOY, 'Pre-deploy'),
+        (BACKUP_TYPE_PRE_RESTORE, 'Pre-restore'),
+    ]
+
+    CONTENT_DATABASE = 'database'
+    CONTENT_MEDIA = 'media'
+    CONTENT_DATABASE_MEDIA = 'database_media'
+    CONTENT_FULL = 'full'
+    CONTENT_CHOICES = [
+        (CONTENT_DATABASE, 'Database'),
+        (CONTENT_MEDIA, 'Media'),
+        (CONTENT_DATABASE_MEDIA, 'Database + Media'),
+        (CONTENT_FULL, 'Full system'),
+    ]
+
+    INTEGRITY_UNKNOWN = 'unknown'
+    INTEGRITY_VERIFIED = 'verified'
+    INTEGRITY_CORRUPTED = 'corrupted'
+    INTEGRITY_CHOICES = [
+        (INTEGRITY_UNKNOWN, 'Unknown'),
+        (INTEGRITY_VERIFIED, 'Verified'),
+        (INTEGRITY_CORRUPTED, 'Corrupted'),
+    ]
+
     name = models.CharField(max_length=255, verbose_name='Backup name')
     schedule_type = models.CharField(
         max_length=20,
@@ -44,6 +75,26 @@ class Backup(models.Model):
         verbose_name='Status',
     )
     error_message = models.TextField(blank=True, verbose_name='Error message')
+    duration_seconds = models.FloatField(null=True, blank=True, verbose_name='Duration (sec)')
+    backup_type = models.CharField(
+        max_length=20,
+        choices=BACKUP_TYPE_CHOICES,
+        default=BACKUP_TYPE_MANUAL,
+        verbose_name='Backup type',
+    )
+    content_type = models.CharField(
+        max_length=20,
+        choices=CONTENT_CHOICES,
+        default=CONTENT_DATABASE_MEDIA,
+        verbose_name='Content',
+    )
+    integrity_status = models.CharField(
+        max_length=20,
+        choices=INTEGRITY_CHOICES,
+        default=INTEGRITY_UNKNOWN,
+        verbose_name='Integrity',
+    )
+    restore_log = models.TextField(blank=True, verbose_name='Restore log')
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -70,3 +121,21 @@ class Backup(models.Model):
                 return f'{size:.1f} {unit}'
             size /= 1024
         return f'{size:.1f} TB'
+
+    @property
+    def filename_display(self):
+        """Возвращает только имя файла без пути (для UI)."""
+        if not self.file_path:
+            return '-'
+        return self.file_path.rsplit('/', 1)[-1].rsplit('\\', 1)[-1]
+
+    @property
+    def duration_human(self):
+        """Возвращает длительность в формате 4.3 sec."""
+        if self.duration_seconds is None:
+            return '-'
+        if self.duration_seconds < 60:
+            return f'{self.duration_seconds:.1f} sec'
+        m = int(self.duration_seconds // 60)
+        s = self.duration_seconds % 60
+        return f'{m}m {s:.0f}s'
