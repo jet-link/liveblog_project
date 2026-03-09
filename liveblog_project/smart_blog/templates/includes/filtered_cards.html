@@ -74,7 +74,7 @@
                 </div>
               </div>
               <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-              <hr class="text-muted" />
+              {% comment %} <hr class="text-muted" /> {% endcomment %}
               <div class="d-flex justify-content-between align-items-center pt-2">
                 {% if listing_source == 'search' and listing_source_url and listing_query %}
                   <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
@@ -90,8 +90,13 @@
                   <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
                 </div> {% endcomment %}
 
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center VLB">
                   <div class="item-stats text-muted d-inline-flex align-items-center">
+                    <div class="stat">
+                      <span id="views-count-{{ item.pk }}">{{ item.views_count|human }}</span>
+                      <i class="fa fa-eye text-muted"></i>
+                    </div>
+
                     <div class="stat">
                       <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
                       <i class="fa fa-heart text-muted"></i>
@@ -102,10 +107,6 @@
                       <i class="fa fa-bookmark text-muted"></i>
                     </div>
 
-                    <div class="stat">
-                      <span id="views-count-{{ item.pk }}">{{ item.views_count|human }}</span>
-                      <i class="fa fa-eye text-muted"></i>
-                    </div>
                     <div class="stat">
                       <span id="reposts-count-{{ item.pk }}">{{ item.reposts_count|human }}</span>
                       <i class="fa fa-retweet text-muted"></i>

@@ -388,7 +388,7 @@ textarea {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1320px;
 }
 
 .stretched-link {
@@ -1568,7 +1568,7 @@ textarea {
    BRAINEWS FILTER BLOCK
 ========================= */
 .filter-block {
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .filter-block-label {
@@ -1588,7 +1588,7 @@ textarea {
     background: var(--bg-default);
     color: var(--text-primary);
     padding: 10px 23px;
-    border-radius: 30px;
+    border-radius: 8px;
     font-size: .725rem;
     cursor: pointer;
     font-weight: 500;
@@ -2554,10 +2554,10 @@ html[data-theme="dark"] .tags_block{
 
 /* Views Comments Likes Bookmart */
 .VLB {
-    padding: 12px 8px;
+    padding: 10px 15px;
     box-shadow: var(--card-shadow);
-    border-radius: 8px;
-    font-size: .9rem;
+    border-radius: 5px;
+    font-size: .8rem;
     font-weight: 600;
 }
 
@@ -3282,7 +3282,7 @@ pre {
 
 .item_block.back-highlight,
 .item-card.back-highlight .item_block {
-    animation: backPulse 1.5s ease-out forwards;
+    animation: backPulse 1.5s ease-in-out forwards;
 }
 
 
@@ -3410,9 +3410,9 @@ pre {
 }
 
 .item-stats {
-    gap: 20px;
-    font-size: 13px;
-    font-weight: 500;
+    gap: 25px;
+    /* font-size: 13px; */
+    /* font-weight: 500; */
 }
 
 .item-stats .stat {
