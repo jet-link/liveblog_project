@@ -768,6 +768,19 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     color: var(--text-link) !important;
 }
 
+/* Minimal brand logo — like admin sidebar */
+.brand-minimal {
+    color: var(--text-default) !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease;
+}
+.brand-minimal:hover {
+    color: var(--text-link) !important;
+}
+
 /* iOS-style toggle with sun/moon icons */
 /* Theme toggle — простая кнопка: светлая тема = луна, тёмная = солнце */
 .theme-toggle-btn {

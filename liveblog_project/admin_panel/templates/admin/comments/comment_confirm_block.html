@@ -1,6 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 {% load mentions %}
 {% block title %}Block User{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:comments_list' %}">Comments</a></li><li class="admin-breadcrumbs-item">Block</li></ol></nav>{% endblock %}
 {% block page_title %}Block {{ comment.author.username }}?{% endblock %}
 {% block content %}
 <div class="admin-card admin-modal-card">

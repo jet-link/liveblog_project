@@ -6,28 +6,55 @@
 
   var STORAGE_THEME = 'admin_theme';
 
-  // Theme
-  var root = document.documentElement;
-  var themeToggle = document.getElementById('adminThemeToggle');
-  var savedTheme = localStorage.getItem(STORAGE_THEME) || 'dark';
-  if (savedTheme === 'light' && root.getAttribute('data-theme') !== 'light') {
-    root.setAttribute('data-theme', 'light');
-    if (themeToggle) themeToggle.textContent = '☀️';
+  // Theme: light → moon (click to dark), dark → sun (click to light)
+  function getAdminTheme() {
+    return document.documentElement.getAttribute('data-theme') || '';
   }
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-      var isLight = root.getAttribute('data-theme') === 'light';
-      if (isLight) {
-        root.removeAttribute('data-theme');
-        themeToggle.textContent = '🌓';
-        localStorage.setItem(STORAGE_THEME, 'dark');
-      } else {
-        root.setAttribute('data-theme', 'light');
-        themeToggle.textContent = '☀️';
-        localStorage.setItem(STORAGE_THEME, 'light');
+  function isAdminLight() {
+    return getAdminTheme() === 'light';
+  }
+  function syncAdminThemeIcon() {
+    var icon = document.querySelector('.admin-theme-icon');
+    if (!icon) return;
+    var light = isAdminLight();
+    icon.classList.remove('fa-moon', 'fa-sun');
+    icon.classList.add(light ? 'fa-moon' : 'fa-sun');
+  }
+  function setAdminTheme(light) {
+    var root = document.documentElement;
+    if (light) {
+      root.setAttribute('data-theme', 'light');
+      try { localStorage.setItem(STORAGE_THEME, 'light'); } catch (e) {}
+    } else {
+      root.removeAttribute('data-theme');
+      try { localStorage.setItem(STORAGE_THEME, 'dark'); } catch (e) {}
+    }
+    syncAdminThemeIcon();
+  }
+
+  (function initAdminTheme() {
+    var root = document.documentElement;
+    var saved = localStorage.getItem(STORAGE_THEME);
+    if (saved === 'light') root.setAttribute('data-theme', 'light');
+    syncAdminThemeIcon();
+
+    var btn = document.getElementById('adminThemeToggle');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        setAdminTheme(!isAdminLight());
+      });
+    }
+
+    var observer = new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].attributeName === 'data-theme') {
+          syncAdminThemeIcon();
+          break;
+        }
       }
     });
-  }
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  })();
 
   // Mobile sidebar
   var sidebar = document.getElementById('adminSidebar');
@@ -81,22 +108,6 @@
     }
   });
 
-  // Confirm destructive actions
-  document.querySelectorAll('[data-confirm]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      if (!confirm(el.getAttribute('data-confirm'))) e.preventDefault();
-    });
-  });
-
-  // Delete links - optional confirm
-  document.querySelectorAll('.admin-action-delete').forEach(function(link) {
-    if (!link.hasAttribute('data-no-confirm') && link.tagName === 'A') {
-      link.addEventListener('click', function(e) {
-        if (!confirm('Are you sure?')) e.preventDefault();
-      });
-    }
-  });
-
   // Dropdowns: close others when opening one, position fixed overlay
   document.querySelectorAll('.admin-dropdown').forEach(function(dd) {
     var trigger = dd.querySelector('.admin-dropdown-trigger');
@@ -110,12 +121,27 @@
         });
         if (!wasOpen) {
           dd.classList.add('is-open');
-          var tr = trigger.getBoundingClientRect();
-          var mw = 140;
-          if (menu.offsetWidth) mw = menu.offsetWidth;
-          var left = Math.max(8, Math.min(tr.right - mw, window.innerWidth - mw - 8));
-          menu.style.left = left + 'px';
-          menu.style.top = (tr.bottom + 4) + 'px';
+          function positionMenu() {
+            var tr = trigger.getBoundingClientRect();
+            var mw = menu.offsetWidth || 140;
+            var mh = menu.offsetHeight || 200;
+            var gap = 4;
+            var pad = 8;
+            var winW = window.innerWidth;
+            var winH = window.innerHeight;
+            var left = tr.right - mw;
+            if (left < pad) left = pad;
+            if (left + mw > winW - pad) left = winW - mw - pad;
+            var top = tr.bottom + gap;
+            if (top + mh > winH - pad) {
+              top = tr.top - mh - gap;
+              if (top < pad) top = pad;
+            }
+            menu.style.left = Math.round(left) + 'px';
+            menu.style.top = Math.round(top) + 'px';
+          }
+          positionMenu();
+          requestAnimationFrame(positionMenu);
         }
       });
     }

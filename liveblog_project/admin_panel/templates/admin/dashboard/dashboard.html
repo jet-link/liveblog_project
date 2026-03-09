@@ -2,12 +2,15 @@
 {% load static %}
 
 {% block title %}Dashboard{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item">Dashboard</li></ol></nav>{% endblock %}
 {% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 <div class="admin-dashboard">
-    <section class="admin-stats-grid">
+    <section class="admin-alltime-stats">
+        <h2 class="admin-section-title">All time</h2>
+        <div class="admin-stats-grid">
         <div class="admin-card admin-stat-card">
             <div class="admin-stat-value">{{ total_posts }}</div>
             <div class="admin-stat-label">Total Posts</div>
@@ -43,6 +46,7 @@
         <div class="admin-card admin-stat-card">
             <div class="admin-stat-value">{{ total_reposts }}</div>
             <div class="admin-stat-label">Total Reposts</div>
+        </div>
         </div>
     </section>
 
@@ -99,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     onClick: function() {}
                 }

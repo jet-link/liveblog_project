@@ -19,6 +19,7 @@ class ItemAdminCreateForm(BaseItemCreateForm):
         self.label_suffix = ''
         self.fields['tags'].widget = forms.SelectMultiple(attrs={'class': 'admin-select', 'size': 6})
         self.fields['new_tags'].widget = forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'Enter tag/s separate with spaces (optional)'})
+        self.fields['images'].widget.attrs.update({'class': 'admin-file-input'})
 
 
 class ItemAdminEditForm(forms.ModelForm):
@@ -29,7 +30,7 @@ class ItemAdminEditForm(forms.ModelForm):
         fields = ['title', 'text', 'category', 'tags', 'is_published', 'slug']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'Title'}),
-            'text': forms.Textarea(attrs={'class': 'admin-textarea', 'rows': 12}),
+            'text': forms.Textarea(attrs={'class': 'admin-textarea', 'rows': 12, 'placeholder': 'Post text'}),
             'category': forms.Select(attrs={'class': 'admin-select'}),
             'tags': forms.SelectMultiple(attrs={'class': 'admin-select', 'size': 6}),
             'is_published': forms.CheckboxInput(attrs={'class': 'admin-checkbox'}),

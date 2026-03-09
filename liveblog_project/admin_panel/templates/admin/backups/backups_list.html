@@ -1,5 +1,6 @@
 {% extends 'admin/layout/base.html' %}
 {% block title %}Backups{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Backups</li></ol></nav>{% endblock %}
 {% block page_title %}Backups{% endblock %}
 {% block content %}
 {% if request.user.is_superuser %}
@@ -28,7 +29,7 @@
                                 <a href="{% url 'admin_panel:backup_download' b.pk %}">Download</a>
                                 <a href="{% url 'admin_panel:backup_restore' b.pk %}">Restore</a>
                                 {% endif %}
-                                <a href="{% url 'admin_panel:backup_delete' b.pk %}" class="admin-action-delete">Delete</a>
+                                <a href="{% url 'admin_panel:backup_delete' b.pk %}" class="admin-action-delete" data-no-confirm>Delete</a>
                             </div>
                         </div>
                     </td>

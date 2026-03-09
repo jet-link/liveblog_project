@@ -1,6 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 
 {% block title %}Posts{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Posts</li></ol></nav>{% endblock %}
 {% block page_title %}Posts{% endblock %}
 
 {% block content %}
@@ -8,7 +9,7 @@
     <form class="admin-search-form" method="get" action="{% url 'admin_panel:posts_list' %}">
         <input type="text" name="q" value="{{ search }}" placeholder="Search posts..." class="admin-input admin-search-input">
         <select name="category" class="admin-select">
-            <option value="">All categories</option>
+            <option value="">---</option>
             {% for cat in categories %}
             <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
             {% endfor %}

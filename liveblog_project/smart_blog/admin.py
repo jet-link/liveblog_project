@@ -78,10 +78,7 @@ class ContentReportAdmin(admin.ModelAdmin):
     def comment_link(self, obj):
         if not obj.comment:
             return "-"
-        item = obj.comment.item
-        if not item:
-            return "-"
-        url = f"{item.get_absolute_url()}#comment-anchor-{obj.comment.pk}"
+        url = obj.comment.get_comment_url()
         return format_html('<a href="{}" target="_blank">Comment #{}</a>', url, obj.comment.pk)
     comment_link.short_description = "Comment link"
 

@@ -1,5 +1,6 @@
 {% extends 'admin/layout/base.html' %}
 {% block title %}Reports{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Reports</li></ol></nav>{% endblock %}
 {% block page_title %}Reports{% endblock %}
 {% block content %}
 <div class="admin-toolbar">
@@ -10,7 +11,7 @@
             <option value="comment" {% if current_target == 'comment' %}selected{% endif %}>Comments</option>
         </select>
         <select name="reason" class="admin-select">
-            <option value="">All reasons</option>
+            <option value="">Reasons</option>
             <option value="spam" {% if current_reason == 'spam' %}selected{% endif %}>Spam</option>
             <option value="abuse" {% if current_reason == 'abuse' %}selected{% endif %}>Abuse</option>
             <option value="harassment" {% if current_reason == 'harassment' %}selected{% endif %}>Harassment</option>

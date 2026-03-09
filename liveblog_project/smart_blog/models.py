@@ -327,7 +327,13 @@ class Comment(models.Model):
             except Comment.DoesNotExist:
                 pass
         super().save(*args, **kwargs)
-        
+
+    def get_comment_url(self):
+        """URL to view this comment: thread page for replies, item page for root."""
+        anchor = f"#comment-anchor-{self.pk}"
+        if self.parent_id:
+            return reverse("smart_blog:comment_thread", args=[self.parent_id]) + anchor
+        return self.item.get_absolute_url() + anchor
 
 
 class CommentLike(models.Model):

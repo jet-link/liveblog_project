@@ -20,6 +20,7 @@
         {% include 'admin/layout/sidebar.html' %}
         <div class="admin-main">
             {% include 'admin/layout/header.html' %}
+            {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li></ol></nav>{% endblock %}
             <main class="admin-content">
                 {% if messages %}
                 <div class="admin-messages">

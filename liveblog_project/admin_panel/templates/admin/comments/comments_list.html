@@ -1,9 +1,8 @@
 {% extends 'admin/layout/base.html' %}
 {% load mentions %}
 
-{% block title %}
-  Comments
-{% endblock %}
+{% block title %}Comments{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Comments</li></ol></nav>{% endblock %}
 {% block page_title %}
   Comments
 {% endblock %}
@@ -38,7 +37,7 @@
           {% for c in comments %}
             <tr>
               <td>
-                <a href="{% url 'smart_blog:item_detail' c.item.slug %}#comment-anchor-{{ c.pk }}" class="admin-comment-link">{{ c.text|strip_mentions|truncatewords:5 }}</a>
+                <a href="{{ c.get_comment_url }}" class="admin-comment-link">{{ c.text|strip_mentions|truncatewords:5 }}</a>
               </td>
               <td>{{ c.author.username|default:'Vanished' }}</td>
               <td>

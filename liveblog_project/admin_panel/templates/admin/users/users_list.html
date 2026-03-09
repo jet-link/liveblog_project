@@ -1,6 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 
 {% block title %}Users{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Users</li></ol></nav>{% endblock %}
 {% block page_title %}Users{% endblock %}
 
 {% block content %}
@@ -25,7 +26,6 @@
                     <th>Email</th>
                     <th>Posts</th>
                     <th>Comments</th>
-                    <th>Join date</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -37,7 +37,6 @@
                     <td>{{ u.email|default:"—" }}</td>
                     <td>{{ u.posts_count }}</td>
                     <td>{{ u.comments_count }}</td>
-                    <td>{{ u.date_joined|date:"M d, Y" }}</td>
                     <td><span class="admin-badge {% if u.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if u.is_active %}Active{% else %}Banned{% endif %}</span></td>
                     <td class="admin-actions-cell">
                         <div class="admin-dropdown">
@@ -55,7 +54,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" class="admin-empty">No users.</td></tr>
+                <tr><td colspan="6" class="admin-empty">No users.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -2,6 +2,7 @@
 {% load mentions %}
 
 {% block title %}{{ user_obj.username }}{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}">Users</a></li><li class="admin-breadcrumbs-item">{{ user_obj.username }}</li></ol></nav>{% endblock %}
 {% block page_title %}User {{ user_obj.username }}{% endblock %}
 
 {% block content %}
@@ -36,7 +37,7 @@
     <h3>Recent Comments</h3>
     <ul class="admin-profile-list">
         {% for c in comments %}
-        <li><span class="admin-profile-comment">{{ c.text|mention_names|truncatewords:12 }}</span> on <a href="{% url 'smart_blog:item_detail' c.item.slug %}" class="admin-profile-link">{{ c.item.title }}</a></li>
+        <li><span class="admin-profile-comment">{{ c.text|strip_mentions|truncatewords:12 }}</span> on <a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a></li>
         {% empty %}
         <li>No comments.</li>
         {% endfor %}
