@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     # Local apps
-    'admin_ui',
+    'admin_panel',
     'smart_blog.apps.SmartBlogConfig',
     'login',
     'pages',
@@ -63,7 +63,7 @@ ROOT_URLCONF = 'liveblog_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "admin_ui" / "templates", BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / "admin_panel" / "templates", BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,7 +121,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "admin_ui" / "static",
+    BASE_DIR / "admin_panel" / "static",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -140,6 +140,9 @@ BACKUP_WEEKLY_COUNT = 4
 BACKUP_MONTHLY_COUNT = 12
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Admin panel login redirect
+LOGIN_URL = '/profile/login/'
 
 # Logging
 LOGGING = {

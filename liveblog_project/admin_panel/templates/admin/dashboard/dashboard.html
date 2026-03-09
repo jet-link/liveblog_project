@@ -1,0 +1,125 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <section class="admin-stats-grid">
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_posts }}</div>
+            <div class="admin-stat-label">Total Posts</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_users }}</div>
+            <div class="admin-stat-label">Total Users</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_comments }}</div>
+            <div class="admin-stat-label">Total Comments</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_likes }}</div>
+            <div class="admin-stat-label">Total Likes</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_bookmarks }}</div>
+            <div class="admin-stat-label">Total Bookmarks</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_replies }}</div>
+            <div class="admin-stat-label">Total Replies</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_backups }}</div>
+            <div class="admin-stat-label">Total Backups</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_views }}</div>
+            <div class="admin-stat-label">Total Views</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ total_reposts }}</div>
+            <div class="admin-stat-label">Total Reposts</div>
+        </div>
+    </section>
+
+    <section class="admin-today-stats">
+        <h2 class="admin-section-title">Today</h2>
+        <div class="admin-stats-row">
+            <div class="admin-card admin-today-card">
+                <span class="admin-today-value">{{ posts_today }}</span>
+                <span class="admin-today-label">Posts</span>
+            </div>
+            <div class="admin-card admin-today-card">
+                <span class="admin-today-value">{{ users_today }}</span>
+                <span class="admin-today-label">Users</span>
+            </div>
+            <div class="admin-card admin-today-card">
+                <span class="admin-today-value">{{ comments_today }}</span>
+                <span class="admin-today-label">Comments</span>
+            </div>
+            <div class="admin-card admin-today-card">
+                <span class="admin-today-value">{{ reports_today }}</span>
+                <span class="admin-today-label">Reports</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin-activity-chart">
+        <h2 class="admin-section-title">Activity (last 14 days)</h2>
+        <div class="admin-chart-legend">
+            <label><input type="checkbox" id="chartPosts" checked> Posts</label>
+            <label><input type="checkbox" id="chartComments" checked> Comments</label>
+            <label><input type="checkbox" id="chartUsers" checked> Users</label>
+        </div>
+        <div class="admin-card admin-chart-container">
+            <canvas id="activityChart"></canvas>
+        </div>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('activityChart');
+    if (ctx && typeof Chart !== 'undefined') {
+        var data = {{ activity_json|safe }};
+        if (data && data.labels) {
+            var chartConfig = {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { id: 'posts', label: 'Posts', data: data.posts, borderColor: '#238636', fill: false },
+                        { id: 'comments', label: 'Comments', data: data.comments, borderColor: '#1f6feb', fill: false },
+                        { id: 'users', label: 'Users', data: data.users, borderColor: '#a371f7', fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    onClick: function() {}
+                }
+            };
+            var chart = new Chart(ctx, chartConfig);
+            document.getElementById('chartPosts').addEventListener('change', function() { chart.setDatasetVisibility(0, this.checked); chart.update(); });
+            document.getElementById('chartComments').addEventListener('change', function() { chart.setDatasetVisibility(1, this.checked); chart.update(); });
+            document.getElementById('chartUsers').addEventListener('change', function() { chart.setDatasetVisibility(2, this.checked); chart.update(); });
+            function resizeChart() {
+                if (chart && chart.canvas && chart.canvas.parentNode) {
+                    chart.resize();
+                }
+            }
+            window.addEventListener('resize', resizeChart);
+            if (typeof ResizeObserver !== 'undefined') {
+                var container = ctx.closest('.admin-chart-container');
+                if (container) new ResizeObserver(resizeChart).observe(container);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

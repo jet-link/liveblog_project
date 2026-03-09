@@ -1,0 +1,45 @@
+{% extends 'admin/layout/base.html' %}
+{% load mentions %}
+
+{% block title %}{{ user_obj.username }}{% endblock %}
+{% block page_title %}User {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <p><strong>Username:</strong> {{ user_obj.username }}</p>
+    <p><strong>Email:</strong> {{ user_obj.email|default:"—" }}</p>
+    <p><strong>Joined:</strong> {{ user_obj.date_joined|date:"M d, Y" }}</p>
+    <p><strong>Status:</strong> <span class="admin-badge {% if user_obj.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if user_obj.is_active %}Active{% else %}Banned{% endif %}</span></p>
+    <div class="admin-form-actions">
+        <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
+        {% if user_obj.is_active %}
+        <a href="{% url 'admin_panel:user_ban' user_obj.pk %}" class="admin-button admin-button-outline">Ban</a>
+        {% else %}
+        <a href="{% url 'admin_panel:user_unban' user_obj.pk %}" class="admin-button admin-button-outline">Unban</a>
+        {% endif %}
+        <a href="{% url 'admin_panel:user_delete' user_obj.pk %}" class="admin-button admin-button-danger">Delete</a>
+    </div>
+</div>
+
+<div class="admin-card admin-profile-list-card">
+    <h3>Recent Posts</h3>
+    <ul class="admin-profile-list">
+        {% for p in posts %}
+        <li><a href="{% url 'smart_blog:item_detail' p.slug %}" class="admin-profile-link">{{ p.title }}</a></li>
+        {% empty %}
+        <li>No posts.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="admin-card admin-profile-list-card">
+    <h3>Recent Comments</h3>
+    <ul class="admin-profile-list">
+        {% for c in comments %}
+        <li><span class="admin-profile-comment">{{ c.text|mention_names|truncatewords:12 }}</span> on <a href="{% url 'smart_blog:item_detail' c.item.slug %}" class="admin-profile-link">{{ c.item.title }}</a></li>
+        {% empty %}
+        <li>No comments.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

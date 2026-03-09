@@ -1,0 +1,80 @@
+<aside class="admin-sidebar" id="adminSidebar" role="navigation" aria-label="Admin navigation">
+    <div class="admin-sidebar-brand">
+        <a href="{% url 'admin_panel:dashboard' %}">BrainStorm Admin</a>
+        <button type="button" class="admin-sidebar-close" id="adminSidebarClose" aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="admin-sidebar-nav">
+        <a href="{% url 'admin_panel:dashboard' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="admin-nav-icon fa-solid fa-chart-line"></i>
+            Dashboard
+        </a>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">Content</div>
+            <a href="{% url 'admin_panel:posts_list' %}" class="admin-nav-item {% if 'post' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-file-lines"></i>
+                Posts
+            </a>
+            <a href="{% url 'admin_panel:comments_list' %}" class="admin-nav-item {% if 'comment' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-comments"></i>
+                Comments
+            </a>
+            <a href="{% url 'admin_panel:categories_list' %}" class="admin-nav-item {% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-folder"></i>
+                Categories
+            </a>
+            <a href="{% url 'admin_panel:tags_list' %}" class="admin-nav-item {% if 'tag' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-tags"></i>
+                Tags
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">Users</div>
+            <a href="{% url 'admin_panel:users_list' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'users_list' %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-user"></i>
+                Users
+            </a>
+            <a href="{% url 'admin_panel:banned_users' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'banned_users' %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-user-slash"></i>
+                Banned Users
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">Moderation</div>
+            <a href="{% url 'admin_panel:reports_list' %}" class="admin-nav-item {% if 'report' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-flag"></i>
+                Reports
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">Analytics</div>
+            <a href="{% url 'admin_panel:analytics' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-chart-simple"></i>
+                Statistics
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">Pages</div>
+            <a href="{% url 'admin_panel:faq_list' %}" class="admin-nav-item {% if 'faq' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-circle-question"></i>
+                FAQ
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <div class="admin-nav-group-title">System</div>
+            <a href="{% url 'admin_panel:backups_list' %}" class="admin-nav-item {% if 'backup' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-floppy-disk"></i>
+                Backups
+            </a>
+            <a href="{% url 'admin_panel:logs' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'logs' %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-clipboard"></i>
+                Logs
+            </a>
+        </div>
+    </nav>
+</aside>

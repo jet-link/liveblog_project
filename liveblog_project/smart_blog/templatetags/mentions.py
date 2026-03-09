@@ -40,6 +40,13 @@ def render_mentions(text, parent_comment_id=None):
 
 
 @register.filter
+def strip_mentions(text):
+    """Strip @[user:ID], from text. Returns plain comment body for admin display."""
+    from smart_blog.utils import strip_mention_tokens
+    return strip_mention_tokens(text or "")
+
+
+@register.filter
 def mention_names(text):
     """Replace @[user:ID] with @username (plain text, no HTML). Use for truncation-friendly display."""
     if not text:

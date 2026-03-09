@@ -1,15 +1,10 @@
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from smart_blog import views as smart_views
 
-admin.site.site_header = 'Admin panel'
-admin.site.site_title = 'Admin panel'
-admin.site.index_title = 'Dashboard'
-
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', include('admin_panel.urls')),
 
     # Глобальный поиск доступен по /search/
     path('search/', smart_views.search_view, name='global_search'),

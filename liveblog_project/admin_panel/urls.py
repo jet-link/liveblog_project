@@ -1,0 +1,66 @@
+"""Admin panel URL configuration."""
+from django.urls import path
+from . import views
+
+app_name = 'admin_panel'
+
+urlpatterns = [
+    path('', views.dashboard_view, name='dashboard'),
+
+    # Posts
+    path('posts/', views.posts_list, name='posts_list'),
+    path('posts/create/', views.post_create, name='post_create'),
+    path('posts/<slug:slug>/edit/', views.post_edit, name='post_edit'),
+    path('posts/<slug:slug>/delete/', views.post_delete, name='post_delete'),
+    path('posts/<slug:slug>/stats/', views.post_view_stats, name='post_stats'),
+
+    # Comments
+    path('comments/', views.comments_list, name='comments_list'),
+    path('comments/<int:pk>/delete/', views.comment_delete, name='comment_delete'),
+    path('comments/<int:pk>/block-user/', views.comment_block_user, name='comment_block_user'),
+
+    # Users
+    path('users/', views.users_list, name='users_list'),
+    path('users/banned/', views.banned_users_list, name='banned_users'),
+    path('users/<int:pk>/', views.user_profile, name='user_profile'),
+    path('users/<int:pk>/ban/', views.user_ban, name='user_ban'),
+    path('users/<int:pk>/unban/', views.user_unban, name='user_unban'),
+    path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
+
+    # Categories
+    path('categories/', views.categories_list, name='categories_list'),
+    path('categories/create/', views.category_create, name='category_create'),
+    path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
+    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+
+    # Tags
+    path('tags/', views.tags_list, name='tags_list'),
+    path('tags/create/', views.tag_create, name='tag_create'),
+    path('tags/<int:pk>/edit/', views.tag_edit, name='tag_edit'),
+    path('tags/<int:pk>/delete/', views.tag_delete, name='tag_delete'),
+
+    # Reports
+    path('reports/', views.reports_list, name='reports_list'),
+    path('reports/<int:pk>/dismiss/', views.report_dismiss, name='report_dismiss'),
+    path('reports/<int:pk>/delete-content/', views.report_delete_content, name='report_delete_content'),
+    path('reports/<int:pk>/ban-user/', views.report_ban_user, name='report_ban_user'),
+
+    # Analytics
+    path('analytics/', views.analytics_view, name='analytics'),
+
+    # Backups
+    path('backups/', views.backups_list, name='backups_list'),
+    path('backups/create/', views.backup_create, name='backup_create'),
+    path('backups/<int:pk>/download/', views.backup_download, name='backup_download'),
+    path('backups/<int:pk>/restore/', views.backup_restore, name='backup_restore'),
+    path('backups/<int:pk>/delete/', views.backup_delete, name='backup_delete'),
+
+    # Logs (placeholder)
+    path('logs/', views.logs_view, name='logs'),
+
+    # Pages / FAQ
+    path('faq/', views.faq_list, name='faq_list'),
+    path('faq/create/', views.faq_create, name='faq_create'),
+    path('faq/<int:pk>/edit/', views.faq_edit, name='faq_edit'),
+    path('faq/<int:pk>/delete/', views.faq_delete, name='faq_delete'),
+]

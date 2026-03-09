@@ -17,7 +17,7 @@
         </a>
         {% comment %} <a href="#" class="header-menu-item text-decoration-none text-muted">Popular</a> {% endcomment %}
       </div>
-      <div class="d-flex align-items-center gap-3 header-actions">
+      <div class="d-flex align-items-center gap-2 header-actions">
         {% if user.is_authenticated %}
           {% comment %} <a href="{% url 'login_app:notifications' user.username %}" class="text-muted text-decoration-none fs-5 notification-btn" data-notifications-count="{{ notifications_count }}">
             {% if notifications_count_label %}
@@ -36,7 +36,6 @@
                 <i class="fa fa-bell me-2" aria-hidden="true"></i>
                 Notifications
               </a>
-
               <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
             </div>
           </div>
@@ -48,12 +47,8 @@
           <span></span>
           <span></span>
         </button>
-        <button type="button" id="themeToggle" class="ios-toggle" aria-label="Toggle theme" title="Toggle theme">
-          <span class="ios-toggle-track">
-            <i class="fa fa-sun-o ios-toggle-icon ios-toggle-sun" style="color:#ffffff;" aria-hidden="true"></i>
-            <span class="ios-toggle-thumb"></span>
-            <i class="fa fa-moon-o ios-toggle-icon ios-toggle-moon" style="color:#5f27cd;" aria-hidden="true"></i>
-          </span>
+        <button type="button" id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Light/Dark theme">
+          <i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i>
         </button>
       </div>
     </nav>

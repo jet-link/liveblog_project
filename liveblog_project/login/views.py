@@ -13,6 +13,7 @@ from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
 from django.http import JsonResponse, Http404
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count, Q, Max, Exists, OuterRef
 from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb, strip_mention_tokens
 from smart_blog.models import Notification
@@ -173,6 +174,9 @@ def login_view(request):
                     request.session.set_expiry(0)  # until browser close
 
                 messages.success(request, f'Welcome back, {user.username}!')
+                next_url = request.GET.get('next', '')
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                    return redirect(next_url)
                 return redirect('login_app:profile', username=user.username)
             else:
                 if not User.objects.filter(username__iexact=username).exists():

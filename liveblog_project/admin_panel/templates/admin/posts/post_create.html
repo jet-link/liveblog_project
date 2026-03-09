@@ -1,0 +1,27 @@
+{% extends 'admin/layout/base.html' %}
+
+{% block title %}Create Post{% endblock %}
+{% block page_title %}Create Post{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <form method="post" enctype="multipart/form-data" class="admin-form">
+        {% csrf_token %}
+        {% for field in form %}
+        {% if field.name != 'tags' %}
+        <div class="admin-form-group {% if field.name == 'is_published' %}admin-form-group-inline{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% include 'admin/includes/admin_tag_select.html' with form=form selected_tag_ids=selected_tag_ids %}
+        {% if form.tags.errors %}<div class="admin-form-group"><span class="admin-alert admin-alert-error">{{ form.tags.errors }}</span></div>{% endif %}
+        <div class="admin-form-actions">
+            <button type="submit" class="admin-button admin-button-primary">Create</button>
+            <a href="{% url 'admin_panel:posts_list' %}" class="admin-button admin-button-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

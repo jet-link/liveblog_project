@@ -769,6 +769,28 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 }
 
 /* iOS-style toggle with sun/moon icons */
+/* Theme toggle — простая кнопка: светлая тема = луна, тёмная = солнце */
+.theme-toggle-btn {
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    border-radius: 6px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+.theme-toggle-btn:hover {
+    color: var(--text-default);
+    background-color: var(--bg-subtle);
+}
+.theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+
 .ios-toggle {
     padding: 0;
     border: none;
@@ -856,17 +878,17 @@ html[data-theme="dark"] .ios-toggle-thumb {
         display: flex !important;
     }
 
-    .header-actions .ios-toggle {
+    .header-actions .theme-toggle-btn:not(.theme-toggle-overlay) {
         display: none !important;
     }
 
-    .ios-toggle-overlay {
+    .theme-toggle-overlay {
         display: inline-flex !important;
     }
 }
 
 @media (min-width: 993px) {
-    .ios-toggle-overlay {
+    .theme-toggle-overlay {
         display: none !important;
     }
 }
@@ -1745,7 +1767,7 @@ textarea {
     cursor: pointer;
 }
 
-.bottom-menu-header .ios-toggle-overlay {
+.bottom-menu-header .theme-toggle-overlay {
     font-size: 1rem;
     line-height: 1;
     width: auto;

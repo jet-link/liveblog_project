@@ -1,0 +1,97 @@
+{% extends 'admin/layout/base.html' %}
+
+{% block title %}Posts{% endblock %}
+{% block page_title %}Posts{% endblock %}
+
+{% block content %}
+<div class="admin-toolbar">
+    <form class="admin-search-form" method="get" action="{% url 'admin_panel:posts_list' %}">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search posts..." class="admin-input admin-search-input">
+        <select name="category" class="admin-select">
+            <option value="">All categories</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="status" class="admin-select">
+            <option value="">All</option>
+            <option value="published" {% if current_status == 'published' %}selected{% endif %}>Published</option>
+            <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>Draft</option>
+        </select>
+        <select name="sort" class="admin-select">
+            <option value="date" {% if current_sort == 'date' %}selected{% endif %}>By date</option>
+            <option value="views" {% if current_sort == 'views' %}selected{% endif %}>By views</option>
+            <option value="likes" {% if current_sort == 'likes' %}selected{% endif %}>By likes</option>
+            <option value="comments" {% if current_sort == 'comments' %}selected{% endif %}>By comments</option>
+        </select>
+        <button type="submit" class="admin-button">Filter</button>
+    </form>
+    <a href="{% url 'admin_panel:post_create' %}" class="admin-button admin-button-primary">New Post</a>
+</div>
+
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Views</th>
+                    <th>Likes</th>
+                    <th>Comments</th>
+                    <th>Bookmarks</th>
+                    <th>Reposts</th>
+                    <th>Published</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td><a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a></td>
+                    <td>{{ post.author.username|default:"—" }}</td>
+                    <td>{{ post.category.name|default:"—" }}</td>
+                    <td>{{ post.views_count }}</td>
+                    <td>{{ post.likes_count }}</td>
+                    <td>{{ post.comments_count|default:0 }}</td>
+                    <td>{{ post.bookmarks_count }}</td>
+                    <td>{{ post.reposts_count }}</td>
+                    <td>{{ post.published_date|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="admin-badge {% if post.is_published %}admin-badge-success{% else %}admin-badge-warning{% endif %}">
+                            {% if post.is_published %}Published{% else %}Draft{% endif %}
+                        </span>
+                    </td>
+                    <td class="admin-actions-cell">
+                        <div class="admin-dropdown">
+                            <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="admin-dropdown-menu">
+                                <a href="{% url 'admin_panel:post_edit' post.slug %}">Edit</a>
+                                <a href="{% url 'admin_panel:post_stats' post.slug %}">Stats</a>
+                                <a href="{% url 'admin_panel:post_delete' post.slug %}" class="admin-action-delete">Delete</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="11" class="admin-empty">No posts found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ posts.paginator.count }}</div>
+    {% if posts.has_other_pages %}
+    <div class="admin-pagination">
+        {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}&sort={{ current_sort }}" class="admin-button admin-button-sm">Previous</a>
+        {% endif %}
+        <span class="admin-pagination-info">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+        {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}&sort={{ current_sort }}" class="admin-button admin-button-sm">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

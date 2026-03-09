@@ -1,0 +1,11 @@
+<header class="admin-header">
+    <div class="admin-header-left">
+        <button type="button" class="admin-menu-toggle" id="adminMenuToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+        <h1 class="admin-page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+    </div>
+    <div class="admin-header-right">
+        <button type="button" class="admin-theme-toggle" id="adminThemeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">🌓</button>
+        <a href="{% url 'login_app:profile' username=request.user.username %}" class="admin-button admin-button-sm">{{ request.user.username }}</a>
+        <a href="{% url 'login_app:logout' %}" class="admin-button admin-button-sm admin-button-outline">Logout</a>
+    </div>
+</header>

@@ -1,0 +1,62 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<div class="admin-toolbar">
+    <form class="admin-search-form" method="get">
+        <select name="target" class="admin-select">
+            <option value="">All</option>
+            <option value="item" {% if current_target == 'item' %}selected{% endif %}>Posts</option>
+            <option value="comment" {% if current_target == 'comment' %}selected{% endif %}>Comments</option>
+        </select>
+        <select name="reason" class="admin-select">
+            <option value="">All reasons</option>
+            <option value="spam" {% if current_reason == 'spam' %}selected{% endif %}>Spam</option>
+            <option value="abuse" {% if current_reason == 'abuse' %}selected{% endif %}>Abuse</option>
+            <option value="harassment" {% if current_reason == 'harassment' %}selected{% endif %}>Harassment</option>
+            <option value="copyright" {% if current_reason == 'copyright' %}selected{% endif %}>Copyright</option>
+            <option value="other" {% if current_reason == 'other' %}selected{% endif %}>Other</option>
+        </select>
+        <button type="submit" class="admin-button">Filter</button>
+    </form>
+</div>
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr><th>Target</th><th>Reason</th><th>Reporter</th><th>Details</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for r in reports %}
+                <tr>
+                    <td>
+                        {% if r.item %}<a href="{% url 'smart_blog:item_detail' r.item.slug %}">Post: {{ r.item.title|truncatewords:5 }}</a>{% endif %}
+                        {% if r.comment %}Comment #{{ r.comment.id }}{% endif %}
+                    </td>
+                    <td><span class="admin-badge">{{ r.get_reason_display }}</span></td>
+                    <td>{{ r.reporter.username|default:"—" }}</td>
+                    <td>{{ r.details|truncatewords:10|default:"—" }}</td>
+                    <td>{{ r.created_at|date:"M d, H:i" }}</td>
+                    <td class="admin-actions-cell">
+                        <div class="admin-dropdown">
+                            <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="admin-dropdown-menu">
+                                <form method="post" action="{% url 'admin_panel:report_dismiss' r.pk %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn">Dismiss</button></form>
+                                <a href="{% url 'admin_panel:report_delete_content' r.pk %}">Delete content</a>
+                                <a href="{% url 'admin_panel:report_ban_user' r.pk %}">Ban user</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="admin-empty">No open reports.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ reports.paginator.count }}</div>
+    {% if reports.has_other_pages %}
+    <div class="admin-pagination">{% if reports.has_previous %}<a href="?page={{ reports.previous_page_number }}{% if current_target %}&target={{ current_target }}{% endif %}{% if current_reason %}&reason={{ current_reason }}{% endif %}" class="admin-button admin-button-sm">Previous</a>{% endif %}<span class="admin-pagination-info">Page {{ reports.number }} of {{ reports.paginator.num_pages }}</span>{% if reports.has_next %}<a href="?page={{ reports.next_page_number }}{% if current_target %}&target={{ current_target }}{% endif %}{% if current_reason %}&reason={{ current_reason }}{% endif %}" class="admin-button admin-button-sm">Next</a>{% endif %}</div>
+    {% endif %}
+</div>
+{% endblock %}

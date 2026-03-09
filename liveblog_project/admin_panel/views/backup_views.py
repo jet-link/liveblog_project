@@ -1,0 +1,111 @@
+"""Backup management views."""
+import subprocess
+import sys
+from pathlib import Path
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.http import FileResponse, Http404
+from django.conf import settings
+
+from admin_panel.decorators import admin_required
+from backups.models import Backup
+from backups.services import create_backup_async, create_backup_sync
+
+
+@admin_required
+def backups_list(request):
+    """List backups."""
+    if not request.user.is_superuser:
+        return redirect('admin_panel:dashboard')
+    qs = Backup.objects.select_related('created_by').order_by('-created_at')
+    return render(request, 'admin/backups/backups_list.html', {'backups': qs})
+
+
+@admin_required
+def backup_create(request):
+    """Create new backup."""
+    if not request.user.is_superuser:
+        raise Http404
+    if request.method == 'POST':
+        backup = create_backup_async(user=request.user)
+        messages.success(request, f'Backup "{backup.name}" started. It will complete in background.')
+        return redirect('admin_panel:backups_list')
+    return redirect('admin_panel:backups_list')
+
+
+@admin_required
+def backup_download(request, pk):
+    """Download backup file."""
+    if not request.user.is_superuser:
+        raise Http404
+    backup = get_object_or_404(Backup, pk=pk)
+    if backup.status != Backup.STATUS_COMPLETED or not backup.file_path:
+        raise Http404('Backup not available for download')
+    path = Path(backup.file_path)
+    if not path.exists():
+        raise Http404('Backup file not found')
+    return FileResponse(
+        path.open('rb'),
+        as_attachment=True,
+        filename=path.name,
+        content_type='application/gzip',
+    )
+
+
+@admin_required
+def backup_restore(request, pk):
+    """Restore from backup."""
+    if not request.user.is_superuser:
+        raise Http404
+    backup = get_object_or_404(Backup, pk=pk)
+    if backup.status != Backup.STATUS_COMPLETED or not backup.file_path:
+        raise Http404('Backup not available for restore')
+    path = Path(backup.file_path)
+    if not path.exists():
+        raise Http404('Backup file not found')
+
+    if request.method == 'POST':
+        confirm = request.POST.get('confirm') == 'yes'
+        confirm_text = request.POST.get('confirm_text', '').strip().upper()
+        if confirm and confirm_text == 'RESTORE':
+            if request.POST.get('backup_before_restore') == 'yes':
+                try:
+                    safety = create_backup_sync(backup_type='pre_restore', user=request.user)
+                    messages.info(request, f'Safety backup created: {safety.name}')
+                except Exception as e:
+                    messages.error(request, f'Cannot create safety backup: {e}. Restore cancelled.')
+                    return redirect('admin_panel:backup_restore', pk=backup.pk)
+            manage_py = Path(settings.BASE_DIR) / 'manage.py'
+            cmd = [sys.executable, str(manage_py), 'restore_backup', str(path.resolve()), '--no-input']
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=3600, cwd=str(settings.BASE_DIR))
+                if result.returncode == 0:
+                    messages.success(request, 'Restore completed. Restart the server to use the restored data.')
+                else:
+                    messages.error(request, f'Restore failed: {result.stderr or result.stdout}')
+            except subprocess.TimeoutExpired:
+                messages.error(request, 'Restore timed out.')
+            except Exception as e:
+                messages.error(request, f'Restore failed: {str(e)}')
+            return redirect('admin_panel:backups_list')
+
+    return render(request, 'admin/backups/backup_restore_confirm.html', {'backup': backup})
+
+
+@admin_required
+def backup_delete(request, pk):
+    """Delete backup."""
+    if not request.user.is_superuser:
+        raise Http404
+    backup = get_object_or_404(Backup, pk=pk)
+    if request.method == 'POST':
+        if backup.file_path and Path(backup.file_path).exists():
+            try:
+                Path(backup.file_path).unlink()
+            except OSError:
+                pass
+        backup.delete()
+        messages.success(request, 'Backup deleted.')
+        return redirect('admin_panel:backups_list')
+    return render(request, 'admin/backups/backup_confirm_delete.html', {'backup': backup})

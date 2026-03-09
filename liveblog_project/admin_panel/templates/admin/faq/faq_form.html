@@ -1,0 +1,29 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} FAQ{% endblock %}
+{% block page_title %}{% if is_create %}Create FAQ{% else %}Edit FAQ{% endif %}{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <form method="post" class="admin-form">
+        {% csrf_token %}
+        <div class="admin-form-group">
+            <label>Question</label>
+            <input type="text" name="question" value="{% if item %}{{ item.question }}{% endif %}" class="admin-input" required>
+        </div>
+        <div class="admin-form-group">
+            <label>Answer</label>
+            <textarea name="answer" class="admin-textarea" rows="6" required>{% if item %}{{ item.answer }}{% endif %}</textarea>
+        </div>
+        <div class="admin-form-group">
+            <label>Order</label>
+            <input type="number" name="order" value="{% if item %}{{ item.order }}{% else %}0{% endif %}" class="admin-input" min="0">
+        </div>
+        <div class="admin-form-group admin-form-group-inline">
+            <label><input type="checkbox" name="is_active" {% if not item or item.is_active %}checked{% endif %}> Active</label>
+        </div>
+        <div class="admin-form-actions">
+            <button type="submit" class="admin-button admin-button-primary">{% if is_create %}Create{% else %}Save{% endif %}</button>
+            <a href="{% url 'admin_panel:faq_list' %}" class="admin-button admin-button-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

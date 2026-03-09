@@ -1,0 +1,12 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} Tag{% endblock %}
+{% block page_title %}{% if is_create %}Create Tag{% else %}Edit {{ tag.tag_name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <form method="post" class="admin-form">
+        {% csrf_token %}
+        <div class="admin-form-group"><label>Tag name</label><input type="text" name="tag_name" value="{% if tag %}{{ tag.tag_name }}{% endif %}" class="admin-input" required></div>
+        <div class="admin-form-actions"><button type="submit" class="admin-button admin-button-primary">{% if is_create %}Create{% else %}Save{% endif %}</button><a href="{% url 'admin_panel:tags_list' %}" class="admin-button admin-button-outline">Cancel</a></div>
+    </form>
+</div>
+{% endblock %}

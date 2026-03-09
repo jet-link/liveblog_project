@@ -1,0 +1,22 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} Category{% endblock %}
+{% block page_title %}{% if is_create %}Create Category{% else %}Edit {{ category.name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <form method="post" class="admin-form">
+        {% csrf_token %}
+        <div class="admin-form-group">
+            <label>Name</label>
+            <input type="text" name="name" value="{% if category %}{{ category.name }}{% endif %}" class="admin-input" required>
+        </div>
+        <div class="admin-form-group">
+            <label>Description</label>
+            <textarea name="description" class="admin-textarea">{% if category %}{{ category.description }}{% endif %}</textarea>
+        </div>
+        <div class="admin-form-actions">
+            <button type="submit" class="admin-button admin-button-primary">{% if is_create %}Create{% else %}Save{% endif %}</button>
+            <a href="{% url 'admin_panel:categories_list' %}" class="admin-button admin-button-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

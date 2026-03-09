@@ -1,0 +1,46 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}FAQ{% endblock %}
+{% block page_title %}FAQ{% endblock %}
+{% block content %}
+<div class="admin-toolbar">
+    <a href="{% url 'admin_panel:faq_create' %}" class="admin-button admin-button-primary">New FAQ</a>
+</div>
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr><th>Order</th><th>Question</th><th>Answer</th><th>Active</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.order }}</td>
+                    <td>{{ item.question|truncatewords:10 }}</td>
+                    <td>{{ item.answer|truncatewords:6 }}</td>
+                    <td><span class="admin-badge {% if item.is_active %}admin-badge-success{% else %}admin-badge-warning{% endif %}">{% if item.is_active %}Yes{% else %}No{% endif %}</span></td>
+                    <td class="admin-actions-cell">
+                        <div class="admin-dropdown">
+                            <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="admin-dropdown-menu">
+                                <a href="{% url 'admin_panel:faq_edit' item.pk %}">Edit</a>
+                                <a href="{% url 'admin_panel:faq_delete' item.pk %}" class="admin-action-delete">Delete</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="admin-empty">No FAQ items.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ items.paginator.count }}</div>
+    {% if items.has_other_pages %}
+    <div class="admin-pagination">
+        {% if items.has_previous %}<a href="?page={{ items.previous_page_number }}" class="admin-button">Previous</a>{% endif %}
+        <span class="admin-pagination-info">Page {{ items.number }} of {{ items.paginator.num_pages }}</span>
+        {% if items.has_next %}<a href="?page={{ items.next_page_number }}" class="admin-button">Next</a>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
