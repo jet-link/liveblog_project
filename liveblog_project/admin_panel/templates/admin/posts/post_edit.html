@@ -1,12 +1,17 @@
 {% extends 'admin/layout/base.html' %}
+{% load static %}
 
 {% block title %}Edit Post{% endblock %}
+{% block extra_head %}
+<link rel="preconnect" href="https://cdn.ckeditor.com" crossorigin />
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+{% endblock %}
 {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}">Posts</a></li><li class="admin-breadcrumbs-item">Edit</li></ol></nav>{% endblock %}
 {% block page_title %}Edit {{ item.title|truncatewords:5 }}{% endblock %}
 
 {% block content %}
 <div class="admin-card">
-    <form method="post" class="admin-form">
+    <form method="post" class="admin-form" novalidate>
         {% csrf_token %}
         <div class="admin-form-group">
             <label for="id_title">{{ form.title.label }}</label>
@@ -18,7 +23,7 @@
             {{ form.text }}
             {{ form.text.errors }}
         </div>
-        <div class="admin-form-group">
+        {% comment %} <div class="admin-form-group">
             <label for="id_category">{{ form.category.label }}</label>
             {{ form.category }}
             {{ form.category.errors }}
@@ -37,12 +42,18 @@
             <label for="id_slug">{{ form.slug.label }}</label>
             {{ form.slug }}
             {{ form.slug.errors }}
+        </div> {% endcomment %}
+         <div class="admin-form-group admin-form-group-inline">
+            <label for="id_is_published">{{ form.is_published.label }}</label>
+            {{ form.is_published }}
+            {{ form.is_published.errors }}
         </div>
         <div class="admin-form-actions">
             <button type="submit" class="admin-button admin-button-primary">Save</button>
             <a href="{% url 'admin_panel:posts_list' %}" class="admin-button admin-button-outline">Cancel</a>
-            <a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button admin-button-outline">View</a>
+            {% if item.is_published %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button admin-button-outline">View</a>{% else %}<span class="admin-button admin-button-outline admin-link-draft">View</span>{% endif %}
         </div>
     </form>
 </div>
 {% endblock %}
+{% block extra_js %}<script src="{% static 'admin/js/admin_ckeditor.js' %}"></script>{% endblock %}

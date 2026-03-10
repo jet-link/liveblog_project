@@ -1,12 +1,17 @@
 {% extends 'admin/layout/base.html' %}
+{% load static %}
 
 {% block title %}Create Post{% endblock %}
+{% block extra_head %}
+<link rel="preconnect" href="https://cdn.ckeditor.com" crossorigin />
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+{% endblock %}
 {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}">Posts</a></li><li class="admin-breadcrumbs-item">Create</li></ol></nav>{% endblock %}
 {% block page_title %}Create Post{% endblock %}
 
 {% block content %}
 <div class="admin-card">
-    <form method="post" enctype="multipart/form-data" class="admin-form">
+    <form method="post" enctype="multipart/form-data" class="admin-form" novalidate>
         {% csrf_token %}
         {% for field in form %}
         {% if field.name != 'tags' %}
@@ -26,3 +31,4 @@
     </form>
 </div>
 {% endblock %}
+{% block extra_js %}<script src="{% static 'admin/js/admin_ckeditor.js' %}"></script>{% endblock %}

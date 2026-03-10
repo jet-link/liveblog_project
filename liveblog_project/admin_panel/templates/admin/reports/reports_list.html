@@ -31,7 +31,7 @@
                 {% for r in reports %}
                 <tr>
                     <td>
-                        {% if r.item %}<a href="{% url 'smart_blog:item_detail' r.item.slug %}">Post: {{ r.item.title|truncatewords:5 }}</a>{% endif %}
+                        {% if r.item %}{% if r.item.is_published %}<a href="{% url 'smart_blog:item_detail' r.item.slug %}" class="admin-link">Post: {{ r.item.title|truncatewords:5 }}</a>{% else %}<span class="admin-link admin-link-draft">Post: {{ r.item.title|truncatewords:5 }}</span>{% endif %}{% endif %}
                         {% if r.comment %}Comment #{{ r.comment.id }}{% endif %}
                     </td>
                     <td><span class="admin-badge">{{ r.get_reason_display }}</span></td>

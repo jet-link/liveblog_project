@@ -27,7 +27,7 @@
         </select>
         <button type="submit" class="admin-button">Filter</button>
     </form>
-    <a href="{% url 'admin_panel:post_create' %}" class="admin-button admin-button-primary">New Post</a>
+    {% comment %} <a href="{% url 'admin_panel:post_create' %}" class="admin-button admin-button-primary">New Post</a> {% endcomment %}
 </div>
 
 <div class="admin-card">
@@ -51,7 +51,7 @@
             <tbody>
                 {% for post in posts %}
                 <tr>
-                    <td><a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a></td>
+                    <td>{% if post.is_published %}<a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a>{% else %}<span class="admin-link admin-link-draft">{{ post.title|truncatewords:8 }}</span>{% endif %}</td>
                     <td>{{ post.author.username|default:"—" }}</td>
                     <td>{{ post.category.name|default:"—" }}</td>
                     <td>{{ post.views_count }}</td>

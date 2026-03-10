@@ -79,6 +79,57 @@
   if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
   if (overlay) overlay.addEventListener('click', closeSidebar);
 
+  // Sidebar collapse toggle (desktop)
+  var STORAGE_COLLAPSED = 'admin_sidebar_collapsed';
+  var collapseBtn = document.getElementById('adminSidebarCollapseToggle');
+  var collapseIcon = collapseBtn ? collapseBtn.querySelector('.admin-sidebar-toggle-icon') : null;
+
+  function applyCollapsed(collapsed) {
+    if (!sidebar) return;
+    var root = document.documentElement;
+    if (collapsed) {
+      root.classList.add('admin-sidebar-collapsed');
+      sidebar.classList.add('admin-sidebar-collapsed');
+      if (collapseIcon) { collapseIcon.classList.remove('fa-angle-left'); collapseIcon.classList.add('fa-angle-right'); }
+    } else {
+      root.classList.remove('admin-sidebar-collapsed');
+      sidebar.classList.remove('admin-sidebar-collapsed');
+      if (collapseIcon) { collapseIcon.classList.remove('fa-angle-right'); collapseIcon.classList.add('fa-angle-left'); }
+    }
+    try { localStorage.setItem(STORAGE_COLLAPSED, collapsed ? '1' : ''); } catch (e) {}
+  }
+
+  (function initCollapse() {
+    if (window.innerWidth >= 993) {
+      var saved = localStorage.getItem(STORAGE_COLLAPSED);
+      if (saved === '1') {
+        applyCollapsed(true);
+      } else if (document.documentElement.classList.contains('admin-sidebar-collapsed')) {
+        sidebar.classList.add('admin-sidebar-collapsed');
+        if (collapseIcon) { collapseIcon.classList.remove('fa-angle-left'); collapseIcon.classList.add('fa-angle-right'); }
+      }
+    }
+  })();
+
+  if (collapseBtn) {
+    collapseBtn.addEventListener('click', function() {
+      if (window.innerWidth < 993) return;
+      var collapsed = sidebar.classList.contains('admin-sidebar-collapsed');
+      applyCollapsed(!collapsed);
+    });
+  }
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth < 993) {
+      document.documentElement.classList.remove('admin-sidebar-collapsed');
+      if (sidebar) sidebar.classList.remove('admin-sidebar-collapsed');
+      if (collapseIcon) { collapseIcon.classList.remove('fa-angle-right'); collapseIcon.classList.add('fa-angle-left'); }
+    } else {
+      var saved = localStorage.getItem(STORAGE_COLLAPSED);
+      if (saved === '1') applyCollapsed(true);
+    }
+  });
+
   // Close sidebar on nav click (mobile) or escape
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeSidebar();

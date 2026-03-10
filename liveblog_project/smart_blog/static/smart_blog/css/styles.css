@@ -388,7 +388,7 @@ textarea {
 }
 
 .container {
-    max-width: 1320px;
+    max-width: 1200px;
 }
 
 .stretched-link {
@@ -770,16 +770,15 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 
 /* Minimal brand logo — like admin sidebar */
 .brand-minimal {
-    color: var(--text-default) !important;
+    color: var(--text-muted) !important;
     text-decoration: none;
-    font-weight: 600;
     font-size: 1rem;
     letter-spacing: 0.02em;
-    transition: color 0.2s ease;
+    /* transition: color 0.2s ease; */
 }
-.brand-minimal:hover {
+/* .brand-minimal:hover {
     color: var(--text-link) !important;
-}
+} */
 
 /* iOS-style toggle with sun/moon icons */
 /* Theme toggle — простая кнопка: светлая тема = луна, тёмная = солнце */
@@ -2521,16 +2520,16 @@ html[data-theme="dark"] .form-wrapper{
 
 
 .comment-text {
-    padding: 25px 20px;
+    padding: 17px;
     background-color: var(--card-bg);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     color: #5e5e5e;
-    border-radius: 10px;
+    border-radius: 8px;
     position: relative;
     z-index: 1;
     line-height: 1.25rem;
     word-wrap: break-word;
-    font-size: .850rem;
+    font-size: .8rem;
     font-weight: 500;
     border-left: 4px solid var(--text-link)
 }
@@ -2554,7 +2553,7 @@ html[data-theme="dark"] .form-wrapper{
 
 .published_block,
 .tags_block {
-    padding: 15px 25px;
+    padding: 12px 25px;
     box-shadow: var(--card-shadow);
     background: var(--bg-default);
     border-radius: 8px;

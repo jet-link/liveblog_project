@@ -56,8 +56,8 @@ def banned_users_list(request):
 def user_profile(request, pk):
     """View user profile (admin detail)."""
     user = get_object_or_404(User, pk=pk)
-    posts = Item.objects.filter(author=user).order_by('-published_date')[:10]
-    comments = Comment.objects.filter(author=user).order_by('-created')[:10]
+    posts = Item.objects.filter(author=user, is_published=True).order_by('-published_date')[:10]
+    comments = Comment.objects.filter(author=user, item__is_published=True, is_draft=False).order_by('-created')[:10]
     context = {'user_obj': user, 'posts': posts, 'comments': comments}
     return render(request, 'admin/users/user_profile.html', context)
 
@@ -66,6 +66,9 @@ def user_profile(request, pk):
 def user_ban(request, pk):
     """Ban user (set is_active=False)."""
     user = get_object_or_404(User, pk=pk)
+    if user.is_staff:
+        messages.error(request, 'Cannot ban admin users.')
+        return redirect('admin_panel:user_profile', pk=pk)
     if request.method == 'POST':
         if user == request.user:
             messages.error(request, 'You cannot ban yourself.')
@@ -83,6 +86,9 @@ def user_ban(request, pk):
 def user_unban(request, pk):
     """Unban user (set is_active=True)."""
     user = get_object_or_404(User, pk=pk)
+    if user.is_staff:
+        messages.error(request, 'Cannot unban admin users.')
+        return redirect('admin_panel:user_profile', pk=pk)
     if request.method == 'POST':
         user.is_active = True
         user.save()
@@ -95,6 +101,9 @@ def user_unban(request, pk):
 def user_delete(request, pk):
     """Delete user account."""
     user = get_object_or_404(User, pk=pk)
+    if user.is_staff:
+        messages.error(request, 'Cannot delete admin users.')
+        return redirect('admin_panel:user_profile', pk=pk)
     if request.method == 'POST':
         if user == request.user:
             messages.error(request, 'You cannot delete yourself.')

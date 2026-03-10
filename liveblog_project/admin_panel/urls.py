@@ -17,7 +17,8 @@ urlpatterns = [
     # Comments
     path('comments/', views.comments_list, name='comments_list'),
     path('comments/<int:pk>/delete/', views.comment_delete, name='comment_delete'),
-    path('comments/<int:pk>/block-user/', views.comment_block_user, name='comment_block_user'),
+    path('comments/<int:pk>/draft/', views.comment_confirm_draft, name='comment_confirm_draft'),
+    path('comments/<int:pk>/activate/', views.comment_confirm_activate, name='comment_confirm_activate'),
 
     # Users
     path('users/', views.users_list, name='users_list'),

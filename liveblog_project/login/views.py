@@ -42,8 +42,8 @@ def _vanished_items_qs():
     """Публикации удалённого пользователя (author=None)."""
     return (
         Item.objects
+        .filter(is_published=True, author__isnull=True)
         .with_counters()
-        .filter(author__isnull=True)
         .order_by('-published_date')
         .prefetch_related("images")
     )
@@ -110,8 +110,8 @@ def user_not_found_view(request, user_obj):
     """Страница удалённого пользователя: аватар, Vanished user, список публикаций."""
     user_items_qs = (
         Item.objects
+        .filter(is_published=True, author=user_obj)
         .with_counters()
-        .filter(author=user_obj)
         .order_by('-published_date')
         .prefetch_related("images")
     )
@@ -247,8 +247,8 @@ def profile_view(request, username):
     # --- базовые queryset'ы ---
     user_items_qs = (
         Item.objects
+        .filter(is_published=True, author=user_obj)
         .with_counters()
-        .filter(author=user_obj)
         .order_by('-published_date')
     )
     user_items_qs = annotate_user_liked(user_items_qs, request.user)
@@ -313,8 +313,8 @@ def profile_section_view(request, username, section):
         pass
     user_items_qs = (
         Item.objects
+        .filter(is_published=True, author=user_obj)
         .with_counters()
-        .filter(author=user_obj)
         .order_by('-published_date')
     )
     user_items_qs = annotate_user_liked(user_items_qs, request.user)

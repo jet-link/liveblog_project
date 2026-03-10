@@ -1,0 +1,13 @@
+{% extends 'admin/layout/base.html' %}
+{% load mentions %}
+{% block title %}Set Active{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:comments_list' %}">Comments</a></li><li class="admin-breadcrumbs-item">Active</li></ol></nav>{% endblock %}
+{% block page_title %}Set comment as Active?{% endblock %}
+{% block content %}
+<div class="admin-card admin-modal-card">
+    <h3>Set this comment as Active?</h3>
+    <p class="admin-text-muted">The comment will be visible again.</p>
+    <blockquote class="admin-comment-blockquote">{{ comment.text|strip_mentions }}</blockquote>
+    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-primary">Active</button><a href="{% url 'admin_panel:comments_list' %}" class="admin-button admin-button-outline">Cancel</a></form>
+</div>
+{% endblock %}

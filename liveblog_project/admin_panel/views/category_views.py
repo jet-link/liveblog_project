@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 from admin_panel.decorators import admin_required
 from smart_blog.models import Category
@@ -9,12 +10,15 @@ from smart_blog.models import Category
 
 @admin_required
 def categories_list(request):
-    """List categories."""
+    """List categories with search."""
     qs = Category.objects.all().order_by('name')
+    search = request.GET.get('q', '').strip()
+    if search:
+        qs = qs.filter(Q(name__icontains=search) | Q(slug__icontains=search))
     paginator = Paginator(qs, 25)
     page = request.GET.get('page', 1)
     categories = paginator.get_page(page)
-    return render(request, 'admin/categories/categories_list.html', {'categories': categories})
+    return render(request, 'admin/categories/categories_list.html', {'categories': categories, 'search': search})
 
 
 @admin_required

@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 from admin_panel.decorators import admin_required
 from pages.models import FAQItem
@@ -9,12 +10,15 @@ from pages.models import FAQItem
 
 @admin_required
 def faq_list(request):
-    """List FAQ items."""
+    """List FAQ items with search."""
     qs = FAQItem.objects.all().order_by('order', 'pk')
+    search = request.GET.get('q', '').strip()
+    if search:
+        qs = qs.filter(Q(question__icontains=search) | Q(answer__icontains=search))
     paginator = Paginator(qs, 25)
     page = request.GET.get('page', 1)
     items = paginator.get_page(page)
-    return render(request, 'admin/faq/faq_list.html', {'items': items})
+    return render(request, 'admin/faq/faq_list.html', {'items': items, 'search': search})
 
 
 @admin_required

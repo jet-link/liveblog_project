@@ -17,6 +17,7 @@ def reports_list(request):
     qs = ContentReport.objects.select_related('reporter', 'item', 'comment').filter(
         status=ContentReport.STATUS_OPEN
     ).order_by('-created_at')
+    qs = qs.exclude(item__is_published=False).exclude(comment__is_draft=True)
 
     target = request.GET.get('target')
     if target == 'item':

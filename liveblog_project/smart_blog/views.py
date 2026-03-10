@@ -10,7 +10,7 @@ import json
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q, Subquery
@@ -42,6 +42,7 @@ def annotate_user_bookmarked(qs, user):
 def items_list(request):
     qs = (
         Item.objects
+        .filter(is_published=True)
         .with_counters()
         .select_related("category")
         .order_by('-published_date')
@@ -159,6 +160,7 @@ def tag_list(request, slug):
 
     items = (
         tag.items
+        .filter(is_published=True)
         .with_counters()
         .select_related("category")
         .order_by('-published_date')
@@ -456,7 +458,7 @@ def register_item_view(request, item):
 # detail item 
 def item_detail(request, slug):
     slug = (slug or '').strip()
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Item.objects.filter(is_published=True), slug=slug)
 
     # 1️⃣ РЕГИСТРИРУЕМ ПРОСМОТР
     register_item_view(request, item)
@@ -483,11 +485,11 @@ def item_detail(request, slug):
     # ---- 3) Основные комментарии ----
     main_comments_qs = (
         Comment.objects
-        .filter(item=item, parent__isnull=True)
+        .filter(item=item, parent__isnull=True, is_draft=False)
         .annotate(
             user_liked=Exists(likes_subq),
             likes_count=Count('likes', distinct=True),
-            replies_count=Count('replies', distinct=True),  # ✅ ВАЖНО
+            replies_count=Count('replies', filter=Q(replies__is_draft=False), distinct=True),
             reports_count=Count('reports', distinct=True),
         )
         .order_by('-created')
@@ -495,7 +497,7 @@ def item_detail(request, slug):
 
     replies_qs = (
         Comment.objects
-        .filter(parent__isnull=False)
+        .filter(parent__isnull=False, is_draft=False)
         .annotate(
             user_liked=Exists(likes_subq),
             likes_count=Count('likes', distinct=True),
@@ -616,6 +618,8 @@ def item_detail(request, slug):
 
 def comment_thread(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
+    if comment.is_draft:
+        raise Http404
 
     if request.user.is_authenticated:
         thread_likes_subq = CommentLike.objects.filter(
@@ -625,7 +629,7 @@ def comment_thread(request, pk):
     else:
         thread_likes_subq = CommentLike.objects.none()
 
-    replies_qs = Comment.objects.annotate(
+    replies_qs = Comment.objects.filter(is_draft=False).annotate(
         user_liked=Exists(thread_likes_subq),
         likes_count=Count('likes', distinct=True),
         reports_count=Count('reports', distinct=True),
@@ -1022,7 +1026,8 @@ def add_comment(request, slug):
         "comment_html": html,
         "comments_count": Comment.objects.filter(
             item=item,
-            parent__isnull=True
+            parent__isnull=True,
+            is_draft=False
         ).count()
     })
 
@@ -1055,7 +1060,7 @@ def edit_comment(request, pk):
         "report_rate_limited": False,
         "just_edited": True,
     })
-    total_comments = Comment.objects.filter(item=comment.item).count()
+    total_comments = Comment.objects.filter(item=comment.item, is_draft=False).count()
     return JsonResponse({'success': True, 'comment_html': html, 'comment_id': comment.pk, 'total_comments': total_comments})
 
 
@@ -1081,7 +1086,8 @@ def delete_comment(request, pk):
         "parent_id": parent_id,
         "comments_count": Comment.objects.filter(
             item=comment.item,
-            parent__isnull=True
+            parent__isnull=True,
+            is_draft=False
         ).count()
     })
 

@@ -52,15 +52,24 @@ def comment_delete(request, pk):
 
 
 @admin_required
-def comment_block_user(request, pk):
-    """Block user (deactivate) from comment."""
+def comment_confirm_draft(request, pk):
+    """Confirmation page to set comment as draft."""
     comment = get_object_or_404(Comment, pk=pk)
-    if not comment.author:
-        messages.error(request, 'Cannot ban vanished user.')
-        return redirect('admin_panel:comments_list')
     if request.method == 'POST':
-        comment.author.is_active = False
-        comment.author.save()
-        messages.success(request, f'User {comment.author.username} has been banned.')
+        comment.is_draft = True
+        comment.save()
+        messages.success(request, 'Comment set as Draft.')
         return redirect('admin_panel:comments_list')
-    return render(request, 'admin/comments/comment_confirm_block.html', {'comment': comment})
+    return render(request, 'admin/comments/comment_confirm_draft.html', {'comment': comment})
+
+
+@admin_required
+def comment_confirm_activate(request, pk):
+    """Confirmation page to set comment as active."""
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.method == 'POST':
+        comment.is_draft = False
+        comment.save()
+        messages.success(request, 'Comment set as Active.')
+        return redirect('admin_panel:comments_list')
+    return render(request, 'admin/comments/comment_confirm_activate.html', {'comment': comment})

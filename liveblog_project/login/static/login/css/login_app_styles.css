@@ -662,7 +662,7 @@ html[data-theme="dark"] .block-quote {
 .user-tooltip {
     position: absolute;
     top: calc(100% + 21px);
-    right: -100px;
+    right: -60px;
     min-width: 170px;
     background: var(--card-bg);
     box-shadow: 3px 12px 25px rgba(0, 0, 0, .2);

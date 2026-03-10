@@ -48,7 +48,7 @@
                                 {% else %}
                                 <a href="{% url 'admin_panel:user_unban' u.pk %}">Unban</a>
                                 {% endif %}
-                                <a href="{% url 'admin_panel:user_delete' u.pk %}" class="admin-action-delete">Delete</a>
+                                {% if not u.is_staff %}<a href="{% url 'admin_panel:user_delete' u.pk %}" class="admin-action-delete">Delete</a>{% endif %}
                             </div>
                         </div>
                     </td>

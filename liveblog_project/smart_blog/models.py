@@ -278,6 +278,7 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
+    is_draft = models.BooleanField(default=False)
 
     @property
     def human_published(self):

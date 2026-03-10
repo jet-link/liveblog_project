@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin{% endblock %} | BraiNews</title>
+    <title>{% block title %}Admin{% endblock %} | BrainStorm</title>
     <link rel="icon" type="image/svg+xml" href="{% static 'admin/favicon-cube.svg' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'admin/css/admin.css' %}">
     <script>
-      (function(){var t=localStorage.getItem('admin_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})();
+      (function(){var t=localStorage.getItem('admin_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');if(window.innerWidth>=993&&localStorage.getItem('admin_sidebar_collapsed')==='1')document.documentElement.classList.add('admin-sidebar-collapsed');})();
     </script>
     {% block extra_css %}{% endblock %}
     {% block extra_head %}{% endblock %}

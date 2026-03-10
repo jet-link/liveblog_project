@@ -24,7 +24,7 @@
     </div>
 </div>
 {% comment %} <div class="admin-card"> {% endcomment %}
-    <a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button">View Post</a>
+    {% if item.is_published %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button">View Post</a>{% else %}<span class="admin-button admin-link-draft">View Post</span>{% endif %}
     <a href="{% url 'admin_panel:post_edit' item.slug %}" class="admin-button admin-button-outline">Edit</a>
 {% comment %} </div> {% endcomment %}
 {% endblock %}

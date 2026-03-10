@@ -4,6 +4,10 @@
 {% block page_title %}FAQ{% endblock %}
 {% block content %}
 <div class="admin-toolbar">
+    <form class="admin-search-form" method="get" action="{% url 'admin_panel:faq_list' %}">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search..." class="admin-input admin-search-input">
+        <button type="submit" class="admin-button">Search</button>
+    </form>
     <a href="{% url 'admin_panel:faq_create' %}" class="admin-button admin-button-primary">New FAQ</a>
 </div>
 <div class="admin-card">
@@ -38,9 +42,9 @@
     <div class="admin-table-total">Total: {{ items.paginator.count }}</div>
     {% if items.has_other_pages %}
     <div class="admin-pagination">
-        {% if items.has_previous %}<a href="?page={{ items.previous_page_number }}" class="admin-button">Previous</a>{% endif %}
+        {% if items.has_previous %}<a href="?page={{ items.previous_page_number }}{% if search %}&q={{ search }}{% endif %}" class="admin-button">Previous</a>{% endif %}
         <span class="admin-pagination-info">Page {{ items.number }} of {{ items.paginator.num_pages }}</span>
-        {% if items.has_next %}<a href="?page={{ items.next_page_number }}" class="admin-button">Next</a>{% endif %}
+        {% if items.has_next %}<a href="?page={{ items.next_page_number }}{% if search %}&q={{ search }}{% endif %}" class="admin-button">Next</a>{% endif %}
     </div>
     {% endif %}
 </div>

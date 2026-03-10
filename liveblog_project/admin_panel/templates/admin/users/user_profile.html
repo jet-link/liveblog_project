@@ -13,12 +13,14 @@
     <p><strong>Status:</strong> <span class="admin-badge {% if user_obj.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if user_obj.is_active %}Active{% else %}Banned{% endif %}</span></p>
     <div class="admin-form-actions">
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
+        {% if not user_obj.is_staff %}
         {% if user_obj.is_active %}
         <a href="{% url 'admin_panel:user_ban' user_obj.pk %}" class="admin-button admin-button-outline">Ban</a>
         {% else %}
         <a href="{% url 'admin_panel:user_unban' user_obj.pk %}" class="admin-button admin-button-outline">Unban</a>
         {% endif %}
         <a href="{% url 'admin_panel:user_delete' user_obj.pk %}" class="admin-button admin-button-danger">Delete</a>
+        {% endif %}
     </div>
 </div>
 
@@ -26,7 +28,7 @@
     <h3>Recent Posts</h3>
     <ul class="admin-profile-list">
         {% for p in posts %}
-        <li><a href="{% url 'smart_blog:item_detail' p.slug %}" class="admin-profile-link">{{ p.title }}</a></li>
+        <li>{% if p.is_published %}<a href="{% url 'smart_blog:item_detail' p.slug %}" class="admin-profile-link">{{ p.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ p.title }}</span>{% endif %}</li>
         {% empty %}
         <li>No posts.</li>
         {% endfor %}
@@ -37,7 +39,7 @@
     <h3>Recent Comments</h3>
     <ul class="admin-profile-list">
         {% for c in comments %}
-        <li><span class="admin-profile-comment">{{ c.text|strip_mentions|truncatewords:12 }}</span> on <a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a></li>
+        <li><span class="admin-profile-comment">{{ c.text|strip_mentions|truncatewords:12 }}</span> on {% if c.item.is_published %}<a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ c.item.title }}</span>{% endif %}</li>
         {% empty %}
         <li>No comments.</li>
         {% endfor %}
