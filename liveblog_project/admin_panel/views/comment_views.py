@@ -25,18 +25,17 @@ def comments_list(request):
     if item_slug:
         qs = qs.filter(item__slug=item_slug)
 
-    root_only = request.GET.get('root') == '1'
-    child_only = request.GET.get('child') == '1'
-    if root_only:
+    filter_type = request.GET.get('filter', 'all')
+    if filter_type == 'root':
         qs = qs.filter(parent__isnull=True)
-    elif child_only:
+    elif filter_type == 'child':
         qs = qs.filter(parent__isnull=False)
 
     paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     comments = paginator.get_page(page)
 
-    context = {'comments': comments, 'search': search, 'root_only': root_only, 'child_only': child_only}
+    context = {'comments': comments, 'search': search, 'filter_type': filter_type}
     return render(request, 'admin/comments/comments_list.html', context)
 
 

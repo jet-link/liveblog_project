@@ -10,14 +10,13 @@
 {% block content %}
   <div class="admin-toolbar">
     <form class="admin-search-form" method="get" action="{% url 'admin_panel:comments_list' %}">
-      <div class="admin-search-row">
-        <input type="text" name="q" value="{{ search }}" placeholder="Search..." class="admin-input admin-search-input" />
-        <button type="submit" class="admin-button">Filter</button>
-      </div>
-      <div class="admin-filter-checkboxes">
-        <label class="admin-checkbox-label"><input type="checkbox" name="root" value="1" {% if root_only %}checked{% endif %} class="admin-filter-root"> Root only</label>
-        <label class="admin-checkbox-label"><input type="checkbox" name="child" value="1" {% if child_only %}checked{% endif %} class="admin-filter-child"> Child only</label>
-      </div>
+      <input type="text" name="q" value="{{ search }}" placeholder="Search..." class="admin-input admin-search-input">
+      <select name="filter" class="admin-select">
+        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All</option>
+        <option value="root" {% if filter_type == 'root' %}selected{% endif %}>Root only</option>
+        <option value="child" {% if filter_type == 'child' %}selected{% endif %}>Child only</option>
+      </select>
+      <button type="submit" class="admin-button">Filter</button>
     </form>
   </div>
 
@@ -68,28 +67,13 @@
     {% if comments.has_other_pages %}
       <div class="admin-pagination">
         {% if comments.has_previous %}
-          <a href="?page={{ comments.previous_page_number }}{% if search %}
-              
-              &q={{ search }}
-            {% endif %}{% if root_only %}&root=1{% endif %}{% if child_only %}&child=1{% endif %}"
-            class="admin-button">
-            Previous
-          </a>
+          <a href="?page={{ comments.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button">Previous</a>
         {% endif %}
         <span class="admin-pagination-info">Page {{ comments.number }} of {{ comments.paginator.num_pages }}</span>
         {% if comments.has_next %}
-          <a href="?page={{ comments.next_page_number }}{% if search %}
-              
-              &q={{ search }}
-            {% endif %}{% if root_only %}&root=1{% endif %}{% if child_only %}&child=1{% endif %}"
-            class="admin-button">
-            Next
-          </a>
+          <a href="?page={{ comments.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button">Next</a>
         {% endif %}
       </div>
     {% endif %}
   </div>
-  <script>
-  (function(){var r=document.querySelector('.admin-filter-root'),c=document.querySelector('.admin-filter-child');if(r&&c){r.addEventListener('change',function(){if(r.checked)c.checked=false;});c.addEventListener('change',function(){if(c.checked)r.checked=false;});}})();
-  </script>
 {% endblock %}
