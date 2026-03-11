@@ -27,15 +27,20 @@ class ItemAdminCreateForm(BaseItemCreateForm):
 class ItemAdminEditForm(forms.ModelForm):
     """Simplified form for admin post editing."""
 
+    status = forms.ChoiceField(
+        choices=[('published', 'Published'), ('draft', 'Draft')],
+        widget=forms.Select(attrs={'class': 'admin-select'}),
+        label='Status',
+    )
+
     class Meta:
         model = Item
-        fields = ['title', 'text', 'category', 'tags', 'is_published', 'slug']
+        fields = ['title', 'text', 'category', 'tags', 'slug']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'Title'}),
             'text': forms.Textarea(attrs={'class': 'admin-textarea ckeditor', 'rows': 12, 'placeholder': 'Post text'}),
             'category': forms.Select(attrs={'class': 'admin-select'}),
             'tags': forms.SelectMultiple(attrs={'class': 'admin-select', 'size': 6}),
-            'is_published': forms.CheckboxInput(attrs={'class': 'admin-checkbox'}),
             'slug': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'slug'}),
         }
         labels = {
@@ -43,10 +48,19 @@ class ItemAdminEditForm(forms.ModelForm):
             'text': 'Post body',
             'category': 'Category',
             'tags': 'Tags',
-            'is_published': 'Is published',
             'slug': 'Slug',
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ''
+        if self.instance and self.instance.pk:
+            self.fields['status'].initial = 'published' if self.instance.is_published else 'draft'
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.is_published = (self.cleaned_data['status'] == 'published')
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance

@@ -234,6 +234,12 @@
 .admin-form input[type="text"], .admin-form input[type="email"], .admin-form input[type="password"],
 .admin-form textarea, .admin-form select { width: 100%; box-sizing: border-box; }
 .admin-form-actions { display: flex; gap: 5px; margin-top: 20px; flex-wrap: wrap; }
+/* Field errors */
+.admin-form .errorlist,
+.admin-form .admin-form-errors { list-style: none; margin-top: 10px; padding: 0; font-size: 12px; color: var(--admin-danger); }
+.admin-form .errorlist li,
+.admin-form .admin-form-errors li { margin-top: 2px; }
+.admin-form .admin-form-errors { margin-bottom: 16px; padding: 10px 12px; background: rgba(248, 81, 73, 0.15); border: 1px solid var(--admin-danger); border-radius: var(--admin-radius); }
 
 /* Alerts */
 .admin-messages { margin-bottom: 16px; }

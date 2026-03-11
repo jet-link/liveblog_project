@@ -71,3 +71,24 @@ python manage.py create_backup --schedule monthly
           </div>
         </div>
       </div>
+
+ <div class="admin-form-group">
+            <label for="id_tags">{{ form.tags.label }}</label>
+            {{ form.tags }}
+            {{ form.tags.errors }}
+        </div>
+        <div class="admin-form-group admin-form-group-inline">
+            <label for="id_is_published">{{ form.is_published.label }}</label>
+            {{ form.is_published }}
+            {{ form.is_published.errors }}
+        </div>
+        <div class="admin-form-group">
+            <label for="id_slug">{{ form.slug.label }}</label>
+            {{ form.slug }}
+            {{ form.slug.errors }}
+        </div> 
+        <div class="admin-form-group">
+            <label for="id_slug">{{ form.slug.label }}</label>
+            {{ form.slug }}
+            {{ form.slug.errors }}
+        </div>
