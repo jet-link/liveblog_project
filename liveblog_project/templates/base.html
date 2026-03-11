@@ -56,6 +56,7 @@
     {% comment %} {% endcache %} {% endcomment %}
 
     {% include 'includes/back_to_top.html' %}
+    {% include 'includes/signout_confirm_modal.html' %}
 
     <!-- Bootstrap JS + Popper + CKEditor5 + Custom JS files -->
     <script defer src="{% static 'ckeditor/ckeditor_main.js' %}"></script>
@@ -84,6 +85,7 @@
     <script defer src="{% static 'login/js/password_gen_switcher.js' %}"></script>
     <script defer src="{% static 'login/js/password_generator.js' %}"></script>
     <script defer src="{% static 'login/js/profile_opener.js' %}"></script>
+    <script defer src="{% static 'js/signout_modal.js' %}"></script>
     <!-- global avatar viewer -->
     <script>
       window.CURRENT_AVATAR = {

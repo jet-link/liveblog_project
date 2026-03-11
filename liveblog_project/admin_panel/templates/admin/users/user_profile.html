@@ -15,7 +15,7 @@
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
         {% if not user_obj.is_staff %}
         {% if user_obj.is_active %}
-        <a href="{% url 'admin_panel:user_ban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Ban</a>
+        <a href="{% url 'admin_panel:user_ban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-warning">Ban</a>
         {% else %}
         <a href="{% url 'admin_panel:user_unban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Unban</a>
         {% endif %}

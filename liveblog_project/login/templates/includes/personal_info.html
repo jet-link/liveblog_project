@@ -29,6 +29,11 @@
       <a class="cstm-btn-sm custom-primary-btn" href="{% url 'smart_blog:create_item' %}">Create post</a>
       <a class="cstm-btn-sm custom-primary-btn" href="{% url 'login_app:profile-edit' request.user.username %}"><i class="fa fa-cog" aria-hidden="true"></i></a>
     </div>
-    <a class="cstm-btn-sm custom-danger-btn" href="{% url 'login_app:logout' %}">Sign out</a>
+    <div class="d-flex align-items-center gap-1">
+      {% if user_obj.is_staff and user.username == user_obj.username %}
+        <a href="/admin" class="cstm-btn-sm custom-secondary-btn">Administration</a>
+      {% endif %}
+      <a class="cstm-btn-sm custom-danger-btn signout-trigger" href="#">Sign out</a>
+    </div>
   </div>
 {% endif %}

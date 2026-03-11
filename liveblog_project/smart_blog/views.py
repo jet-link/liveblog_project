@@ -909,6 +909,11 @@ def submit_report(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
 
+    if 'other' in reasons:
+        details_stripped = (details or '').strip()
+        if len(details_stripped) < 2 or len(details_stripped) > 300:
+            return JsonResponse({"success": False, "error": "Please write other reasons."}, status=400)
+
     try:
         target_id = int(target_id)
     except (TypeError, ValueError):

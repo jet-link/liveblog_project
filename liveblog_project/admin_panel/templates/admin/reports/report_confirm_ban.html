@@ -4,7 +4,7 @@
 {% block page_title %}Ban {{ user_obj.username }}?{% endblock %}
 {% block content %}
 <div class="admin-card admin-modal-card">
-    <h3>Ban user "{{ user_obj.username }}" (reported content author)?</h3>
+    <h3>Ban user {{ user_obj.username }} (reported content author)?</h3>
     <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-danger">Ban</button><a href="{% url 'admin_panel:reports_list' %}" class="admin-button admin-button-outline">Cancel</a></form>
 </div>
 {% endblock %}

@@ -35,6 +35,22 @@
             </main>
         </div>
     </div>
+    <!-- Sign out confirmation modal -->
+    <div id="adminSignoutModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminSignoutModalTitle" aria-hidden="true" hidden>
+      <div class="admin-modal-backdrop" id="adminSignoutModalBackdrop"></div>
+      <div class="admin-modal-dialog">
+        <div class="admin-modal-content">
+          <h2 class="admin-modal-title" id="adminSignoutModalTitle">Are you sure you want to sign out?</h2>
+          <div class="admin-modal-actions">
+            <button type="button" class="admin-button admin-button-danger" id="adminSignoutConfirmBtn">Sign out</button>
+            <button type="button" class="admin-button admin-button-outline" id="adminSignoutCancelBtn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      window.ADMIN_LOGOUT_URL = "{% url 'login_app:logout' %}";
+    </script>
     <script src="{% static 'admin/js/admin.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>

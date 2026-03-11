@@ -13,9 +13,12 @@
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
 
-        {% if user != item.author and not user.is_staff and user.is_authenticated and not report_rate_limited %}
-          <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
+        {% if user != item.author and user.is_authenticated and not report_rate_limited %}
+          {% if not user.is_staff or item.reports_count|default:0 < 10 %}
+            <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
+          {% endif %}
         {% endif %}
+        <span class="report-limited-btn"><i class="fa fa-flag"></i></span>
       </div>
     </div>
     <div class="d-flex align-items-end justify-content-between mt-3">
@@ -162,7 +165,7 @@
       </div>
     </div>
 
-    {% if user.is_authenticated and user.is_staff and item.reports_count|default:0 > 10 %}
+    {% if user.is_authenticated and user.is_staff and item.reports_count|default:0 >= 10 %}
       <div class="d-flex justify-content-start align-items-center mb-3">
         <button type="button" class="cstm-btn custom-danger-btn cstm-btn-sm" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" aria-label="Delete post">Delete post</button>
       </div>

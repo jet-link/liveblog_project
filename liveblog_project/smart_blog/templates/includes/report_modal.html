@@ -13,11 +13,13 @@
           <button type="button" class="report-reason-btn" data-reason="copyright">Copyright</button>
           <button type="button" class="report-reason-btn" data-reason="other">Other</button>
         </div>
-        <textarea id="reportDetails" class="form-control report-details" rows="4" placeholder="Optional details"></textarea>
+        <div class="mb-2">
+          <textarea id="reportDetails" class="form-control report-details" rows="4" placeholder="Describe your reason (2-300 characters)" disabled></textarea>
+        </div>
         <div id="reportFeedback" class="text-muted small mt-2"></div>
       </div>
       <div class="modal-footer">
-        {% comment %} <button type="button" class="cstm-btn custom-secondary-btn" data-bs-dismiss="modal">Cancel</button> {% endcomment %}
+        <button type="button" class="cstm-btn-sm custom-secondary-btn" data-bs-dismiss="modal">Cancel</button>
         <button id="reportSubmitBtn" type="button" class="cstm-btn custom-danger-btn cstm-btn-sm">Report</button>
       </div>
     </div>

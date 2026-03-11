@@ -6,7 +6,7 @@
       </div>
       <div class="header-menu d-flex align-items-center gap-4 small">
         <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
-        <a href="#" class="header-menu-item text-decoration-none text-muted">Ai assistant</a>
+        <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">
           Сategories
           <i class="fa fa-angle-down ms-1"></i>
@@ -26,7 +26,7 @@
                 <i class="fa fa-bell me-2" aria-hidden="true"></i>
                 Notifications
               </a>
-              <a href="{% url 'login_app:logout' %}" class="danger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
+              <a href="#" class="danger signout-trigger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
             </div>
           </div>
         {% else %}

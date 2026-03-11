@@ -52,6 +52,10 @@
                 <i class="admin-nav-icon fa-regular fa-flag"></i>
                 <span class="admin-nav-text">Reports</span>
             </a>
+            <span class="admin-nav-item admin-nav-item-disabled" title="Coming soon">
+                <i class="admin-nav-icon fa-solid fa-robot"></i>
+                <span class="admin-nav-text">Assistant</span>
+            </span>
         </div>
 
         <div class="admin-nav-group">
@@ -87,10 +91,10 @@
             <i class="fa-solid fa-angle-left admin-sidebar-toggle-icon" aria-hidden="true"></i>
             <span class="admin-sidebar-footer-text">Hide</span>
         </button>
-        <a href="{% url 'login_app:logout' %}" class="admin-sidebar-logout" title="Logout">
+        <button type="button" class="admin-sidebar-logout admin-signout-trigger" id="adminSidebarLogoutBtn" title="Logout">
             <i class="admin-nav-icon fa-solid fa-sign-out"></i>
             <span class="admin-sidebar-logout-text">Logout</span>
-        </a>
+        </button>
     </div>
     </div>
 </aside>

@@ -3,22 +3,25 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 function initAutoDismiss(container, onAfterRemove) {
     const root = container || document;
+    const path = typeof window !== 'undefined' ? window.location.pathname : '';
+    const isSmartBlogPage = path.startsWith('/blog/') || path.startsWith('/search/');
     let els = root.querySelectorAll ? Array.from(root.querySelectorAll('[data-auto-dismiss]')) : [];
     if (root.nodeType === 1 && root.matches && root.matches('[data-auto-dismiss]') && !els.includes(root)) {
         els.unshift(root);
     }
     els.forEach(function (el) {
         if (el.__autoDismissInit) return;
+        if (isSmartBlogPage) return;
         el.__autoDismissInit = true;
-        const ms = parseInt(el.getAttribute('data-auto-dismiss'), 10) || 3000;
-        setTimeout(function () {
-            el.style.transition = 'opacity 0.3s ease';
-            el.style.opacity = '0';
-            setTimeout(function () {
-                el.remove();
-                if (typeof onAfterRemove === 'function') onAfterRemove();
-            }, 300);
-        }, ms);
+        // const ms = parseInt(el.getAttribute('data-auto-dismiss'), 10) || 3000;
+        // setTimeout(function () {
+        //     el.style.transition = 'opacity 0.3s ease';
+        //     el.style.opacity = '0';
+        //     setTimeout(function () {
+        //         el.remove();
+        //         if (typeof onAfterRemove === 'function') onAfterRemove();
+        //     }, 300);
+        // }, ms);
     });
 }
 window.initAutoDismiss = initAutoDismiss;

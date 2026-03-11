@@ -210,4 +210,45 @@
     });
   }, true);
 
+  // Sign out confirmation modal
+  var signoutModal = document.getElementById('adminSignoutModal');
+  var signoutBackdrop = document.getElementById('adminSignoutModalBackdrop');
+  var signoutConfirm = document.getElementById('adminSignoutConfirmBtn');
+  var signoutCancel = document.getElementById('adminSignoutCancelBtn');
+  var logoutUrl = typeof window.ADMIN_LOGOUT_URL === 'string' ? window.ADMIN_LOGOUT_URL : '';
+
+  function openSignoutModal() {
+    if (!signoutModal) return;
+    signoutModal.removeAttribute('hidden');
+    signoutModal.classList.add('is-open');
+    signoutModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSignoutModal() {
+    if (!signoutModal) return;
+    signoutModal.classList.remove('is-open');
+    signoutModal.setAttribute('aria-hidden', 'true');
+    signoutModal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.admin-signout-trigger').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      openSignoutModal();
+    });
+  });
+  if (signoutBackdrop) signoutBackdrop.addEventListener('click', closeSignoutModal);
+  if (signoutCancel) signoutCancel.addEventListener('click', closeSignoutModal);
+  if (signoutConfirm && logoutUrl) {
+    signoutConfirm.addEventListener('click', function() {
+      window.location.href = logoutUrl;
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && signoutModal && signoutModal.classList.contains('is-open')) {
+      closeSignoutModal();
+    }
+  });
+
 })();

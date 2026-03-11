@@ -10,6 +10,25 @@
   const submitBtn = document.getElementById('reportSubmitBtn');
   const feedback = document.getElementById('reportFeedback');
 
+  const MIN_OTHER_CHARS = 2;
+  const MAX_OTHER_CHARS = 300;
+
+  function validateOtherDetails() {
+    const text = (details?.value || '').trim();
+    if (text.length < MIN_OTHER_CHARS) return { valid: false, msg: 'Minimum 2 characters' };
+    if (text.length > MAX_OTHER_CHARS) return { valid: false, msg: 'Maximum 300 characters' };
+    return { valid: true };
+  }
+
+  function toggleDetailsEnabled() {
+    const isOther = selectedReasons.includes('other');
+    if (details) {
+      details.disabled = !isOther;
+      if (!isOther) details.value = '';
+    }
+    if (!isOther) setFeedback('');
+  }
+
   let targetType = null;
   let targetId = null;
   let selectedReasons = [];
@@ -24,10 +43,11 @@
 
   function resetForm() {
     selectedReasons = [];
-    details.value = '';
+    if (details) details.value = '';
     setFeedback('');
     reasonList?.querySelectorAll('.report-reason-btn')
       .forEach(btn => btn.classList.remove('is-selected'));
+    toggleDetailsEnabled();
   }
 
   function openReportModal(type, id) {
@@ -50,19 +70,43 @@
     if (!btn) return;
     const reason = btn.dataset.reason;
     if (!reason) return;
-    if (selectedReasons.includes(reason)) {
-      selectedReasons = selectedReasons.filter(r => r !== reason);
-      btn.classList.remove('is-selected');
+    if (reason === 'other') {
+      if (selectedReasons.includes('other')) {
+        selectedReasons = [];
+        btn.classList.remove('is-selected');
+      } else {
+        selectedReasons = ['other'];
+        reasonList.querySelectorAll('.report-reason-btn').forEach(b => b.classList.remove('is-selected'));
+        btn.classList.add('is-selected');
+      }
     } else {
-      selectedReasons.push(reason);
-      btn.classList.add('is-selected');
+      if (selectedReasons.includes('other')) {
+        selectedReasons = selectedReasons.filter(r => r !== 'other');
+        reasonList.querySelector('.report-reason-btn[data-reason="other"]')?.classList.remove('is-selected');
+      }
+      if (selectedReasons.includes(reason)) {
+        selectedReasons = selectedReasons.filter(r => r !== reason);
+        btn.classList.remove('is-selected');
+      } else {
+        selectedReasons.push(reason);
+        btn.classList.add('is-selected');
+      }
     }
+    toggleDetailsEnabled();
+    if (!selectedReasons.includes('other')) setFeedback('');
   });
 
   submitBtn?.addEventListener('click', async () => {
     if (!selectedReasons.length) {
       setFeedback('Please select a reason.', true);
       return;
+    }
+    if (selectedReasons.includes('other')) {
+      const result = validateOtherDetails();
+      if (!result.valid) {
+        setFeedback(result.msg, true);
+        return;
+      }
     }
     if (!reportUrl || !targetType || !targetId) {
       setFeedback('Report target error.', true);
