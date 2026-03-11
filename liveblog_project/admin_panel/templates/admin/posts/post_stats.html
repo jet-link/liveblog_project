@@ -15,12 +15,20 @@
         <div class="admin-stat-label">Likes</div>
     </div>
     <div class="admin-card admin-stat-card">
+        <div class="admin-stat-value">{{ comments_count }}</div>
+        <div class="admin-stat-label">Comments</div>
+    </div>
+    <div class="admin-card admin-stat-card">
         <div class="admin-stat-value">{{ item.bookmarks_count }}</div>
         <div class="admin-stat-label">Bookmarks</div>
     </div>
     <div class="admin-card admin-stat-card">
         <div class="admin-stat-value">{{ item.reposts_count }}</div>
         <div class="admin-stat-label">Reposts</div>
+    </div>
+    <div class="admin-card admin-stat-card">
+        <div class="admin-stat-value">{{ reports_count }}</div>
+        <div class="admin-stat-label">Reports</div>
     </div>
 </div>
 {% comment %} <div class="admin-card"> {% endcomment %}

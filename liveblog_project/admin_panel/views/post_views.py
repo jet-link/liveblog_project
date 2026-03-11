@@ -135,5 +135,12 @@ def post_delete(request, slug):
 @admin_required
 def post_view_stats(request, slug):
     """View post statistics."""
+    from smart_blog.models import Comment
     item = get_object_or_404(Item, slug=slug)
-    return render(request, 'admin/posts/post_stats.html', {'item': item})
+    comments_count = Comment.objects.filter(item=item, parent__isnull=True).count()
+    reports_count = item.reports.count()
+    return render(request, 'admin/posts/post_stats.html', {
+        'item': item,
+        'comments_count': comments_count,
+        'reports_count': reports_count,
+    })

@@ -38,11 +38,6 @@
                     <th>Title</th>
                     <th>Author</th>
                     <th>Category</th>
-                    <th>Views</th>
-                    <th>Likes</th>
-                    <th>Comments</th>
-                    <th>Bookmarks</th>
-                    <th>Reposts</th>
                     <th>Published</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -54,11 +49,6 @@
                     <td>{% if post.is_published %}<a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a>{% else %}<span class="admin-link admin-link-draft">{{ post.title|truncatewords:8 }}</span>{% endif %}</td>
                     <td>{{ post.author.username|default:"—" }}</td>
                     <td>{{ post.category.name|default:"—" }}</td>
-                    <td>{{ post.views_count }}</td>
-                    <td>{{ post.likes_count }}</td>
-                    <td>{{ post.comments_count|default:0 }}</td>
-                    <td>{{ post.bookmarks_count }}</td>
-                    <td>{{ post.reposts_count }}</td>
                     <td>{{ post.published_date|date:"M d, Y" }}</td>
                     <td>
                         <span class="admin-badge {% if post.is_published %}admin-badge-success{% else %}admin-badge-warning{% endif %}">
@@ -77,7 +67,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="11" class="admin-empty">No posts found.</td></tr>
+                <tr><td colspan="6" class="admin-empty">No posts found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

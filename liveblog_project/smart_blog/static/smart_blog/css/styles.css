@@ -2553,7 +2553,7 @@ html[data-theme="dark"] .form-wrapper{
 
 .published_block,
 .tags_block {
-    padding: 12px 25px;
+    padding: 15px 25px;
     box-shadow: var(--card-shadow);
     background: var(--bg-default);
     border-radius: 8px;

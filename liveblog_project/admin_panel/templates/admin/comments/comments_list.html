@@ -28,8 +28,8 @@
             <th>Comment</th>
             <th>Author</th>
             <th>Post</th>
-            <th>Status</th>
             <th>Published</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -41,10 +41,10 @@
               </td>
               <td>{{ c.author.username|default:'Vanished' }}</td>
               <td>{{ c.item.title|truncatewords:5 }}</td>
+              <td>{{ c.created|date:'M d, H:i' }}</td>
               <td>
                 <span class="admin-badge {% if c.is_draft %}admin-badge-warning{% else %}admin-badge-success{% endif %}">{% if c.is_draft %}Draft{% else %}Active{% endif %}</span>
               </td>
-              <td>{{ c.created|date:'M d, H:i' }}</td>
               <td class="admin-actions-cell">
                 <div class="admin-dropdown">
                   <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
