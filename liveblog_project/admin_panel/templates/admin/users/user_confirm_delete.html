@@ -1,11 +1,11 @@
 {% extends 'admin/layout/base.html' %}
 {% block title %}Delete User{% endblock %}
-{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}">Users</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:user_profile' user_obj.pk %}">{{ user_obj.username }}</a></li><li class="admin-breadcrumbs-item">Delete</li></ol></nav>{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Users</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:user_profile' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">{{ user_obj.username }}</a></li><li class="admin-breadcrumbs-item">Delete</li></ol></nav>{% endblock %}
 {% block page_title %}Delete {{ user_obj.username }}?{% endblock %}
 {% block content %}
 <div class="admin-card admin-modal-card">
     <h3>Delete user "{{ user_obj.username }}"?</h3>
     <p>This will permanently delete the account and all associated data.</p>
-    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-danger">Delete</button><a href="{% url 'admin_panel:users_list' %}" class="admin-button admin-button-outline">Cancel</a></form>
+    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-danger">Delete</button><a href="{% url 'admin_panel:users_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
 </div>
 {% endblock %}

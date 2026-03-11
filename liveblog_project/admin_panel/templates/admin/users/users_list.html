@@ -33,7 +33,7 @@
             <tbody>
                 {% for u in users %}
                 <tr>
-                    <td><a href="{% url 'admin_panel:user_profile' u.pk %}" class="admin-link">{{ u.username }}</a></td>
+                    <td><a href="{% url 'admin_panel:user_profile' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-link">{{ u.username }}</a></td>
                     <td>{{ u.email|default:"—" }}</td>
                     <td>{{ u.posts_count }}</td>
                     <td>{{ u.comments_count }}</td>
@@ -42,13 +42,13 @@
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
-                                <a href="{% url 'admin_panel:user_profile' u.pk %}">Profile</a>
+                                <a href="{% url 'admin_panel:user_profile' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Profile</a>
                                 {% if u.is_active %}
-                                <a href="{% url 'admin_panel:user_ban' u.pk %}">Ban</a>
+                                <a href="{% url 'admin_panel:user_ban' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Ban</a>
                                 {% else %}
-                                <a href="{% url 'admin_panel:user_unban' u.pk %}">Unban</a>
+                                <a href="{% url 'admin_panel:user_unban' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Unban</a>
                                 {% endif %}
-                                {% if not u.is_staff %}<a href="{% url 'admin_panel:user_delete' u.pk %}" class="admin-action-delete">Delete</a>{% endif %}
+                                {% if not u.is_staff %}<a href="{% url 'admin_panel:user_delete' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete">Delete</a>{% endif %}
                             </div>
                         </div>
                     </td>

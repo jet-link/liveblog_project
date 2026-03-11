@@ -2,7 +2,7 @@
 {% load mentions %}
 
 {% block title %}{{ user_obj.username }}{% endblock %}
-{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}">Users</a></li><li class="admin-breadcrumbs-item">{{ user_obj.username }}</li></ol></nav>{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Users</a></li><li class="admin-breadcrumbs-item">{{ user_obj.username }}</li></ol></nav>{% endblock %}
 {% block page_title %}User {{ user_obj.username }}{% endblock %}
 
 {% block content %}
@@ -15,11 +15,11 @@
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
         {% if not user_obj.is_staff %}
         {% if user_obj.is_active %}
-        <a href="{% url 'admin_panel:user_ban' user_obj.pk %}" class="admin-button admin-button-outline">Ban</a>
+        <a href="{% url 'admin_panel:user_ban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Ban</a>
         {% else %}
-        <a href="{% url 'admin_panel:user_unban' user_obj.pk %}" class="admin-button admin-button-outline">Unban</a>
+        <a href="{% url 'admin_panel:user_unban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Unban</a>
         {% endif %}
-        <a href="{% url 'admin_panel:user_delete' user_obj.pk %}" class="admin-button admin-button-danger">Delete</a>
+        <a href="{% url 'admin_panel:user_delete' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-danger">Delete</a>
         {% endif %}
     </div>
 </div>

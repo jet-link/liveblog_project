@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://cdn.ckeditor.com" crossorigin />
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 {% endblock %}
-{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}">Posts</a></li><li class="admin-breadcrumbs-item">Edit</li></ol></nav>{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Posts</a></li><li class="admin-breadcrumbs-item">Edit</li></ol></nav>{% endblock %}
 {% block page_title %}Edit {{ item.title|truncatewords:5 }}{% endblock %}
 
 {% block content %}
@@ -38,7 +38,7 @@
         </div>
         <div class="admin-form-actions">
             <button type="submit" class="admin-button admin-button-primary">Save</button>
-            <a href="{% url 'admin_panel:posts_list' %}" class="admin-button admin-button-outline">Cancel</a>
+            <a href="{% url 'admin_panel:posts_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a>
             {% if item.is_published and item.slug %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button admin-button-outline">View</a>{% else %}<span class="admin-button admin-button-outline admin-link-draft">View</span>{% endif %}
         </div>
     </form>

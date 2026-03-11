@@ -1,6 +1,7 @@
 """Post (Item) management views."""
 import re
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
@@ -106,7 +107,11 @@ def post_edit(request, slug):
         if form.is_valid():
             form.save()
             messages.success(request, 'Post updated.')
-            return redirect('admin_panel:posts_list')
+            url = reverse('admin_panel:posts_list')
+            qs = request.GET.urlencode()
+            if qs:
+                url += '?' + qs
+            return redirect(url)
     else:
         form = ItemAdminEditForm(instance=item)
     return render(request, 'admin/posts/post_edit.html', {'form': form, 'item': item})
@@ -119,7 +124,11 @@ def post_delete(request, slug):
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'Post deleted.')
-        return redirect('admin_panel:posts_list')
+        url = reverse('admin_panel:posts_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/posts/post_confirm_delete.html', {'item': item})
 
 

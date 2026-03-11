@@ -1,5 +1,6 @@
 """User management views."""
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
@@ -68,7 +69,11 @@ def user_ban(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot ban admin users.')
-        return redirect('admin_panel:user_profile', pk=pk)
+        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     if request.method == 'POST':
         if user == request.user:
             messages.error(request, 'You cannot ban yourself.')
@@ -78,7 +83,11 @@ def user_ban(request, pk):
             user.is_active = False
             user.save()
             messages.success(request, f'User {user.username} has been banned.')
-        return redirect('admin_panel:users_list')
+        url = reverse('admin_panel:users_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/users/user_confirm_ban.html', {'user_obj': user})
 
 
@@ -88,12 +97,20 @@ def user_unban(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot unban admin users.')
-        return redirect('admin_panel:user_profile', pk=pk)
+        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     if request.method == 'POST':
         user.is_active = True
         user.save()
         messages.success(request, f'User {user.username} has been unbanned.')
-        return redirect('admin_panel:users_list')
+        url = reverse('admin_panel:users_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/users/user_confirm_unban.html', {'user_obj': user})
 
 
@@ -103,7 +120,11 @@ def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot delete admin users.')
-        return redirect('admin_panel:user_profile', pk=pk)
+        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     if request.method == 'POST':
         if user == request.user:
             messages.error(request, 'You cannot delete yourself.')
@@ -113,5 +134,9 @@ def user_delete(request, pk):
             username = user.username
             user.delete()
             messages.success(request, f'User {username} has been deleted.')
-        return redirect('admin_panel:users_list')
+        url = reverse('admin_panel:users_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/users/user_confirm_delete.html', {'user_obj': user})

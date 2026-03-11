@@ -1,7 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 
 {% block title %}Stats {{ item.title }}{% endblock %}
-{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}">Posts</a></li><li class="admin-breadcrumbs-item">Stats</li></ol></nav>{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Posts</a></li><li class="admin-breadcrumbs-item">Stats</li></ol></nav>{% endblock %}
 {% block page_title %}Stats {{ item.title|truncatewords:5 }}{% endblock %}
 
 {% block content %}
@@ -25,6 +25,6 @@
 </div>
 {% comment %} <div class="admin-card"> {% endcomment %}
     {% if item.is_published %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button">View Post</a>{% else %}<span class="admin-button admin-link-draft">View Post</span>{% endif %}
-    <a href="{% url 'admin_panel:post_edit' item.slug %}" class="admin-button admin-button-outline">Edit</a>
+    <a href="{% url 'admin_panel:post_edit' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Edit</a>
 {% comment %} </div> {% endcomment %}
 {% endblock %}

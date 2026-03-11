@@ -69,9 +69,9 @@
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
-                                <a href="{% url 'admin_panel:post_edit' post.slug %}">Edit</a>
-                                <a href="{% url 'admin_panel:post_stats' post.slug %}">Stats</a>
-                                <a href="{% url 'admin_panel:post_delete' post.slug %}" class="admin-action-delete">Delete</a>
+                                <a href="{% url 'admin_panel:post_edit' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Edit</a>
+                                <a href="{% url 'admin_panel:post_stats' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Stats</a>
+                                <a href="{% url 'admin_panel:post_delete' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete">Delete</a>
                             </div>
                         </div>
                     </td>

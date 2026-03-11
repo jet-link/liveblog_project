@@ -1,5 +1,6 @@
 """Comment moderation views."""
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -46,7 +47,11 @@ def comment_delete(request, pk):
     if request.method == 'POST':
         comment.delete()
         messages.success(request, 'Comment deleted.')
-        return redirect('admin_panel:comments_list')
+        url = reverse('admin_panel:comments_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/comments/comment_confirm_delete.html', {'comment': comment})
 
 
@@ -58,7 +63,11 @@ def comment_confirm_draft(request, pk):
         comment.is_draft = True
         comment.save()
         messages.success(request, 'Comment set as Draft.')
-        return redirect('admin_panel:comments_list')
+        url = reverse('admin_panel:comments_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/comments/comment_confirm_draft.html', {'comment': comment})
 
 
@@ -70,5 +79,9 @@ def comment_confirm_activate(request, pk):
         comment.is_draft = False
         comment.save()
         messages.success(request, 'Comment set as Active.')
-        return redirect('admin_panel:comments_list')
+        url = reverse('admin_panel:comments_list')
+        qs = request.GET.urlencode()
+        if qs:
+            url += '?' + qs
+        return redirect(url)
     return render(request, 'admin/comments/comment_confirm_activate.html', {'comment': comment})
