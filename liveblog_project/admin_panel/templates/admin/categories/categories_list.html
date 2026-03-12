@@ -19,7 +19,7 @@
                 <tr>
                     <td>{{ c.name }}</td>
                     <td>{{ c.slug }}</td>
-                    <td>{% if c.description %}{{ c.description|truncatewords:10 }}{% else %}…{% endif %}</td>
+                    <td class="admin-category-details-cell" title="{{ c.description }}">{% if c.description %}{{ c.description|truncatewords:10 }}{% else %}…{% endif %}</td>
                     <td class="admin-actions-cell">
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>

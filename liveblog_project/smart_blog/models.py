@@ -394,10 +394,12 @@ class ContentReport(models.Model):
 
     STATUS_OPEN = "open"
     STATUS_RESOLVED = "resolved"
+    STATUS_IGNORED = "ignored"
 
     STATUS_CHOICES = [
-        (STATUS_OPEN, "Open"),
+        (STATUS_OPEN, "Pending"),
         (STATUS_RESOLVED, "Resolved"),
+        (STATUS_IGNORED, "Ignored"),
     ]
 
     reporter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reports")
@@ -445,6 +447,14 @@ class ContentReport(models.Model):
 
     def is_comment_report(self):
         return self.comment_id is not None
+
+    def get_reasons_display(self):
+        """Return list of display labels for reasons (supports multiple)."""
+        reasons = getattr(self, 'reasons', None)
+        if not reasons or not isinstance(reasons, list):
+            return [self.get_reason_display()] if self.reason else []
+        labels = dict(self.REASON_CHOICES)
+        return [labels.get(r, r) for r in reasons if r]
 
     def __str__(self):
         target = self.item or self.comment

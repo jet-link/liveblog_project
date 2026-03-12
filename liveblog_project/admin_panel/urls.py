@@ -42,6 +42,7 @@ urlpatterns = [
 
     # Reports
     path('reports/', views.reports_list, name='reports_list'),
+    path('reports/<int:pk>/resolve/', views.report_resolve, name='report_resolve'),
     path('reports/<int:pk>/dismiss/', views.report_dismiss, name='report_dismiss'),
     path('reports/<int:pk>/delete-content/', views.report_delete_content, name='report_delete_content'),
     path('reports/<int:pk>/ban-user/', views.report_ban_user, name='report_ban_user'),
