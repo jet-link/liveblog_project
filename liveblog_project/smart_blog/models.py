@@ -198,7 +198,7 @@ class Item(models.Model):
     @property
     def is_edited(self):
         return bool(self.edited)
-    
+
     @property
     def human_published(self):
         dt = self.published_date
@@ -404,13 +404,47 @@ class ContentReport(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
     reason = models.CharField(max_length=30, choices=REASON_CHOICES)
-    reasons = models.JSONField(default=list, blank=True)
+    reasons = models.JSONField(default=list, blank=True)  # list of reason strings for multiple reasons
     details = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
 
     class Meta:
         ordering = ("-created_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["reporter", "item"],
+                condition=Q(item__isnull=False),
+                name="unique_user_item_report",
+            ),
+            models.UniqueConstraint(
+                fields=["reporter", "comment"],
+                condition=Q(comment__isnull=False),
+                name="unique_user_comment_report",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(item__isnull=False, comment__isnull=True)
+                    | Q(item__isnull=True, comment__isnull=False)
+                ),
+                name="report_target_valid",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["item", "created_at"]),
+            models.Index(fields=["comment", "created_at"]),
+            models.Index(fields=["reporter", "created_at"]),
+        ]
+
+    def get_target(self):
+        return self.item or self.comment
+
+    def is_item_report(self):
+        return self.item_id is not None
+
+    def is_comment_report(self):
+        return self.comment_id is not None
 
     def __str__(self):
         target = self.item or self.comment

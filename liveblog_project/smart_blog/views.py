@@ -16,6 +16,9 @@ from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q, Subquery
 from django.db.models import Prefetch
 from .utils import count_convert, build_breadcrumbs, breadcrumb
+from .selectors import has_user_reported_item, has_user_reported_comment
+from .services.report_limits import can_user_report
+from .services.reports import ReportService
 from .search_utils import build_search_filter, apply_popular_filter
 from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging
@@ -523,15 +526,9 @@ def item_detail(request, slug):
         if request.user.is_authenticated else False
     )
 
-    user_reported_item = (
-        ContentReport.objects.filter(item=item, reporter=request.user).exists()
-        if request.user.is_authenticated else False
-    )
-
-    report_rate_limited = False
-    if request.user.is_authenticated:
-        since = timezone.now() - timedelta(hours=24)
-        report_rate_limited = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count() >= 5
+    user_reported_item = has_user_reported_item(request.user, item)
+    allowed, _ = can_user_report(request.user) if request.user.is_authenticated else (False, None)
+    report_rate_limited = not allowed
 
     liked_users = (
         Like.objects
@@ -651,10 +648,8 @@ def comment_thread(request, pk):
         .get()
     )
 
-    report_rate_limited = False
-    if request.user.is_authenticated:
-        since = timezone.now() - timedelta(hours=24)
-        report_rate_limited = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count() >= 5
+    allowed, _ = can_user_report(request.user) if request.user.is_authenticated else (False, None)
+    report_rate_limited = not allowed
 
     breadcrumbs = build_breadcrumbs(
         breadcrumb("BraiNews", reverse("smart_blog:items_list")),
@@ -909,7 +904,7 @@ def submit_report(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid reason."}, status=400)
 
-    if 'other' in reasons:
+    if reason == ContentReport.REASON_OTHER:
         details_stripped = (details or '').strip()
         if len(details_stripped) < 2 or len(details_stripped) > 300:
             return JsonResponse({"success": False, "error": "Please write other reasons."}, status=400)
@@ -922,39 +917,22 @@ def submit_report(request):
     item = None
     comment = None
     if target_type == "item":
-        item = get_object_or_404(Item, pk=target_id)
+        item = get_object_or_404(Item.objects.filter(is_published=True), pk=target_id)
     elif target_type == "comment":
-        comment = get_object_or_404(Comment, pk=target_id)
-        # для жалобы на комментарий item не указываем — только item-репорты попадют в user_reported_item
+        comment = get_object_or_404(Comment.objects.filter(is_draft=False), pk=target_id)
     else:
         return JsonResponse({"success": False, "error": "Invalid target type."}, status=400)
 
-    # Rate limit: max 5 reports per 24h per user
-    since = timezone.now() - timedelta(hours=24)
-    recent_count = ContentReport.objects.filter(reporter=request.user, created_at__gte=since).count()
-    if recent_count >= 5:
-        return JsonResponse({
-            "success": False,
-            "error": "You have reached the report limit. Try again in 24 hours."
-        }, status=429)
+    allowed, err = can_user_report(request.user)
+    if not allowed:
+        return JsonResponse({"success": False, "error": err}, status=429)
 
-    # Prevent duplicate reports
-    if item and ContentReport.objects.filter(item=item, reporter=request.user).exists():
-        return JsonResponse({"success": True})  # idempotent
-    if comment and ContentReport.objects.filter(comment=comment, reporter=request.user).exists():
-        return JsonResponse({"success": True})  # idempotent
-
-    reporter = request.user
-    ContentReport.objects.create(
-        reporter=reporter,
-        item=item,
-        comment=comment,
-        reason=reason,
-        reasons=reasons,
-        details=details,
+    report, err = ReportService.create_or_update_report(
+        request.user, item=item, comment=comment, reason=reason, details=details
     )
-
-    return JsonResponse({"success": True})
+    if err:
+        return JsonResponse({"success": False, "error": err}, status=400)
+    return JsonResponse({"success": True, "report_id": report.pk})
 
 
 @login_required

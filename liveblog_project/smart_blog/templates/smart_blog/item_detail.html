@@ -13,15 +13,12 @@
       <div class="d-flex gap-1 align-items-center">
         <button type="button" class="item_share_btn"><i class="fa fa-bullhorn" aria-hidden="true"></i></button>
 
-        {% if user != item.author and user.is_authenticated and not report_rate_limited %}
-          {% if not user.is_staff or item.reports_count|default:0 < 10 %}
-            <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
-          {% endif %}
+        {% if user != item.author and user.is_authenticated and not user.is_staff and not report_rate_limited and item.reports_count|default:0 < 10 %}
+          <button type="button" class="item_report_btn" data-item-id="{{ item.pk }}"><i class="fa fa-flag"></i></button>
         {% endif %}
-        <span class="report-limited-btn"><i class="fa fa-flag"></i></span>
       </div>
     </div>
-    <div class="d-flex align-items-end justify-content-between mt-3">
+    <div class="d-flex align-items-end justify-content-between mt-5">
       {% if item.category %}
         <div class="d-inline-flex align-items-center gap-2">
           <span class="item-category-badge" title="Category">{{ item.category.name }}</span>

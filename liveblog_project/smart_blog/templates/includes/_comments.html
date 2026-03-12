@@ -73,16 +73,11 @@
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                       {% if comment.reports_count|default:0 >= 10 %}
                         <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
-                      {% elif not report_rate_limited %}
-                        <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
                       {% endif %}
                     </div>
                   </div>
                 {% else %}
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-                  {% if comment.reports_count|default:0 < 10 and not report_rate_limited %}
-                    <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
-                  {% endif %}
                 {% endif %}
               {% endif %}
             {% else %}
@@ -140,15 +135,6 @@
                 <i class="fa fa-angle-right mx-1 success_"></i>
                 <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                 <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
-              </div>
-            </div>
-          {% elif not report_rate_limited %}
-            <div class="comment-menu">
-              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Vanished user</button>
-              <div class="comment-actions">
-                <i class="fa fa-angle-right mx-1 success_"></i>
-                <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-                <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>
               </div>
             </div>
           {% else %}

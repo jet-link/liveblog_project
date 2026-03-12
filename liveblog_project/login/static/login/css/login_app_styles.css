@@ -924,43 +924,6 @@ html[data-theme="dark"] .block-quote {
     pointer-events: none;
 }
 
-.report-reason-btn{
-    border: 1px solid #dfe4ea;
-    background: #fff;
-    color: #4b5a68;
-    padding: 6px 12px;
-    border-radius: 18px;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
-.report-reason-btn.is-selected {
-    border-color: #2980b9;
-    color: #ffffff;
-    background: #2980b9;
-}
-
-html[data-theme="dark"] .report-reason-btn{
-    background: transparent;
-    border-color: #6e7072;
-    color: #6e7072;
-}
-
-html[data-theme="dark"] .report-reason-btn.is-selected{
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-.report-modal .modal-dialog {
-    max-width: 640px;
-}
-
-.report-details {
-    max-height: 180px;
-    overflow-y: auto;
-    resize: vertical;
-}
-
 .comment-share-overlay {
     position: fixed;
     inset: 0;
@@ -982,12 +945,6 @@ html[data-theme="dark"] .report-reason-btn.is-selected{
 .comment-share-overlay-text {
     color: #ffffff;
     font-weight: 600;
-}
-
-#reportDetails {
-    overflow-y: auto;
-    min-height: 200px;
-    resize: none;
 }
 
 .modal-dialog {

@@ -2278,7 +2278,7 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
     padding: 8px 10px;
     transition: .2s ease-in-out;
     font-size: .8rem;
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
     border-radius: 5px;
     display: inline-flex;
@@ -2516,6 +2516,108 @@ html[data-theme="dark"] .form-wrapper{
 
 .comment-text-wrapper {
     position: relative;
+}
+
+/* Report modal */
+.report-modal .modal-dialog {
+    max-width: 640px;
+}
+
+.report-reason-btn {
+    border: 1px solid #dfe4ea;
+    background: #fff;
+    color: #4b5a68;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.report-reason-btn.is-selected {
+    border-color: var(--danger-fg);
+    color: #ffffff;
+    background: var(--danger-fg);
+}
+
+html[data-theme="dark"] .report-reason-btn {
+    background: transparent;
+    border-color: #6e7072;
+    color: #6e7072;
+}
+
+html[data-theme="dark"] .report-reason-btn.is-selected {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.report-details {
+    max-height: 180px;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+#reportDetails {
+    overflow-y: auto;
+    min-height: 200px;
+    resize: none;
+}
+
+/* Report exists view (already reported) */
+.report-exists-view {
+    font-size: 0.9rem;
+}
+
+.report-exists-header {
+    color: #3498db;
+    font-weight: 500;
+}
+
+.report-exists-label {
+    color: #a4a2a2;
+    font-weight: 500;
+}
+
+.report-exists-meta {
+    font-size: 0.8rem;
+    color: #a4a2a2;
+    font-weight: 600;
+}
+
+.report-exists-reasons-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    color: #484747;
+}
+
+.report-exists-reasons-list li {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: .7rem;
+    border: 1px solid var(--danger-fg);
+    font-weight: 500;
+    color: var(--bg-default);
+    background-color: var(--danger-fg);
+}
+
+.report-exists-details-block {
+    padding: 15px;
+    background-color: var(--card-bg);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    color: #a4a2a2;
+    border-radius: 8px;
+    z-index: 1;
+    line-height: 1.25rem;
+    word-wrap: break-word;
+    font-size: 0.8rem;
+    font-weight: 500;
 }
 
 

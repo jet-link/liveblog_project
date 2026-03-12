@@ -4,14 +4,34 @@
   const modalEl = document.getElementById('reportModal');
   if (!modalEl) return;
 
-  const reportUrl = modalEl.dataset.reportUrl;
   const reasonList = document.getElementById('reportReasonList');
   const details = document.getElementById('reportDetails');
   const submitBtn = document.getElementById('reportSubmitBtn');
   const feedback = document.getElementById('reportFeedback');
+  const formView = document.getElementById('reportFormView');
+  const existsView = document.getElementById('reportExistsView');
+  const reportExistsReasonsWrap = document.getElementById('reportExistsReasonsWrap');
+  const reportExistsReasonsList = document.getElementById('reportExistsReasonsList');
+  const reportExistsDetailsWrap = document.getElementById('reportExistsDetailsWrap');
+  const reportExistsDetailsBlock = document.getElementById('reportExistsDetailsBlock');
+  const reportExistsTime = document.getElementById('reportExistsTime');
+  const updateBtn = document.getElementById('reportUpdateBtn');
+  const cancelBtn = document.getElementById('reportCancelBtn');
 
   const MIN_OTHER_CHARS = 2;
   const MAX_OTHER_CHARS = 300;
+  const REASON_LABELS = { spam: 'Spam', abuse: 'Abuse', harassment: 'Harassment', copyright: 'Copyright', other: 'Other' };
+
+  function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta && meta.content) return meta.content;
+    const m = (document.cookie || '').match(/csrftoken=([^;]+)/);
+    return m ? m[1] : '';
+  }
+
+  function buildUrl(template, id) {
+    return template.replace(/\/0\//, '/' + id + '/');
+  }
 
   function validateOtherDetails() {
     const text = (details?.value || '').trim();
@@ -32,6 +52,7 @@
   let targetType = null;
   let targetId = null;
   let selectedReasons = [];
+  let existingReport = null;
 
   function setFeedback(text, isError = false, isSuccess = false) {
     if (!feedback) return;
@@ -43,25 +64,116 @@
 
   function resetForm() {
     selectedReasons = [];
+    existingReport = null;
     if (details) details.value = '';
     setFeedback('');
-    reasonList?.querySelectorAll('.report-reason-btn')
-      .forEach(btn => btn.classList.remove('is-selected'));
+    reasonList?.querySelectorAll('.report-reason-btn').forEach(btn => btn.classList.remove('is-selected'));
     toggleDetailsEnabled();
+    showFormView();
+  }
+
+  function showFormView() {
+    if (formView) formView.classList.remove('d-none');
+    if (existsView) existsView.classList.add('d-none');
+    if (submitBtn) {
+      submitBtn.textContent = existingReport ? 'Update report' : 'Report';
+      submitBtn.style.display = '';
+    }
+  }
+
+  function showExistsView(report) {
+    if (formView) formView.classList.add('d-none');
+    if (existsView) existsView.classList.remove('d-none');
+    if (submitBtn) submitBtn.style.display = 'none';
+
+    const reasons = Array.isArray(report.reasons) ? report.reasons : (report.reason ? [report.reason] : []);
+    const isOther = reasons.includes('other') || (report.reason || '') === 'other';
+    const detailsText = (report.details || '').trim();
+
+    if (reportExistsReasonsWrap && reportExistsReasonsList) {
+      if (reasons.length > 0) {
+        reportExistsReasonsWrap.classList.remove('d-none');
+        reportExistsReasonsList.innerHTML = '';
+        reasons.forEach(r => {
+          if (r) {
+            const li = document.createElement('li');
+            li.textContent = REASON_LABELS[r] || r;
+            reportExistsReasonsList.appendChild(li);
+          }
+        });
+      } else {
+        reportExistsReasonsWrap.classList.add('d-none');
+      }
+    }
+
+    if (reportExistsDetailsWrap && reportExistsDetailsBlock) {
+      if (isOther && detailsText) {
+        reportExistsDetailsWrap.classList.remove('d-none');
+        reportExistsDetailsBlock.textContent = detailsText;
+      } else {
+        reportExistsDetailsWrap.classList.add('d-none');
+      }
+    }
+
+    if (reportExistsTime) {
+      const d = new Date(report.created_at);
+      const now = new Date();
+      const diffMs = now - d;
+      const diffM = Math.floor(diffMs / 60000);
+      const diffH = Math.floor(diffMs / 3600000);
+      reportExistsTime.textContent = diffMs < 60000 ? 'just Now' : diffM < 60 ? diffM + ' min ago' : diffH < 24 ? diffH + ' hours ago' : Math.floor(diffH / 24) + ' days ago';
+    }
   }
 
   function openReportModal(type, id) {
     targetType = type;
-    targetId = id;
+    targetId = String(id);
     resetForm();
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
+
+    const apiUrl = type === 'item'
+      ? buildUrl(modalEl.dataset.apiItemUrl || '', targetId)
+      : buildUrl(modalEl.dataset.apiCommentUrl || '', targetId);
+
+    fetch(apiUrl, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'same-origin',
+    })
+      .then(r => {
+        if (!r.ok) {
+          setFeedback('Could not load report status.', true);
+          showFormView();
+          return;
+        }
+        return r.json();
+      })
+      .then(data => {
+        if (data && data.exists && data.report) {
+          existingReport = data.report;
+          showExistsView(data.report);
+        } else {
+          showFormView();
+        }
+      })
+      .catch(() => {
+        setFeedback('Could not load report status.', true);
+        showFormView();
+      });
   }
 
   function markTargetReported(type, id) {
     if (type === 'item') {
       const el = document.getElementById('item-reported-label');
       if (el) el.classList.remove('d-none');
+    }
+  }
+
+  function unmarkTargetReported(type, id) {
+    if (type === 'item') {
+      const el = document.getElementById('item-reported-label');
+      if (el) el.classList.add('d-none');
     }
   }
 
@@ -96,6 +208,47 @@
     if (!selectedReasons.includes('other')) setFeedback('');
   });
 
+  updateBtn?.addEventListener('click', () => {
+    if (!existingReport) return;
+    const report = existingReport;
+    existingReport = null;
+    selectedReasons = Array.isArray(report.reasons) && report.reasons.length > 0
+      ? [...report.reasons]
+      : [report.reason || 'spam'];
+    if (details) details.value = report.details || '';
+    reasonList?.querySelectorAll('.report-reason-btn').forEach(b => {
+      b.classList.toggle('is-selected', selectedReasons.includes(b.dataset.reason));
+    });
+    toggleDetailsEnabled();
+    showFormView();
+    if (submitBtn) submitBtn.textContent = 'Update report';
+  });
+
+  cancelBtn?.addEventListener('click', async () => {
+    if (!existingReport || !existingReport.id) return;
+    const url = buildUrl(modalEl.dataset.cancelUrl || '', existingReport.id);
+    try {
+      const r = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': getCsrfToken(),
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+        },
+        credentials: 'same-origin',
+      });
+      const data = await r.json().catch(() => ({}));
+      if (r.ok && data.success) {
+        unmarkTargetReported(targetType, targetId);
+        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+      } else {
+        setFeedback(data.error || 'Could not cancel report.', true);
+      }
+    } catch (err) {
+      setFeedback('Network error.', true);
+    }
+  });
+
   submitBtn?.addEventListener('click', async () => {
     if (!selectedReasons.length) {
       setFeedback('Please select a reason.', true);
@@ -108,40 +261,38 @@
         return;
       }
     }
-    if (!reportUrl || !targetType || !targetId) {
+    if (!targetType || !targetId) {
       setFeedback('Report target error.', true);
       return;
     }
+    const reportUrl = targetType === 'item'
+      ? buildUrl(modalEl.dataset.reportItemUrl || '', targetId)
+      : buildUrl(modalEl.dataset.reportCommentUrl || '', targetId);
+    const reasons = [...selectedReasons];
+
     setFeedback('Sending...');
     submitBtn.disabled = true;
-
     try {
       const resp = await fetch(reportUrl, {
         method: 'POST',
         headers: {
-          'X-CSRFToken': (document.cookie.split('; ').find(c => c.startsWith('csrftoken=')) || '').split('=')[1] || '',
+          'X-CSRFToken': getCsrfToken(),
           'X-Requested-With': 'XMLHttpRequest',
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          target_type: targetType,
-          target_id: targetId,
-          reasons: selectedReasons,
-          details: details.value || ''
-        })
+        body: JSON.stringify({ reasons, details: (details?.value || '').trim() }),
       });
-
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data?.success) {
         setFeedback(data?.error || 'Report failed.', true);
         return;
       }
-      setFeedback('Report sent. Thank you', false, true);
+      setFeedback(existingReport ? 'Report updated.' : 'Report sent. Thank you', false, true);
+      existingReport = { id: data.report_id, reasons, reason: reasons[0], details: (details?.value || '').trim(), created_at: new Date().toISOString() };
       markTargetReported(targetType, targetId);
       setTimeout(() => {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.hide();
+        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
       }, 500);
     } catch (err) {
       setFeedback('Network error.', true);
@@ -154,28 +305,14 @@
     const itemBtn = e.target.closest('.item_report_btn');
     if (itemBtn) {
       e.preventDefault();
-      const itemId = document.body.dataset.itemSlug || itemBtn.dataset.itemId;
-      if (itemId && itemBtn.dataset.itemId) {
-        openReportModal('item', itemBtn.dataset.itemId);
-      } else if (itemBtn.dataset.itemId) {
-        openReportModal('item', itemBtn.dataset.itemId);
-      } else if (itemBtn.dataset.itemPk) {
-        openReportModal('item', itemBtn.dataset.itemPk);
-      } else if (itemBtn.dataset.targetId) {
-        openReportModal('item', itemBtn.dataset.targetId);
-      } else if (itemBtn.dataset.item) {
-        openReportModal('item', itemBtn.dataset.item);
-      } else {
-        const el = document.getElementById('itemIdForReport');
-        if (el) openReportModal('item', el.value);
-      }
+      const id = itemBtn.dataset.itemId || itemBtn.dataset.itemPk || itemBtn.dataset.targetId || itemBtn.dataset.item || document.getElementById('itemIdForReport')?.value;
+      if (id) openReportModal('item', id);
       return;
     }
   });
 
   window.addEventListener('comment-report', (e) => {
     const commentId = e?.detail?.commentId;
-    if (!commentId) return;
-    openReportModal('comment', commentId);
+    if (commentId) openReportModal('comment', commentId);
   });
 })();

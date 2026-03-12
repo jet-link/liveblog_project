@@ -59,14 +59,10 @@ class SearchHistoryAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
 @admin.register(ContentReport)
 class ContentReportAdmin(admin.ModelAdmin):
-    list_display = ("reason", "reasons_display", "status", "reporter", "item_link", "comment_link", "created_at")
+    list_display = ("reason", "status", "reporter", "item_link", "comment_link", "created_at", "updated_at")
     list_filter = ("reason", "status", "created_at")
-    readonly_fields = ("item_link", "comment_link", "created_at")
-    fields = ("reporter", "item", "item_link", "comment", "comment_link", "reason", "reasons", "details", "status", "created_at")
-
-    def reasons_display(self, obj):
-        return ", ".join(obj.reasons or []) or "-"
-    reasons_display.short_description = "Reasons"
+    readonly_fields = ("item_link", "comment_link", "created_at", "updated_at")
+    fields = ("reporter", "item", "item_link", "comment", "comment_link", "reason", "details", "status", "created_at", "updated_at")
 
     def item_link(self, obj):
         if not obj.item:

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import views_reports
 
 app_name = "smart_blog"
 
@@ -21,6 +22,11 @@ urlpatterns = [
     path("item/<slug:slug>/like/", views.toggle_like, name="toggle_like"),
     path('item/<slug:slug>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
     path("report/", views.submit_report, name="submit_report"),
+    path("api/report/item/<int:pk>/", views_reports.api_report_item, name="api_report_item"),
+    path("api/report/comment/<int:pk>/", views_reports.api_report_comment, name="api_report_comment"),
+    path("report/item/<int:pk>/", views_reports.report_item, name="report_item"),
+    path("report/comment/<int:pk>/", views_reports.report_comment, name="report_comment"),
+    path("report/<int:pk>/delete/", views_reports.cancel_report, name="cancel_report"),
     # browser back button action
     path("api/item/<int:item_id>/counters/", views.item_counters, name="item_counters"),
     path("api/repost/", views.api_repost, name="api_repost"),
