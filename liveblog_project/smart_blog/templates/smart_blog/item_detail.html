@@ -98,7 +98,8 @@
       {% include 'includes/image_gallery.html' %}
     {% endif %}
     <!-- === published_block: слева — liked users, справа — like/bookmark кнопки === -->
-    <div class="d-flex justify-content-between align-items-center published_block my-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+    {% comment %} <div class="d-flex justify-content-between align-items-center published_block my-4"> {% endcomment %}
       <div class="liked-users-block d-flex align-items-center">
         <span id="noLikesYet" class="small text-muted" {% if item.likes_count|add:0 >= 1 %}style="display:none"{% endif %}>No likes yet</span>
         <div id="likedUsersContainer" class="d-flex align-items-center gap-1" {% if item.likes_count|add:0 < 1 %}style="display:none"{% endif %}>
@@ -144,8 +145,10 @@
         {% endif %}
       </div>
     </div>
+    <hr />
     <!-- ===== Теги ===== -->
-    <div class="mb-4 tags_block">
+    <div class="tags">
+    {% comment %} <div class="mb-4 tags_block"> {% endcomment %}
       <div class="tag-list w-100">
         {% if item.tags.all %}
           <small class="text-muted fw-semibold"><i class="fa fa-tags me-2"></i>Tags</small>
@@ -156,11 +159,12 @@
           </div>
         {% else %}
           <div class="d-inline-flex primary_ fw-semibold">
-            <small>Without tags</small>
+            <small><i class="fa fa-tags me-2"></i>No tags</small>
           </div>
         {% endif %}
       </div>
     </div>
+    <hr />
 
     {% if user.is_authenticated and user.is_staff and item.reports_count|default:0 >= 10 %}
       <div class="d-flex justify-content-start align-items-center mb-3">

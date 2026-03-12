@@ -1,5 +1,8 @@
-/* Admin Panel - GitHub / Linear / Notion style */
+/* Admin Panel - GitHub / Linear / Notion style (fonts same as smart_blog) */
 :root {
+  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --admin-font: var(--font-body);
   --admin-bg: #0d1117;
   --admin-bg-elevated: #161b22;
   --admin-bg-hover: #21262d;
@@ -13,7 +16,6 @@
   --admin-danger: #f85149;
   --admin-radius: 6px;
   --admin-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --admin-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
 }
 
 /* Light theme */
@@ -32,7 +34,9 @@
   --admin-shadow: 0 1px 3px rgba(31,35,40,0.12);
 }
 
-.admin-body { margin: 0; font-family: var(--admin-font); background: var(--admin-bg); color: var(--admin-text); min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+.admin-body { margin: 0; font-family: var(--font-body); font-weight: 400; background: var(--admin-bg); color: var(--admin-text); min-height: 100vh; font-size: 14px; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+.admin-body h1, .admin-body h2, .admin-body h3, .admin-body h4, .admin-body h5, .admin-body h6 { font-family: var(--font-heading); font-weight: 600; letter-spacing: -0.02em; }
+.admin-body input, .admin-body button, .admin-body select, .admin-body textarea { font-family: var(--font-body); }
 
 .admin-layout { display: flex; min-height: 100vh; }
 
@@ -115,7 +119,7 @@
 .admin-header { min-height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid var(--admin-border); background: var(--admin-bg); gap: 12px; flex-wrap: wrap; }
 .admin-header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
 .admin-header-right { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-.admin-page-title { margin: 0; font-size: 20px; font-weight: 600; }
+.admin-page-title { margin: 0; font-size: 20px; font-weight: 600; font-family: var(--font-heading); }
 .admin-user-name { color: var(--admin-text-muted); font-size: 13px; }
 .admin-breadcrumbs { padding: 15px 25px; font-size: 13px; color: var(--admin-text-muted); border-bottom: 1px solid var(--admin-border); background: var(--admin-bg); }
 .admin-breadcrumbs-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -134,10 +138,10 @@
 .admin-button-primary { background: var(--admin-success); color: #fff; border: 1px solid var(--admin-success);}
 .admin-button-primary:hover { background: #286e33; border-color: none; }
 .admin-button-outline { background: transparent; }
-.admin-button-danger { background: var(--admin-danger); border-color: var(--admin-danger); color: #fff; }
-.admin-button-danger:hover { background: #c04848; border-color: #c04848; }
-.admin-button-warning { background: #f1c40f; color: #595959; border-color: #f1c40f; }
-.admin-button-warning:hover { background-color: #fbcc12; border-color: #f1c40f; } 
+.admin-button-danger { background: var(--admin-danger); border-color: var(--admin-danger); color: #ffffff; }
+.admin-button-danger:hover { background: #db5353; border-color: #db5353; }
+.admin-button-warning { background: #f6c814; color: #ffffff; border: none; }
+.admin-button-warning:hover { background-color: #ffd21d; border-color: #ffd21d; } 
 
 /* Cards */
 .admin-card { background: var(--admin-bg-elevated); border: 1px solid var(--admin-border); border-radius: var(--admin-radius); box-shadow: var(--admin-shadow); overflow: hidden; margin-bottom: 16px; padding: 20px;}
@@ -197,14 +201,18 @@
 
 /* Table */
 .admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table { width: 100%; border-collapse: collapse; font-family: var(--font-body); }
 .admin-table th, .admin-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); white-space: nowrap; }
 .admin-table tbody tr:last-child td { border-bottom: none; }
-.admin-table th { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--admin-text-muted); }
+.admin-table th { font-family: var(--font-heading); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--admin-text-muted); }
+.admin-table td { font-family: var(--font-body); font-size: .875rem; font-weight: 500; line-height: 1.5; }
+.admin-table td .admin-link, .admin-table td a { font-family: var(--font-body); font-weight: 500; }
+.admin-table .admin-badge { font-family: var(--font-body); font-weight: 500; }
+.admin-table .admin-dropdown-trigger, .admin-table .admin-dropdown-btn { font-family: var(--font-body); font-weight: 500; }
 .admin-table tr:hover td { background: var(--admin-bg-hover); }
-.admin-empty { color: var(--admin-text-muted); font-style: italic; text-align: center; padding: 24px !important; }
+.admin-empty { font-family: var(--font-body); color: var(--admin-text-muted); font-style: italic; text-align: center; padding: 24px !important; }
 .admin-text-muted { color: var(--admin-text-muted); font-size: 13px; }
-.admin-table-total { font-size: 13px; color: var(--admin-text-muted); padding: 12px 16px; border-top: 1px solid var(--admin-border); }
+.admin-table-total { font-family: var(--font-body); font-size: 13px; font-weight: 400; color: var(--admin-text-muted); padding: 12px 16px; border-top: 1px solid var(--admin-border); }
 .admin-link, a.admin-link { color: var(--admin-accent); text-decoration: none; }
 .admin-link:hover { color: var(--admin-accent-hover); }
 .admin-link:visited { color: var(--admin-accent); }
@@ -233,8 +241,8 @@
 .admin-action-delete:visited { color: var(--admin-danger); }
 
 /* Pagination */
-.admin-pagination { display: flex; align-items: center; gap: 12px; padding: 16px; border-top: 1px solid var(--admin-border); justify-content: flex-start; }
-.admin-pagination-info { font-size: 13px; color: var(--admin-text-muted); }
+.admin-pagination { display: flex; align-items: center; gap: 12px; padding: 16px; border-top: 1px solid var(--admin-border); justify-content: flex-start; font-family: var(--font-body); }
+.admin-pagination-info { font-size: 13px; font-weight: 400; color: var(--admin-text-muted); }
 
 /* Form */
 .admin-form { padding: 24px; }
@@ -296,7 +304,7 @@
 .admin-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
 .admin-modal-dialog { position: relative; width: 100%; max-width: 400px; }
 .admin-modal-content { background: var(--admin-bg-elevated); border: 1px solid var(--admin-border); border-radius: var(--admin-radius); box-shadow: 0 8px 32px rgba(0,0,0,0.4); padding: 24px; }
-.admin-modal-title { padding: 0 0 20px; font-size: 16px; font-weight: 500; color: var(--admin-text); border-bottom: 1px solid #cccccc; }
+.admin-modal-title { padding: 0 0 20px; font-size: 16px; font-weight: 500; font-family: var(--font-heading); color: var(--admin-text); border-bottom: 1px solid #cccccc; }
 .admin-modal-actions { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
 /* .admin-modal-actions .admin-button { min-width: 100px; } */
 
@@ -307,10 +315,10 @@
 .admin-dropdown-menu { display: none; position: fixed; min-width: 140px; max-width: 200px; background: var(--admin-bg-elevated); border: 1px solid var(--admin-border); border-radius: var(--admin-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; padding: 6px 0; overflow: hidden; }
 .admin-dropdown.is-open .admin-dropdown-menu { display: flex; flex-direction: column; }
 .admin-dropdown-menu a, .admin-dropdown-menu form { width: 100%; box-sizing: border-box; }
-.admin-dropdown-menu a { padding: 8px 14px; color: var(--admin-text); text-decoration: none; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-dropdown-menu a { font-family: var(--font-body); padding: 8px 14px; color: var(--admin-text); text-decoration: none; font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .admin-dropdown-menu a:hover { background: var(--admin-bg-hover); color: var(--admin-accent); }
 .admin-dropdown-menu form { margin: 0; width: 100%; }
-.admin-dropdown-btn { display: block; width: 100%; padding: 8px 14px; border: none; background: none; color: var(--admin-text); font-size: 13px; text-align: left; cursor: pointer; font-family: inherit; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-dropdown-btn { display: block; width: 100%; padding: 8px 14px; border: none; background: none; color: var(--admin-text); font-size: 13px; font-family: var(--font-body); font-weight: 500; text-align: left; cursor: pointer; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-dropdown-btn:hover { background: var(--admin-bg-hover); color: var(--admin-accent); }
 .admin-dropdown-menu .admin-dropdown-btn { color: var(--admin-text); }
 .admin-dropdown-menu .admin-dropdown-btn:hover { color: var(--admin-accent); }
@@ -338,12 +346,12 @@
 .admin-comment-link:hover { color: #3498db !important; }
 .admin-comment-link:visited { color: #2980b9 !important; }
 .admin-comment-link.admin-link-draft { color: #2980b9 !important; text-decoration: line-through; }
-.admin-comment-blockquote { margin: 12px 0; padding: 15px 20px; border-left: 4px solid var(--admin-border); background: transparent; color: var(--admin-text); font-size: 13px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); }
+.admin-comment-blockquote { margin: 12px 0; padding: 17px 20px; border-left: 4px solid var(--admin-border); background: transparent; color: var(--admin-text); font-size: .9rem; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); font-weight: 500;}
 .admin-table td a, .admin-table td .admin-actions a { text-decoration: none; color: #2980b9; }
 .admin-table td:not(.admin-actions-cell) a:visited { color: #2980b9 !important; }
 
 /* tables */
-.admin-table tr th { font-weight: 600; color: #686de0; }
+.admin-table tr th { font-family: var(--font-heading); font-weight: 600; color: #686de0; letter-spacing: 0.06em; }
 
 /* ckeditor */
 .ck .ck-balloon-panel{display: none !important;}

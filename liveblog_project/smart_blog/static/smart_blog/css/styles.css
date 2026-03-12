@@ -2594,6 +2594,10 @@ html[data-theme="dark"] .report-reason-btn.is-selected {
     color: #484747;
 }
 
+.form-control:disabled{
+    background-color: var(--bg-subtle);
+}
+
 .report-exists-reasons-list li {
     display: inline-block;
     width: fit-content;
@@ -2690,7 +2694,7 @@ html[data-theme="dark"] .tags_block{
 
 /* Views Comments Likes Bookmart */
 .VLB {
-    padding: 10px 15px;
+    padding: 12px 15px;
     box-shadow: var(--card-shadow);
     border-radius: 5px;
     font-size: .8rem;
@@ -3555,7 +3559,6 @@ pre {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    /* padding: 0 7px; */
     position: relative;
 }
 

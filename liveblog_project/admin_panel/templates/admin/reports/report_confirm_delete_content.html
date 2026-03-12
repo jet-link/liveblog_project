@@ -6,7 +6,8 @@
 {% block content %}
 <div class="admin-card admin-modal-card">
     <h3>Delete reported content?</h3>
-    {% if report.item %}<p>Post: {{ report.item.title }}</p>{% endif %}
+    {% comment %} <hr /> {% endcomment %}
+    {% if report.item %}<blockquote class="admin-comment-blockquote">Post: {{ report.item.title }}</blockquote>{% endif %}
     {% if report.comment %}<blockquote class="admin-comment-blockquote">Comment: {{ report.comment.text|strip_mentions|truncatewords:15 }}</blockquote>{% endif %}
     <form method="post" action="{% url 'admin_panel:report_delete_content' report.pk %}{% if next_qs %}?{{ next_qs }}{% endif %}" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-danger">Delete</button><a href="{% url 'admin_panel:reports_list' %}{% if next_qs %}?{{ next_qs }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
 </div>

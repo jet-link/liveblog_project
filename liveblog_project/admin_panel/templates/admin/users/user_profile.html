@@ -7,17 +7,17 @@
 
 {% block content %}
 <div class="admin-card">
-    <p><strong>Username:</strong> {{ user_obj.username }}</p>
-    <p><strong>Email:</strong> {{ user_obj.email|default:"—" }}</p>
-    <p><strong>Joined:</strong> {{ user_obj.date_joined|date:"M d, Y" }}</p>
-    <p><strong>Status:</strong> <span class="admin-badge {% if user_obj.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if user_obj.is_active %}Active{% else %}Banned{% endif %}</span></p>
+    <p><strong>Username</strong> - {{ user_obj.username }}</p>
+    <p><strong>Email</strong> - {{ user_obj.email|default:"—" }}</p>
+    <p><strong>Joined</strong> - {{ user_obj.date_joined|date:"M d, Y" }}</p>
+    <p><strong>Status</strong> <span class="admin-badge {% if user_obj.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if user_obj.is_active %}Active{% else %}Banned{% endif %}</span></p>
     <div class="admin-form-actions">
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
         {% if not user_obj.is_staff %}
         {% if user_obj.is_active %}
         <a href="{% url 'admin_panel:user_ban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-warning">Ban</a>
         {% else %}
-        <a href="{% url 'admin_panel:user_unban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Unban</a>
+        <a href="{% url 'admin_panel:user_unban' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-primary">Unban</a>
         {% endif %}
         <a href="{% url 'admin_panel:user_delete' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-danger">Delete</a>
         {% endif %}
