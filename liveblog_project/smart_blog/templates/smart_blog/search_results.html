@@ -17,7 +17,7 @@
           <h6 class="text-muted m-0">Search results for</h6>
           <span class="primary_ fw-semibold">{{ query }}</span>
         </div>
-        <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+        <a href="{% url 'smart_blog:items_list' %}" class="text-muted small back-btn text-decoration-none" data-return-key="search_return_url" data-fallback="{% url 'smart_blog:items_list' %}" title="Back to previous page"><i class="fa fa-angle-left me-2" aria-hidden="true"></i>Back</a>
       </div>
       <hr />
       <div class="d-flex gap-2 text-muted small align-items-center">

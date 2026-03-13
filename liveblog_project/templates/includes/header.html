@@ -6,9 +6,9 @@
         <a href="/" class="brand-minimal">BrainStorm</a>
       </div>
       <div class="header-menu d-flex align-items-center gap-4 small">
-        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}"><span class="header-menu-icon brainews-icon me-2" aria-hidden="true">🧠</span>BraiNews</a>
-        <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}"><i class="fa fa-fire me-2"></i>Popular</a>
-        <a href="#" class="header-menu-item text-decoration-none text-muted"><i class="fa fa-level-up me-2"></i>Trending</a>
+        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}">BraiNews</a>
+        <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}">Popular</a>
+        <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">
           Сategories
           <i class="fa fa-angle-down ms-1"></i>

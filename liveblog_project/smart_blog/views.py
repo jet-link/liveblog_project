@@ -100,7 +100,6 @@ def items_popular_list(request):
     )
 
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
         breadcrumb("Popular", None),
     )
 
@@ -205,7 +204,6 @@ def tag_list(request, slug):
     items = annotate_user_liked(items, request.user)
 
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
         breadcrumb(tag.tag_name, None),
     )
 
@@ -608,22 +606,24 @@ def item_detail(request, slug):
         )
     elif source == "popular":
         breadcrumbs = build_breadcrumbs(
-            breadcrumb("BraiNews", reverse("smart_blog:items_list")),
             breadcrumb("Popular", safe_source_url or reverse("smart_blog:items_popular")),
             breadcrumb(item.title, None),
         )
     elif source == "search" and source_query:
+        from urllib.parse import urlencode
+        search_url = safe_source_url or (reverse("global_search") + "?" + urlencode({"q": source_query}))
         breadcrumbs = build_breadcrumbs(
-            breadcrumb(f"Found - {source_query}...", safe_source_url or reverse("smart_blog:items_list")),
-            # breadcrumb(f"Searched {source_query}...", safe_source_url or reverse("smart_blog:items_list")),
+            breadcrumb(f"Found - {source_query}", search_url),
             breadcrumb(item.title, None),
         )
     elif source == "tag" and source_tag:
         tag_url = safe_source_url
         if not tag_url and source_tag_slug:
             tag_url = reverse("smart_blog:tag_list", kwargs={"slug": source_tag_slug})
+        if not tag_url:
+            tag_url = reverse("smart_blog:items_list")
         breadcrumbs = build_breadcrumbs(
-            breadcrumb(f"Tag - {source_tag}", tag_url or reverse("smart_blog:items_list")),
+            breadcrumb(source_tag, tag_url),
             breadcrumb(item.title, None),
         )
     elif source == "home":
@@ -691,7 +691,6 @@ def comment_thread(request, pk):
     report_rate_limited = not allowed
 
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
         breadcrumb(comment.item.title, comment.item.get_absolute_url()),
         breadcrumb("Replies", None),
     )

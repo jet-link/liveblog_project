@@ -13,6 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // helpers
     function $(sel, ctx) { try { return (ctx || document).querySelector(sel); } catch (e) { return null; } }
     function $$(sel, ctx) { try { return Array.from((ctx || document).querySelectorAll(sel)); } catch (e) { return []; } }
+    function getSearchReturnUrl() {
+        var path = location.pathname;
+        var m = path.match(/^(\/blog\/item\/[^/]+)\/edit\/?$/);
+        if (m) return m[1] + '/';
+        return path + location.search;
+    }
 
     const originalInner = document.querySelector('.header-search-inner');
     const floatingBtn = document.getElementById('floatingSearchBtn');
@@ -354,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 sessionStorage.setItem('search_clear_next', '1');
                 sessionStorage.removeItem('brainews_filter_active');
+                sessionStorage.setItem('search_return_url', getSearchReturnUrl());
             } catch (err) { }
             if (isAuth && clickedPattern && badge.dataset.id) {
                 var clickedUrl = clickedPattern.replace('999999', badge.dataset.id);
@@ -509,7 +516,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!((chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked))) {
                 params.set('by_title', '1'); params.set('by_text', '1'); params.set('by_tags', '1');
             }
-            try { sessionStorage.removeItem('brainews_filter_active'); } catch (err) { }
+            try {
+                sessionStorage.removeItem('brainews_filter_active');
+                sessionStorage.setItem('search_return_url', getSearchReturnUrl());
+            } catch (err) { }
             if (typeof window.saveGuestSearchHistory === 'function') {
                 var hasAny = (chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked);
                 window.saveGuestSearchHistory(q, {
@@ -573,6 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 sessionStorage.setItem('search_clear_next', '1');
                 sessionStorage.removeItem('brainews_filter_active');
+                sessionStorage.setItem('search_return_url', getSearchReturnUrl());
             } catch (e) { }
             if (typeof window.saveGuestSearchHistory === 'function') {
                 var hasAny = (chkTitle && chkTitle.checked) || (chkText && chkText.checked) || (chkTags && chkTags.checked);
@@ -915,6 +926,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 sessionStorage.setItem('search_clear_next', '1');
                 sessionStorage.removeItem('brainews_filter_active');
+                sessionStorage.setItem('search_return_url', getSearchReturnUrl());
             } catch (err) { }
             if (isAuth && clickedPattern && historyId) {
                 var clickedUrl = clickedPattern.replace('999999', historyId);

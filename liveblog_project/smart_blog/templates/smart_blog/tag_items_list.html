@@ -17,7 +17,7 @@
           <h6 class="m-0 text-muted">Posts for tag</h6>
           <span class="badge bg-secondary text-decoration-none small">{{ tag.tag_name }}</span>
         </div>
-        <a href="{% url 'smart_blog:items_list' %}" class="text-secondary small" title="Reload page"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+        <a href="{% url 'smart_blog:items_list' %}" class="text-muted small back-btn text-decoration-none" data-return-key="tag_return_url" data-fallback="{% url 'smart_blog:items_list' %}" title="Back to previous page"><i class="fa fa-angle-left me-2" aria-hidden="true"></i>Back</a>
       </div>
       <hr />
       <div class="d-flex gap-2 text-muted align-items-center small">

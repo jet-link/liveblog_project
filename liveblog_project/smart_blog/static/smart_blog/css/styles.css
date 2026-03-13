@@ -753,7 +753,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     width: 100%;
     /* background: #f1f2f6; */
     background: var(--bg-default);
-    padding: 25px 0;
+    padding: 20px 0;
     transform: none;
     transition: none;
     will-change: auto;
@@ -805,28 +805,10 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     font-size: 1rem;
 }
 
-.search-btn:hover,
 .theme-toggle-btn:hover{
     color: var(--text-primary);
 }
 
-/* Theme toggle — простая кнопка: светлая тема = луна, тёмная = солнце */
-/* .theme-toggle-btn {
-    padding: 8px 10px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    line-height: 1;
-    border-radius: 6px;
-    transition: color 0.2s ease, background-color 0.2s ease;
-}
-.theme-toggle-btn:hover {
-    color: var(--text-default);
-    background-color: var(--bg-subtle);
-} */
 .theme-toggle-btn:focus-visible {
     outline: 2px solid var(--text-link);
     outline-offset: 2px;
@@ -1710,7 +1692,7 @@ textarea {
 .bottom-burger {
     background: none;
     border: none;
-    width: 20px;
+    width: 15px;
     height: 13px;
     display: none;
     flex-direction: column;
@@ -1780,7 +1762,7 @@ textarea {
 
 /* header */
 .bottom-menu-header {
-    padding: 22px 13px;
+    padding: 24px 13px;
     display: flex;
     justify-content: space-between;
     align-items: center;
