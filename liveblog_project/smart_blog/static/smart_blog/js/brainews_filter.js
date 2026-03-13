@@ -1,4 +1,4 @@
-// brainews_filter.js – Popular / Liked / Bookmarked filter for BraiNews, Search, Tag
+// brainews_filter.js – Liked / Bookmarked filter for BraiNews, Search, Tag
 (function () {
     'use strict';
 
@@ -72,7 +72,7 @@
         return btn ? btn.dataset.filter : null;
     }
 
-    const FILTER_TITLES = { popular: 'Popular', liked: 'Liked', bookmarked: 'Marked' };
+    const FILTER_TITLES = { liked: 'Liked', bookmarked: 'Marked' };
 
     function setActiveFilter(value) {
         getFilterButtons().forEach(b => {

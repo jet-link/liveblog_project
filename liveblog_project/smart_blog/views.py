@@ -76,12 +76,48 @@ def items_list(request):
     })
 
 
+def items_popular_list(request):
+    """Public page: popular posts (time-decayed popularity, min 6 likes)."""
+    qs = (
+        Item.objects
+        .filter(is_published=True)
+        .with_counters()
+        .select_related("category")
+        .prefetch_related("images")
+    )
+    qs = apply_popular_filter(qs)
+    qs = annotate_user_liked(qs, request.user)
+    qs = annotate_user_bookmarked(qs, request.user)
+
+    paginator = Paginator(qs, 40)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    page_range = paginator.get_elided_page_range(
+        number=page_obj.number,
+        on_each_side=1,
+        on_ends=1
+    )
+
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb("Popular", None),
+    )
+
+    return render(request, "smart_blog/popular_items_list.html", {
+        "page_obj": page_obj,
+        "page_range": page_range,
+        "items": page_obj.object_list,
+        "breadcrumbs": breadcrumbs,
+    })
+
+
 def items_filtered(request):
-    """Returns filtered items HTML for BraiNews filter block (Popular/Liked/Bookmarked)."""
+    """Returns filtered items HTML for BraiNews filter block (Liked/Bookmarked)."""
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
     filter_type = request.GET.get('filter', '').strip().lower()
-    if filter_type not in ('popular', 'liked', 'bookmarked'):
+    if filter_type not in ('liked', 'bookmarked'):
         return HttpResponse('', content_type='text/html')
     qs = (
         Item.objects
@@ -104,10 +140,7 @@ def items_filtered(request):
         qs = build_search_filter(qs, search_q, by_title, by_text, by_tags)
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
-    if filter_type == 'popular':
-        qs = apply_popular_filter(qs)
-        empty_msg = 'Popular not exists'
-    elif filter_type == 'liked':
+    if filter_type == 'liked':
         like_exists = Like.objects.filter(item=OuterRef('pk'), user=request.user)
         like_date_subq = Like.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
         qs = qs.filter(Exists(like_exists)).annotate(
@@ -571,6 +604,12 @@ def item_detail(request, slug):
     elif source == "items_list":
         breadcrumbs = build_breadcrumbs(
             breadcrumb("BraiNews", safe_source_url or reverse("smart_blog:items_list")),
+            breadcrumb(item.title, None),
+        )
+    elif source == "popular":
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+            breadcrumb("Popular", safe_source_url or reverse("smart_blog:items_popular")),
             breadcrumb(item.title, None),
         )
     elif source == "search" and source_query:

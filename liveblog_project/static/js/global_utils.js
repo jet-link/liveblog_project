@@ -239,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // element we track for visibility
     const originalSearchInner = document.querySelector('.header-search-inner');
-    if (!originalSearchInner) {
-        // nothing to do if no search on page
+    // overlay_search.html не включён на всех страницах (e.g. notifications)
+    if (!originalSearchInner || !floatingBtn || !overlayRoot || !overlayCloseBtn) {
         if (floatingBtn) floatingBtn.style.display = 'none';
         return;
     }

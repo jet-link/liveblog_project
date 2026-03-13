@@ -330,6 +330,10 @@ html {
     overflow-x: hidden;
 }
 
+html {
+    scroll-padding-top: 100px;
+}
+
 body {
     background: var(--bg-default);
     color: var(--text-default);
@@ -734,13 +738,22 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     margin-top: 10px;
 }
 
+/* Фиксированный header — высота учитывается через --header-height для padding контента */
+.header-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    --header-height: 72px;
+}
+
 .header {
     position: static;
     width: 100%;
-    z-index: 1050;
     /* background: #f1f2f6; */
     background: var(--bg-default);
-    padding: 20px 0;
+    padding: 25px 0;
     transform: none;
     transition: none;
     will-change: auto;
@@ -763,26 +776,42 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 .header-menu-item {
     transition: color 0.2s ease;
 }
+.header-menu-icon.brainews-icon {
+    font-style: normal;
+    display: inline-block;
+}
 
 .header-menu-item:hover {
     color: var(--text-link) !important;
 }
-
-/* Minimal brand logo — like admin sidebar */
-.brand-minimal {
-    color: var(--text-muted) !important;
-    text-decoration: none;
-    font-size: 1rem;
-    letter-spacing: 0.02em;
-    /* transition: color 0.2s ease; */
-}
-/* .brand-minimal:hover {
+.header-menu-item.active {
     color: var(--text-link) !important;
-} */
+    /* font-weight: 600; */
+}
 
-/* iOS-style toggle with sun/moon icons */
+.search-btn,
+.theme-toggle-btn  {
+    border: none;
+    background-color: var(--bg-subtle);
+    color: var(--text-muted);
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    font-size: 1rem;
+}
+
+.search-btn:hover,
+.theme-toggle-btn:hover{
+    color: var(--text-primary);
+}
+
 /* Theme toggle — простая кнопка: светлая тема = луна, тёмная = солнце */
-.theme-toggle-btn {
+/* .theme-toggle-btn {
     padding: 8px 10px;
     border: none;
     background: transparent;
@@ -797,63 +826,45 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 .theme-toggle-btn:hover {
     color: var(--text-default);
     background-color: var(--bg-subtle);
-}
+} */
 .theme-toggle-btn:focus-visible {
     outline: 2px solid var(--text-link);
     outline-offset: 2px;
 }
 
-.ios-toggle {
-    padding: 0;
-    border: none;
-    background: none;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.ios-toggle-track {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    width: 60px;
-    height: 30px;
-    padding: 0 6px;
-    background: var(--toggle-track);
-    border-radius: 30px;
-    transition: background 0.2s ease;
-}
-
-/* track stays gray, no green - sun/moon icons indicate state */
-
-.ios-toggle-icon {
-    font-size: 11px;
-    z-index: 1;
-    transition: color 0.2s ease;
-}
-
-.ios-toggle-sun,
-.ios-toggle-moon {
-    color: var(--text-muted-alt);
-}
-
-.ios-toggle-thumb {
+/* Search dropdown — шторка под header, не влияет на высоту контента */
+.header-search-dropdown {
     position: absolute;
-    left: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    background: var(--toggle-thumb);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: left 0.2s ease, background 0.2s ease;
-    z-index: 2;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: var(--bg-default);
+    border-bottom: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 1049;
+}
+.header-search-dropdown:not(.hidden) {
+    max-height: 220px;
+    padding: 12px 0;
+    overflow: visible; /* search-history-dropdown может выходить за границы при focus */
+}
+.header-search-dropdown.hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom-width: 0;
+    pointer-events: none;
+    overflow: hidden;
 }
 
-html[data-theme="dark"] .ios-toggle-thumb {
-    left: 30px;
-    background: var(--toggle-thumb-dark);
+/* Minimal brand logo — like admin sidebar */
+.brand-minimal {
+    color: var(--text-muted) !important;
+    text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    /* transition: color 0.2s ease; */
 }
 
 .header-actions {
@@ -918,8 +929,8 @@ html[data-theme="dark"] .ios-toggle-thumb {
 
 .content_block {
     position: relative;
-    padding-top: 90px;
-    margin-bottom: 90px;
+    padding-top: 200px;
+    margin-bottom: 120px;
 }
 
 .footer {
@@ -1055,6 +1066,11 @@ input::-webkit-search-decoration {
     transition: opacity 0.6s linear, transform 0.3s ease;
 }
 
+/* Контейнер алертов — под фиксированным header с верхним отступом (только когда есть сообщения) */
+.messages-container:has(.custom-alert) {
+    padding-top: calc(72px + 12px);
+}
+
 .custom-alert {
     padding: 15px 20px;
     border-radius: var(--radius-sm);
@@ -1168,7 +1184,7 @@ textarea {
     width: 100%;
     height: 67px;
     padding: 15px 50px;
-    border-radius: 10px;
+    border-radius: 0;
     font-size: .925rem;
     border: 1px solid var(--border-default);
     color: var(--text-primary) !important;
@@ -1480,7 +1496,7 @@ textarea {
     margin-top: 8px;
 }
 
-/* История поиска — дропдаун под строкой на BraiNews */
+/* История поиска — дропдаун под строкой, при focus на input */
 .search-history-dropdown {
     position: absolute;
     top: 100%;
@@ -1492,7 +1508,7 @@ textarea {
     box-shadow: var(--card-shadow-lg);
     max-height: 400px;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 1060;
 }
 
 .search-history-dropdown.hidden {
@@ -1601,9 +1617,9 @@ textarea {
 /* =========================
    BRAINEWS FILTER BLOCK
 ========================= */
-.filter-block {
+/* .filter-block {
     padding-top: 10px;
-}
+} */
 
 .filter-block-label {
     font-size: 0.9rem;
@@ -1621,8 +1637,8 @@ textarea {
     border: 1px solid var(--border-strong);
     background: var(--bg-default);
     color: var(--text-primary);
-    padding: 10px 23px;
-    border-radius: 8px;
+    padding: 10px 25px;
+    border-radius: 25px;
     font-size: .725rem;
     cursor: pointer;
     font-weight: 500;
@@ -2368,8 +2384,6 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
     margin: 0 auto;
 }
 
-
-
 .custom_link_danger {
     text-decoration: none;
     color: var(--text-link);
@@ -2624,7 +2638,6 @@ html[data-theme="dark"] .report-reason-btn.is-selected {
     font-weight: 500;
 }
 
-
 .comment-text {
     padding: 17px;
     background-color: var(--card-bg);
@@ -2645,11 +2658,6 @@ html[data-theme="dark"] .report-reason-btn.is-selected {
     border-radius: 6px;
     transform: scale(.995);
 }
-
-
-/* blockquote {
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-} */
 
 /* ========== Container ========== */
 .item-gallery {

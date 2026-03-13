@@ -10,9 +10,8 @@
     data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}"
     data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}"
     data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
-    {% include 'includes/search_form.html' %}
     <h5 id="brainewsListingTitle" class="mt-5 mb-3 text-muted d-none" aria-hidden="true">BraiNews</h5>
-    <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition my-4">
+    <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition mb-4">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2 align-items-center">
           <h6 class="m-0 text-muted">Posts for tag</h6>

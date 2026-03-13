@@ -1,3 +1,4 @@
+<div class="header-wrapper">
 <header class="header">
   <div class="container">
     <nav class="nav header-nav d-flex align-items-center justify-content-between">
@@ -5,8 +6,9 @@
         <a href="/" class="brand-minimal">BrainStorm</a>
       </div>
       <div class="header-menu d-flex align-items-center gap-4 small">
-        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
-        <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
+        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}"><span class="header-menu-icon brainews-icon me-2" aria-hidden="true">🧠</span>BraiNews</a>
+        <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}"><i class="fa fa-fire me-2"></i>Popular</a>
+        <a href="#" class="header-menu-item text-decoration-none text-muted"><i class="fa fa-level-up me-2"></i>Trending</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">
           Сategories
           <i class="fa fa-angle-down ms-1"></i>
@@ -14,6 +16,7 @@
         </a>
       </div>
       <div class="d-flex align-items-center gap-2 header-actions">
+        <button type="button" class="search-btn"><i class="fa fa-search"></i></button>
         <button type="button" id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Light/Dark theme"><i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i></button>
         {% if user.is_authenticated %}
           <div class="user-menu" id="userMenu">
@@ -41,4 +44,10 @@
     </nav>
   </div>
 </header>
+  <div id="headerSearchDropdown" class="header-search-dropdown hidden" aria-hidden="true">
+    <div class="container">
+      {% include 'includes/search_form.html' %}
+    </div>
+  </div>
+</div>
 {% include 'includes/overlay-menu.html' %}

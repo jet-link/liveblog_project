@@ -121,7 +121,7 @@
       const diffMs = now - d;
       const diffM = Math.floor(diffMs / 60000);
       const diffH = Math.floor(diffMs / 3600000);
-      reportExistsTime.textContent = diffMs < 60000 ? 'just Now' : diffM < 60 ? diffM + ' min ago' : diffH < 24 ? diffH + ' hours ago' : Math.floor(diffH / 24) + ' days ago';
+      reportExistsTime.textContent = diffMs < 60000 ? 'just now' : diffM < 60 ? diffM + ' min ago...' : diffH < 24 ? diffH + ' hours ago' : Math.floor(diffH / 24) + ' days ago';
     }
   }
 

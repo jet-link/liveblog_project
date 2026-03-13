@@ -92,9 +92,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ------------- sticky search bar: липнет при скролле вниз, возвращается на место при скролле вверх -------------
+    // Отключено для search в header dropdown — не создаём placeholder/offset при скролле
     (function initStickySearchBar() {
         const searchOverlay = document.getElementById('headerSearchOverlay');
-        if (!searchOverlay || searchOverlay.closest('#overlaySearchRoot')) return;
+        if (!searchOverlay || searchOverlay.closest('#overlaySearchRoot') || searchOverlay.closest('#headerSearchDropdown')) return;
 
         let placeholder = null;
         let stickThreshold = 0;
@@ -837,9 +838,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         headerInput.addEventListener('focus', function () {
-            fetchAndShow((headerInput.value || '').trim());
-        });
-        headerInput.addEventListener('click', function () {
             fetchAndShow((headerInput.value || '').trim());
         });
         headerInput.addEventListener('input', function () {

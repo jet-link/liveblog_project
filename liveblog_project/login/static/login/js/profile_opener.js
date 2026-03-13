@@ -20,12 +20,13 @@
         menu.classList.toggle('open');
     });
 
-    // закрытие по клику вне
+    // закрытие по клику вне (в т.ч. по другим кнопкам — search, theme, burger)
+    // capture: true — чтобы сработать до stopPropagation в обработчиках кнопок
     document.addEventListener('click', (e) => {
         if (!menu.contains(e.target)) {
             menu.classList.remove('open');
         }
-    });
+    }, true);
 
     // закрытие по ESC
     document.addEventListener('keydown', (e) => {

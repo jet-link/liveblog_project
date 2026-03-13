@@ -1207,7 +1207,7 @@
   window.addEventListener('scroll', checkVisibility, { passive: true });
 
   btn.addEventListener('click', () => {
-    commentsHeader.scrollIntoView({
+    commentsList.scrollIntoView({
       behavior: 'auto',
       block: 'start'
     });

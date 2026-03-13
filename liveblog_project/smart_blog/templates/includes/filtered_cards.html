@@ -26,27 +26,9 @@
                     <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
                   {% endif %}
                 </div>
-                {% comment %} {% if user != item.author and user.is_authenticated %}
-                  <div class="item-stats text-muted d-inline-flex align-items-center position-relative" style="z-index: 2">
-                    <div class="stat p-0 d-inline-flex align-items-center">
-                      <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                      <button type="button" class="like-btn border-0 bg-transparent p-0 ms-1 text-danger" data-url="{% url 'smart_blog:toggle_like' item.slug %}" data-item-id="{{ item.pk }}" title="Like" aria-label="Like">
-                        {% if item.user_liked %}
-                          <i id="like-icon-{{ item.pk }}" class="fa fa-heart danger_" aria-hidden="true"></i>
-                        {% else %}
-                          <i id="like-icon-{{ item.pk }}" class="fa fa-heart-o danger_" aria-hidden="true"></i>
-                        {% endif %}
-                      </button>
-                    </div>
-                  </div>
-                {% else %}
-                  <small class="text-muted fw-semibold">Your post</small>
-                {% endif %} {% endcomment %}
 
                 {% if item.category %}
                   <div class="d-inline-flex align-items-center gap-2">
-                    {% comment %} <i class="fa fa-folder-o" aria-hidden="true"></i> {% endcomment %}
-                    {% comment %} <small class="text-muted fw-semibold">Category</small> {% endcomment %}
                     <span class="item-category-badge">{{ item.category.name }}</span>
                   </div>
                 {% else %}
@@ -59,9 +41,6 @@
                   <h4 class="mb-2">{{ item.title }}</h4>
                   <div class="small d-inline-flex align-items-center gap-2 flex-wrap">
                     <small>{{ item.human_published }}</small>
-                    {% comment %} {% if item.category %}
-                      <span class="item-category-badge">{{ item.category.name }}</span>
-                    {% endif %} {% endcomment %}
                   </div>
                 </div>
 
