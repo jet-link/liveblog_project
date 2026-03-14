@@ -12,11 +12,13 @@ urlpatterns = [
     path('posts/create/', views.post_create, name='post_create'),
     path('posts/<slug:slug>/edit/', views.post_edit, name='post_edit'),
     path('posts/<slug:slug>/delete/', views.post_delete, name='post_delete'),
+    path('posts/bulk-delete/', views.posts_bulk_delete, name='posts_bulk_delete'),
     path('posts/<slug:slug>/stats/', views.post_view_stats, name='post_stats'),
 
     # Comments
     path('comments/', views.comments_list, name='comments_list'),
     path('comments/<int:pk>/delete/', views.comment_delete, name='comment_delete'),
+    path('comments/bulk-delete/', views.comments_bulk_delete, name='comments_bulk_delete'),
     path('comments/<int:pk>/draft/', views.comment_confirm_draft, name='comment_confirm_draft'),
     path('comments/<int:pk>/activate/', views.comment_confirm_activate, name='comment_confirm_activate'),
 
@@ -27,24 +29,30 @@ urlpatterns = [
     path('users/<int:pk>/ban/', views.user_ban, name='user_ban'),
     path('users/<int:pk>/unban/', views.user_unban, name='user_unban'),
     path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
+    path('users/bulk-delete/', views.users_bulk_delete, name='users_bulk_delete'),
+    path('users/banned/bulk-delete/', views.banned_users_bulk_delete, name='banned_users_bulk_delete'),
 
     # Categories
     path('categories/', views.categories_list, name='categories_list'),
     path('categories/create/', views.category_create, name='category_create'),
     path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+    path('categories/bulk-delete/', views.categories_bulk_delete, name='categories_bulk_delete'),
 
     # Tags
     path('tags/', views.tags_list, name='tags_list'),
     path('tags/create/', views.tag_create, name='tag_create'),
     path('tags/<int:pk>/edit/', views.tag_edit, name='tag_edit'),
     path('tags/<int:pk>/delete/', views.tag_delete, name='tag_delete'),
+    path('tags/bulk-delete/', views.tags_bulk_delete, name='tags_bulk_delete'),
 
     # Reports
     path('reports/', views.reports_list, name='reports_list'),
     path('reports/<int:pk>/resolve/', views.report_resolve, name='report_resolve'),
     path('reports/<int:pk>/dismiss/', views.report_dismiss, name='report_dismiss'),
     path('reports/<int:pk>/delete-content/', views.report_delete_content, name='report_delete_content'),
+    path('reports/bulk-clear/', views.reports_bulk_clear, name='reports_bulk_clear'),
+    path('reports/bulk-delete/', views.reports_bulk_delete, name='reports_bulk_delete'),
     path('reports/<int:pk>/ban-user/', views.report_ban_user, name='report_ban_user'),
 
     # Analytics
@@ -52,10 +60,12 @@ urlpatterns = [
 
     # Backups
     path('backups/', views.backups_list, name='backups_list'),
+    path('backups/status/', views.backup_status, name='backup_status'),
     path('backups/create/', views.backup_create, name='backup_create'),
     path('backups/<int:pk>/download/', views.backup_download, name='backup_download'),
     path('backups/<int:pk>/restore/', views.backup_restore, name='backup_restore'),
     path('backups/<int:pk>/delete/', views.backup_delete, name='backup_delete'),
+    path('backups/bulk-delete/', views.backups_bulk_delete, name='backups_bulk_delete'),
 
     # Logs (placeholder)
     path('logs/', views.logs_view, name='logs'),
@@ -65,4 +75,5 @@ urlpatterns = [
     path('faq/create/', views.faq_create, name='faq_create'),
     path('faq/<int:pk>/edit/', views.faq_edit, name='faq_edit'),
     path('faq/<int:pk>/delete/', views.faq_delete, name='faq_delete'),
+    path('faq/bulk-delete/', views.faq_bulk_delete, name='faq_bulk_delete'),
 ]

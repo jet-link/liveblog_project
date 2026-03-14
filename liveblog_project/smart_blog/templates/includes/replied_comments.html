@@ -4,7 +4,7 @@
     <form class="reply-comment-form" data-parent-id="{{ comment.pk }}" data-username="{{ comment.author.username }}" novalidate>
       {% csrf_token %}
       <div class="form-floating mb-2">
-        <textarea name="text" id="id_reply_comment_text" class="form-control auto-grow" placeholder=" " rows="1" required></textarea>
+        <textarea name="text" id="id_reply_comment_text" class="form-control auto-grow" placeholder=" " rows="1" required spellcheck="true"></textarea>
         <label for="id_reply_comment_text">Text here...</label>
       </div>
       <div class="reply-form-errors mb-2"></div>

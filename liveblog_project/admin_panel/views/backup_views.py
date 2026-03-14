@@ -5,7 +5,7 @@ from pathlib import Path
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.conf import settings
 
 from admin_panel.decorators import admin_required
@@ -20,6 +20,33 @@ def backups_list(request):
         return redirect('admin_panel:dashboard')
     qs = Backup.objects.select_related('created_by').order_by('-created_at')
     return render(request, 'admin/backups/backups_list.html', {'backups': qs})
+
+
+@admin_required
+def backup_status(request):
+    """Return backup status as JSON for polling. GET ?ids=1,2,3"""
+    if not request.user.is_superuser:
+        raise Http404
+    ids_str = request.GET.get('ids', '')
+    ids = []
+    for x in ids_str.split(','):
+        try:
+            ids.append(int(x.strip()))
+        except (ValueError, TypeError):
+            pass
+    backups = Backup.objects.filter(pk__in=ids)
+    data = [
+        {
+            'id': b.pk,
+            'status': b.status,
+            'display': dict(Backup.STATUS_CHOICES).get(b.status, b.status),
+            'has_file': bool(b.file_path),
+            'file_size': b.file_size,
+            'file_size_human': b.file_size_human if b.file_size else '—',
+        }
+        for b in backups
+    ]
+    return JsonResponse({'backups': data})
 
 
 @admin_required

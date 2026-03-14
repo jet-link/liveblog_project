@@ -5,11 +5,13 @@
 {% block page_title %}Banned Users{% endblock %}
 
 {% block content %}
+<div class="admin-toolbar"></div>
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table">
+        <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:banned_users_bulk_delete' %}">
             <thead>
                 <tr>
+                    <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Posts</th>
@@ -21,6 +23,7 @@
             <tbody>
                 {% for u in users %}
                 <tr>
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ u.pk }}" aria-label="Select"></td>
                     <td>{{ u.username }}</td>
                     <td>{{ u.email|default:"—" }}</td>
                     <td>{{ u.posts_count }}</td>
@@ -31,7 +34,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="6" class="admin-empty">No banned users.</td></tr>
+                <tr><td colspan="7" class="admin-empty">No banned users.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

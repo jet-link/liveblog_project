@@ -8,11 +8,11 @@
         {% csrf_token %}
         <div class="admin-form-group">
             <label for="id_category_name">Name</label>
-            <input type="text" id="id_category_name" name="name" value="{% if category %}{{ category.name }}{% endif %}" class="admin-input" placeholder="Category name" required>
+            <input type="text" id="id_category_name" name="name" value="{% if category %}{{ category.name }}{% endif %}" class="admin-input" placeholder="Category name" required spellcheck="true">
         </div>
         <div class="admin-form-group">
             <label for="id_category_description">Description</label>
-            <textarea id="id_category_description" name="description" class="admin-textarea" placeholder="Description (optional)">{% if category %}{{ category.description }}{% endif %}</textarea>
+            <textarea id="id_category_description" name="description" class="admin-textarea" placeholder="Description (optional)" spellcheck="true">{% if category %}{{ category.description }}{% endif %}</textarea>
         </div>
         <div class="admin-form-actions">
             <button type="submit" class="admin-button admin-button-primary">{% if is_create %}Create{% else %}Save{% endif %}</button>

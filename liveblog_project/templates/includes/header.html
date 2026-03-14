@@ -5,7 +5,7 @@
       <div class="bottom-left-nav header-brand">
         <a href="/" class="brand-minimal">BrainStorm</a>
       </div>
-      <div class="header-menu d-flex align-items-center gap-4 small">
+      <div class="header-menu d-flex align-items-center small">
         <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}">BraiNews</a>
         <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}">Popular</a>
         <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>

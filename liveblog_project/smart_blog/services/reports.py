@@ -50,20 +50,25 @@ class ReportService:
             "reason": primary_reason,
             "reasons": reasons_list,
             "details": (details or "").strip(),
+            "status": ContentReport.STATUS_OPEN,
+            "admin_hidden": False,  # Re-show in admin when user updates reason after Clear
         }
 
         if item is not None:
-            report, _ = ContentReport.objects.update_or_create(
+            report, created = ContentReport.objects.update_or_create(
                 reporter=user,
                 item=item,
                 defaults={"comment": None, **defaults},
             )
         else:
-            report, _ = ContentReport.objects.update_or_create(
+            report, created = ContentReport.objects.update_or_create(
                 reporter=user,
                 comment=comment,
                 defaults={"item": None, **defaults},
             )
+
+        if not created:
+            report.touch_updated()  # Refresh updated_at from model (user changed report)
 
         return report, None
 

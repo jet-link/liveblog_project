@@ -20,11 +20,18 @@ document.addEventListener('DOMContentLoaded', function () {
 			})
 			.then(editor => {
 				const textareaId = el.id;
+				const editable = editor.ui?.getEditableElement?.() || editor.ui?.view?.editableElement;
+				if (editable) {
+					editable.setAttribute('spellcheck', 'true');
+					const langEl = editable.closest('[data-spellcheck-lang]');
+					const lang = langEl ? langEl.getAttribute('data-spellcheck-lang') : (document.documentElement.getAttribute('lang') || 'ru');
+					editable.setAttribute('lang', lang);
+				}
 				if (!textareaId) return;
 				let attempts = 0;
 				const tryFix = () => {
-					const editable = editor.ui?.getEditableElement?.() || editor.ui?.view?.editableElement;
-					const editorRoot = editable ? editable.closest('.ck-editor') : el.parentElement?.querySelector('.ck-editor');
+					const editEl = editor.ui?.getEditableElement?.() || editor.ui?.view?.editableElement;
+					const editorRoot = editEl ? editEl.closest('.ck-editor') : el.parentElement?.querySelector('.ck-editor');
 					const label = editorRoot?.querySelector('.ck-voice-label');
 					if (label) {
 						label.setAttribute('for', textareaId);

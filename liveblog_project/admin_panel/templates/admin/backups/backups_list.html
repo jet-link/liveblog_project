@@ -9,19 +9,20 @@
 </div>
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table">
+        <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:backups_bulk_delete' %}">
             <thead>
-                <tr><th>Name</th><th>Created</th><th>Size</th><th>Status</th><th>Type</th><th>Actions</th></tr>
+                <tr><th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all"></th><th>Name</th><th>Created</th><th>Size</th><th>Status</th><th>Type</th><th>Actions</th></tr>
             </thead>
             <tbody>
                 {% for b in backups %}
-                <tr>
+                <tr data-backup-id="{{ b.pk }}" data-backup-status="{{ b.status }}">
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ b.pk }}" aria-label="Select"></td>
                     <td>{{ b.name }}</td>
                     <td>{{ b.created_at|date:"M d, Y H:i" }}</td>
-                    <td>{{ b.file_size_human }}</td>
-                    <td><span class="admin-badge admin-badge-{% if b.status == 'completed' %}success{% elif b.status == 'failed' %}danger{% else %}warning{% endif %}">{{ b.get_status_display }}</span></td>
+                    <td class="admin-backup-size-cell"><span class="admin-backup-size-value">{% if b.status == 'completed' and b.file_size %}{{ b.file_size_human }}{% else %}—{% endif %}</span></td>
+                    <td class="admin-backup-status-cell"><span class="admin-badge admin-badge-{% if b.status == 'completed' %}success{% elif b.status == 'failed' %}danger{% else %}warning{% endif %}">{{ b.get_status_display }}</span></td>
                     <td>{{ b.get_content_type_display }}</td>
-                    <td class="admin-actions-cell">
+                    <td class="admin-actions-cell admin-backup-actions-cell">
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
@@ -35,13 +36,127 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="6" class="admin-empty">No backups.</td></tr>
+                <tr><td colspan="7" class="admin-empty">No backups.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <div class="admin-table-total">Total: {{ backups.count }}</div>
 </div>
+<script>
+(function() {
+  var statusUrl = "{% url 'admin_panel:backup_status' %}";
+  var downloadUrl = "{% url 'admin_panel:backup_download' 0 %}".replace('/0/', '/');
+  var restoreUrl = "{% url 'admin_panel:backup_restore' 0 %}".replace('/0/', '/');
+  var deleteUrl = "{% url 'admin_panel:backup_delete' 0 %}".replace('/0/', '/');
+  var table = document.querySelector('.admin-table');
+  if (!table) return;
+
+  function getRunningIds() {
+    var ids = [];
+    table.querySelectorAll('tr[data-backup-id]').forEach(function(tr) {
+      var status = tr.getAttribute('data-backup-status');
+      if (status === 'running' || status === 'pending') {
+        ids.push(tr.getAttribute('data-backup-id'));
+      }
+    });
+    return ids;
+  }
+
+  function badgeClass(status) {
+    if (status === 'completed') return 'admin-badge-success';
+    if (status === 'failed') return 'admin-badge-danger';
+    return 'admin-badge-warning';
+  }
+
+  function formatSize(bytes) {
+    if (!bytes || bytes <= 0) return '0.0 B';
+    var size = bytes;
+    var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var i = 0;
+    while (size >= 1024 && i < units.length - 1) { size /= 1024; i++; }
+    return size.toFixed(1) + ' ' + units[i];
+  }
+
+  function animateSize(sizeCell, targetBytes, finalHuman, duration) {
+    if (!sizeCell || targetBytes <= 0) {
+      if (sizeCell) sizeCell.textContent = finalHuman || '—';
+      return;
+    }
+    var span = sizeCell.querySelector('.admin-backup-size-value') || sizeCell;
+    var startTime = performance.now();
+    function tick(now) {
+      var elapsed = now - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var current = Math.floor(progress * targetBytes);
+      span.textContent = formatSize(current);
+      if (progress < 1) requestAnimationFrame(tick);
+      else span.textContent = finalHuman;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function updateRow(tr, data) {
+    var statusCell = tr.querySelector('.admin-backup-status-cell');
+    if (statusCell) {
+      statusCell.innerHTML = '<span class="admin-badge ' + badgeClass(data.status) + '">' + (data.display || data.status) + '</span>';
+    }
+    tr.setAttribute('data-backup-status', data.status);
+    if (data.status === 'completed' && (data.file_size || data.file_size_human)) {
+      var sizeCell = tr.querySelector('.admin-backup-size-cell');
+      if (sizeCell) {
+        var alreadyAnimated = sizeCell.getAttribute('data-size-animated') === '1';
+        if (!alreadyAnimated && data.file_size) {
+          sizeCell.setAttribute('data-size-animated', '1');
+          animateSize(sizeCell, data.file_size, data.file_size_human || formatSize(data.file_size), 1000);
+        } else {
+          var span = sizeCell.querySelector('.admin-backup-size-value');
+          if (span) span.textContent = data.file_size_human || formatSize(data.file_size) || '—';
+        }
+      }
+    }
+    if (data.status === 'completed' && data.has_file) {
+      var actionsCell = tr.querySelector('.admin-backup-actions-cell .admin-dropdown-menu');
+      if (actionsCell && !actionsCell.querySelector('a[href*="download"]')) {
+        var id = tr.getAttribute('data-backup-id');
+        var dl = document.createElement('a');
+        dl.href = downloadUrl + id + '/';
+        dl.textContent = 'Download';
+        var rst = document.createElement('a');
+        rst.href = restoreUrl + id + '/';
+        rst.textContent = 'Restore';
+        actionsCell.insertBefore(rst, actionsCell.firstChild);
+        actionsCell.insertBefore(dl, actionsCell.firstChild);
+      }
+    }
+  }
+
+  function poll() {
+    var ids = getRunningIds();
+    if (ids.length === 0) return;
+    fetch(statusUrl + '?ids=' + ids.join(','), { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.backups) {
+          data.backups.forEach(function(b) {
+            var tr = table.querySelector('tr[data-backup-id="' + b.id + '"]');
+            if (tr) updateRow(tr, b);
+          });
+        }
+      })
+      .catch(function() {});
+  }
+
+  var ids = getRunningIds();
+  if (ids.length > 0) {
+    var interval = setInterval(function() {
+      poll();
+      if (getRunningIds().length === 0) clearInterval(interval);
+    }, 1500);
+    poll();
+  }
+})();
+</script>
 {% else %}
 <div class="admin-alert admin-alert-warning">Access denied. Superuser only.</div>
 {% endif %}

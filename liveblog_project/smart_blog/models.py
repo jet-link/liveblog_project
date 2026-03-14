@@ -411,6 +411,7 @@ class ContentReport(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
+    admin_hidden = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("-created_at",)
@@ -441,6 +442,10 @@ class ContentReport(models.Model):
 
     def get_target(self):
         return self.item or self.comment
+
+    def touch_updated(self):
+        """Refresh updated_at to current time (triggers auto_now). Use when user changes report."""
+        self.save(update_fields=["updated_at"])
 
     def is_item_report(self):
         return self.item_id is not None

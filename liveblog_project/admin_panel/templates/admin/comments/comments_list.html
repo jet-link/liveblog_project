@@ -22,9 +22,10 @@
 
   <div class="admin-card">
     <div class="admin-table-wrapper">
-      <table class="admin-table">
+      <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:comments_bulk_delete' %}">
         <thead>
           <tr>
+            <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
             <th>Comment</th>
             <th>Author</th>
             <th>Post</th>
@@ -36,6 +37,7 @@
         <tbody>
           {% for c in comments %}
             <tr>
+              <td><input type="checkbox" class="admin-bulk-row-check" value="{{ c.pk }}" aria-label="Select"></td>
               <td>
                 {% if c.is_draft %}<span class="admin-comment-link admin-link-draft">{{ c.text|strip_mentions|truncatewords:5 }}</span>{% elif c.item.is_published %}<a href="{{ c.get_comment_url }}" class="admin-comment-link">{{ c.text|strip_mentions|truncatewords:5 }}</a>{% else %}<span class="admin-comment-link admin-link-draft">{{ c.text|strip_mentions|truncatewords:5 }}</span>{% endif %}
               </td>
@@ -57,7 +59,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6" class="admin-empty">No comments.</td>
+              <td colspan="7" class="admin-empty">No comments.</td>
             </tr>
           {% endfor %}
         </tbody>

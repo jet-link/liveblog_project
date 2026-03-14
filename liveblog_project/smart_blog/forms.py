@@ -93,7 +93,7 @@ class ItemCreateForm(forms.ModelForm):
     new_tags = forms.CharField(
         required=False,
         label="Enter tag (optional)",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag/s separate with spaces (optional)"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter tag/s separate with spaces (optional)", "spellcheck": "true"}),
     )
 
     category = forms.ModelChoiceField(
@@ -109,12 +109,13 @@ class ItemCreateForm(forms.ModelForm):
         fields = ["title", "text", "category", "tags", "new_tags"]
         labels = {"title": "Enter title", "text": "Item text"}
         widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title", "required": True}),
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter title", "required": True, "spellcheck": "true"}),
             "text": forms.Textarea(attrs={
                 "class": "form-control editor-container__editor ckeditor",
                 # "id": "editor",
                 "placeholder": "Fill the text",
                 "rows": 15,
+                "spellcheck": "true",
             }),
         }
 
@@ -231,6 +232,7 @@ class CommentForm(forms.ModelForm):
                 "placeholder": " ",
                 "rows": 1,          # стартовая высота
                 "required": True,
+                "spellcheck": "true",
             })
         }
         # error_messages = {

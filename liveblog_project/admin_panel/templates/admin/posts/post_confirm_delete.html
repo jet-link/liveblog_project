@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="admin-card admin-modal-card">
-    <h3>Delete "{{ item.title }}"?</h3>
+    <h3>Delete {{ item.title }}?</h3>
     <p>This action cannot be undone.</p>
     <form method="post" class="admin-form-actions">
         {% csrf_token %}

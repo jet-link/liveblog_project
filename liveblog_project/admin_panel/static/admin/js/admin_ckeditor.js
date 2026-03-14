@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
           editable.style.minHeight = '450px';
           editable.style.maxHeight = '450px';
           editable.style.overflowY = 'auto';
+          editable.setAttribute('spellcheck', 'true');
+          var langEl = editable.closest('[data-spellcheck-lang]');
+          var lang = langEl ? langEl.getAttribute('data-spellcheck-lang') : (document.documentElement.getAttribute('lang') || 'en');
+          editable.setAttribute('lang', lang);
         }
       })
       .catch(function (err) { console.error(err); });

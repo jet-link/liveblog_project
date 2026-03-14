@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Q
 
 from .models import Notification
@@ -25,3 +26,10 @@ def notifications_context(request):
         "notifications_count": count,
         "notifications_count_label": label,
     }
+
+
+def spellcheck_context(request):
+    """Add spellcheck_lang for templates (used by data-spellcheck-lang)."""
+    if request.path.startswith("/admin/"):
+        return {"spellcheck_lang": "en"}
+    return {"spellcheck_lang": getattr(settings, "SPELLCHECK_LANG", "ru")}

@@ -72,6 +72,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'smart_blog.context_processors.notifications_context',
+                'smart_blog.context_processors.spellcheck_context',
+                'admin_panel.context_processors.admin_online_count',
             ],
         },
     },
@@ -143,6 +145,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Admin panel login redirect
 LOGIN_URL = '/profile/login/'
+
+# Spellcheck language (ru/en) - used by spellcheck.js via data-spellcheck-lang
+SPELLCHECK_LANG = os.environ.get('SPELLCHECK_LANG', 'ru')
 
 # Logging
 LOGGING = {

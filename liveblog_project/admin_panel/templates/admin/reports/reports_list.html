@@ -7,7 +7,7 @@
 <div class="admin-toolbar">
     <form class="admin-search-form" method="get">
         <select name="target" class="admin-select">
-            <option value="">Type</option>
+            <option value="">Types</option>
             <option value="item" {% if current_target == 'item' %}selected{% endif %}>Posts</option>
             <option value="comment" {% if current_target == 'comment' %}selected{% endif %}>Comments</option>
         </select>
@@ -28,14 +28,15 @@
 </div>
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table admin-reports-table">
+        <table class="admin-table admin-reports-table" data-bulk-clear-url="{% url 'admin_panel:reports_bulk_clear' %}">
             <thead>
-                <tr><th>Status</th><th>Type</th><th>Preview</th><th>Reasons</th><th>Reporter</th><th>Details</th><th>Reports</th><th>Date</th><th>Actions</th></tr>
+                <tr><th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th><th>Status</th><th>Type</th><th>Preview</th><th>Reasons</th><th>Reporter</th><th>Details</th><th>Reports</th><th>Date</th><th>Actions</th></tr>
             </thead>
             <tbody>
                 {% for r in reports %}
                 <tr data-report-id="{{ r.pk }}" data-status="{{ r.status }}">
-                    <td>
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ r.pk }}" aria-label="Select"></td>
+                    <td class="admin-report-status-cell">
                         {% if r.status == 'resolved' %}
                             <span class="admin-badge admin-badge-success">Resolved</span>
                         {% elif r.status == 'ignored' %}
@@ -86,7 +87,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="9" class="admin-empty">No reports.</td></tr>
+                <tr><td colspan="10" class="admin-empty">No reports.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -133,7 +134,7 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success && data.new_status && row) {
-        var statusTd = row.querySelector('td:first-child');
+        var statusTd = row.querySelector('.admin-report-status-cell');
         if (statusTd) {
           statusTd.innerHTML = data.new_status === 'resolved'
             ? '<span class="admin-badge admin-badge-success">Resolved</span>'

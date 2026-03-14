@@ -8,11 +8,11 @@
         {% csrf_token %}
         <div class="admin-form-group">
             <label for="id_faq_question">Question</label>
-            <input type="text" id="id_faq_question" name="question" value="{% if item %}{{ item.question }}{% endif %}" class="admin-input" placeholder="Enter question" required>
+            <input type="text" id="id_faq_question" name="question" value="{% if item %}{{ item.question }}{% endif %}" class="admin-input" placeholder="Enter question" required spellcheck="true">
         </div>
         <div class="admin-form-group">
             <label for="id_faq_answer">Answer</label>
-            <textarea id="id_faq_answer" name="answer" class="admin-textarea" rows="6" placeholder="Enter answer" required>{% if item %}{{ item.answer }}{% endif %}</textarea>
+            <textarea id="id_faq_answer" name="answer" class="admin-textarea" rows="6" placeholder="Enter answer" required spellcheck="true">{% if item %}{{ item.answer }}{% endif %}</textarea>
         </div>
         <div class="admin-form-group">
             <label for="id_faq_order">Order</label>

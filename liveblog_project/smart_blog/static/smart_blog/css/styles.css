@@ -768,13 +768,17 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 }
 
 .header-menu {
+    display: flex;
     justify-self: center;
     align-items: center;
     white-space: nowrap;
 }
 
 .header-menu-item {
-    transition: color 0.2s ease;
+    padding: 8px 15px;
+    transition: .3s ease-in-out;
+    font-size: .875rem;
+    font-weight: 500;
 }
 .header-menu-icon.brainews-icon {
     font-style: normal;
@@ -782,11 +786,12 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 }
 
 .header-menu-item:hover {
+    background-color: var(--bg-subtle);
     color: var(--text-link) !important;
 }
 .header-menu-item.active {
     color: var(--text-link) !important;
-    /* font-weight: 600; */
+    background-color: var(--bg-subtle);
 }
 
 .search-btn,

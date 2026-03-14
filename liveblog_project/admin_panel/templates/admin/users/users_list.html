@@ -19,9 +19,10 @@
 
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table">
+        <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:users_bulk_delete' %}">
             <thead>
                 <tr>
+                    <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Posts</th>
@@ -33,6 +34,7 @@
             <tbody>
                 {% for u in users %}
                 <tr>
+                    <td>{% if not u.is_staff %}<input type="checkbox" class="admin-bulk-row-check" value="{{ u.pk }}" aria-label="Select">{% endif %}</td>
                     <td><a href="{% url 'admin_panel:user_profile' u.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-link">{{ u.username }}</a></td>
                     <td>{{ u.email|default:"—" }}</td>
                     <td>{{ u.posts_count }}</td>
@@ -54,7 +56,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="6" class="admin-empty">No users.</td></tr>
+                <tr><td colspan="7" class="admin-empty">No users.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
