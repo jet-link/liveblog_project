@@ -47,6 +47,7 @@
 
   function openOverlay() {
     captureInitialOrder();
+    filterLikedUsers(searchInput?.value || '');
     updateListMaxHeight();
     overlay.classList.remove('hidden');
     overlay.setAttribute('aria-hidden', 'false');
@@ -106,9 +107,11 @@
     const exactMatches = [];
 
     items.forEach(function (item) {
-      const username = (item.getAttribute('data-like-user') || '').toLowerCase().trim();
+      const rawUsername = item.getAttribute('data-like-user') || '';
+      const username = rawUsername.toLowerCase().trim().replace(/\s+/g, ' ');
       const badge = item.querySelector('.custom_badge');
-      const label = (badge ? badge.textContent.trim().toLowerCase() : '');
+      const rawLabel = badge ? badge.textContent : '';
+      const label = rawLabel.trim().toLowerCase().replace(/\s+/g, ' ');
       const exact = q && (username === q || label === q);
       const partial = !q || username.indexOf(q) !== -1 || label.indexOf(q) !== -1;
 
@@ -125,7 +128,10 @@
     }
 
     items.forEach(function (item) {
-      item.style.display = toShow.indexOf(item) !== -1 ? 'flex' : 'none';
+      item.style.setProperty('display', 'none', 'important');
+    });
+    toShow.forEach(function (item) {
+      item.style.setProperty('display', 'flex', 'important');
     });
 
     if (q && toShow.length) {

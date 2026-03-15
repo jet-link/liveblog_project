@@ -522,7 +522,7 @@ html[data-theme="dark"] .block-quote {
     background: var(--card-bg);
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    padding: 15px;
+    /* padding: 15px; */
 }
 
 .liked-users-search-input {
@@ -533,13 +533,14 @@ html[data-theme="dark"] .block-quote {
 
 .liked-users-list-container {
     position: relative;
-    /* margin-top: 16px; */
     min-height: calc(80vh - 120px);
-    max-height: calc(80vh - 100px);
+    max-height: calc(80vh - 120px);
+    padding: 0 20px 20px 20px;
 }
 
 .liked-users-header{
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
+    padding: 20px 20px 0 20px;
 }
 
 .liked-users-list {

@@ -568,6 +568,8 @@ def item_detail(request, slug):
         Like.objects
         .filter(item=item)
         .select_related('user', 'user__profile')
+        .exclude(user__is_active=False)
+        .exclude(user__isnull=True)
         .order_by('-created_at')
     )
 
