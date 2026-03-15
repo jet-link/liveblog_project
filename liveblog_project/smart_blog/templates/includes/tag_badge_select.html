@@ -4,9 +4,9 @@
       <small>{{ form.tags.label }}</small>
       {% comment %} <button type="button" class="btn-tag-select-all small text-muted text-decoration-none border-0 bg-transparent" data-action="select">Select all</button> {% endcomment %}
     </legend>
-  <div class="tags-badge-wrap d-flex flex-wrap gap-1" data-field-name="{{ form.tags.html_name }}">
+  <div class="tags-badge-wrap d-flex flex-wrap gap-1 align-items-center" data-field-name="{{ form.tags.html_name }}">
     {% for tag in form.tags.field.queryset %}
-      <label class="badge bg-secondary tag-badge-option text-decoration-none mb-0 cursor-pointer{% if tag.pk in selected_tag_ids %} tag-badge-selected{% endif %}">
+      <label class="badge bg-secondary tag-badge-option text-decoration-none mb-0 cursor-pointer{% if tag.pk in selected_tag_ids %} tag-badge-selected{% endif %}{% if forloop.counter > 10 %} tag-badge-overflow d-none{% endif %}">
         <input type="checkbox" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="tag-badge-checkbox d-none"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
         {{ tag.tag_name }}
       </label>
@@ -14,6 +14,13 @@
       <span class="small text-muted">No existing tags. Add new ones below.</span>
     {% endfor %}
   </div>
+  {% with tag_count=form.tags.field.queryset.count %}
+  {% if tag_count > 10 %}
+  <div class="mt-2">
+    <button type="button" class="btn-tag-show-more" aria-expanded="false">More tags</button>
+  </div>
+  {% endif %}
+  {% endwith %}
   </fieldset>
 </div>
 <script>
@@ -22,12 +29,27 @@
   if (!wrap) return;
   var labels = wrap.querySelectorAll('.tag-badge-option');
   var toggleBtn = wrap.querySelector('.btn-tag-select-all');
+  var showMoreBtn = wrap.querySelector('.btn-tag-show-more');
+  var overflowLabels = wrap.querySelectorAll('.tag-badge-overflow');
+
   function updateToggleBtn() {
     var checkboxes = wrap.querySelectorAll('.tag-badge-checkbox');
     var anyUnchecked = Array.from(checkboxes).some(function(c) { return !c.checked; });
     if (toggleBtn) toggleBtn.textContent = anyUnchecked ? 'Select all' : 'Deselect all';
   }
   updateToggleBtn();
+
+  if (showMoreBtn && overflowLabels.length > 0) {
+    showMoreBtn.addEventListener('click', function() {
+      var expanded = showMoreBtn.getAttribute('aria-expanded') === 'true';
+      overflowLabels.forEach(function(lbl) {
+        lbl.classList.toggle('d-none', expanded);
+      });
+      showMoreBtn.textContent = expanded ? 'More tags' : 'Less tags';
+      showMoreBtn.setAttribute('aria-expanded', !expanded);
+    });
+  }
+
   labels.forEach(function(lbl) {
     lbl.addEventListener('click', function(e) {
       e.preventDefault();

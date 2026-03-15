@@ -1,10 +1,11 @@
-"""Signals to keep Item.likes_count, views_count, bookmarks_count in sync."""
-from django.db.models.signals import post_save, post_delete
+"""Signals to keep Item.likes_count, views_count, bookmarks_count, search_vector in sync."""
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from django.db.models import F
 from django.db.models.functions import Greatest
 
 from .models import Like, Item, ItemView, Bookmark, PostRepost
+from .search_utils import refresh_item_search_vector
 
 
 @receiver(post_save, sender=Like)
@@ -51,3 +52,21 @@ def bookmark_deleted(sender, instance, **kwargs):
 def repost_created(sender, instance, created, **kwargs):
     if created:
         Item.objects.filter(pk=instance.item_id).update(reposts_count=F('reposts_count') + 1)
+
+
+@receiver(post_save, sender=Item)
+def item_search_vector_sync(sender, instance, **kwargs):
+    """Ensure search_vector is populated so new/updated posts appear in search immediately."""
+    if instance.pk:
+        refresh_item_search_vector(instance.pk)
+
+
+@receiver(m2m_changed, sender=Item.tags.through)
+def item_tags_search_vector_sync(sender, instance, action, **kwargs):
+    """Refresh search_vector when tags are added/removed (M2M changes after initial save)."""
+    if action not in ('post_add', 'post_remove', 'post_clear'):
+        return
+    # instance is Item when using item.tags.add(); or through instance has item_id
+    item_id = getattr(instance, 'item_id', None) or getattr(instance, 'pk', None)
+    if item_id:
+        refresh_item_search_vector(item_id)

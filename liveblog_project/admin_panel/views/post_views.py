@@ -10,6 +10,7 @@ from admin_panel.decorators import admin_required
 from admin_panel.forms import ItemAdminEditForm, ItemAdminCreateForm
 from smart_blog.models import Item, Category, Tag, ItemImage
 from smart_blog.image_utils import process_image_legacy_safe
+from smart_blog.search_utils import refresh_item_search_vector
 
 MAX_IMAGES = 10
 
@@ -79,6 +80,7 @@ def post_create(request):
                 for tg in [t for t in re.split(r'\s+', new_tags_raw.strip()) if t]:
                     tag_obj, _ = Tag.objects.get_or_create(tag_name=tg)
                     item.tags.add(tag_obj)
+            refresh_item_search_vector(item.pk)
             for f in files[:MAX_IMAGES]:
                 if f:
                     processed = process_image_legacy_safe(f, item.pk)

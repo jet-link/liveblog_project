@@ -19,7 +19,7 @@ from .utils import count_convert, build_breadcrumbs, breadcrumb
 from .selectors import has_user_reported_item, has_user_reported_comment
 from .services.report_limits import can_user_report
 from .services.reports import ReportService
-from .search_utils import build_search_filter, apply_popular_filter
+from .search_utils import build_search_filter, apply_popular_filter, refresh_item_search_vector
 from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging
 import os
@@ -434,6 +434,9 @@ def create_item(request):
                 for tg in [t for t in re.split(r'\s+', new_tags_raw.strip()) if t]:
                     tag_obj, _ = Tag.objects.get_or_create(tag_name=tg)
                     item.tags.add(tag_obj)
+
+            # Ensure search_vector is populated so new posts appear in search immediately
+            refresh_item_search_vector(item.pk)
 
             for f in files[:MAX_IMAGES]:
                 processed = process_image_legacy_safe(f, item.pk)

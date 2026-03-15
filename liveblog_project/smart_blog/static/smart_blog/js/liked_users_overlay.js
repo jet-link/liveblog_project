@@ -9,8 +9,24 @@
   const backdrop = overlay?.querySelector('.liked-users-backdrop');
   const stack = document.querySelector('.liked-users-stack');
   const list = overlay?.querySelector('.liked-users-list');
+  const searchBtn = overlay?.querySelector('.users-search-btn');
+  const searchInput = overlay?.querySelector('.liked-users-search-input');
+  const emptyMsg = overlay?.querySelector('.liked-users-empty-msg');
   const current = document.getElementById('likedUsersCurrent');
+  let initialOrder = [];
   if (!overlay) return;
+
+  function captureInitialOrder() {
+    if (!list) return;
+    initialOrder = Array.from(list.querySelectorAll('.liked-users-item'));
+  }
+
+  function restoreInitialOrder() {
+    if (!list || !initialOrder.length) return;
+    initialOrder.forEach(function (item) {
+      list.appendChild(item);
+    });
+  }
 
   function updateListMaxHeight() {
     if (!list) return;
@@ -23,12 +39,14 @@
     const gap = parseFloat(styles.rowGap || styles.gap || 0) || 0;
     const itemHeight = sample.getBoundingClientRect().height || 0;
     if (!itemHeight) return;
-    const target = Math.round(itemHeight * 10 + gap * 9);
+    const paddingBottom = 16;
+    const target = Math.round(itemHeight * 10 + gap * 9) + paddingBottom;
     list.style.maxHeight = `${target}px`;
     list.style.overflowY = 'auto';
   }
 
   function openOverlay() {
+    captureInitialOrder();
     updateListMaxHeight();
     overlay.classList.remove('hidden');
     overlay.setAttribute('aria-hidden', 'false');
@@ -39,6 +57,11 @@
   function closeOverlay() {
     if (overlay.contains(document.activeElement)) {
       document.activeElement.blur();
+    }
+    if (searchInput && searchInput.style.display !== 'none') {
+      searchInput.style.display = 'none';
+      searchInput.value = '';
+      filterLikedUsers('');
     }
     overlay.classList.add('hidden');
     overlay.setAttribute('aria-hidden', 'true');
@@ -61,6 +84,87 @@
   });
   closeBtn?.addEventListener('click', closeOverlay);
   backdrop?.addEventListener('click', closeOverlay);
+
+  function showSearchInput() {
+    if (!searchInput) return;
+    searchInput.style.display = '';
+    searchInput.focus();
+  }
+
+  function hideSearchInput() {
+    if (!searchInput) return;
+    searchInput.style.display = 'none';
+    searchInput.value = '';
+    filterLikedUsers('');
+  }
+
+  function filterLikedUsers(query) {
+    if (!list) return;
+    const q = (query || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    const items = Array.from(list.querySelectorAll('.liked-users-item'));
+    const partialMatches = [];
+    const exactMatches = [];
+
+    items.forEach(function (item) {
+      const username = (item.getAttribute('data-like-user') || '').toLowerCase().trim();
+      const badge = item.querySelector('.custom_badge');
+      const label = (badge ? badge.textContent.trim().toLowerCase() : '');
+      const exact = q && (username === q || label === q);
+      const partial = !q || username.indexOf(q) !== -1 || label.indexOf(q) !== -1;
+
+      if (exact) exactMatches.push(item);
+      if (partial) partialMatches.push(item);
+    });
+
+    var toShow = [];
+    if (q) {
+      toShow = exactMatches.length > 0 ? exactMatches : partialMatches;
+    } else {
+      restoreInitialOrder();
+      toShow = items;
+    }
+
+    items.forEach(function (item) {
+      item.style.display = toShow.indexOf(item) !== -1 ? 'flex' : 'none';
+    });
+
+    if (q && toShow.length) {
+      for (var i = toShow.length - 1; i >= 0; i--) {
+        list.insertBefore(toShow[i], list.firstChild);
+      }
+    }
+
+    var noMatches = q && toShow.length === 0;
+    if (emptyMsg) {
+      emptyMsg.style.display = noMatches ? 'flex' : 'none';
+    }
+    list.style.display = noMatches ? 'none' : 'flex';
+  }
+
+  searchBtn?.addEventListener('click', function (e) {
+    e.stopPropagation();
+    showSearchInput();
+  });
+
+  searchInput?.addEventListener('input', function () {
+    filterLikedUsers(this.value);
+  });
+
+  searchInput?.addEventListener('focusout', function () {
+    setTimeout(function () {
+      if (!document.activeElement || !searchInput.contains(document.activeElement)) {
+        hideSearchInput();
+      }
+    }, 120);
+  });
+
+  overlay?.addEventListener('click', function (e) {
+    if (searchInput && searchInput.style.display !== 'none' &&
+        !searchInput.contains(e.target) && !searchBtn?.contains(e.target)) {
+      hideSearchInput();
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeOverlay();
   });
@@ -82,7 +186,7 @@
     const row = document.createElement('a');
     row.href = profileUrl || '#';
     row.className = 'liked-users-item d-flex align-items-center gap-2 text-decoration-none';
-    row.dataset.likeUser = username;
+    row.setAttribute('data-like-user', username);
     const avatarWrap = document.createElement('div');
     avatarWrap.className = 'liked-user-avatar little-avatar';
     const img = document.createElement('img');
@@ -101,12 +205,16 @@
     row.appendChild(avatarWrap);
     row.appendChild(badge);
     list.prepend(row);
+    initialOrder.unshift(row);
   }
 
   function removeListItem(username) {
     if (!list) return;
     const existing = list.querySelector(`[data-like-user="${username}"]`);
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      initialOrder = initialOrder.filter(function (item) { return item !== existing; });
+    }
   }
 
   function syncStackFromList() {

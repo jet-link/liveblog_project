@@ -73,9 +73,22 @@
           </div>
           <!-- Обрезанный текст, занимает доступное пространство -->
           <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-          {% comment %} <hr class="text-muted" /> {% endcomment %}
+
+        {% if item.tags.all %}
+          {% comment %} <small class="text-muted fw-semibold"><i class="fa fa-tags me-2"></i>Tags</small> {% endcomment %}
+          <div class="d-flex justify-content-end flex-wrap gap-1 mt-2">
+            {% for tag in item.tags.all %}
+              <a class="badge bg-secondary text-decoration-none" href="{% url 'smart_blog:tag_list' tag.slug %}">{{ tag.tag_name }}</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="d-inline-flex justify-content-end text-muted">
+            <small class="fw-semibold">No tags</small>
+          </div>
+        {% endif %}
+        <hr class="text-muted" />
           <!-- Нижняя панель — ссылка слева, лайки/закладки справа -->
-          <div class="d-flex justify-content-between align-items-center pt-2">
+          <div class="d-flex justify-content-between align-items-center pt-3">
             <!-- ! важно: добавил класс item-link и data-item-id (тот же id) -->
             {% if listing_source == 'profile' and listing_user and listing_section %}
               <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>

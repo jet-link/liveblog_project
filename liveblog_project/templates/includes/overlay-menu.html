@@ -12,8 +12,8 @@
   </div>
 
   <nav class="bottom-menu-nav">
-    <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}">BraiNews</a>
-    <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}">Popular</a>
+    <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
+    <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted">Popular</a>
     <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
     <a href="#" class="header-menu-item text-decoration-none text-muted">
       Сategories

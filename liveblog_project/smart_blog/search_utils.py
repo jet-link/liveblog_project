@@ -10,12 +10,30 @@ from functools import reduce
 from operator import or_
 
 from django.db import connection
-from django.db.models import Q, Value, FloatField, F
-from django.db.models.functions import Coalesce
+from django.db.models import Q
 
 
 def is_postgresql():
     return connection.vendor == 'postgresql'
+
+
+def refresh_item_search_vector(item_id):
+    """Update search_vector for Item (PostgreSQL FTS). Call after create/edit to ensure search works."""
+    if connection.vendor != 'postgresql':
+        return
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            UPDATE smart_blog_item SET search_vector = (
+                setweight(to_tsvector('simple', coalesce(title, '')), 'A') ||
+                setweight(to_tsvector('simple', coalesce(regexp_replace(text, '<[^>]+>', ' ', 'g'), '')), 'B') ||
+                setweight(to_tsvector('simple', coalesce(
+                    (SELECT string_agg(t.tag_name, ' ') FROM smart_blog_item_tags it
+                     JOIN smart_blog_tag t ON t.id = it.tag_id
+                     WHERE it.item_id = smart_blog_item.id),
+                    ''
+                )), 'C')
+            ) WHERE id = %s
+        """, [item_id])
 
 
 def _build_fts_query_with_prefix(q):
@@ -41,75 +59,49 @@ def _build_fts_query_with_prefix(q):
 def build_search_filter(qs, q, by_title, by_text, by_tags):
     """
     PostgreSQL FTS with field filtering: by_title, by_text, by_tags.
-    When all three are True, uses precomputed search_vector.
-    Otherwise builds tsvector from selected fields only (title, text, tags).
+    Always computes tsvector from selected fields (title, text, tags) so search
+    works for new posts even before search_vector is backfilled.
     Adds prefix matching so "universe" matches "universal" etc.
     """
     if not q or not (by_title or by_text or by_tags):
         return qs
 
     if is_postgresql():
-        try:
-            from django.contrib.postgres.search import SearchQuery, SearchRank
-        except ImportError:
-            return _search_icontains(qs, q, by_title, by_text, by_tags)
-
         raw_query = _build_fts_query_with_prefix(q)
         table = qs.model._meta.db_table
 
-        # When all fields selected — use stored search_vector (uses GIN index)
-        if by_title and by_text and by_tags:
-            try:
-                query = SearchQuery(raw_query, config='simple', search_type='raw')
-                qs = qs.annotate(
-                    rank=SearchRank(F('search_vector'), query),
-                )
-                qs = qs.filter(search_vector=query)
-            except Exception:
-                query = SearchQuery(q, config='simple', search_type='websearch')
-                qs = qs.annotate(
-                    rank=SearchRank(F('search_vector'), query),
-                )
-                qs = qs.filter(search_vector=query)
-        else:
-            # Build tsvector from selected fields only
-            vector_parts = []
-            if by_title:
-                vector_parts.append(
-                    "setweight(to_tsvector('simple', coalesce({0}.title, '')), 'A')"
-                    .format(table)
-                )
-            if by_text:
-                vector_parts.append(
-                    "setweight(to_tsvector('simple', coalesce(regexp_replace({0}.text, '<[^>]+>', ' ', 'g'), '')), 'B')"
-                    .format(table)
-                )
-            if by_tags:
-                vector_parts.append(
-                    "setweight(to_tsvector('simple', coalesce("
-                    "(SELECT string_agg(t.tag_name, ' ') FROM smart_blog_item_tags it "
-                    "JOIN smart_blog_tag t ON t.id = it.tag_id "
-                    "WHERE it.item_id = {0}.id), '')), 'C')"
-                    .format(table)
-                )
-            if not vector_parts:
-                return qs
-            vector_sql = ' || '.join(vector_parts)
-            try:
-                qs = qs.extra(
-                    where=["({0}) @@ to_tsquery('simple', %s)".format(vector_sql)],
-                    select={'rank': "ts_rank(({0}), to_tsquery('simple', %s))".format(vector_sql)},
-                    params=[raw_query, raw_query],
-                )
-                qs = qs.order_by('-rank', '-published_date')
-            except Exception:
-                qs = _search_icontains(qs, q, by_title, by_text, by_tags)
-
-        if by_title and by_text and by_tags:
-            qs = qs.order_by(
-                Coalesce('rank', Value(0.0), output_field=FloatField()).desc(nulls_last=True),
-                '-published_date',
+        # Build tsvector from selected fields (always compute — works even when search_vector is NULL)
+        vector_parts = []
+        if by_title:
+            vector_parts.append(
+                "setweight(to_tsvector('simple', coalesce({0}.title, '')), 'A')"
+                .format(table)
             )
+        if by_text:
+            vector_parts.append(
+                "setweight(to_tsvector('simple', coalesce(regexp_replace({0}.text, '<[^>]+>', ' ', 'g'), '')), 'B')"
+                .format(table)
+            )
+        if by_tags:
+            vector_parts.append(
+                "setweight(to_tsvector('simple', coalesce("
+                "(SELECT string_agg(t.tag_name, ' ') FROM smart_blog_item_tags it "
+                "JOIN smart_blog_tag t ON t.id = it.tag_id "
+                "WHERE it.item_id = {0}.id), '')), 'C')"
+                .format(table)
+            )
+        if not vector_parts:
+            return qs
+        vector_sql = ' || '.join(vector_parts)
+        try:
+            qs = qs.extra(
+                where=["({0}) @@ to_tsquery('simple', %s)".format(vector_sql)],
+                select={'rank': "ts_rank(({0}), to_tsquery('simple', %s))".format(vector_sql)},
+                params=[raw_query, raw_query],
+            )
+            qs = qs.order_by('-rank', '-published_date')
+        except Exception:
+            qs = _search_icontains(qs, q, by_title, by_text, by_tags)
     else:
         qs = _search_icontains(qs, q, by_title, by_text, by_tags)
 

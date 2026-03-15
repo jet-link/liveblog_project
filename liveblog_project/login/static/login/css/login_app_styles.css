@@ -525,13 +525,40 @@ html[data-theme="dark"] .block-quote {
     padding: 15px;
 }
 
+.liked-users-search-input {
+    min-width: 140px;
+    padding: 5px 12px;
+    font-size: .775rem;
+}
+
+.liked-users-list-container {
+    position: relative;
+    /* margin-top: 16px; */
+    min-height: calc(80vh - 120px);
+    max-height: calc(80vh - 100px);
+}
+
+.liked-users-header{
+    margin-bottom: 15px;
+}
+
 .liked-users-list {
-    margin-top: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: calc(80vh - 100px);
+    max-height: calc(80vh - 120px);
     overflow-y: auto;
+    padding-bottom: 16px;
+}
+
+.liked-users-empty-msg {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted, #6c757d);
+    font-size: 1rem;
 }
 
 .liked-users-item {
