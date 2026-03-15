@@ -72,7 +72,7 @@
         return btn ? btn.dataset.filter : null;
     }
 
-    const FILTER_TITLES = { liked: 'Liked', bookmarked: 'Marked' };
+    const FILTER_TITLES = { liked: 'Liked posts', bookmarked: 'Marked posts' };
 
     function setActiveFilter(value) {
         getFilterButtons().forEach(b => {
