@@ -161,11 +161,12 @@
       </div>
     </div>
     <hr />
-
-    {% if user.is_authenticated and user.is_staff and item.reports_count|default:0 >= 10 %}
+    {% if user.is_authenticated and user.is_staff %}
+      {% if item.reports_count|default:0 >= 10 or not item.author or item.author and not item.author.is_active %}
       <div class="d-flex justify-content-start align-items-center mb-3">
         <button type="button" class="cstm-btn custom-danger-btn cstm-btn-sm" data-bs-toggle="modal" data-bs-target="#confirmItemDeleteModal-{{ item.pk }}" aria-label="Delete post">Delete post</button>
       </div>
+      {% endif %}
     {% endif %}
 
     {% if user.is_authenticated %}

@@ -73,7 +73,7 @@
 
   function updateSearchWrapVisibility(count) {
     if (!searchWrap) return;
-    searchWrap.style.display = count > 5 ? '' : 'none';
+    searchWrap.style.display = count > 50 ? '' : 'none';
   }
 
   function openOverlay() {
@@ -330,7 +330,7 @@
     }
     var count = getLikedCount();
     updateSearchWrapVisibility(count);
-    if (count <= 5 && searchInput && searchInput.style.display !== 'none') {
+    if (count <= 50 && searchInput && searchInput.style.display !== 'none') {
       searchActiveWithMany = false;
       searchInput.style.display = 'none';
       searchInput.value = '';
