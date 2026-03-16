@@ -46,9 +46,7 @@
 <script>
 (function() {
   var statusUrl = "{% url 'admin_panel:backup_status' %}";
-  var downloadUrl = "{% url 'admin_panel:backup_download' 0 %}".replace('/0/', '/');
-  var restoreUrl = "{% url 'admin_panel:backup_restore' 0 %}".replace('/0/', '/');
-  var deleteUrl = "{% url 'admin_panel:backup_delete' 0 %}".replace('/0/', '/');
+  var backupBaseUrl = "{% url 'admin_panel:backup_download' 0 %}".replace(/\/0\/download\/?$/, '/');
   var table = document.querySelector('.admin-table');
   if (!table) return;
 
@@ -120,10 +118,10 @@
       if (actionsCell && !actionsCell.querySelector('a[href*="download"]')) {
         var id = tr.getAttribute('data-backup-id');
         var dl = document.createElement('a');
-        dl.href = downloadUrl + id + '/';
+        dl.href = backupBaseUrl + id + '/download/';
         dl.textContent = 'Download';
         var rst = document.createElement('a');
-        rst.href = restoreUrl + id + '/';
+        rst.href = backupBaseUrl + id + '/restore/';
         rst.textContent = 'Restore';
         actionsCell.insertBefore(rst, actionsCell.firstChild);
         actionsCell.insertBefore(dl, actionsCell.firstChild);

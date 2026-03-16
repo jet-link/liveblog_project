@@ -53,8 +53,22 @@
                 </div>
               </div>
               <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-              {% comment %} <hr class="text-muted" /> {% endcomment %}
-              <div class="d-flex justify-content-between align-items-center pt-2">
+
+              {% if item.tags.all %}
+                <div class="d-flex align-items-center flex-wrap gap-1 mt-2">
+                  <i class="fa fa-tags me-2 text-muted"></i>
+                  {% for tag in item.tags.all|slice:':5' %}
+                    <span class="badge bg-secondary text-decoration-none">{{ tag.tag_name }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="d-inline-flex text-muted">
+                  <small class="fw-semibold"><i class="fa fa-tags me-2"></i>No tags</small>
+                </div>
+              {% endif %}
+              <hr class="text-muted" />
+
+              <div class="d-flex justify-content-between align-items-center pt-3">
                 {% if listing_source == 'search' and listing_source_url and listing_query %}
                   <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
                 {% elif listing_source == 'tag' and listing_source_url and listing_tag %}
@@ -64,10 +78,6 @@
                 {% else %}
                   <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
                 {% endif %}
-                {% comment %} <div class="d-flex gap-2 item-stats">
-                  <span id="comments-count-{{ item.pk }}" class="text-muted">{{ item.comments_count|human }}</span>
-                  <span><i class="fa fa-comment" style="color: #b2bec3;"></i></span>
-                </div> {% endcomment %}
 
                 <div class="d-flex align-items-center VLB">
                   <div class="item-stats text-muted d-inline-flex align-items-center">

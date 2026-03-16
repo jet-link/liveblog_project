@@ -2,11 +2,10 @@
   <fieldset class="border-0 p-0 m-0">
     <legend class="form-label text-muted mb-1 d-flex justify-content-between align-items-center" style="width:100%;float:none;">
       <small>{{ form.tags.label }}</small>
-      {% comment %} <button type="button" class="btn-tag-select-all small text-muted text-decoration-none border-0 bg-transparent" data-action="select">Select all</button> {% endcomment %}
     </legend>
   <div class="tags-badge-wrap d-flex flex-wrap gap-1 align-items-center" data-field-name="{{ form.tags.html_name }}">
     {% for tag in form.tags.field.queryset %}
-      <label class="badge bg-secondary tag-badge-option text-decoration-none mb-0 cursor-pointer{% if tag.pk in selected_tag_ids %} tag-badge-selected{% endif %}{% if forloop.counter > 10 %} tag-badge-overflow d-none{% endif %}">
+      <label class="badge bg-secondary tag-badge-option text-decoration-none mb-0 cursor-pointer{% if tag.pk in selected_tag_ids %} tag-badge-selected{% endif %}{% if forloop.counter > 12 %} tag-badge-overflow d-none{% endif %}">
         <input type="checkbox" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="tag-badge-checkbox d-none"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
         {{ tag.tag_name }}
       </label>
@@ -15,9 +14,11 @@
     {% endfor %}
   </div>
   {% with tag_count=form.tags.field.queryset.count %}
-  {% if tag_count > 10 %}
-  <div class="mt-2">
+  {% if tag_count > 12 %}
+  <div class="d-flex align-items-center gap-2 mt-2">
     <button type="button" class="btn-tag-show-more" aria-expanded="false">More tags</button>
+    <span>-</span>
+    <button type="button" class="btn-tag-select-all small text-muted text-decoration-none border-0 p-0 bg-transparent" data-action="select">Select all</button>
   </div>
   {% endif %}
   {% endwith %}

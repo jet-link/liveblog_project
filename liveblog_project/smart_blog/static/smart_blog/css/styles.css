@@ -300,10 +300,8 @@ html[data-theme="dark"] .tag-badge-option.tag-badge-selected {
 
 .btn-tag-select-all {
     cursor: pointer;
-}
-
-.btn-tag-select-all:hover {
-    text-decoration: underline !important;
+    font-size: .8rem;
+    text-decoration: none;
 }
 
 /* ===== Category badge on cards and detail ===== */
