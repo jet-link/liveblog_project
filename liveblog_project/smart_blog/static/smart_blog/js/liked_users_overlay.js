@@ -10,11 +10,22 @@
   const stack = document.querySelector('.liked-users-stack');
   const list = overlay?.querySelector('.liked-users-list');
   const searchBtn = overlay?.querySelector('.users-search-btn');
+  const searchIcon = searchBtn?.querySelector('.users-search-icon, i');
   const searchInput = overlay?.querySelector('.liked-users-search-input');
   const emptyMsg = overlay?.querySelector('.liked-users-empty-msg');
+  const searchWrap = overlay?.querySelector('.liked-users-search-wrap');
+  const container = overlay?.querySelector('.liked-users-list-container');
   const current = document.getElementById('likedUsersCurrent');
+  const MAX_VISIBLE = 11;
+  const SEARCH_MIN_USERS = 6;
   let initialOrder = [];
+  let searchActiveWithMany = false; /* true when search open and count >= 6 */
   if (!overlay) return;
+
+  function getLikedCount() {
+    if (!list) return 0;
+    return list.querySelectorAll('.liked-users-item').length;
+  }
 
   function captureInitialOrder() {
     if (!list) return;
@@ -28,31 +39,56 @@
     });
   }
 
-  function updateListMaxHeight() {
-    if (!list) return;
+  function measureItemHeight() {
+    if (!list) return { itemHeight: 0, gap: 0 };
     const sample = list.querySelector('.liked-users-item');
-    if (!sample) {
-      list.style.maxHeight = '';
-      return;
-    }
+    if (!sample) return { itemHeight: 0, gap: 0 };
     const styles = window.getComputedStyle(list);
     const gap = parseFloat(styles.rowGap || styles.gap || 0) || 0;
     const itemHeight = sample.getBoundingClientRect().height || 0;
-    if (!itemHeight) return;
+    return { itemHeight, gap };
+  }
+
+  function updateModalHeight(count, forceSearchLock) {
+    if (!container || !list) return;
+    const lock = forceSearchLock || (searchActiveWithMany && count >= SEARCH_MIN_USERS);
+    let { itemHeight, gap } = measureItemHeight();
+    if (!itemHeight) {
+      itemHeight = 50;
+      gap = 10;
+    }
     const paddingBottom = 16;
-    const target = Math.round(itemHeight * 10 + gap * 9) + paddingBottom;
-    list.style.maxHeight = `${target}px`;
-    list.style.overflowY = 'auto';
+    const n = Math.min(count, MAX_VISIBLE);
+    let h = Math.round(itemHeight * n + gap * Math.max(0, n - 1) + paddingBottom);
+    if (lock) {
+      const minH = Math.round(itemHeight * SEARCH_MIN_USERS + gap * (SEARCH_MIN_USERS - 1) + paddingBottom);
+      h = Math.max(h, minH);
+    }
+    container.style.minHeight = h + 'px';
+    container.style.maxHeight = h + 'px';
+    list.style.minHeight = h + 'px';
+    list.style.maxHeight = h + 'px';
+    list.style.overflowY = count > MAX_VISIBLE ? 'auto' : 'visible';
+  }
+
+  function updateSearchWrapVisibility(count) {
+    if (!searchWrap) return;
+    searchWrap.style.display = count > 5 ? '' : 'none';
   }
 
   function openOverlay() {
     captureInitialOrder();
+    const count = getLikedCount();
+    updateSearchWrapVisibility(count);
     filterLikedUsers(searchInput?.value || '');
-    updateListMaxHeight();
+    searchActiveWithMany = false;
     overlay.classList.remove('hidden');
     overlay.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    requestAnimationFrame(function () {
+      updateModalHeight(count, false);
+    });
   }
 
   function closeOverlay() {
@@ -63,6 +99,7 @@
       searchInput.style.display = 'none';
       searchInput.value = '';
       filterLikedUsers('');
+      setSearchIcon(false);
     }
     overlay.classList.add('hidden');
     overlay.setAttribute('aria-hidden', 'true');
@@ -86,17 +123,34 @@
   closeBtn?.addEventListener('click', closeOverlay);
   backdrop?.addEventListener('click', closeOverlay);
 
+  function setSearchIcon(isOpen) {
+    var icon = searchIcon || searchBtn?.querySelector('i');
+    if (!icon) return;
+    icon.classList.remove('fa-search', 'fa-times');
+    icon.classList.add(isOpen ? 'fa-times' : 'fa-search');
+    if (searchBtn) {
+      searchBtn.setAttribute('aria-label', isOpen ? 'Close search' : 'Search');
+    }
+  }
+
   function showSearchInput() {
     if (!searchInput) return;
+    const count = getLikedCount();
+    if (count >= SEARCH_MIN_USERS) searchActiveWithMany = true;
     searchInput.style.display = '';
     searchInput.focus();
+    setSearchIcon(true);
+    updateModalHeight(count, searchActiveWithMany);
   }
 
   function hideSearchInput() {
     if (!searchInput) return;
+    searchActiveWithMany = false;
     searchInput.style.display = 'none';
     searchInput.value = '';
     filterLikedUsers('');
+    setSearchIcon(false);
+    updateModalHeight(getLikedCount(), false);
   }
 
   function filterLikedUsers(query) {
@@ -145,30 +199,22 @@
       emptyMsg.style.display = noMatches ? 'flex' : 'none';
     }
     list.style.display = noMatches ? 'none' : 'flex';
+
+    var count = getLikedCount();
+    updateModalHeight(count, searchActiveWithMany && count >= SEARCH_MIN_USERS);
   }
 
   searchBtn?.addEventListener('click', function (e) {
     e.stopPropagation();
-    showSearchInput();
+    if (searchInput && searchInput.style.display !== 'none') {
+      hideSearchInput();
+    } else {
+      showSearchInput();
+    }
   });
 
   searchInput?.addEventListener('input', function () {
     filterLikedUsers(this.value);
-  });
-
-  searchInput?.addEventListener('focusout', function () {
-    setTimeout(function () {
-      if (!document.activeElement || !searchInput.contains(document.activeElement)) {
-        hideSearchInput();
-      }
-    }, 120);
-  });
-
-  overlay?.addEventListener('click', function (e) {
-    if (searchInput && searchInput.style.display !== 'none' &&
-        !searchInput.contains(e.target) && !searchBtn?.contains(e.target)) {
-      hideSearchInput();
-    }
   });
 
   document.addEventListener('keydown', (e) => {
@@ -182,7 +228,7 @@
   window.addEventListener('pagehide', closeOverlay);
   window.addEventListener('pageshow', closeOverlay);
   window.addEventListener('resize', () => {
-    updateListMaxHeight();
+    updateModalHeight(getLikedCount(), searchActiveWithMany);
   });
 
   function upsertListItem(username, avatarUrl, profileUrl) {
@@ -282,6 +328,15 @@
     if (typeof data.likes_count === 'number') {
       updateButtonVisibility(data.likes_count);
     }
-    updateListMaxHeight();
+    var count = getLikedCount();
+    updateSearchWrapVisibility(count);
+    if (count <= 5 && searchInput && searchInput.style.display !== 'none') {
+      searchActiveWithMany = false;
+      searchInput.style.display = 'none';
+      searchInput.value = '';
+      filterLikedUsers('');
+      setSearchIcon(false);
+    }
+    updateModalHeight(count, searchActiveWithMany);
   };
 })();

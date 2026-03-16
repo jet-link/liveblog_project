@@ -106,10 +106,14 @@
           <div id="likedUsersStackTrigger" class="liked-users-stack d-flex align-items-center" role="button" tabindex="0" title="View liked users">
             {% for like in liked_users|slice:':5' %}
               <span class="liked-user-avatar little-avatar" title="{{ like.user.username }}">
-                {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
-                  <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                {% if like.user.is_active %}
+                  {% if like.user.profile.avatar_url or like.user.profile.avatar_file %}
+                    <img src="{{ like.user.profile.get_avatar }}" alt="{{ like.user.username }}" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% else %}
+                    <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% endif %}
                 {% else %}
-                  <img src="{% static 'img/no_avatar.svg' %}" alt="{{ like.user.username }}" class="user-avatar no_avatar" width="30" height="30" loading="lazy" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="lazy" decoding="async" />
                 {% endif %}
               </span>
             {% endfor %}
