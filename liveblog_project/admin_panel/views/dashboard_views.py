@@ -31,7 +31,7 @@ def dashboard_view(request):
 
     # Today stats
     posts_today = Item.objects.filter(published_date__date=today).count()
-    users_today = User.objects.filter(date_joined__date=today).count()
+    users_today = User._base_manager.filter(date_joined__date=today).count()
     comments_today = Comment.objects.filter(created__date=today).count()
     reports_today = ContentReport.objects.filter(created_at__date=today).count()
 

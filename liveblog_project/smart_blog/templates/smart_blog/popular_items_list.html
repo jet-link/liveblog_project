@@ -17,9 +17,6 @@
       <div id="filterCardsWrapper" class="brainews-cards-wrapper">
         {% include 'includes/all_cards.html' with listing_source='popular' listing_source_url=request.get_full_path %}
       </div>
-      <div id="itemsListPagination" class="brainews-pagination filter-pagination-extra">
-        {% include 'includes/pagination.html' %}
-      </div>
     {% else %}
       <h5 class="text-muted pt-4">There are no popular posts yet.</h5>
     {% endif %}

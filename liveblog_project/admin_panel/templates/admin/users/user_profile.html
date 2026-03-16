@@ -30,7 +30,7 @@
         {% for p in posts %}
         <li>{% if p.is_published %}<a href="{% url 'smart_blog:item_detail' p.slug %}" class="admin-profile-link">{{ p.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ p.title }}</span>{% endif %}</li>
         {% empty %}
-        <li>No posts.</li>
+        <li>No posts yet.</li>
         {% endfor %}
     </ul>
 </div>
@@ -39,9 +39,9 @@
     <h3>Recent Comments</h3>
     <ul class="admin-profile-list">
         {% for c in comments %}
-        <li><span class="admin-profile-comment">{{ c.text|strip_mentions|truncatewords:12 }}</span> on {% if c.item.is_published %}<a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ c.item.title }}</span>{% endif %}</li>
+        <li><blockquote class="admin-comment-blockquote">{{ c.text|strip_mentions|truncatewords:12 }}</blockquote> on {% if c.item.is_published %}<a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ c.item.title }}</span>{% endif %}</li>
         {% empty %}
-        <li>No comments.</li>
+        <li>No comments yet.</li>
         {% endfor %}
     </ul>
 </div>

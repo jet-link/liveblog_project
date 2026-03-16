@@ -365,11 +365,13 @@
 .ck .ck-balloon-panel{display: none !important;}
 
 /* Bulk delete/clear button - responsive */
-.admin-bulk-delete-form, .admin-bulk-clear-form { display: inline-flex; }
+.admin-bulk-delete-form, .admin-bulk-clear-form, .admin-bulk-unban-form, .admin-bulk-ban-form { display: inline-flex; }
 @media (max-width: 1019px) {
-  .admin-bulk-delete-form, .admin-bulk-clear-form { width: 100%; display: flex; }
+  .admin-bulk-delete-form, .admin-bulk-clear-form, .admin-bulk-unban-form, .admin-bulk-ban-form { width: 100%; display: flex; }
   .admin-bulk-delete-form .admin-bulk-delete-btn,
-  .admin-bulk-clear-form .admin-bulk-clear-btn { width: 100%;}
+  .admin-bulk-clear-form .admin-bulk-clear-btn,
+  .admin-bulk-unban-form .admin-bulk-unban-btn,
+  .admin-bulk-ban-form .admin-bulk-ban-btn { width: 100%;}
 }
 
 /* ========== RESPONSIVE ========== */

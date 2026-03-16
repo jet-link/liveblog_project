@@ -649,7 +649,7 @@ html[data-theme="dark"] .item-text.ck-content td {
     color: var(--text-default);
     background: transparent;
     border: 1px solid var(--border-default);
-    border-radius: var(--btn-radius, 8px);
+    border-radius: 999px;
     text-decoration: none;
     transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }

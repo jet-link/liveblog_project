@@ -44,6 +44,10 @@
                 <i class="admin-nav-icon fa-solid fa-user-slash"></i>
                 <span class="admin-nav-text">Banned</span>
             </a>
+            <a href="{% url 'admin_panel:recently_deleted' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'recently_deleted' %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-user-minus"></i>
+                <span class="admin-nav-text">Deleted</span>
+            </a>
         </div>
 
         <div class="admin-nav-group">

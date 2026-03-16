@@ -61,19 +61,22 @@
     });
   }
 
+  var BULK_ACTIONS = [
+    { attr: 'data-bulk-unban-url', formClass: 'admin-bulk-unban-form', btnClass: 'admin-bulk-unban-btn', btnText: 'Unban', btnStyle: 'admin-button-primary', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to unban this user?' : 'Are you sure you want to unban ' + n + ' users?'; }, confirmText: 'Unban' },
+    { attr: 'data-bulk-ban-url', formClass: 'admin-bulk-ban-form', btnClass: 'admin-bulk-ban-btn', btnText: 'Ban', btnStyle: 'admin-button-warning', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to ban this user?' : 'Are you sure you want to ban ' + n + ' users?'; }, confirmText: 'Ban' },
+    { attr: 'data-bulk-delete-url', formClass: 'admin-bulk-delete-form', btnClass: 'admin-bulk-delete-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to delete this item?' : 'Are you sure you want to delete ' + n + ' items?'; }, confirmText: 'Delete' },
+    { attr: 'data-bulk-clear-url', formClass: 'admin-bulk-clear-form', btnClass: 'admin-bulk-clear-btn', btnText: 'Clear', btnStyle: 'admin-button-danger', modalTitle: function() { return 'Are you sure about cleaning?'; }, confirmText: 'Clear' }
+  ];
+
   function init() {
     initBulkDeleteModal();
-    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url]');
+    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url], .admin-table[data-bulk-unban-url], .admin-table[data-bulk-ban-url]');
     tables.forEach(function(table) {
       setupTable(table);
     });
   }
 
   function setupTable(table) {
-    var bulkUrl = table.getAttribute('data-bulk-delete-url') || table.getAttribute('data-bulk-clear-url');
-    var isClear = !!table.getAttribute('data-bulk-clear-url');
-    if (!bulkUrl) return;
-
     var selectAll = table.querySelector('.admin-bulk-select-all');
     var rowChecks = table.querySelectorAll('.admin-bulk-row-check');
     var card = table.closest('.admin-card');
@@ -86,53 +89,6 @@
     }
     if (!toolbar) return;
 
-    var formClass = isClear ? 'admin-bulk-clear-form' : 'admin-bulk-delete-form';
-    var btnClass = isClear ? 'admin-bulk-clear-btn' : 'admin-bulk-delete-btn';
-    var form = toolbar.querySelector('form.' + formClass);
-    if (!form) {
-      form = document.createElement('form');
-      form.method = 'post';
-      form.action = bulkUrl + (window.location.search ? window.location.search : '');
-      form.className = formClass;
-      form.style.display = 'inline';
-      var csrf = document.createElement('input');
-      csrf.type = 'hidden';
-      csrf.name = 'csrfmiddlewaretoken';
-      csrf.value = getCsrfToken();
-      form.appendChild(csrf);
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'admin-button admin-button-danger ' + btnClass;
-      btn.style.display = 'none';
-      btn.textContent = isClear ? 'Clear' : 'Delete';
-      form.appendChild(btn);
-      toolbar.appendChild(form);
-
-      btn.addEventListener('click', function() {
-        var ids = getSelectedIds(table);
-        if (ids.length === 0) return;
-        var modalOpts = isClear ? { title: 'Are you sure about cleaning?', confirmText: 'Clear' } : null;
-        openBulkModal(ids.length, function() {
-          var container = form.querySelector('.admin-bulk-ids');
-          if (container) container.remove();
-          container = document.createElement('div');
-          container.className = 'admin-bulk-ids';
-          container.style.display = 'none';
-          ids.forEach(function(id) {
-            var inp = document.createElement('input');
-            inp.type = 'hidden';
-            inp.name = 'ids';
-            inp.value = id;
-            container.appendChild(inp);
-          });
-          form.appendChild(container);
-          form.submit();
-        }, modalOpts);
-      });
-    }
-
-    var deleteBtn = form.querySelector('.' + btnClass);
-
     function getSelectedIds(tbl) {
       var ids = [];
       tbl.querySelectorAll('.admin-bulk-row-check:checked').forEach(function(cb) {
@@ -142,10 +98,60 @@
       return ids;
     }
 
-    function updateDeleteButton() {
+    function updateAllButtons() {
       var ids = getSelectedIds(table);
-      deleteBtn.style.display = ids.length > 0 ? '' : 'none';
+      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-ban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn').forEach(function(btn) {
+        btn.style.display = ids.length > 0 ? '' : 'none';
+      });
     }
+
+    BULK_ACTIONS.forEach(function(action) {
+      var bulkUrl = table.getAttribute(action.attr);
+      if (!bulkUrl) return;
+
+      var form = toolbar.querySelector('form.' + action.formClass);
+      if (!form) {
+        form = document.createElement('form');
+        form.method = 'post';
+        form.action = bulkUrl + (window.location.search ? window.location.search : '');
+        form.className = action.formClass;
+        form.style.display = 'inline';
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        csrf.value = getCsrfToken();
+        form.appendChild(csrf);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'admin-button ' + action.btnStyle + ' ' + action.btnClass;
+        btn.style.display = 'none';
+        btn.textContent = action.btnText;
+        form.appendChild(btn);
+        toolbar.appendChild(form);
+
+        btn.addEventListener('click', function() {
+          var ids = getSelectedIds(table);
+          if (ids.length === 0) return;
+          openBulkModal(ids.length, function() {
+            var container = form.querySelector('.admin-bulk-ids');
+            if (container) container.remove();
+            container = document.createElement('div');
+            container.className = 'admin-bulk-ids';
+            container.style.display = 'none';
+            ids.forEach(function(id) {
+              var inp = document.createElement('input');
+              inp.type = 'hidden';
+              inp.name = 'ids';
+              inp.value = id;
+              container.appendChild(inp);
+            });
+            form.appendChild(container);
+            form.submit();
+          }, { title: action.modalTitle(ids.length), confirmText: action.confirmText });
+        });
+      }
+
+    });
 
     if (selectAll) {
       selectAll.addEventListener('change', function() {
@@ -156,15 +162,14 @@
         checkboxes.forEach(function(cb) {
           cb.checked = selectAll.checked;
         });
-        updateDeleteButton();
+        updateAllButtons();
       });
     }
-
     rowChecks.forEach(function(cb) {
-      cb.addEventListener('change', updateDeleteButton);
+      cb.addEventListener('change', updateAllButtons);
     });
 
-    updateDeleteButton();
+    updateAllButtons();
   }
 
   if (document.readyState === 'loading') {

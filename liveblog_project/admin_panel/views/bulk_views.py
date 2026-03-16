@@ -79,6 +79,8 @@ def users_bulk_delete(request):
             pk_int = int(pk)
             user = User.objects.filter(pk=pk_int).first()
             if user and not user.is_staff and not user.is_superuser and user != request.user:
+                from admin_panel.models import DeletedUserLog
+                DeletedUserLog.objects.create(username=user.username, deleted_by=request.user)
                 user.delete()
                 deleted += 1
         except (ValueError, TypeError):
@@ -86,6 +88,28 @@ def users_bulk_delete(request):
     if deleted:
         messages.success(request, f'{deleted} user(s) deleted.')
     return _redirect_with_qs('users_list', request)
+
+
+@admin_required
+def banned_users_bulk_unban(request):
+    """Bulk unban users (set is_active=True)."""
+    if request.method != 'POST':
+        return redirect('admin_panel:banned_users')
+    ids = _get_ids(request)
+    unbanned = 0
+    for pk in ids:
+        try:
+            pk_int = int(pk)
+            user = User.objects.filter(pk=pk_int, is_active=False).first()
+            if user:
+                user.is_active = True
+                user.save()
+                unbanned += 1
+        except (ValueError, TypeError):
+            pass
+    if unbanned:
+        messages.success(request, f'{unbanned} user(s) unbanned.')
+    return redirect('admin_panel:banned_users')
 
 
 @admin_required
@@ -100,6 +124,8 @@ def banned_users_bulk_delete(request):
             pk_int = int(pk)
             user = User.objects.filter(pk=pk_int).first()
             if user and not user.is_staff and not user.is_superuser and user != request.user:
+                from admin_panel.models import DeletedUserLog
+                DeletedUserLog.objects.create(username=user.username, deleted_by=request.user)
                 user.delete()
                 deleted += 1
         except (ValueError, TypeError):
@@ -107,6 +133,51 @@ def banned_users_bulk_delete(request):
     if deleted:
         messages.success(request, f'{deleted} user(s) deleted.')
     return redirect('admin_panel:banned_users')
+
+
+@admin_required
+def deleted_logs_bulk_delete(request):
+    """Bulk delete DeletedUserLog records (remove from Recently deleted list)."""
+    if request.method != 'POST':
+        return redirect('admin_panel:recently_deleted')
+    ids = _get_ids(request)
+    valid_ids = []
+    for x in ids:
+        try:
+            valid_ids.append(int(x))
+        except (ValueError, TypeError):
+            pass
+    from admin_panel.models import DeletedUserLog
+    deleted = DeletedUserLog.objects.filter(pk__in=valid_ids).delete()[0]
+    if deleted:
+        messages.success(request, f'{deleted} record(s) deleted.')
+    url = reverse('admin_panel:recently_deleted')
+    qs = request.GET.urlencode()
+    if qs:
+        url += '?' + qs
+    return redirect(url)
+
+
+@admin_required
+def users_bulk_ban(request):
+    """Bulk ban users (set is_active=False). Skips staff, superuser, self."""
+    if request.method != 'POST':
+        return redirect('admin_panel:users_list')
+    ids = _get_ids(request)
+    banned = 0
+    for pk in ids:
+        try:
+            pk_int = int(pk)
+            user = User.objects.filter(pk=pk_int).first()
+            if user and not user.is_staff and not user.is_superuser and user != request.user and user.is_active:
+                user.is_active = False
+                user.save()
+                banned += 1
+        except (ValueError, TypeError):
+            pass
+    if banned:
+        messages.success(request, f'{banned} user(s) banned.')
+    return _redirect_with_qs('users_list', request)
 
 
 @admin_required

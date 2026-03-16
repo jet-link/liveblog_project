@@ -62,3 +62,12 @@ def mention_names(text):
 
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     return MENTION_RE.sub(repl, text)
+
+
+@register.filter
+def mention_first_id(text):
+    """Extract first @[user:ID]'s user id for edit form (to preserve mention on save)."""
+    if not text:
+        return ""
+    m = MENTION_RE.search(text.replace('\r\n', '\n').replace('\r', '\n'))
+    return m.group(1) if m else ""

@@ -1,7 +1,7 @@
 {# includes/_comment.html #}
 {% load static %}
 {% load mentions %}
-<div id="comment-{{ comment.pk }}" class="py-3 comment-block comment-card" data-reply-url="{% url 'smart_blog:add_comment' comment.item.slug %}" data-thread-url="{% url 'smart_blog:comment_thread' comment.pk %}" data-depth="{{ depth|default:0 }}" data-raw-html="{{ comment.text|escape }}">
+<div id="comment-{{ comment.pk }}" class="py-3 comment-block comment-card" data-reply-url="{% url 'smart_blog:add_comment' comment.item.slug %}" data-thread-url="{% url 'smart_blog:comment_thread' comment.pk %}" data-depth="{{ depth|default:0 }}" data-raw-html="{{ comment.text|escape }}" data-edit-text="{{ comment.text|mention_names|escape }}" data-mention-id="{{ comment.text|mention_first_id }}">
   <span class="comment-anchor" id="comment-anchor-{{ comment.pk }}"></span>
 
   {% if comment.author %}
@@ -40,9 +40,7 @@
                 <div class="comment-actions">
                   <i class="fa fa-angle-right mx-1 success_"></i>
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
-                  {% if comment.parent is None %}
-                    <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
-                  {% endif %}
+                  <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
                   <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
                 </div>
               </div>
@@ -187,7 +185,7 @@
           <i class="fa fa-calendar-check-o me-1"></i>
           {{ comment.human_published }}
         </span>
-        {% if comment.parent is None and comment.is_edited %}
+        {% if comment.is_edited %}
           <span>/</span>
           <span class="primary_ fw-semibold">Edited</span>
           {% if just_edited %}

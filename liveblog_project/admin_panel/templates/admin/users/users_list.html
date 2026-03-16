@@ -19,7 +19,7 @@
 
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:users_bulk_delete' %}">
+        <table class="admin-table" data-bulk-ban-url="{% url 'admin_panel:users_bulk_ban' %}" data-bulk-delete-url="{% url 'admin_panel:users_bulk_delete' %}">
             <thead>
                 <tr>
                     <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
@@ -27,6 +27,7 @@
                     <th>Email</th>
                     <th>Posts</th>
                     <th>Comments</th>
+                    <th>Joined</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -39,6 +40,7 @@
                     <td>{{ u.email|default:"—" }}</td>
                     <td>{{ u.posts_count }}</td>
                     <td>{{ u.comments_count }}</td>
+                    <td>{{ u.date_joined|date:"M d, Y" }}</td>
                     <td><span class="admin-badge {% if u.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if u.is_active %}Active{% else %}Banned{% endif %}</span></td>
                     <td class="admin-actions-cell">
                         <div class="admin-dropdown">
@@ -56,7 +58,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" class="admin-empty">No users.</td></tr>
+                <tr><td colspan="8" class="admin-empty">No users.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -829,6 +829,7 @@
     const originalHtml = body.innerHTML;
     const textDiv = body.querySelector('.comment-text');
     const rawHtml = commentNode.dataset.rawHtml || '';
+    const editText = commentNode.dataset.editText || '';
 
     const decodeHtml = (value) => {
       if (!value) return '';
@@ -840,8 +841,8 @@
     const displayHtml =
       textDiv?.dataset.fullHtml || textDiv?.innerHTML || '';
     const fullHtml =
-      decodeHtml(rawHtml) || displayHtml;
-    if (fullHtml && !commentNode.dataset.rawHtml) {
+      editText ? decodeHtml(editText) : (decodeHtml(rawHtml) || displayHtml);
+    if (fullHtml && !commentNode.dataset.rawHtml && !editText) {
       commentNode.dataset.rawHtml = fullHtml;
     }
     // cache rendered html for restore after cancel
@@ -883,8 +884,12 @@
     textarea.placeholder = 'Edited text';
     textarea.value = originalText;
 
+    const mentionId = commentNode.dataset.mentionId || '';
     if (mention) {
       textarea.dataset.mention = mention;
+    }
+    if (mentionId) {
+      textarea.dataset.mentionId = mentionId;
     }
 
     const label = document.createElement('label');
@@ -955,8 +960,13 @@
         return;
       }
 
+      const mentionId = textarea.dataset.mentionId;
       const mention = textarea.dataset.mention;
-      if (mention) {
+      if (mentionId && mention) {
+        text = text.replace(new RegExp('@' + mention.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g'), '@[user:' + mentionId + ']');
+      } else if (mentionId && !mention) {
+        text = `@[user:${mentionId}], ${text}`;
+      } else if (mention) {
         text = `@${mention}, ${text}`;
       }
 

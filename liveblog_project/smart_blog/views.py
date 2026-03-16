@@ -77,10 +77,11 @@ def items_list(request):
 
 
 def items_popular_list(request):
-    """Public page: popular posts (time-decayed popularity, min 6 likes)."""
+    """Public page: top 20 popular posts from the last 15 days (no pagination)."""
+    since = timezone.now() - timedelta(days=15)
     qs = (
         Item.objects
-        .filter(is_published=True)
+        .filter(is_published=True, published_date__gte=since)
         .with_counters()
         .select_related("category")
         .prefetch_related("images")
@@ -88,25 +89,14 @@ def items_popular_list(request):
     qs = apply_popular_filter(qs)
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
-
-    paginator = Paginator(qs, 40)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    page_range = paginator.get_elided_page_range(
-        number=page_obj.number,
-        on_each_side=1,
-        on_ends=1
-    )
+    items = list(qs[:20])
 
     breadcrumbs = build_breadcrumbs(
         breadcrumb("Popular", None),
     )
 
     return render(request, "smart_blog/popular_items_list.html", {
-        "page_obj": page_obj,
-        "page_range": page_range,
-        "items": page_obj.object_list,
+        "items": items,
         "breadcrumbs": breadcrumbs,
     })
 

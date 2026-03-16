@@ -24,8 +24,8 @@ def get_activity_chart_data(days=14):
     ).values('date').annotate(count=Count('pk')).order_by('date')
     comments_map = {str(c['date']): c['count'] for c in comments}
 
-    # Users per day
-    users = User.objects.filter(date_joined__gte=since).annotate(
+    # Users per day (use _base_manager to include all, including inactive)
+    users = User._base_manager.filter(date_joined__gte=since).annotate(
         date=TruncDate('date_joined')
     ).values('date').annotate(count=Count('pk')).order_by('date')
     users_map = {str(u['date']): u['count'] for u in users}

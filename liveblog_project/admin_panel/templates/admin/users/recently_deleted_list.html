@@ -1,0 +1,48 @@
+{% extends 'admin/layout/base.html' %}
+
+{% block title %}Recently Deleted{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}">Users</a></li><li class="admin-breadcrumbs-item">Recently deleted</li></ol></nav>{% endblock %}
+{% block page_title %}Recently Deleted{% endblock %}
+
+{% block content %}
+<div class="admin-toolbar">
+    <form class="admin-search-form" method="get" action="{% url 'admin_panel:recently_deleted' %}">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search deleted users..." class="admin-input admin-search-input">
+        <button type="submit" class="admin-button">Search</button>
+    </form>
+</div>
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table" data-bulk-delete-url="{% url 'admin_panel:deleted_logs_bulk_delete' %}">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
+                    <th>Name of user</th>
+                    <th>Date of deletion</th>
+                    <th>Who deleted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ log.pk }}" aria-label="Select"></td>
+                    <td>{{ log.username }}</td>
+                    <td>{{ log.deleted_at|date:"M d, Y H:i" }}</td>
+                    <td>{% if log.deleted_by %}<span class="admin-badge admin-badge-danger">{{ log.deleted_by.username }}</span>{% else %}—{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="admin-empty">No recently deleted users.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ logs.paginator.count }}</div>
+    {% if logs.has_other_pages %}
+    <div class="admin-pagination">
+        {% if logs.has_previous %}<a href="?page={{ logs.previous_page_number }}{% if search %}&q={{ search }}{% endif %}" class="admin-button admin-button-sm">Previous</a>{% endif %}
+        <span class="admin-pagination-info">Page {{ logs.number }} of {{ logs.paginator.num_pages }}</span>
+        {% if logs.has_next %}<a href="?page={{ logs.next_page_number }}{% if search %}&q={{ search }}{% endif %}" class="admin-button admin-button-sm">Next</a>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

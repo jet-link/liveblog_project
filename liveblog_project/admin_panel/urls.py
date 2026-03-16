@@ -25,11 +25,15 @@ urlpatterns = [
     # Users
     path('users/', views.users_list, name='users_list'),
     path('users/banned/', views.banned_users_list, name='banned_users'),
+    path('users/recently-deleted/', views.recently_deleted_list, name='recently_deleted'),
+    path('users/recently-deleted/bulk-delete/', views.deleted_logs_bulk_delete, name='deleted_logs_bulk_delete'),
     path('users/<int:pk>/', views.user_profile, name='user_profile'),
     path('users/<int:pk>/ban/', views.user_ban, name='user_ban'),
     path('users/<int:pk>/unban/', views.user_unban, name='user_unban'),
     path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
     path('users/bulk-delete/', views.users_bulk_delete, name='users_bulk_delete'),
+    path('users/bulk-ban/', views.users_bulk_ban, name='users_bulk_ban'),
+    path('users/banned/bulk-unban/', views.banned_users_bulk_unban, name='banned_users_bulk_unban'),
     path('users/banned/bulk-delete/', views.banned_users_bulk_delete, name='banned_users_bulk_delete'),
 
     # Categories
