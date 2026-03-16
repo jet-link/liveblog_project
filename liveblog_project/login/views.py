@@ -19,6 +19,45 @@ from smart_blog.utils import count_convert, build_breadcrumbs, breadcrumb, strip
 from smart_blog.models import Notification
 from django.core.exceptions import PermissionDenied
 from login.middleware import is_user_online, clear_user_online
+import random
+
+FUNNY_NAMES = [
+    "Bobby McWobble",
+    "Lars von Pickle",
+    "Giuseppe Spaghettini",
+    "Hiroshi Banana",
+    "Pierre Baguettino",
+    "Olga Vodkanova",
+    "Sven Snowbeard",
+    "Carlos Jalapeno",
+    "Nigel Wiggletop",
+    "Fatima Moonshine",
+    "Dmitri Thunderpants",
+    "Ahmed Falafelson",
+    "Hans Pretzelberg",
+    "Juan Burritowski",
+    "Luca Mozzarelli",
+    "Ivan Gigglevich",
+    "Akira Sushiroll",
+    "Pedro Mangopez",
+    "Tariq Sandstorm",
+    "Bruno Pastaferro",
+    "Yuki Bubbletea",
+    "Boris Pickleman",
+    "Ali Kebabzade",
+    "Marco Pizzaio",
+    "Satoshi Pixelman",
+    "Enzo Raviolini",
+    "Abdul Giggleton",
+    "Diego Nachozilla",
+    "Gustav Schnitzelmann",
+    "Vladimir Chucklev",
+]
+
+
+def _random_vanished_name():
+    """Return a random funny name for vanished user display."""
+    return random.choice(FUNNY_NAMES)
 
 
 def annotate_user_liked(qs, user):
@@ -66,9 +105,10 @@ def vanished_generic_view(request):
 
     apply_human_counts(created_items)
 
+    vanished_name = _random_vanished_name()
     breadcrumbs = build_breadcrumbs(
         breadcrumb("BraiNews", reverse("smart_blog:items_list")),
-        breadcrumb("Vanished user", None),
+        breadcrumb(vanished_name, None),
     )
     context = {
         "created_items": created_items,
@@ -76,6 +116,7 @@ def vanished_generic_view(request):
         "view_all_url": reverse("login_app:vanished-created"),
         "listing_source": "vanished",
         "breadcrumbs": breadcrumbs,
+        "vanished_display_name": vanished_name,
     }
     return render(request, "includes/vanished.html", context)
 
@@ -135,9 +176,10 @@ def user_not_found_view(request, user_obj):
         "section": "created",
     })
 
+    vanished_name = _random_vanished_name()
     breadcrumbs = build_breadcrumbs(
         breadcrumb("BraiNews", reverse("smart_blog:items_list")),
-        breadcrumb("Vanished user", None),
+        breadcrumb(vanished_name, None),
     )
 
     context = {
@@ -148,6 +190,7 @@ def user_not_found_view(request, user_obj):
         "listing_user": user_obj.username,
         "listing_section": "created",
         "breadcrumbs": breadcrumbs,
+        "vanished_display_name": vanished_name,
     }
     return render(request, "includes/vanished.html", context)
 
