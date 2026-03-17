@@ -6,3 +6,6 @@ django-translit
 Pillow
 whitenoise
 djangorestframework
+detoxify
+torch
+transformers

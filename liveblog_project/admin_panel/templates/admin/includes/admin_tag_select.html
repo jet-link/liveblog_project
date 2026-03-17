@@ -1,7 +1,6 @@
 <div class="admin-tags-select admin-form-group">
-    <fieldset class="admin-tags-fieldset">
-        <legend class="admin-tags-legend">{{ form.tags.label }}</legend>
-        <div class="admin-tags-wrap" data-field-name="{{ form.tags.html_name }}">
+    <div class="admin-tags-label" style="font-size:13px;font-weight:500;margin-bottom:6px;color:var(--admin-text);">{{ form.tags.label }}</div>
+    <div class="admin-tags-wrap" data-field-name="{{ form.tags.html_name }}">
         {% for tag in form.tags.field.queryset %}
         <label class="admin-tag-badge{% if tag.pk in selected_tag_ids %} admin-tag-badge-selected{% endif %}">
             <input type="checkbox" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="admin-tag-checkbox"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
@@ -11,7 +10,6 @@
         <span class="admin-tags-empty">No existing tags. Add new ones below.</span>
         {% endfor %}
     </div>
-    </fieldset>
 </div>
 <script>
 (function(){var w=document.querySelector('.admin-tags-wrap');if(!w)return;w.querySelectorAll('.admin-tag-badge').forEach(function(lbl){var cb=lbl.querySelector('.admin-tag-checkbox');if(!cb)return;cb.addEventListener('change',function(){lbl.classList.toggle('admin-tag-badge-selected',cb.checked);});});})();

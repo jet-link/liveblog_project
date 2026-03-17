@@ -9,7 +9,7 @@
     <form class="admin-search-form" method="get" action="{% url 'admin_panel:posts_list' %}">
         <input type="text" name="q" value="{{ search }}" placeholder="Search posts..." class="admin-input admin-search-input">
         <select name="category" class="admin-select">
-            <option value="">---</option>
+            <option value="">Categories</option>
             {% for cat in categories %}
             <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
             {% endfor %}

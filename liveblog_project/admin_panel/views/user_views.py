@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Value, FloatField, Case, When
 from django.contrib.auth import get_user_model
 
 from admin_panel.decorators import admin_required
@@ -13,13 +13,41 @@ from smart_blog.models import Item, Comment
 User = get_user_model()
 
 
+def _annotate_user_rating(qs):
+    """Annotate User queryset with rating (0.0-10.0) based on reports and violations."""
+    from django.db.models import F
+    qs = qs.annotate(
+        reports_item=Count('items__reports', distinct=True),
+        reports_comment=Count('comments__reports', distinct=True),
+        violations_item=Count('items__content_violations', distinct=True),
+        violations_comment=Count('comments__content_violations', distinct=True),
+    )
+    qs = qs.annotate(
+        reports_count=F('reports_item') + F('reports_comment'),
+        violations_count=F('violations_item') + F('violations_comment'),
+    )
+    qs = qs.annotate(
+        _penalty=(F('reports_count') * 0.2) + (F('violations_count') * 0.5)
+    )
+    qs = qs.annotate(
+        rating=Case(
+            When(_penalty__gte=10, then=Value(0.0)),
+            default=10.0 - F('_penalty'),
+            output_field=FloatField(),
+        )
+    )
+    return qs
+
+
 @admin_required
 def users_list(request):
     """List users with search, pagination."""
     qs = User.objects.annotate(
         posts_count=Count('items', distinct=True),
         comments_count=Count('comments', distinct=True),
-    ).order_by('-date_joined')
+    )
+    qs = _annotate_user_rating(qs)
+    qs = qs.order_by('-date_joined')
 
     search = request.GET.get('q', '').strip()
     if search:
@@ -77,7 +105,7 @@ def user_ban(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot ban admin users.')
-        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+        url = reverse('admin_panel:users_list')
         qs = request.GET.urlencode()
         if qs:
             url += '?' + qs
@@ -105,8 +133,10 @@ def user_unban(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot unban admin users.')
-        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
-        qs = request.GET.urlencode()
+        url = reverse('admin_panel:banned_users') if request.GET.get('from') == 'banned' else reverse('admin_panel:users_list')
+        qs = request.GET.copy()
+        qs.pop('from', None)
+        qs = qs.urlencode()
         if qs:
             url += '?' + qs
         return redirect(url)
@@ -117,7 +147,7 @@ def user_unban(request, pk):
         if request.GET.get('from') == 'banned':
             url = reverse('admin_panel:banned_users')
         else:
-            url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+            url = reverse('admin_panel:users_list')
         qs = request.GET.copy()
         qs.pop('from', None)
         qs = qs.urlencode()
@@ -131,7 +161,7 @@ def user_unban(request, pk):
     if from_banned:
         cancel_url = reverse('admin_panel:banned_users') + ('?' + qs if qs else '')
     else:
-        cancel_url = reverse('admin_panel:user_profile', kwargs={'pk': pk}) + ('?' + qs if qs else '')
+        cancel_url = reverse('admin_panel:users_list') + ('?' + qs if qs else '')
     return render(request, 'admin/users/user_confirm_unban.html', {
         'user_obj': user,
         'cancel_url': cancel_url,
@@ -144,7 +174,7 @@ def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot delete admin users.')
-        url = reverse('admin_panel:user_profile', kwargs={'pk': pk})
+        url = reverse('admin_panel:users_list')
         qs = request.GET.urlencode()
         if qs:
             url += '?' + qs

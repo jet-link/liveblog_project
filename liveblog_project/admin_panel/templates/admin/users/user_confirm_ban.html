@@ -7,6 +7,6 @@
     <h3>Ban user {{ user_obj.username }}?</h3>
     <hr />
     <p>User will not be able to log in.</p>
-    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-warning">Ban</button><a href="{% url 'admin_panel:user_profile' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
+    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-warning">Ban</button><a href="{% url 'admin_panel:users_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
 </div>
 {% endblock %}

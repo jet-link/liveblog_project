@@ -50,6 +50,20 @@ urlpatterns = [
     path('tags/<int:pk>/delete/', views.tag_delete, name='tag_delete'),
     path('tags/bulk-delete/', views.tags_bulk_delete, name='tags_bulk_delete'),
 
+    # Moderation: Assistant & Content Violations
+    path('assistant/', views.assistant_view, name='assistant'),
+    path('assistant/analyze/', views.assistant_analyze, name='assistant_analyze'),
+    path('assistant/status/<int:pk>/', views.assistant_status, name='assistant_status'),
+    path('assistant/check-running/', views.assistant_check_running, name='assistant_check_running'),
+    path('assistant/clear-history/', views.assistant_clear_history, name='assistant_clear_history'),
+    path('content-violations/', views.content_violations_list, name='content_violations_list'),
+    path('content-violations/<int:pk>/check/', views.content_violation_check, name='content_violation_check'),
+    path('content-violations/<int:pk>/ignore/', views.content_violation_ignore, name='content_violation_ignore'),
+    path('content-violations/<int:pk>/clear/', views.content_violation_clear, name='content_violation_clear'),
+    path('content-violations/<int:pk>/confirm-delete/', views.content_violation_confirm_delete, name='content_violation_confirm_delete'),
+    path('content-violations/<int:pk>/delete-content/', views.content_violation_delete_content, name='content_violation_delete_content'),
+    path('content-violations/bulk-clear/', views.content_violations_bulk_clear, name='content_violations_bulk_clear'),
+
     # Reports
     path('reports/', views.reports_list, name='reports_list'),
     path('reports/<int:pk>/resolve/', views.report_resolve, name='report_resolve'),

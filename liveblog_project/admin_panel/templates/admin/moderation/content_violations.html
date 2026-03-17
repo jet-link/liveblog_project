@@ -1,0 +1,195 @@
+{% extends 'admin/layout/base.html' %}
+{% load mentions %}
+{% block title %}Content Violations{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Content Violations</li></ol></nav>{% endblock %}
+{% block page_title %}Content Violations{% endblock %}
+{% block content %}
+<div class="admin-toolbar">
+    <form class="admin-search-form" method="get" action="{% url 'admin_panel:content_violations_list' %}">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search..." class="admin-input admin-search-input">
+        <select name="type" class="admin-select">
+            <option value="">Type</option>
+            <option value="post" {% if current_type == 'post' %}selected{% endif %}>Posts</option>
+            <option value="comment" {% if current_type == 'comment' %}selected{% endif %}>Comments</option>
+        </select>
+        <select name="status" class="admin-select">
+            <option value="">Status</option>
+            <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="checked" {% if current_status == 'checked' %}selected{% endif %}>Checked</option>
+            <option value="ignored" {% if current_status == 'ignored' %}selected{% endif %}>Ignored</option>
+        </select>
+        <button type="submit" class="admin-button">Filter</button>
+    </form>
+</div>
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table admin-content-violations-table" data-bulk-clear-url="{% url 'admin_panel:content_violations_bulk_clear' %}">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Reasons</th>
+                    <th>Rating</th>
+                    <th>Preview</th>
+                    <th>Author</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in violations %}
+                <tr data-violation-id="{{ v.pk }}" data-status="{{ v.status }}">
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ v.pk }}" aria-label="Select"></td>
+                    <td>{{ v.content_type|capfirst }}</td>
+                    <td class="admin-violation-status-cell">
+                        {% if v.status == 'checked' %}
+                            <span class="admin-badge admin-badge-success">Checked</span>
+                        {% elif v.status == 'ignored' %}
+                            <span class="admin-badge admin-badge-warning">Ignored</span>
+                        {% else %}
+                            <span class="admin-badge admin-badge-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ v.created_at|date:"M d, Y H:i" }}</td>
+                    <td>{{ v.reason }}</td>
+                    <td>{{ v.get_rating_display }}</td>
+                    <td class="admin-violation-preview-cell">
+                        {% if v.item %}
+                            {% if v.item.is_published %}
+                                <a href="{% url 'smart_blog:item_detail' v.item.slug %}" class="admin-link">{{ v.item.title|truncatechars:50 }}</a>
+                            {% else %}
+                                <span class="admin-link admin-link-draft" style="text-decoration:line-through">{{ v.item.title|truncatechars:50 }}</span>
+                            {% endif %}
+                        {% endif %}
+                        {% if v.comment %}
+                            <a href="{{ v.comment.get_comment_url }}" class="admin-link">{{ v.comment.text|strip_mentions|truncatechars:50 }}</a>
+                            {% if v.comment.is_draft %}<span class="admin-badge admin-badge-warning">Draft</span>{% endif %}
+                        {% endif %}
+                        {% if not v.item and not v.comment %}
+                            <span style="text-decoration:line-through; color:var(--admin-muted)">Deleted</span>
+                        {% endif %}
+                    </td>
+                    <td class="admin-violation-author-cell">
+                        {% if v.item %}
+                            {% if v.item.author %}
+                                {% if v.item.author.is_active %}
+                                    <a href="{% url 'admin_panel:user_profile' v.item.author.pk %}" class="admin-link">{{ v.item.author.username }}</a>
+                                {% else %}
+                                    <span style="text-decoration:line-through; color:var(--admin-muted)">{{ v.item.author.username }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="text-decoration:line-through; color:var(--admin-muted)">Deleted</span>
+                            {% endif %}
+                        {% endif %}
+                        {% if v.comment %}
+                            {% if v.comment.author %}
+                                {% if v.comment.author.is_active %}
+                                    <a href="{% url 'admin_panel:user_profile' v.comment.author.pk %}" class="admin-link">{{ v.comment.author.username }}</a>
+                                {% else %}
+                                    <span style="text-decoration:line-through; color:var(--admin-muted)">{{ v.comment.author.username }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="text-decoration:line-through; color:var(--admin-muted)">Deleted</span>
+                            {% endif %}
+                        {% endif %}
+                        {% if not v.item and not v.comment %}—{% endif %}
+                    </td>
+                    <td class="admin-actions-cell">
+                        {% if v.item or v.comment %}
+                        {% if v.item %}
+                        {% with v.item.author as author_obj %}
+                        <div class="admin-dropdown" {% if author_obj and not author_obj.is_active %}style="opacity:0.6; pointer-events:none"{% endif %}>
+                            <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="admin-dropdown-menu">
+                                {% if v.status == 'pending' %}
+                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-success">Checked</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-warning">Ignore</button></form>
+                                {% endif %}
+                                <a href="{% url 'admin_panel:content_violation_confirm_delete' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" class="admin-dropdown-btn admin-action-delete admin-button-danger">Delete</a>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% else %}
+                        {% with v.comment.author as author_obj %}
+                        <div class="admin-dropdown" {% if author_obj and not author_obj.is_active %}style="opacity:0.6; pointer-events:none"{% endif %}>
+                            <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="admin-dropdown-menu">
+                                {% if v.status == 'pending' %}
+                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-success">Checked</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-warning">Ignore</button></form>
+                                {% endif %}
+                                <a href="{% url 'admin_panel:content_violation_confirm_delete' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" class="admin-dropdown-btn admin-action-delete admin-button-danger">Delete</a>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endif %}
+                        {% else %}
+                        <span style="color:var(--admin-muted)">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="admin-empty">No content violations.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ violations.paginator.count }}</div>
+    {% if violations.has_other_pages %}
+    <div class="admin-pagination">
+        {% if violations.has_previous %}
+            <a href="?page={{ violations.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if analysis_id %}&analysis_id={{ analysis_id }}{% endif %}" class="admin-button admin-button-sm">Previous</a>
+        {% endif %}
+        <span class="admin-pagination-info">Page {{ violations.number }} of {{ violations.paginator.num_pages }}</span>
+        {% if violations.has_next %}
+            <a href="?page={{ violations.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if analysis_id %}&analysis_id={{ analysis_id }}{% endif %}" class="admin-button admin-button-sm">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+<script>
+(function() {
+  var table = document.querySelector('.admin-content-violations-table');
+  if (!table) return;
+
+  function getCsrfToken() {
+    return document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || (window.ADMIN_CSRF_TOKEN || '');
+  }
+
+  table.addEventListener('submit', function(e) {
+    var form = e.target;
+    if (!form || !form.classList.contains('admin-violation-ajax-form')) return;
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
+    var row = form.closest('tr');
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCsrfToken(), 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(form)),
+      credentials: 'same-origin'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.new_status && row) {
+        var statusTd = row.querySelector('.admin-violation-status-cell');
+        if (statusTd) {
+          statusTd.innerHTML = data.new_status === 'checked'
+            ? '<span class="admin-badge admin-badge-success">Checked</span>'
+            : '<span class="admin-badge admin-badge-warning">Ignored</span>';
+        }
+        row.dataset.status = data.new_status;
+        var menu = row.querySelector('.admin-dropdown-menu');
+        if (menu) {
+          var forms = menu.querySelectorAll('.admin-violation-ajax-form');
+          forms.forEach(function(f) { f.remove(); });
+        }
+      }
+    })
+    .finally(function() { if (btn) btn.disabled = false; });
+  });
+
+})();
+</script>
+{% endblock %}

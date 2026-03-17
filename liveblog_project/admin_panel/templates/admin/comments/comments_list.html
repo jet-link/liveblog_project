@@ -12,7 +12,7 @@
     <form class="admin-search-form" method="get" action="{% url 'admin_panel:comments_list' %}">
       <input type="text" name="q" value="{{ search }}" placeholder="Search..." class="admin-input admin-search-input">
       <select name="filter" class="admin-select">
-        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All</option>
+        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>Comments</option>
         <option value="root" {% if filter_type == 'root' %}selected{% endif %}>Root only</option>
         <option value="child" {% if filter_type == 'child' %}selected{% endif %}>Child only</option>
       </select>
@@ -69,11 +69,11 @@
     {% if comments.has_other_pages %}
       <div class="admin-pagination">
         {% if comments.has_previous %}
-          <a href="?page={{ comments.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button">Previous</a>
+          <a href="?page={{ comments.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button admin-button-sm">Previous</a>
         {% endif %}
         <span class="admin-pagination-info">Page {{ comments.number }} of {{ comments.paginator.num_pages }}</span>
         {% if comments.has_next %}
-          <a href="?page={{ comments.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button">Next</a>
+          <a href="?page={{ comments.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button admin-button-sm">Next</a>
         {% endif %}
       </div>
     {% endif %}

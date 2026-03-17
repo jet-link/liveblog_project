@@ -8,7 +8,7 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2 mb-3">
       <div class="d-inline-flex align-items-center gap-3">
         <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
       </div>

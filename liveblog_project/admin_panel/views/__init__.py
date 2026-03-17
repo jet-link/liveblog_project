@@ -5,6 +5,16 @@ from .user_views import users_list, user_profile, user_ban, user_unban, user_del
 from .category_views import categories_list, category_create, category_edit, category_delete
 from .tag_views import tags_list, tag_create, tag_edit, tag_delete
 from .report_views import reports_list, report_resolve, report_dismiss, report_delete_content, report_ban_user
+from .assistant_views import assistant_view, assistant_analyze, assistant_status, assistant_check_running, assistant_clear_history
+from .moderation_views import (
+    content_violations_list,
+    content_violation_check,
+    content_violation_ignore,
+    content_violation_clear,
+    content_violation_confirm_delete,
+    content_violation_delete_content,
+    content_violations_bulk_clear,
+)
 from .backup_views import backups_list, backup_status, backup_create, backup_download, backup_restore, backup_delete
 from .analytics_views import analytics_view
 from .logs_views import logs_view
@@ -32,6 +42,9 @@ __all__ = [
     'categories_list', 'category_create', 'category_edit', 'category_delete',
     'tags_list', 'tag_create', 'tag_edit', 'tag_delete',
     'reports_list', 'report_resolve', 'report_dismiss', 'report_delete_content', 'report_ban_user',
+    'assistant_view', 'assistant_analyze', 'assistant_status', 'assistant_check_running', 'assistant_clear_history',
+    'content_violations_list', 'content_violation_check', 'content_violation_ignore',
+    'content_violation_clear', 'content_violation_confirm_delete', 'content_violation_delete_content', 'content_violations_bulk_clear',
     'backups_list', 'backup_status', 'backup_create', 'backup_download', 'backup_restore', 'backup_delete',
     'analytics_view',
     'logs_view',

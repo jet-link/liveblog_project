@@ -56,10 +56,14 @@
                 <i class="admin-nav-icon fa-regular fa-flag"></i>
                 <span class="admin-nav-text">Reports</span>
             </a>
-            <span class="admin-nav-item admin-nav-item-disabled" title="Coming soon">
+            <a href="{% url 'admin_panel:content_violations_list' %}" class="admin-nav-item {% if 'content_violation' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-triangle-exclamation"></i>
+                <span class="admin-nav-text">Violations</span>
+            </a>
+            <a href="{% url 'admin_panel:assistant' %}" class="admin-nav-item {% if 'assistant' in request.resolver_match.url_name %}active{% endif %}">
                 <i class="admin-nav-icon fa-solid fa-robot"></i>
                 <span class="admin-nav-text">Assistant</span>
-            </span>
+            </a>
         </div>
 
         <div class="admin-nav-group">
