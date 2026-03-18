@@ -1,49 +1,54 @@
+{% load extras %}
 <div class="header-wrapper">
-<header class="header">
-  <div class="container">
-    <nav class="nav header-nav d-flex align-items-center justify-content-between">
-      <div class="bottom-left-nav header-brand">
-        <a href="/" class="brand-minimal">BrainStorm</a>
-      </div>
-      <div class="header-menu d-flex align-items-center small">
-        <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}">BraiNews</a>
-        <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}">Popular</a>
-        <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
-        <a href="#" class="header-menu-item text-decoration-none text-muted">
-          Сategories
-          <i class="fa fa-angle-down ms-1"></i>
-          <i class="fa fa-angle-up ms-1 hidden"></i>
-        </a>
-      </div>
-      <div class="d-flex align-items-center gap-2 header-actions">
-        <button type="button" class="search-btn"><i class="fa fa-search"></i></button>
-        <button type="button" id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Light/Dark theme"><i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i></button>
-        {% if user.is_authenticated %}
-          <div class="user-menu" id="userMenu">
-            <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
-            <div class="user-tooltip">
-              <a href="{% url 'login_app:profile' user.username %}" class="text-muted"><i class="fa fa-user-circle-o me-3" aria-hidden="true"></i>View profile</a>
-              <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
-              <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create post</a>
-              <a href="{% url 'login_app:notifications' user.username %}" class="text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}">
-                <i class="fa fa-bell me-2" aria-hidden="true"></i>
-                Notifications
-              </a>
-              <a href="#" class="danger signout-trigger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
+  <header class="header">
+    <div class="container">
+      <nav class="nav header-nav d-flex align-items-center justify-content-between">
+        <div class="bottom-left-nav header-brand">
+          <a href="/" class="brand-minimal">BrainStorm</a>
+        </div>
+        <div class="header-menu d-flex align-items-center small">
+          <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_list' %} active{% endif %}">BraiNews</a>
+          <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'items_popular' %} active{% endif %}">Popular</a>
+          <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
+          <a href="#" class="header-menu-item text-decoration-none text-muted">
+            Сategories
+            <i class="fa fa-angle-down ms-1"></i>
+            <i class="fa fa-angle-up ms-1 hidden"></i>
+          </a>
+        </div>
+        <div class="d-flex align-items-center gap-2 header-actions">
+          <button type="button" class="search-btn"><i class="fa fa-search"></i></button>
+          <button type="button" id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Light/Dark theme"><i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i></button>
+          {% if user.is_authenticated %}
+            <div class="user-menu" id="userMenu">
+              <a href="{% url 'login_app:profile' user.username %}" class="text-decoration-none user-avatar-btn">{% include 'includes/thumb_avatar.html' with user=user %}</a>
+              <div class="user-tooltip">
+                <a href="{% url 'login_app:profile' user.username %}" class="text-muted"><i class="fa fa-user-circle-o me-3" aria-hidden="true"></i>View profile</a>
+                <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
+                {% if user|user_cannot_create_post %}
+                  <span class="text-muted disabled" title="You have been shadow banned"><i class="fa fa-plus me-3"></i>Create post</span>
+                {% else %}
+                  <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create post</a>
+                {% endif %}
+                <a href="{% url 'login_app:notifications' user.username %}" class="text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}">
+                  <i class="fa fa-bell me-2" aria-hidden="true"></i>
+                  Notifications
+                </a>
+                <a href="#" class="danger signout-trigger"><i class="fa fa-sign-out me-3" aria-hidden="true"></i>Sign out</a>
+              </div>
             </div>
-          </div>
-        {% else %}
-          <a href="{% url 'login_app:login' %}" class="cstm-btn-sm custom-secondary-btn">Sign in</a>
-        {% endif %}
-        <button id="bottomBurgerBtn" class="bottom-burger" aria-label="Open menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-    </nav>
-  </div>
-</header>
+          {% else %}
+            <a href="{% url 'login_app:login' %}" class="cstm-btn-sm custom-secondary-btn">Sign in</a>
+          {% endif %}
+          <button id="bottomBurgerBtn" class="bottom-burger" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
   <div id="headerSearchDropdown" class="header-search-dropdown hidden" aria-hidden="true">
     <div class="container">
       {% include 'includes/search_form.html' %}

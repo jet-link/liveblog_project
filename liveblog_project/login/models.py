@@ -37,6 +37,11 @@ class Profile(models.Model):
     avatar_pos_x = models.FloatField(default=0.0)
     avatar_pos_y = models.FloatField(default=0.0)
 
+    # Trust Score (0–10)
+    trust_score = models.FloatField(default=10.0, db_index=True)
+    last_violation_at = models.DateTimeField(null=True, blank=True)
+    can_post = models.BooleanField(default=True)
+    shadow_banned = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Profile: {self.user.username}'

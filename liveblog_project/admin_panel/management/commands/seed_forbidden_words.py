@@ -9,13 +9,31 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         defaults = [
-            ('spam', 'spam'),
-            ('viagra', 'spam'),
-            ('harassment', 'harassment'),
-            ('abuse', 'abuse'),
+            # Obscenity
             ('shit', 'obscenity'),
             ('fuck', 'obscenity'),
             ('asshole', 'obscenity'),
+            ('damn', 'obscenity'),
+            ('bitch', 'obscenity'),
+            ('crap', 'obscenity'),
+            ('идиот', 'obscenity'),
+            ('дурак', 'obscenity'),
+            ('сука', 'obscenity'),
+            # Spam
+            ('spam', 'spam'),
+            ('viagra', 'spam'),
+            ('casino', 'spam'),
+            ('lottery', 'spam'),
+            ('click here', 'spam'),
+            ('buy now', 'spam'),
+            ('free money', 'spam'),
+            # Harassment / Abuse
+            ('harassment', 'harassment'),
+            ('abuse', 'abuse'),
+            ('kill', 'abuse'),
+            ('die', 'abuse'),
+            ('hurt', 'abuse'),
+            ('hate', 'abuse'),
         ]
         for word, reason in defaults:
             _, created = ForbiddenWord.objects.get_or_create(
@@ -27,6 +45,11 @@ class Command(BaseCommand):
 
         patterns = [
             (r'https?://[^\s]+', 'spam'),  # URLs
+            (r'[s5\$][h4][i1!][t7]', 'obscenity'),  # shit-like obfuscation
+            (r'[f4][u][c+][k]', 'obscenity'),  # fuck-like obfuscation
+            (r'(.)\1{4,}', 'spam'),  # repeated chars (aaaaa)
+            (r'\b(?:viagra|cialis|casino)\b', 'spam'),
+            (r'(?:click|buy|free)\s+(?:here|now|money)', 'spam'),
         ]
         for pattern, reason in patterns:
             if not ForbiddenPattern.objects.filter(pattern=pattern).exists():

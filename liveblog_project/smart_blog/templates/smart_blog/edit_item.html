@@ -13,10 +13,9 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="m-0 text-uppercase text-muted">Edit post</h5>
 
-        {% comment %} <a href="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="text-decoration-none text-muted"><i class="fa fa-angle-left back-angle me-2" aria-hidden="true"></i> Back</a> {% endcomment %}
       </div>
 
-      <form method="post" enctype="multipart/form-data" data-replace-history="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" novalidate data-validate="true">
+      <form method="post" enctype="multipart/form-data" id="itemEditForm" data-ajax="true" data-validate="true" data-replace-history="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" novalidate>
         {% csrf_token %}
         {% if form.non_field_errors %}
           <div class="custom-alert custom-alert-danger mb-2" data-auto-dismiss="3000">
@@ -45,7 +44,6 @@
 
         <!-- Category -->
         <div class="mb-3">
-          {% comment %} <label for="{{ form.category.id_for_label }}" class="form-label text-muted">{{ form.category.label }}</label> {% endcomment %}
           <div class="custom-select-wrap">
             {{ form.category }}
           </div>
@@ -59,6 +57,9 @@
           {{ form.new_tags }}
           <label for="{{ form.new_tags.id_for_label }}">{{ form.new_tags.label }}</label>
         </div>
+        {% for err in form.new_tags.errors %}
+          <div class="text-danger small mb-2">{{ err }}</div>
+        {% endfor %}
 
         <!-- Existing tags (badge-style selection) -->
         {% include 'includes/tag_badge_select.html' with form=form selected_tag_ids=selected_tag_ids %}
@@ -99,7 +100,7 @@
           <small class="text-muted text-small">First image will be thumbnail.</small>
         </div>
         <div class="d-flex gap-1 align-items-center mt-2">
-          <button class="cstm-btn-sm custom-primary-btn" type="submit">Edit item</button>
+          <button class="cstm-btn-sm custom-primary-btn" type="submit">Edit post</button>
           <a href="{{ item.get_absolute_url }}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="cstm-btn-sm custom-secondary-btn">Cancel</a>
         </div>
       </form>

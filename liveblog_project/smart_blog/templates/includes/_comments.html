@@ -1,6 +1,7 @@
 {# includes/_comment.html #}
 {% load static %}
 {% load mentions %}
+{% load extras %}
 <div id="comment-{{ comment.pk }}" class="py-3 comment-block comment-card" data-reply-url="{% url 'smart_blog:add_comment' comment.item.slug %}" data-thread-url="{% url 'smart_blog:comment_thread' comment.pk %}" data-depth="{{ depth|default:0 }}" data-raw-html="{{ comment.text|escape }}" data-edit-text="{{ comment.text|mention_names|escape }}" data-mention-id="{{ comment.text|mention_first_id }}">
   <span class="comment-anchor" id="comment-anchor-{{ comment.pk }}"></span>
 
@@ -68,7 +69,11 @@
                     <div class="comment-actions">
                       <i class="fa fa-angle-right mx-1 success_"></i>
                       {% if comment.author.is_active %}
+                      {% if user|user_shadow_banned %}
+                      <span class="comment-menu-action custom_badge badge_primary fw-semibold disabled" title="You have been shadow banned">Reply</span>
+                      {% else %}
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                      {% endif %}
                       {% endif %}
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                       {% if comment.reports_count|default:0 >= 10 or not comment.author.is_active %}
@@ -104,7 +109,11 @@
                     </button>
                     <div class="comment-actions">
                       <i class="fa fa-angle-right mx-1 success_"></i>
+                      {% if user|user_shadow_banned %}
+                      <span class="comment-menu-action custom_badge badge_primary fw-semibold disabled" title="You have been shadow banned">Reply</span>
+                      {% else %}
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="reply" data-comment-id="{{ comment.pk }}" data-mention-id="{{ comment.author.id }}">Reply</button>
+                      {% endif %}
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
                       {% if not report_rate_limited %}
                         <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold" data-action="report" data-comment-id="{{ comment.pk }}">Report</button>

@@ -63,6 +63,7 @@ urlpatterns = [
     path('content-violations/<int:pk>/confirm-delete/', views.content_violation_confirm_delete, name='content_violation_confirm_delete'),
     path('content-violations/<int:pk>/delete-content/', views.content_violation_delete_content, name='content_violation_delete_content'),
     path('content-violations/bulk-clear/', views.content_violations_bulk_clear, name='content_violations_bulk_clear'),
+    path('content-violations/bulk-delete-content/', views.content_violations_bulk_delete_content, name='content_violations_bulk_delete_content'),
 
     # Reports
     path('reports/', views.reports_list, name='reports_list'),

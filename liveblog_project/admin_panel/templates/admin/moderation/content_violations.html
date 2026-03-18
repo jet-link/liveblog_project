@@ -23,7 +23,7 @@
 </div>
 <div class="admin-card">
     <div class="admin-table-wrapper">
-        <table class="admin-table admin-content-violations-table" data-bulk-clear-url="{% url 'admin_panel:content_violations_bulk_clear' %}">
+        <table class="admin-table admin-content-violations-table" data-bulk-clear-url="{% url 'admin_panel:content_violations_bulk_clear' %}" data-bulk-delete-content-url="{% url 'admin_panel:content_violations_bulk_delete_content' %}">
             <thead>
                 <tr>
                     <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
@@ -152,6 +152,12 @@
 </div>
 <script>
 (function() {
+  function removeNewBadgeFromRow(row) {
+    var td = row && row.querySelector('.admin-violation-type-cell');
+    var badge = td && td.querySelector('.admin-badge-new');
+    if (badge) badge.remove();
+  }
+
   var newAnalysisId = null;
   try { newAnalysisId = sessionStorage.getItem('admin_new_analysis_id'); } catch (e) {}
   if (newAnalysisId) {
@@ -161,16 +167,28 @@
         var badge = document.createElement('span');
         badge.className = 'admin-badge admin-badge-new';
         badge.textContent = 'New';
-        /* styles from .admin-badge-new in admin.css */
         td.style.position = 'relative';
         td.appendChild(badge);
       }
     });
-    try { sessionStorage.removeItem('admin_new_analysis_id'); } catch (e) {}
   }
+
+  window.addEventListener('beforeunload', function() {
+    try {
+      sessionStorage.removeItem('admin_new_analysis_id');
+    } catch (e) {}
+  });
 
   var table = document.querySelector('.admin-content-violations-table');
   if (!table) return;
+
+  table.addEventListener('click', function(e) {
+    var link = e.target.closest('a.admin-link, a.admin-action-delete');
+    if (link && link.href) {
+      var row = link.closest('tr[data-violation-id]');
+      if (row) removeNewBadgeFromRow(row);
+    }
+  });
 
   function getCsrfToken() {
     return document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || (window.ADMIN_CSRF_TOKEN || '');
@@ -192,6 +210,7 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success && data.new_status && row) {
+        removeNewBadgeFromRow(row);
         var statusTd = row.querySelector('.admin-violation-status-cell');
         if (statusTd) {
           statusTd.innerHTML = data.new_status === 'checked'

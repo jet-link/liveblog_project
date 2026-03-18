@@ -19,7 +19,8 @@
   {% if access_denied %}
     <div class="admin-alert admin-alert-warning">Access denied. Superuser only.</div>
   {% else %}
-    <div class="admin-card">
+    <div class="admin-assistant-page">
+    <div class="admin-card admin-assistant-card">
       <h3>Content Moderation Analysis</h3>
       <p>Run AI-powered analysis to detect violations in posts and comments (banned words, regex patterns, Detoxify).</p>
       <div style="display:flex; align-items:center; gap:0.2rem; flex-wrap:wrap;">
@@ -33,14 +34,14 @@
         </div>
         <div id="assistantProgressText" style="margin-top:0.5rem; font-size:0.9rem">0%</div>
       </div>
-      <div id="assistantLogsBlock" class="admin-card" style="margin-top:1rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+      <div id="assistantLogsBlock" class="admin-card admin-assistant-logs-block">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-shrink:0;">
           <h4 style="margin:0;">Analysis Logs</h4>
           <div id="assistantClearHistoryBtnWrap" style="display:{% if recent_runs %}flex{% else %}none{% endif %};">
             <button type="button" id="assistantClearHistoryBtn" class="admin-button admin-button-outline admin-button-sm">Clear history</button>
           </div>
         </div>
-        <div id="assistantLogsContent" style="height:280px; min-height:280px; max-height:280px; overflow-y:auto; font-family:monospace; font-size:0.85rem;padding:1rem; border:1px solid var(--admin-border); border-radius:6px;">
+        <div id="assistantLogsContent" class="admin-assistant-logs-content">
           {% for run in recent_runs %}
           <div class="assistant-run-block" data-run-id="{{ run.pk }}">
             <div class="assistant-run-date" style="font-weight:600; color:var(--admin-muted); margin-bottom:0.25rem;" data-iso="{{ run.started_at|date:'c' }}" data-run-id="{{ run.pk }}">—</div>
@@ -58,7 +59,8 @@
           {% endfor %}
         </div>
       </div>
-      <div id="assistantClearHistoryModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="assistantClearHistoryModalTitle" aria-hidden="true" hidden>
+    </div>
+    <div id="assistantClearHistoryModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="assistantClearHistoryModalTitle" aria-hidden="true" hidden>
         <div class="admin-modal-backdrop" id="assistantClearHistoryModalBackdrop"></div>
         <div class="admin-modal-dialog">
           <div class="admin-modal-content">

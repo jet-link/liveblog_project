@@ -44,7 +44,6 @@
 
         <!-- Category -->
         <div class="mb-3">
-          {% comment %} <label for="{{ form.category.id_for_label }}" class="form-label text-muted">{{ form.category.label }}</label> {% endcomment %}
           <div class="custom-select-wrap">
             {{ form.category }}
           </div>
@@ -58,6 +57,9 @@
           {{ form.new_tags }}
           <label for="{{ form.new_tags.id_for_label }}">{{ form.new_tags.label }}</label>
         </div>
+        {% for err in form.new_tags.errors %}
+          <div class="text-danger small mb-2">{{ err }}</div>
+        {% endfor %}
 
         <!-- Existing tags (badge-style selection) -->
         {% include 'includes/tag_badge_select.html' with form=form selected_tag_ids=selected_tag_ids %}
@@ -81,7 +83,7 @@
           <small class="text-muted text-small">First image will be thumbnail.</small>
         </div>
         <div class="d-flex gap-1 align-items-center mt-2">
-          <button class="cstm-btn-sm custom-primary-btn" type="submit">Create item</button>
+          <button class="cstm-btn-sm custom-primary-btn" type="submit">Create post</button>
           <a href="{% url 'login_app:profile' user.username %}" class="cstm-btn-sm custom-secondary-btn">Cancel</a>
         </div>
       </form>

@@ -1,4 +1,8 @@
+{% load extras %}
 {% if user.is_authenticated %}
+  {% if user|user_shadow_banned %}
+    <p class="small danger_" title="You have been shadow banned">You have been shadow banned. Improve your trust score to restore access.</p>
+  {% else %}
   <div class="pt-4">
     <div class="d-inline-flex gap-2 align-items-center">
       <h6 class="text-muted m-0">Leave a comment</h6>
@@ -25,4 +29,5 @@
       <button id="clearComment" type="button" class="cstm-btn-sm custom-danger-btn hidden" aria-label="Clear comment">Claer</button>
     </form>
   </div>
+  {% endif %}
 {% endif %}

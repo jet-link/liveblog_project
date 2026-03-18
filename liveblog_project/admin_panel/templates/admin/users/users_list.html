@@ -1,4 +1,5 @@
 {% extends 'admin/layout/base.html' %}
+{% load admin_extras %}
 
 {% block title %}Users{% endblock %}
 {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Users</li></ol></nav>{% endblock %}
@@ -28,7 +29,7 @@
                     <th>Posts</th>
                     <th>Comments</th>
                     <th>Joined</th>
-                    <th>Rating</th>
+                    <th>Trust Score</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -41,7 +42,7 @@
                     <td>{{ u.posts_count }}</td>
                     <td>{{ u.comments_count }}</td>
                     <td>{{ u.date_joined|date:"M d, Y" }}</td>
-                    <td>{{ u.rating|floatformat:1 }}</td>
+                    <td>{% trust_score_badge u %}</td>
                     <td class="admin-actions-cell">
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>

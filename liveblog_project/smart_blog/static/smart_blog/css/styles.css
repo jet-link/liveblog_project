@@ -3161,38 +3161,35 @@ html[data-theme="dark"] .tags_block{
     background-color: transparent;
 }
 
-.badge{
-    font-weight: 600 !important;
-    padding: 6px 12px;
-    border-radius: 6px !important;
+
+/* Trust level block on profile */
+.trust-level-block .trust-level-badge {
+    min-width: 2.5em;
+    text-align: center;
 }
 
-.badge_danger {
-    border-color: var(--danger-fg);
-    background-color: var(--danger-fg);
-    color: var(--bg-default);
+.trust-level-block .trust-zone-badge {
+    font-size: 0.7rem;
 }
 
-.badge_primary {
-    border-color: var(--text-link);
-    color: var(--text-link);
-}
-
-.badge_success {
-    border-color: var(--success-bg);
-    color: var(--success-bg);
-}
-
-.badge_reserved {
-    border-color: var(--badge-reserve-color);
-    color: var(--bg-default);
-    background-color: var(--badge-reserve-color);
+.trust-level-block .trust-level-message {
+    line-height: 1.4;
 }
 
 .replied-badge {
     color: var(--text-link);
     background-color: var(--card-bg);
     border: 1px solid var(--text-link);
+}
+
+/* Shadow-banned disabled controls */
+.custom_badge.disabled,
+.comment-menu-action.disabled,
+.user-tooltip .disabled,
+.cstm-btn-sm.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .badge {

@@ -125,6 +125,22 @@ class ItemCreateForm(forms.ModelForm):
             raise forms.ValidationError("Length of title should not exceed 40 symbols.")
         return title
 
+    def clean_new_tags(self):
+        value = (self.cleaned_data.get('new_tags') or '').strip()
+        if not value:
+            return value
+        from admin_panel.models import ForbiddenWord
+        forbidden = list(ForbiddenWord.objects.filter(is_active=True))
+        if not forbidden:
+            return value
+        tokens = [t.strip() for t in re.split(r'\s+', value) if t.strip()]
+        for token in tokens:
+            normalized = token.lower()
+            for fw in forbidden:
+                if fw.is_active and fw.word.lower() in normalized:
+                    raise forms.ValidationError('Sorry, forbidden tag.')
+        return value
+
     def clean_text(self):
         """
         1) Optionally convert fenced-code markdown -> HTML (if markdown lib present)

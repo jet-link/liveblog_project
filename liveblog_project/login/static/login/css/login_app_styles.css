@@ -592,6 +592,49 @@ html[data-theme="dark"] .block-quote {
     text-transform: none;
 }
 
+.badge{
+    font-weight: 600 !important;
+    padding: 6px 12px;
+    border-radius: 6px !important;
+}
+
+.badge_danger {
+    border-color: #ff97a9;
+    background-color: #e15c73;
+    color: #ffffff;
+}
+
+.badge_primary {
+    border-color: var(--text-link);
+    color: var(--text-link);
+}
+
+.badge_success {
+    display: inline-flex;
+    align-items: center;
+    color: #3fb950;
+    background: rgba(63, 185, 80, 0.2);
+    border: 1px solid #3fb950;
+}
+
+.badge_reserved {
+    border-color: var(--badge-reserve-color);
+    color: var(--bg-default);
+    background-color: var(--badge-reserve-color);
+}
+
+.badge_muted {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    background-color: var(--bg-subtle);
+}
+
+.badge_warning {
+    border-color: #cc9b0b;
+    color: var(--warning-fg);
+    background-color: var(--warning-bg);
+}
+
 .personal_info li {
     padding: 15px 25px;
 }
@@ -731,7 +774,7 @@ html[data-theme="dark"] .block-quote {
 }
 
 /* ссылки */
-.user-tooltip a {
+.user-tooltip a, .user-tooltip span {
     display: block;
     padding: 15px 25px;
     font-size: .85rem;

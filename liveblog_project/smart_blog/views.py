@@ -390,6 +390,11 @@ def find_existing_media_path(filename, subdir=None):
 
 @login_required
 def create_item(request):
+    if not request.user.is_superuser:
+        can_post = getattr(getattr(request.user, 'profile', None), 'can_post', True)
+        if not can_post:
+            from django.shortcuts import redirect
+            return redirect('smart_blog:items_list')
     if request.method == "POST":
         form = ItemCreateForm(request.POST)
         files = request.FILES.getlist("images")
@@ -808,9 +813,10 @@ def edit_item(request, slug):
                     ItemImage.objects.create(item=item, image=f)
 
             messages.success(request, "Post was successfully edited")
-            if request.GET:
-                return redirect(f"{item.get_absolute_url()}?{request.GET.urlencode()}")
-            return redirect(item.get_absolute_url())
+            redirect_url = f"{item.get_absolute_url()}?{request.GET.urlencode()}" if request.GET else item.get_absolute_url()
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "redirect": redirect_url})
+            return redirect(redirect_url)
         else:
             # if AJAX -> return errors JSON
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -970,6 +976,10 @@ def submit_report(request):
 @login_required
 @require_POST
 def add_comment(request, slug):
+    if not request.user.is_superuser:
+        shadow_banned = getattr(getattr(request.user, 'profile', None), 'shadow_banned', False)
+        if shadow_banned:
+            return JsonResponse({"success": False, "error": "Access denied."}, status=403)
     item = get_object_or_404(Item, slug=slug)
     # Anti-spam: per-item cooldown for main comments only (not replies)
     parent_id = request.POST.get("parent_id")

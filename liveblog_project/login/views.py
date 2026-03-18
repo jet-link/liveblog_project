@@ -329,12 +329,20 @@ def profile_view(request, username):
 
     is_online = is_user_online(user_obj) if user_obj else False
 
+    trust_score = 10.0
+    if user_obj:
+        try:
+            trust_score = float(getattr(user_obj.profile, 'trust_score', 10.0))
+        except Exception:
+            pass
+
     context = {
         'fields': fields,
         'user_obj': user_obj,
         'created_items': created_items,
         'is_owner': is_owner,
         'is_online': is_online,
+        'trust_score': trust_score,
         **counts,
     }
     return render(request, 'accounts/profile.html', context)

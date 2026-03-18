@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, Value, FloatField, Case, When
+from django.db.models import Q, Count
 from django.contrib.auth import get_user_model
 
 from admin_panel.decorators import admin_required
@@ -13,40 +13,13 @@ from smart_blog.models import Item, Comment
 User = get_user_model()
 
 
-def _annotate_user_rating(qs):
-    """Annotate User queryset with rating (0.0-10.0) based on reports and violations."""
-    from django.db.models import F
-    qs = qs.annotate(
-        reports_item=Count('items__reports', distinct=True),
-        reports_comment=Count('comments__reports', distinct=True),
-        violations_item=Count('items__content_violations', distinct=True),
-        violations_comment=Count('comments__content_violations', distinct=True),
-    )
-    qs = qs.annotate(
-        reports_count=F('reports_item') + F('reports_comment'),
-        violations_count=F('violations_item') + F('violations_comment'),
-    )
-    qs = qs.annotate(
-        _penalty=(F('reports_count') * 0.2) + (F('violations_count') * 0.5)
-    )
-    qs = qs.annotate(
-        rating=Case(
-            When(_penalty__gte=10, then=Value(0.0)),
-            default=10.0 - F('_penalty'),
-            output_field=FloatField(),
-        )
-    )
-    return qs
-
-
 @admin_required
 def users_list(request):
     """List users with search, pagination."""
-    qs = User.objects.annotate(
+    qs = User.objects.select_related('profile').annotate(
         posts_count=Count('items', distinct=True),
         comments_count=Count('comments', distinct=True),
     )
-    qs = _annotate_user_rating(qs)
     qs = qs.order_by('-date_joined')
 
     search = request.GET.get('q', '').strip()
@@ -92,7 +65,7 @@ def banned_users_list(request):
 @admin_required
 def user_profile(request, pk):
     """View user profile (admin detail)."""
-    user = get_object_or_404(User, pk=pk)
+    user = get_object_or_404(User.objects.select_related('profile'), pk=pk)
     posts = Item.objects.filter(author=user, is_published=True).order_by('-published_date')[:10]
     comments = Comment.objects.filter(author=user, item__is_published=True, is_draft=False).order_by('-created')[:10]
     context = {'user_obj': user, 'posts': posts, 'comments': comments}

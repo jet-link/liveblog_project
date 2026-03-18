@@ -7,6 +7,7 @@ import unicodedata
 import logging
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.db.models import Q, Exists, OuterRef
 
 logger = logging.getLogger(__name__)
@@ -163,6 +164,51 @@ def analyze_content(text, forbidden_words, forbidden_patterns, use_detoxify=True
     return False, None, None
 
 
+def recheck_and_clear_violation_if_clean(item=None, comment=None):
+    """
+    After edit: if content no longer has violations, remove the ContentViolation.
+    Call with item=... or comment=... (exactly one).
+    """
+    from admin_panel.models import ContentViolation, ForbiddenWord, ForbiddenPattern
+
+    if item:
+        if not ContentViolation.objects.filter(item=item).exists():
+            return
+        parts = [
+            str(item.title or ''),
+            strip_tags(str(item.text or '')),
+            (item.category.name if item.category else ''),
+            str(item.slug or ''),
+        ]
+        text = ' '.join(p for p in parts if p)
+    elif comment:
+        if not ContentViolation.objects.filter(comment=comment).exists():
+            return
+        text = strip_tags(str(comment.text or ''))
+    else:
+        return
+
+    forbidden_words = list(ForbiddenWord.objects.filter(is_active=True))
+    forbidden_patterns = list(ForbiddenPattern.objects.filter(is_active=True))
+    is_violation, _, _ = analyze_content(text, forbidden_words, forbidden_patterns, use_detoxify=True)
+    if not is_violation:
+        author = (item.author if item else None) or (comment.author if comment else None)
+        if item:
+            ContentViolation.objects.filter(item=item).delete()
+        else:
+            ContentViolation.objects.filter(comment=comment).delete()
+        logger.info('Cleared ContentViolation: content edited and no longer violates.')
+        if author:
+            from django.db import transaction
+            from admin_panel.services.trust_score_service import update_user_trust_score
+            def _recalc():
+                try:
+                    update_user_trust_score(author)
+                except Exception:
+                    pass
+            transaction.on_commit(_recalc)
+
+
 def run_content_analysis(schedule='now', analysis_run=None, log_callback=None):
     """
     Run full content analysis: fetch items/comments, check each, create ContentViolation.
@@ -214,7 +260,7 @@ def run_content_analysis(schedule='now', analysis_run=None, log_callback=None):
         )
 
         # Items
-        item_qs = Item.objects.all()
+        item_qs = Item.objects.prefetch_related('tags', 'category').all()
         if cutoff:
             item_qs = item_qs.filter(created__gte=cutoff)
         items = list(item_qs.order_by('-created')[:5000])  # Limit batch
@@ -242,19 +288,36 @@ def run_content_analysis(schedule='now', analysis_run=None, log_callback=None):
             if item.pk in existing_items:
                 processed += 1
                 continue
-            text = f'{item.title or ""} {item.text or ""}'
+            parts = [
+                str(item.title or ''),
+                strip_tags(str(item.text or '')),
+                (item.category.name if item.category else ''),
+                str(item.slug or ''),
+            ]
+            text = ' '.join(p for p in parts if p)
             is_violation, reason, detected = analyze_content(text, forbidden_words, forbidden_patterns)
             if is_violation:
+                severity = ContentViolation.get_severity_from_reason(reason)
+                confidence = ContentViolation.get_confidence_from_detected(detected, reason)
                 ContentViolation.objects.create(
                     content_type=ContentViolation.TYPE_POST,
                     item=item,
                     reason=reason,
+                    severity=severity,
+                    confidence=confidence,
                     detected_word=detected[:255],
                     status=ContentViolation.STATUS_PENDING,
                     analysis_run=analysis_run,
                 )
                 existing_items.add(item.pk)
                 violations_created += 1
+                user = item.author
+                if user:
+                    try:
+                        from admin_panel.services.trust_score_service import update_user_trust_score
+                        update_user_trust_score(user, set_last_violation=True)
+                    except Exception as e:
+                        logger.exception('Trust score update failed for user %s: %s', user.pk, e)
                 log(f'Violation: Post #{item.pk} ({reason}): {detected[:50]}...')
             processed += 1
             if analysis_run and total > 0:
@@ -266,19 +329,30 @@ def run_content_analysis(schedule='now', analysis_run=None, log_callback=None):
                 processed += 1
                 continue
             # Full text, no truncation - banned words checked on entire comment
-            text = str(comment.text or '')
+            text = strip_tags(str(comment.text or ''))
             is_violation, reason, detected = analyze_content(text, forbidden_words, forbidden_patterns)
             if is_violation:
+                severity = ContentViolation.get_severity_from_reason(reason)
+                confidence = ContentViolation.get_confidence_from_detected(detected, reason)
                 ContentViolation.objects.create(
                     content_type=ContentViolation.TYPE_COMMENT,
                     comment=comment,
                     reason=reason,
+                    severity=severity,
+                    confidence=confidence,
                     detected_word=detected[:255],
                     status=ContentViolation.STATUS_PENDING,
                     analysis_run=analysis_run,
                 )
                 existing_comments.add(comment.pk)
                 violations_created += 1
+                user = comment.author
+                if user:
+                    try:
+                        from admin_panel.services.trust_score_service import update_user_trust_score
+                        update_user_trust_score(user, set_last_violation=True)
+                    except Exception as e:
+                        logger.exception('Trust score update failed for user %s: %s', user.pk, e)
                 log(f'Violation: Comment #{comment.pk} ({reason}): {detected[:50]}...')
             processed += 1
             if analysis_run and total > 0:

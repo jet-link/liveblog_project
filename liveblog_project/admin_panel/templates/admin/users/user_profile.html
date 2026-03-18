@@ -1,5 +1,5 @@
 {% extends 'admin/layout/base.html' %}
-{% load mentions %}
+{% load mentions admin_extras %}
 
 {% block title %}{{ user_obj.username }}{% endblock %}
 {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:users_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Users</a></li><li class="admin-breadcrumbs-item">{{ user_obj.username }}</li></ol></nav>{% endblock %}
@@ -11,6 +11,12 @@
     <p><strong>Email</strong> - {{ user_obj.email|default:"—" }}</p>
     <p><strong>Joined</strong> - {{ user_obj.date_joined|date:"M d, Y" }}</p>
     <p><strong>Status</strong> <span class="admin-badge {% if user_obj.is_active %}admin-badge-success{% else %}admin-badge-danger{% endif %}">{% if user_obj.is_active %}Active{% else %}Banned{% endif %}</span></p>
+    {% if user_obj.profile %}
+    <p><strong>Trust Score</strong> {% trust_score_badge user_obj %} {% with ts=user_obj.profile.trust_score %}{% if ts >= 8 %}(Trusted){% elif ts >= 5 %}(Normal){% elif ts >= 3 %}(Risk){% else %}(Dangerous){% endif %}{% endwith %}</p>
+    <p><strong>Can post</strong> {% if user_obj.profile.can_post %}Yes{% else %}No{% endif %}</p>
+    <p><strong>Shadow banned</strong> {% if user_obj.profile.shadow_banned %}Yes{% else %}No{% endif %}</p>
+    {% if user_obj.profile.last_violation_at %}<p><strong>Last violation</strong> {{ user_obj.profile.last_violation_at|date:"M d, Y H:i" }}</p>{% endif %}
+    {% endif %}
     <div class="admin-form-actions">
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
     </div>

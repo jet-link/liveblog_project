@@ -65,12 +65,13 @@
     { attr: 'data-bulk-unban-url', formClass: 'admin-bulk-unban-form', btnClass: 'admin-bulk-unban-btn', btnText: 'Unban', btnStyle: 'admin-button-primary', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to unban this user?' : 'Are you sure you want to unban ' + n + ' users?'; }, confirmText: 'Unban' },
     { attr: 'data-bulk-ban-url', formClass: 'admin-bulk-ban-form', btnClass: 'admin-bulk-ban-btn', btnText: 'Ban', btnStyle: 'admin-button-warning', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to ban this user?' : 'Are you sure you want to ban ' + n + ' users?'; }, confirmText: 'Ban' },
     { attr: 'data-bulk-delete-url', formClass: 'admin-bulk-delete-form', btnClass: 'admin-bulk-delete-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to delete this item?' : 'Are you sure you want to delete ' + n + ' items?'; }, confirmText: 'Delete' },
-    { attr: 'data-bulk-clear-url', formClass: 'admin-bulk-clear-form', btnClass: 'admin-bulk-clear-btn', btnText: 'Clear', btnStyle: 'admin-button-danger', modalTitle: function() { return 'Are you sure about cleaning?'; }, confirmText: 'Clear' }
+    { attr: 'data-bulk-clear-url', formClass: 'admin-bulk-clear-form', btnClass: 'admin-bulk-clear-btn', btnText: 'Clear', btnStyle: 'admin-button-warning', modalTitle: function() { return 'Are you sure about cleaning?'; }, confirmText: 'Clear' },
+    { attr: 'data-bulk-delete-content-url', formClass: 'admin-bulk-delete-content-form', btnClass: 'admin-bulk-delete-content-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to delete this content (post/comment)?' : 'Are you sure you want to delete ' + n + ' selected posts/comments?'; }, confirmText: 'Delete' }
   ];
 
   function init() {
     initBulkDeleteModal();
-    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url], .admin-table[data-bulk-unban-url], .admin-table[data-bulk-ban-url]');
+    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url], .admin-table[data-bulk-delete-content-url], .admin-table[data-bulk-unban-url], .admin-table[data-bulk-ban-url]');
     tables.forEach(function(table) {
       setupTable(table);
     });
@@ -100,7 +101,7 @@
 
     function updateAllButtons() {
       var ids = getSelectedIds(table);
-      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-ban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn').forEach(function(btn) {
+      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-ban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn, .admin-bulk-delete-content-btn').forEach(function(btn) {
         btn.style.display = ids.length > 0 ? '' : 'none';
       });
     }

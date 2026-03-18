@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
@@ -133,6 +134,20 @@ def content_violation_clear(request, pk):
     if not request.user.is_superuser:
         return JsonResponse({'success': False}, status=403)
     v = get_object_or_404(ContentViolation, pk=pk)
+    # #region agent log
+    import json
+    try:
+        with open('/Users/glaze_4life/pyPROJECTS/live-chat-blog/.cursor/debug-007047.log', 'a') as f:
+            f.write(json.dumps({
+                "sessionId": "007047", "hypothesisId": "E",
+                "location": "moderation_views.py:content_violation_clear",
+                "message": "Single clear before v.delete",
+                "data": {"violation_pk": pk, "item_id": v.item_id, "comment_id": v.comment_id},
+                "timestamp": __import__('time').time() * 1000
+            }) + "\n")
+    except Exception:
+        pass
+    # #endregion
     v.delete()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True, 'removed': True})
@@ -171,6 +186,12 @@ def content_violation_delete_content(request, pk):
     if not request.user.is_superuser:
         return JsonResponse({'success': False}, status=403)
     v = get_object_or_404(ContentViolation, pk=pk)
+    # Get author BEFORE deletion; Comment/Item are removed on delete, so post_delete signal cannot fetch them
+    author = None
+    if v.item_id and v.item:
+        author = v.item.author
+    elif v.comment_id and v.comment:
+        author = v.comment.author
     if v.item_id:
         item = v.item
         if item:
@@ -184,6 +205,15 @@ def content_violation_delete_content(request, pk):
             messages.success(request, 'Comment deleted.')
     else:
         v.delete()
+    # Recalculate trust score after CASCADE; signal cannot get author when content is deleted
+    if author:
+        def _recalc():
+            try:
+                from admin_panel.services.trust_score_service import update_user_trust_score
+                update_user_trust_score(author)
+            except Exception:
+                pass
+        transaction.on_commit(_recalc)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True, 'removed': True})
@@ -208,8 +238,90 @@ def content_violations_bulk_clear(request):
         except (ValueError, TypeError):
             pass
     if valid_ids:
+        # QuerySet.delete() does NOT fire post_delete; collect authors before delete and recalc after
+        viols_qs = ContentViolation.objects.filter(pk__in=valid_ids).select_related('item', 'comment')
+        authors_to_recalc = set()
+        for v in viols_qs:
+            if v.item_id and v.item:
+                authors_to_recalc.add(v.item.author_id)
+            elif v.comment_id and v.comment:
+                authors_to_recalc.add(v.comment.author_id)
         deleted = ContentViolation.objects.filter(pk__in=valid_ids).delete()[0]
         messages.success(request, f'{deleted} violation(s) cleared.')
+        # Recalc trust scores; QuerySet.delete doesn't fire post_delete
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        for uid in authors_to_recalc:
+            if not uid:
+                continue
+            try:
+                u = User.objects.filter(pk=uid).first()
+                if u:
+                    def _recalc(usr=u):
+                        try:
+                            from admin_panel.services.trust_score_service import update_user_trust_score
+                            update_user_trust_score(usr)
+                        except Exception:
+                            pass
+                    transaction.on_commit(_recalc)
+            except Exception:
+                pass
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+    filter_qs = request.GET.urlencode()
+    url = reverse('admin_panel:content_violations_list')
+    if filter_qs:
+        url += '?' + filter_qs
+    return redirect(url)
+
+
+@admin_required
+@require_POST
+def content_violations_bulk_delete_content(request):
+    """Bulk delete actual posts/comments for selected violations."""
+    if not request.user.is_superuser:
+        return JsonResponse({'success': False}, status=403)
+    ids = request.POST.getlist('ids[]') or request.POST.getlist('ids')
+    valid_ids = []
+    for x in ids:
+        try:
+            valid_ids.append(int(x))
+        except (ValueError, TypeError):
+            pass
+    if valid_ids:
+        viols = ContentViolation.objects.filter(pk__in=valid_ids).select_related('item', 'comment')
+        authors_to_recalc = set()
+        deleted_count = 0
+        for v in viols:
+            author = None
+            if v.item_id and v.item:
+                author = v.item.author_id
+                v.item.delete()
+                deleted_count += 1
+            elif v.comment_id and v.comment:
+                author = v.comment.author_id
+                v.comment.delete()
+                deleted_count += 1
+            if author:
+                authors_to_recalc.add(author)
+        for uid in authors_to_recalc:
+            if not uid:
+                continue
+            try:
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                u = User.objects.filter(pk=uid).first()
+                if u:
+                    def _recalc(usr=u):
+                        try:
+                            from admin_panel.services.trust_score_service import update_user_trust_score
+                            update_user_trust_score(usr)
+                        except Exception:
+                            pass
+                    transaction.on_commit(_recalc)
+            except Exception:
+                pass
+        messages.success(request, f'{deleted_count} post(s)/comment(s) deleted.')
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True})
     filter_qs = request.GET.urlencode()

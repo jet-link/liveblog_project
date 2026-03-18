@@ -153,8 +153,32 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if self.slug:
             self.slug = self.slug.strip()
-        # генерируем slug только если он пуст
-        if not self.slug:
+
+        if self.pk:
+            try:
+                previous = Item.objects.only('text', 'title').get(pk=self.pk)
+
+                def _norm(s):
+                    if s is None:
+                        return ''
+                    return re.sub(r'\s+', ' ', str(s).strip())
+
+                # Если title изменился — перегенерируем slug
+                if _norm(previous.title) != _norm(self.title):
+                    base_slug = self._generate_base_slug()
+                    slug_candidate = base_slug
+                    counter = 1
+                    while Item.objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
+                        slug_candidate = f"{base_slug}-{counter}"
+                        counter += 1
+                    self.slug = slug_candidate
+
+                if _norm(previous.text) != _norm(self.text) or _norm(previous.title) != _norm(self.title):
+                    self.edited = True
+            except Item.DoesNotExist:
+                pass
+        elif not self.slug:
+            # генерируем slug для новых объектов
             base_slug = self._generate_base_slug()
             slug_candidate = base_slug
             counter = 1
@@ -162,18 +186,6 @@ class Item(models.Model):
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug_candidate
-        if self.pk:
-            try:
-                previous = Item.objects.only('text', 'title').get(pk=self.pk)
-                # Нормализуем для сравнения — избегаем ложных срабатываний из‑за пробелов/HTML
-                def _norm(s):
-                    if s is None:
-                        return ''
-                    return re.sub(r'\s+', ' ', str(s).strip())
-                if _norm(previous.text) != _norm(self.text) or _norm(previous.title) != _norm(self.title):
-                    self.edited = True
-            except Item.DoesNotExist:
-                pass
 
         super().save(*args, **kwargs)
 

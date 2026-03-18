@@ -16,7 +16,7 @@
     <hr />
     <p>This will permanently delete the {{ target_type }} and all associated data.</p>
     {% if target_name %}
-    <p><strong>Preview:</strong> {{ target_name|truncatechars:80 }}{% if target_name|length > 80 %}...{% endif %}</p>
+    <p style="display: none;"><strong>Preview:</strong> {{ target_name|truncatechars:80 }}{% if target_name|length > 80 %}...{% endif %}</p>
     {% endif %}
     <form method="post" class="admin-form-actions" action="{% url 'admin_panel:content_violation_delete_content' violation.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}">
         {% csrf_token %}

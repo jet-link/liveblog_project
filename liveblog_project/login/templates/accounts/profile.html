@@ -8,17 +8,48 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-flex align-items-center gap-2 mb-3">
-      <div class="d-inline-flex align-items-center gap-3">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
+      <div class="d-inline-flex align-items-center gap-2">
         <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
-      </div>
-      {% if is_online %}
+      {% comment %} {% if is_online %}
         <span id="profileOnlineBadge" class="custom_badge badge_reserved">Online</span>
       {% else %}
         <span class="custom_badge badge_danger">Offline</span>
+      {% endif %} {% endcomment %}
+      </div>
+      <div class="d-flex align-items-center gap-1">
+      {% if is_owner %}
+      {% with trust_score=trust_score %}
+        <span class="custom_badge {% if trust_score >= 8 %}badge_success{% elif trust_score >= 5 %}badge_muted{% elif trust_score >= 3 %}badge_warning{% else %}badge_danger{% endif %} trust-level-badge fw-semibold">{{ trust_score|floatformat:1 }}</span>
+        {% if trust_score >= 8 %}
+        <span class="custom_badge badge_success trust-zone-badge">Trusted</span>
+        {% elif trust_score >= 5 %}
+        <span class="custom_badge badge_muted trust-zone-badge">Normal</span>
+        {% elif trust_score >= 3 %}
+        <span class="custom_badge badge_warning trust-zone-badge">Risk</span>
+        {% else %}
+        <span class="custom_badge badge_danger trust-zone-badge">Dangerous</span>
+        {% endif %}
+      {% endwith %}
       {% endif %}
+      </div>
     </div>
     {% include 'includes/personal_info.html' %}
+
+    {% if is_owner %}
+    {% with trust_score=trust_score %}
+    {% if trust_score < 5 %}
+    <p class="trust-level-message text-muted mt-3 small mb-0">
+      {% if trust_score >= 3 %}
+      <strong>Restricted:</strong> Create post is disabled. Comments and replies are allowed. Wait for moderation or recovery to restore full access.
+      {% else %}
+      <strong>Restricted:</strong> Create post, comments and replies are disabled. Wait for moderation or recovery to restore access.
+      {% endif %}
+    </p>
+    {% endif %}
+    {% endwith %}
+    {% endif %}
+
     <div class="mt-5">
       {% if created_items %}
         <div class="d-flex align-items-center gap-2 mb-4">

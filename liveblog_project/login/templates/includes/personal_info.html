@@ -1,3 +1,4 @@
+{% load extras %}
 <div class="d-flex align-items-center personal_block">
   <div class="personal_info">
     <ul class="list-group">
@@ -26,7 +27,11 @@
 {% if user.is_authenticated and user.username == user_obj.username %}
   <div class="d-flex justify-content-between align-items-center mt-3">
     <div>
+      {% if user|user_cannot_create_post %}
+      <span class="cstm-btn-sm custom-primary-btn disabled" title="You have been shadow banned">Create post</span>
+      {% else %}
       <a class="cstm-btn-sm custom-primary-btn" href="{% url 'smart_blog:create_item' %}">Create post</a>
+      {% endif %}
       <a class="cstm-btn-sm custom-primary-btn" href="{% url 'login_app:profile-edit' request.user.username %}"><i class="fa fa-cog" aria-hidden="true"></i></a>
     </div>
     <div class="d-flex align-items-center gap-1">

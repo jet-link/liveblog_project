@@ -151,6 +151,8 @@ class ContentViolation(models.Model):
     )
     status = models.CharField(max_length=20, default=STATUS_PENDING)
     reason = models.CharField(max_length=30)
+    severity = models.CharField(max_length=20, default='medium')
+    confidence = models.FloatField(default=1.0)
     detected_word = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     analysis_run = models.ForeignKey(
@@ -185,6 +187,31 @@ class ContentViolation(models.Model):
         'spam': 0.75,
         'other': 0.80,
     }
+
+    REASON_TO_SEVERITY = {
+        'spam': 'low',
+        'obscenity': 'medium',
+        'other': 'medium',
+        'abuse': 'high',
+        'harassment': 'high',
+    }
+
+    @classmethod
+    def get_severity_from_reason(cls, reason):
+        return cls.REASON_TO_SEVERITY.get(reason, 'medium')
+
+    @classmethod
+    def get_confidence_from_detected(cls, detected_word, reason):
+        """Extract confidence from AI:...=0.85 format, else use default for reason."""
+        word = (detected_word or '').strip()
+        if word.startswith('AI:'):
+            parts = word[3:].split('=')
+            if len(parts) >= 2:
+                try:
+                    return max(0.0, min(1.0, float(parts[1])))
+                except (ValueError, TypeError):
+                    pass
+        return cls.REASON_DEFAULT_RATING.get(reason, 0.80)
 
     def get_rating_display(self):
         """For Rating column: always show numeric score (0.00-1.00) for any violation."""
