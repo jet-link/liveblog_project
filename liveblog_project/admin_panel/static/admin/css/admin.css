@@ -926,7 +926,7 @@
 .admin-table td:first-child {
   width: 1%;
   white-space: nowrap;
-  padding-right: 8px;
+  /* padding-right: 8px; */
 }
 
 .admin-table .admin-bulk-select-all,
@@ -1050,6 +1050,16 @@ a.admin-link {
 .admin-badge-pending {
   background: rgba(139, 148, 158, 0.2);
   color: var(--admin-text-muted);
+}
+
+.admin-badge-new {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  background: var(--admin-accent);
+  color: var(--admin-bg);
 }
 
 /* Admin Reports table — overflow-x instead of text-wrap, min-widths to stay readable */
@@ -1863,7 +1873,10 @@ a.admin-link {
   font-size: .785rem;
 }
 
-
 #assistantProgressBlock{
   margin-top: 1rem;
+}
+
+.assistant-run-block{
+  margin-bottom: 15px;
 }

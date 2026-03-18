@@ -528,29 +528,34 @@ html[data-theme="dark"] .block-quote {
 .liked-users-search-wrap {
     display: inline-flex;
     align-items: center;
+    flex-wrap: nowrap;
     gap: 6px;
+    flex-shrink: 0;
 }
 
-.liked-users-search-wrap[style*="display: none"] {
-    display: none !important;
-}
 
 .liked-users-search-input {
-    min-width: 140px;
+    min-width: 160px;
+    max-width: 160px;
+    width: 200px;
     padding: 5px 12px;
     font-size: .775rem;
+    flex-shrink: 1;
+    box-sizing: border-box;
 }
 
 .liked-users-list-container {
     position: relative;
     padding: 0 20px 20px 20px;
     min-height: 60px;
-    /* min/max height fine-tuned by JS based on user count */
 }
 
-.liked-users-header{
-    /* margin-bottom: 15px; */
+.liked-users-header {
     padding: 20px 20px 0 20px;
+}
+
+.liked-users-header-actions {
+    flex-shrink: 0;
 }
 
 .liked-users-list {
@@ -565,6 +570,8 @@ html[data-theme="dark"] .block-quote {
     display: none;
     position: absolute;
     inset: 0;
+    width: 100%;
+    box-sizing: border-box;
     align-items: center;
     justify-content: center;
     color: var(--text-muted, #6c757d);

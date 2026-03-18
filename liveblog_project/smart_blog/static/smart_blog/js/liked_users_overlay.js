@@ -49,7 +49,24 @@
     return { itemHeight, gap };
   }
 
-  function updateModalHeight(count, forceSearchLock) {
+  const EMPTY_STATE_HEIGHT = 280;
+
+  function getContainerMaxHeight() {
+    if (!container) return 400;
+    const panel = container.closest('.liked-users-panel');
+    if (!panel) return 400;
+    const header = panel.querySelector('.liked-users-header');
+    const headerH = header ? header.getBoundingClientRect().height + 1 : 50;
+    const hrH = 1;
+    return Math.floor(Math.min(window.innerHeight * 0.8 - headerH - hrH - 40, 600));
+  }
+
+  function isEmptyStateActive() {
+    return emptyMsg && emptyMsg.style.display !== 'none' && list && list.style.display === 'none';
+  }
+
+  function updateModalHeight(count, forceSearchLock, isEmptyState) {
+    if (isEmptyState === undefined) isEmptyState = isEmptyStateActive();
     if (!container || !list) return;
     const lock = forceSearchLock || (searchActiveWithMany && count >= SEARCH_MIN_USERS);
     let { itemHeight, gap } = measureItemHeight();
@@ -58,12 +75,19 @@
       gap = 10;
     }
     const paddingBottom = 16;
-    const n = Math.min(count, MAX_VISIBLE);
-    let h = Math.round(itemHeight * n + gap * Math.max(0, n - 1) + paddingBottom);
-    if (lock) {
-      const minH = Math.round(itemHeight * SEARCH_MIN_USERS + gap * (SEARCH_MIN_USERS - 1) + paddingBottom);
-      h = Math.max(h, minH);
+    let h;
+    if (isEmptyState) {
+      h = EMPTY_STATE_HEIGHT;
+    } else {
+      const n = Math.min(count, MAX_VISIBLE);
+      h = Math.round(itemHeight * n + gap * Math.max(0, n - 1) + paddingBottom);
+      if (lock) {
+        const minH = Math.round(itemHeight * SEARCH_MIN_USERS + gap * (SEARCH_MIN_USERS - 1) + paddingBottom);
+        h = Math.max(h, minH);
+      }
     }
+    const maxH = getContainerMaxHeight();
+    h = Math.min(h, maxH);
     container.style.minHeight = h + 'px';
     container.style.maxHeight = h + 'px';
     list.style.minHeight = h + 'px';
@@ -201,7 +225,7 @@
     list.style.display = noMatches ? 'none' : 'flex';
 
     var count = getLikedCount();
-    updateModalHeight(count, searchActiveWithMany && count >= SEARCH_MIN_USERS);
+    updateModalHeight(count, searchActiveWithMany && count >= SEARCH_MIN_USERS, noMatches);
   }
 
   searchBtn?.addEventListener('click', function (e) {
@@ -228,7 +252,7 @@
   window.addEventListener('pagehide', closeOverlay);
   window.addEventListener('pageshow', closeOverlay);
   window.addEventListener('resize', () => {
-    updateModalHeight(getLikedCount(), searchActiveWithMany);
+    updateModalHeight(getLikedCount(), searchActiveWithMany, isEmptyStateActive());
   });
 
   function upsertListItem(username, avatarUrl, profileUrl) {

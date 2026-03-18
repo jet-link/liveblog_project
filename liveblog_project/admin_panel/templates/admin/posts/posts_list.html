@@ -15,7 +15,7 @@
             {% endfor %}
         </select>
         <select name="status" class="admin-select">
-            <option value="">All</option>
+            <option value="">Posts</option>
             <option value="published" {% if current_status == 'published' %}selected{% endif %}>Published</option>
             <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>Draft</option>
         </select>

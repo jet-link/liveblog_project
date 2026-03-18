@@ -13,6 +13,9 @@ class Command(BaseCommand):
             ('viagra', 'spam'),
             ('harassment', 'harassment'),
             ('abuse', 'abuse'),
+            ('shit', 'obscenity'),
+            ('fuck', 'obscenity'),
+            ('asshole', 'obscenity'),
         ]
         for word, reason in defaults:
             _, created = ForbiddenWord.objects.get_or_create(

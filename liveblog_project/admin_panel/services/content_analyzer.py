@@ -1,7 +1,9 @@
 """
 Content moderation analyzer: Banned words + Regex + Detoxify.
+Uses full text for all checks; no truncation before banned-word/regex/abuse.
 """
 import re
+import unicodedata
 import logging
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -28,10 +30,12 @@ def get_detoxify_model():
 
 
 def _normalize_text(text):
-    """Lowercase, strip for comparison."""
+    """Lowercase, strip, NFKC-normalize. Handles long text and unicode evasion."""
     if not text:
         return ''
-    return text.lower().strip()
+    s = str(text).strip()
+    s = unicodedata.normalize('NFKC', s)
+    return s.lower()
 
 
 def check_banned_words(text, forbidden_words):
@@ -261,7 +265,8 @@ def run_content_analysis(schedule='now', analysis_run=None, log_callback=None):
             if comment.pk in existing_comments:
                 processed += 1
                 continue
-            text = comment.text or ''
+            # Full text, no truncation - banned words checked on entire comment
+            text = str(comment.text or '')
             is_violation, reason, detected = analyze_content(text, forbidden_words, forbidden_patterns)
             if is_violation:
                 ContentViolation.objects.create(

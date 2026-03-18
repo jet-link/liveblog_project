@@ -14,13 +14,8 @@
         <a href="{% url 'pages:page' 'contacts' %}" class="text-decoration-none text-muted">Contacts</a>
       </div>
     </div>
-    <div class="footer-subscribe-wrap flex-shrink-0 gap-2">
-      {% comment %} <h5 class="footer-subscribe-title text-muted mb-2">Subscribe to the newsletter</h5>
-      <form class="footer-subscribe d-flex flex-column flex-sm-row gap-2 align-items-stretch" action="#" method="post" novalidate>
-        {% csrf_token %}
-        <input type="email" name="email" class="form-control footer-subscribe-input" placeholder="Enter your email..." required aria-label="Email for newsletter" autocomplete="email" />
-        <button type="submit" class="cstm-btn-sm custom-primary-btn ">Subscribe</button>
-      </form> {% endcomment %}
+    <div class="footer-links d-flex flex-column flex-sm-row gap-4 gap-sm-4">
+      <a href="#" class="text-muted text-decoration-none">Subscribe</a>
       <a href="#" class="text-muted text-decoration-none">Language<i class="fa fa-angle-down ms-2"></i></a>
     </div>
   </div>
@@ -28,7 +23,6 @@
   <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between pb-5 pt-3">
     <p class="text-muted small mb-0">&copy; 2025 BrainStorm, Inc. All rights reserved.</p>
     <div class="d-flex align-items-center">
-      {% comment %} <span>→</span> {% endcomment %}
       <a href="#" class="text-muted text-decoration-none small mt-2">Policy and rights</a>
     </div>
   </div>

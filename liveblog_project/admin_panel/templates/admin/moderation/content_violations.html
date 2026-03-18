@@ -1,7 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 {% load mentions %}
 {% block title %}Content Violations{% endblock %}
-{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Content Violations</li></ol></nav>{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Violations</li></ol></nav>{% endblock %}
 {% block page_title %}Content Violations{% endblock %}
 {% block content %}
 <div class="admin-toolbar">
@@ -39,9 +39,11 @@
             </thead>
             <tbody>
                 {% for v in violations %}
-                <tr data-violation-id="{{ v.pk }}" data-status="{{ v.status }}">
+                <tr data-violation-id="{{ v.pk }}" data-status="{{ v.status }}" data-analysis-id="{{ v.analysis_run_id|default:'' }}">
                     <td><input type="checkbox" class="admin-bulk-row-check" value="{{ v.pk }}" aria-label="Select"></td>
-                    <td>{{ v.content_type|capfirst }}</td>
+                    <td class="admin-violation-type-cell" style="position:relative;">
+                        {{ v.content_type|capfirst }}
+                    </td>
                     <td class="admin-violation-status-cell">
                         {% if v.status == 'checked' %}
                             <span class="admin-badge admin-badge-success">Checked</span>
@@ -103,8 +105,8 @@
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
                                 {% if v.status == 'pending' %}
-                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-success">Checked</button></form>
-                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-warning">Ignore</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-action-resolve">Checked</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-action-dismiss">Ignore</button></form>
                                 {% endif %}
                                 <a href="{% url 'admin_panel:content_violation_confirm_delete' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" class="admin-dropdown-btn admin-action-delete admin-button-danger">Delete</a>
                             </div>
@@ -116,8 +118,8 @@
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
                                 {% if v.status == 'pending' %}
-                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-success">Checked</button></form>
-                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-button-warning">Ignore</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="check" action="{% url 'admin_panel:content_violation_check' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-action-resolve">Checked</button></form>
+                                    <form method="post" class="admin-violation-ajax-form" data-action="ignore" action="{% url 'admin_panel:content_violation_ignore' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" style="margin:0">{% csrf_token %}<button type="submit" class="admin-dropdown-btn admin-action-dismiss">Ignore</button></form>
                                 {% endif %}
                                 <a href="{% url 'admin_panel:content_violation_confirm_delete' v.pk %}{% if filter_qs %}?{{ filter_qs }}{% endif %}" class="admin-dropdown-btn admin-action-delete admin-button-danger">Delete</a>
                             </div>
@@ -150,6 +152,23 @@
 </div>
 <script>
 (function() {
+  var newAnalysisId = null;
+  try { newAnalysisId = sessionStorage.getItem('admin_new_analysis_id'); } catch (e) {}
+  if (newAnalysisId) {
+    document.querySelectorAll('.admin-content-violations-table tr[data-analysis-id="' + newAnalysisId + '"]').forEach(function(row) {
+      var td = row.querySelector('.admin-violation-type-cell');
+      if (td && !td.querySelector('.admin-badge-new')) {
+        var badge = document.createElement('span');
+        badge.className = 'admin-badge admin-badge-new';
+        badge.textContent = 'New';
+        /* styles from .admin-badge-new in admin.css */
+        td.style.position = 'relative';
+        td.appendChild(badge);
+      }
+    });
+    try { sessionStorage.removeItem('admin_new_analysis_id'); } catch (e) {}
+  }
+
   var table = document.querySelector('.admin-content-violations-table');
   if (!table) return;
 

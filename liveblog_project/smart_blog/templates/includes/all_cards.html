@@ -11,6 +11,7 @@
           <div class="d-flex justify-content-between align-items-center py-2">
             <div class="d-flex align-items-center gap-2">
               {% if item.author %}
+                {% if item.author.is_active %}
                 <div class="little-avatar{% if user == item.author %} avatar-ring{% endif %}">
                   {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
                     <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
@@ -19,6 +20,12 @@
                   {% endif %}
                 </div>
                 <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
+                {% else %}
+                <div class="little-avatar">
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="eager" decoding="async" />
+                </div>
+                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
+                {% endif %}
               {% else %}
                 <div class="little-avatar">
                   <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />

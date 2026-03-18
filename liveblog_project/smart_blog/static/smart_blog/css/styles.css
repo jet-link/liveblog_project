@@ -329,7 +329,7 @@ html {
 }
 
 html {
-    scroll-padding-top: 100px;
+    scroll-padding-top: 90px;
 }
 
 body {
@@ -790,12 +790,13 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 .header-menu-item.active {
     color: var(--text-link) !important;
     background-color: var(--bg-subtle);
+    /* border: 1px solid var(--border-muted); */
 }
 
 .search-btn,
 .theme-toggle-btn  {
     border: none;
-    background-color: var(--bg-subtle);
+    border: 1px solid var(--bg-subtle);
     color: var(--text-muted);
     width: 38px;
     height: 38px;
@@ -806,6 +807,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     border-radius: 50%;
     transition: color 0.2s ease, background-color 0.2s ease;
     font-size: 1rem;
+    background: transparent;
 }
 
 .theme-toggle-btn:hover{
@@ -2685,7 +2687,7 @@ html[data-theme="dark"] .tags_block{
 }
 
 
-/* Views Comments Likes Bookmart */
+/* Views Comments Likes Bookmark */
 .VLB {
     padding: 12px 15px;
     box-shadow: var(--card-shadow);
@@ -2694,16 +2696,30 @@ html[data-theme="dark"] .tags_block{
     font-weight: 600;
 }
 
-.users-search-btn{
-    border: none;
+.users-search-btn {
+    border: 1px solid var(--bg-subtle);
     background: transparent;
-    font-size: .8rem;
     color: var(--text-muted);
-    padding: 0 6px;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
-    background-color: var(--border-default);
+    cursor: pointer;
+    font-size: .8rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.users-search-btn:hover {
+    color: var(--text-primary);
+}
+
+.users-search-btn:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
 }
 
 .btn-tag-show-more{

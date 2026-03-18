@@ -182,8 +182,9 @@ def create_backup_scheduled(schedule='manual', user=None):
     from backups.models import Backup
 
     suffix = f' ({schedule})' if schedule != Backup.SCHEDULE_MANUAL else ''
+    local_now = timezone.localtime(timezone.now())
     backup = Backup.objects.create(
-        name=f'Backup {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}{suffix}',
+        name=f'Backup {local_now.strftime("%Y-%m-%d %H:%M:%S")}{suffix}',
         schedule_type=schedule,
         status=Backup.STATUS_PENDING,
         created_by=user,
@@ -210,8 +211,9 @@ def create_backup_sync(backup_type='pre_restore', user=None, timeout=3600):
     """
     from backups.models import Backup
 
+    local_now = timezone.localtime(timezone.now())
     backup = Backup.objects.create(
-        name=f'Safety backup before restore {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}',
+        name=f'Safety backup before restore {local_now.strftime("%Y-%m-%d %H:%M:%S")}',
         schedule_type=Backup.SCHEDULE_MANUAL,
         backup_type=backup_type,
         status=Backup.STATUS_PENDING,
