@@ -393,7 +393,6 @@ def create_item(request):
     if not request.user.is_superuser:
         can_post = getattr(getattr(request.user, 'profile', None), 'can_post', True)
         if not can_post:
-            from django.shortcuts import redirect
             return redirect('smart_blog:items_list')
     if request.method == "POST":
         form = ItemCreateForm(request.POST)

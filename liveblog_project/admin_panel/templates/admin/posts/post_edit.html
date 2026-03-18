@@ -21,8 +21,8 @@
             {{ form.title }}
             {{ form.title.errors }}
         </div>
-        <div class="admin-form-group">
-            <label for="id_text">{{ form.text.label }}</label>
+        <div class="admin-form-group" id="admin-text-field-wrapper" role="group">
+            <label for="id_text" id="admin-text-label">{{ form.text.label }}</label>
             {{ form.text }}
             {{ form.text.errors }}
         </div>

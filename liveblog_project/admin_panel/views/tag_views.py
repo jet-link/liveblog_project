@@ -1,4 +1,6 @@
 """Tag management views."""
+import re
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -22,12 +24,19 @@ def tags_list(request):
 
 @admin_required
 def tag_create(request):
-    """Create tag."""
+    """Create tag(s). Multiple tags separated by spaces create multiple tags (like smart_blog)."""
     if request.method == 'POST':
-        name = request.POST.get('tag_name', '').strip()
-        if name:
-            Tag.objects.get_or_create(tag_name=name)
-            messages.success(request, 'Tag created.')
+        raw = request.POST.get('tag_name', '').strip()
+        if raw:
+            tags_created = 0
+            for tg in [t for t in re.split(r'\s+', raw) if t]:
+                _, created = Tag.objects.get_or_create(tag_name=tg)
+                if created:
+                    tags_created += 1
+            if tags_created:
+                messages.success(request, f'{tags_created} tag(s) created.')
+            else:
+                messages.info(request, 'Tag(s) already exist.')
             return redirect('admin_panel:tags_list')
         messages.error(request, 'Tag name is required.')
     return render(request, 'admin/tags/tag_form.html', {'is_create': True})

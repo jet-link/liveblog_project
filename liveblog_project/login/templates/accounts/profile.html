@@ -18,9 +18,9 @@
       {% endif %} {% endcomment %}
       </div>
       <div class="d-flex align-items-center gap-1">
-      {% if is_owner %}
+      {% if is_owner or user.is_authenticated %}
       {% with trust_score=trust_score %}
-        <span class="custom_badge {% if trust_score >= 8 %}badge_success{% elif trust_score >= 5 %}badge_muted{% elif trust_score >= 3 %}badge_warning{% else %}badge_danger{% endif %} trust-level-badge fw-semibold">{{ trust_score|floatformat:1 }}</span>
+        <span class="custom_badge {% if trust_score >= 8 %}badge_success{% elif trust_score >= 5 %}badge_muted{% elif trust_score >= 3 %}badge_warning{% else %}badge_danger{% endif %} trust-level-badge fw-semibold">Rating: {{ trust_score|floatformat:1 }}</span>
         {% if trust_score >= 8 %}
         <span class="custom_badge badge_success trust-zone-badge">Trusted</span>
         {% elif trust_score >= 5 %}

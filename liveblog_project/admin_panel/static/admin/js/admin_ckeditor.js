@@ -8,11 +8,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   editors.forEach(function (el) {
     if (typeof ClassicEditor === 'undefined') return;
+    var textareaId = el.id || 'id_text';
+    if (!el.id) el.id = textareaId;
     ClassicEditor
       .create(el, {
         toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'undo', 'redo']
       })
       .then(function (editor) {
+        el.id = textareaId;
+        var voiceLabel = el.parentElement.querySelector('.ck-voice-label');
+        if (voiceLabel && voiceLabel.id === el.id) {
+          voiceLabel.id = 'ck-voice-label-' + Math.random().toString(36).slice(2);
+        }
         var editable = editor.ui.getEditableElement();
         if (editable) {
           editable.style.minHeight = '450px';

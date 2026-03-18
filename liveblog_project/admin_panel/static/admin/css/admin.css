@@ -666,6 +666,15 @@
   border-radius: 6px;
 }
 
+/* On small screens, flex height constraints don't apply — add max-height so logs scroll */
+@media (max-width: 992px) {
+  #assistantLogsContent {
+    max-height: min(50vh, 400px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .admin-stat-card {
   padding: 20px;
   text-align: center;

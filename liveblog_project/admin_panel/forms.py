@@ -10,7 +10,7 @@ class ItemAdminCreateForm(BaseItemCreateForm):
     class Meta(BaseItemCreateForm.Meta):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'Enter title', 'spellcheck': 'true'}),
-            'text': forms.Textarea(attrs={'class': 'admin-textarea ckeditor', 'rows': 12, 'placeholder': 'Fill the text', 'spellcheck': 'true'}),
+            'text': forms.Textarea(attrs={'id': 'id_text', 'class': 'admin-textarea ckeditor', 'rows': 12, 'placeholder': 'Fill the text', 'spellcheck': 'true'}),
             'category': forms.Select(attrs={'class': 'admin-select'}),
         }
 
@@ -38,7 +38,7 @@ class ItemAdminEditForm(forms.ModelForm):
         fields = ['title', 'text', 'category', 'tags', 'slug']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'Title', 'spellcheck': 'true'}),
-            'text': forms.Textarea(attrs={'class': 'admin-textarea ckeditor', 'rows': 12, 'placeholder': 'Post text', 'spellcheck': 'true'}),
+            'text': forms.Textarea(attrs={'id': 'id_text', 'class': 'admin-textarea ckeditor', 'rows': 12, 'placeholder': 'Post text', 'spellcheck': 'true'}),
             'category': forms.Select(attrs={'class': 'admin-select'}),
             'tags': forms.SelectMultiple(attrs={'class': 'admin-select', 'size': 6}),
             'slug': forms.TextInput(attrs={'class': 'admin-input', 'placeholder': 'slug'}),
