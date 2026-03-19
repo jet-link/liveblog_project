@@ -1,10 +1,24 @@
 {% extends 'admin/layout/base.html' %}
+{% load static %}
 
 {% block title %}Stats {{ item.title }}{% endblock %}
 {% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:posts_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Posts</a></li><li class="admin-breadcrumbs-item">Stats</li></ol></nav>{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>{% endblock %}
 {% block page_title %}Stats {{ item.title|truncatewords:5 }}{% endblock %}
 
 {% block content %}
+<section class="admin-activity-chart admin-post-stats-chart">
+    <h2 class="admin-section-title">Activity (last 14 days)</h2>
+    <div class="admin-chart-legend">
+        <label><input type="checkbox" id="chartPostViews" checked> Views</label>
+        <label><input type="checkbox" id="chartPostLikes" checked> Likes</label>
+        <label><input type="checkbox" id="chartPostComments" checked> Comments</label>
+    </div>
+    <div class="admin-card admin-chart-container">
+        <canvas id="postStatsChart"></canvas>
+    </div>
+</section>
+
 <div class="admin-stats-grid">
     <div class="admin-card admin-stat-card">
         <div class="admin-stat-value">{{ item.views_count }}</div>
@@ -35,4 +49,35 @@
     {% if item.is_published %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button">View Post</a>{% else %}<span class="admin-button admin-link-draft">View Post</span>{% endif %}
     <a href="{% url 'admin_panel:post_edit' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Edit</a>
 {% comment %} </div> {% endcomment %}
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('postStatsChart');
+    if (ctx && typeof Chart !== 'undefined') {
+        var data = {{ activity_json|safe }};
+        if (data && data.labels) {
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { id: 'views', label: 'Views', data: data.views, borderColor: '#1f6feb', fill: false },
+                        { id: 'likes', label: 'Likes', data: data.likes, borderColor: '#238636', fill: false },
+                        { id: 'comments', label: 'Comments', data: data.comments, borderColor: '#a371f7', fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+            document.getElementById('chartPostViews').addEventListener('change', function() { chart.setDatasetVisibility(0, this.checked); chart.update(); });
+            document.getElementById('chartPostLikes').addEventListener('change', function() { chart.setDatasetVisibility(1, this.checked); chart.update(); });
+            document.getElementById('chartPostComments').addEventListener('change', function() { chart.setDatasetVisibility(2, this.checked); chart.update(); });
+        }
+    }
+});
+</script>
 {% endblock %}

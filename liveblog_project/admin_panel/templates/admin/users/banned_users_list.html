@@ -7,7 +7,7 @@
 {% block content %}
 <div class="admin-toolbar">
     <form class="admin-search-form" method="get" action="{% url 'admin_panel:banned_users' %}">
-        <input type="text" name="q" value="{{ search }}" placeholder="Search banned users..." class="admin-input admin-search-input">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search users..." class="admin-input admin-search-input">
         <button type="submit" class="admin-button">Search</button>
     </form>
 </div>

@@ -217,8 +217,11 @@
   var signoutCancel = document.getElementById('adminSignoutCancelBtn');
   var logoutUrl = typeof window.ADMIN_LOGOUT_URL === 'string' ? window.ADMIN_LOGOUT_URL : '';
 
-  function openSignoutModal() {
+  var signoutModalTrigger = null;
+
+  function openSignoutModal(trigger) {
     if (!signoutModal) return;
+    signoutModalTrigger = trigger || null;
     signoutModal.removeAttribute('hidden');
     signoutModal.classList.add('is-open');
     signoutModal.setAttribute('aria-hidden', 'false');
@@ -226,16 +229,25 @@
   }
   function closeSignoutModal() {
     if (!signoutModal) return;
+    if (signoutModal.contains(document.activeElement)) {
+      if (signoutModalTrigger && typeof signoutModalTrigger.focus === 'function') {
+        signoutModalTrigger.focus({ preventScroll: true });
+      } else {
+        var fallback = document.querySelector('.admin-signout-trigger, .admin-header button');
+        if (fallback) fallback.focus({ preventScroll: true });
+      }
+    }
     signoutModal.classList.remove('is-open');
     signoutModal.setAttribute('aria-hidden', 'true');
     signoutModal.setAttribute('hidden', '');
     document.body.style.overflow = '';
+    signoutModalTrigger = null;
   }
 
   document.querySelectorAll('.admin-signout-trigger').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      openSignoutModal();
+      openSignoutModal(btn);
     });
   });
   if (signoutBackdrop) signoutBackdrop.addEventListener('click', closeSignoutModal);

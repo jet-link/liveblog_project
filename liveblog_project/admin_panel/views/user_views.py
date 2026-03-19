@@ -29,10 +29,10 @@ def users_list(request):
         )
 
     status = request.GET.get('status')
-    if status == 'active':
-        qs = qs.filter(is_active=True)
-    elif status == 'banned':
+    if status == 'banned':
         qs = qs.filter(is_active=False)
+    else:
+        qs = qs.filter(is_active=True)
 
     paginator = Paginator(qs, 25)
     page = request.GET.get('page', 1)
@@ -93,10 +93,9 @@ def user_ban(request, pk):
             user.save()
             messages.success(request, f'User {user.username} has been banned.')
         url = reverse('admin_panel:users_list')
-        qs = request.GET.urlencode()
-        if qs:
-            url += '?' + qs
-        return redirect(url)
+        qs = request.GET.copy()
+        qs['status'] = 'active'
+        return redirect(url + '?' + qs.urlencode())
     return render(request, 'admin/users/user_confirm_ban.html', {'user_obj': user})
 
 
@@ -119,14 +118,17 @@ def user_unban(request, pk):
         messages.success(request, f'User {user.username} has been unbanned.')
         if request.GET.get('from') == 'banned':
             url = reverse('admin_panel:banned_users')
-        else:
-            url = reverse('admin_panel:users_list')
+            qs = request.GET.copy()
+            qs.pop('from', None)
+            qs = qs.urlencode()
+            if qs:
+                url += '?' + qs
+            return redirect(url)
+        url = reverse('admin_panel:users_list')
         qs = request.GET.copy()
         qs.pop('from', None)
-        qs = qs.urlencode()
-        if qs:
-            url += '?' + qs
-        return redirect(url)
+        qs['status'] = 'active'
+        return redirect(url + '?' + qs.urlencode())
     from_banned = request.GET.get('from') == 'banned'
     qs = request.GET.copy()
     qs.pop('from', None)

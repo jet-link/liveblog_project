@@ -137,12 +137,17 @@ def post_delete(request, slug):
 @admin_required
 def post_view_stats(request, slug):
     """View post statistics."""
+    import json
     from smart_blog.models import Comment
+    from admin_panel.services.analytics_service import get_post_activity_chart_data
     item = get_object_or_404(Item, slug=slug)
     comments_count = Comment.objects.filter(item=item, parent__isnull=True).count()
     reports_count = item.reports.count()
+    activity_data = get_post_activity_chart_data(item, days=14)
+    activity_json = json.dumps(activity_data)
     return render(request, 'admin/posts/post_stats.html', {
         'item': item,
         'comments_count': comments_count,
         'reports_count': reports_count,
+        'activity_json': activity_json,
     })

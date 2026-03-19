@@ -710,8 +710,8 @@
 
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 2fr));
-  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
   width: 100%;
 }
 
@@ -1645,14 +1645,9 @@ a.admin-link {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.admin-profile-list li {
-  margin-bottom: 20px;
-}
-
-.admin-profile-list li:last-child {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .admin-profile-link {
@@ -1709,9 +1704,9 @@ a.admin-link {
   color: #2980b9;
 }
 
-.admin-table td:not(.admin-actions-cell) a:visited {
+/* .admin-table td:not(.admin-actions-cell) a:visited {
   color: #2980b9 !important;
-}
+} */
 
 /* tables */
 .admin-table tr th {
@@ -1729,6 +1724,7 @@ a.admin-link {
 /* Bulk delete/clear button - responsive */
 .admin-bulk-delete-form,
 .admin-bulk-clear-form,
+.admin-bulk-delete-content-form,
 .admin-bulk-unban-form,
 .admin-bulk-ban-form {
   display: inline-flex;
@@ -1738,6 +1734,7 @@ a.admin-link {
 
   .admin-bulk-delete-form,
   .admin-bulk-clear-form,
+  .admin-bulk-delete-content-form,
   .admin-bulk-unban-form,
   .admin-bulk-ban-form {
     width: 100%;
@@ -1746,6 +1743,7 @@ a.admin-link {
 
   .admin-bulk-delete-form .admin-bulk-delete-btn,
   .admin-bulk-clear-form .admin-bulk-clear-btn,
+  .admin-bulk-delete-content-form .admin-bulk-delete-content-btn,
   .admin-bulk-unban-form .admin-bulk-unban-btn,
   .admin-bulk-ban-form .admin-bulk-ban-btn {
     width: 100%;
@@ -1835,7 +1833,10 @@ a.admin-link {
 }
 
 @media (max-width: 600px) {
-  .admin-activity-chart {
+  .admin-dashboard .admin-activity-chart {
+    display: none;
+  }
+  .admin-post-stats-chart {
     display: none;
   }
 }
@@ -1930,6 +1931,8 @@ a.admin-link {
 }
 
 .rescent-comment-text {
+  display: inline-block;
+  max-width: 100%;
   padding: 9px 20px;
   background: #f1f1f1;
   color: #0550ae;
@@ -1937,6 +1940,20 @@ a.admin-link {
   border-radius: 8px;
   border-left: 4px solid #0550ae;
   font-size: .785rem;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+
+.admin-profile-list--comments {
+  gap: 12px;
+}
+
+.admin-profile-list--comments li {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
 }
 
 #assistantProgressBlock{

@@ -49,6 +49,49 @@ def get_activity_chart_data(days=14):
     }
 
 
+def get_post_activity_chart_data(item, days=14):
+    """Per-post activity: views, likes, comments per day for chart."""
+    from smart_blog.models import ItemView, Like
+
+    since = timezone.now() - timezone.timedelta(days=days)
+    labels = []
+    views_data = []
+    likes_data = []
+    comments_data = []
+
+    # Views per day (ItemView)
+    views_qs = ItemView.objects.filter(item=item, viewed_at__gte=since).annotate(
+        date=TruncDate('viewed_at')
+    ).values('date').annotate(count=Count('pk')).order_by('date')
+    views_map = {str(v['date']): v['count'] for v in views_qs}
+
+    # Likes per day
+    likes_qs = Like.objects.filter(item=item, created_at__gte=since).annotate(
+        date=TruncDate('created_at')
+    ).values('date').annotate(count=Count('pk')).order_by('date')
+    likes_map = {str(l['date']): l['count'] for l in likes_qs}
+
+    # Comments per day
+    comments_qs = Comment.objects.filter(item=item, created__gte=since).annotate(
+        date=TruncDate('created')
+    ).values('date').annotate(count=Count('pk')).order_by('date')
+    comments_map = {str(c['date']): c['count'] for c in comments_qs}
+
+    for i in range(days):
+        d = (timezone.now() - timezone.timedelta(days=days - 1 - i)).date()
+        labels.append(d.isoformat())
+        views_data.append(views_map.get(str(d), 0))
+        likes_data.append(likes_map.get(str(d), 0))
+        comments_data.append(comments_map.get(str(d), 0))
+
+    return {
+        'labels': labels,
+        'views': views_data,
+        'likes': likes_data,
+        'comments': comments_data,
+    }
+
+
 def get_top_posts_by_popularity(limit=20):
     """Top posts by popularity (views, likes, comments, reposts)."""
     from django.db.models import Q

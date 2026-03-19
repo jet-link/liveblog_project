@@ -109,7 +109,11 @@ def banned_users_bulk_unban(request):
             pass
     if unbanned:
         messages.success(request, f'{unbanned} user(s) unbanned.')
-    return redirect('admin_panel:banned_users')
+    url = reverse('admin_panel:banned_users')
+    qs = request.GET.urlencode()
+    if qs:
+        url += '?' + qs
+    return redirect(url)
 
 
 @admin_required
@@ -177,7 +181,9 @@ def users_bulk_ban(request):
             pass
     if banned:
         messages.success(request, f'{banned} user(s) banned.')
-    return _redirect_with_qs('users_list', request)
+    qs = request.GET.copy()
+    qs['status'] = 'active'
+    return redirect(reverse('admin_panel:users_list') + '?' + qs.urlencode())
 
 
 @admin_required

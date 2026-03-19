@@ -19,6 +19,7 @@
     {% endif %}
     <div class="admin-form-actions">
         <a href="{% url 'login_app:profile' user_obj.username %}" class="admin-button">View Profile</a>
+        {% if not user_obj.is_staff %}<a href="{% url 'admin_panel:user_delete' user_obj.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-danger">Delete profile</a>{% endif %}
     </div>
 </div>
 
@@ -35,7 +36,7 @@
 
 <div class="admin-card admin-profile-list-card">
     <h3>Recent Comments</h3>
-    <ul class="admin-profile-list">
+    <ul class="admin-profile-list admin-profile-list--comments">
         {% for c in comments %}
         <li><span class="rescent-comment-text">{{ c.text|strip_mentions|truncatewords:12 }}</span> on {% if c.item.is_published %}<a href="{{ c.get_comment_url }}" class="admin-profile-link">{{ c.item.title }}</a>{% else %}<span class="admin-profile-link admin-link-draft">{{ c.item.title }}</span>{% endif %}</li>
         {% empty %}

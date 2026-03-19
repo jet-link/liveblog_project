@@ -210,15 +210,25 @@
         var clearHistoryCancelBtn = document.getElementById('assistantClearHistoryCancelBtn')
 
         function openClearHistoryModal() {
+          if (!clearHistoryModal) return
           clearHistoryModal.removeAttribute('hidden')
           clearHistoryModal.classList.add('is-open')
           clearHistoryModal.setAttribute('aria-hidden', 'false')
           document.body.style.overflow = 'hidden'
         }
         function closeClearHistoryModal() {
+          if (!clearHistoryModal) return
+          if (clearHistoryModal.contains(document.activeElement)) {
+            if (clearHistoryBtn && typeof clearHistoryBtn.focus === 'function') {
+              clearHistoryBtn.focus({ preventScroll: true })
+            } else {
+              var fallback = document.querySelector('.admin-toolbar button, .admin-card button')
+              if (fallback) fallback.focus({ preventScroll: true })
+            }
+          }
           clearHistoryModal.classList.remove('is-open')
-          clearHistoryModal.setAttribute('hidden', '')
           clearHistoryModal.setAttribute('aria-hidden', 'true')
+          clearHistoryModal.setAttribute('hidden', '')
           document.body.style.overflow = ''
         }
 

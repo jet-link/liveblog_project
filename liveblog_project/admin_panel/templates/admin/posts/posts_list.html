@@ -25,7 +25,7 @@
             <option value="likes" {% if current_sort == 'likes' %}selected{% endif %}>By likes</option>
             <option value="comments" {% if current_sort == 'comments' %}selected{% endif %}>By comments</option>
         </select>
-        <button type="submit" class="admin-button">Filter</button>
+        <button type="submit" class="admin-button">Search</button>
     </form>
     {% comment %} <a href="{% url 'admin_panel:post_create' %}" class="admin-button admin-button-primary">New Post</a> {% endcomment %}
 </div>

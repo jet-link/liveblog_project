@@ -15,15 +15,20 @@
 
   var bulkDeleteModal, bulkDeleteTitle, bulkDeleteConfirmBtn, bulkDeleteCancelBtn, bulkDeleteBackdrop;
   var pendingSubmit = null;
+  var lastModalTrigger = null;
 
   function openBulkModal(count, onConfirm, opts) {
     if (!bulkDeleteModal) return;
     opts = opts || {};
+    lastModalTrigger = opts.trigger || null;
     var msg = opts.title || (count === 1
       ? 'Are you sure you want to delete this item?'
       : 'Are you sure you want to delete ' + count + ' items?');
     if (bulkDeleteTitle) bulkDeleteTitle.textContent = msg;
-    if (bulkDeleteConfirmBtn) bulkDeleteConfirmBtn.textContent = opts.confirmText || 'Delete';
+    if (bulkDeleteConfirmBtn) {
+      bulkDeleteConfirmBtn.textContent = opts.confirmText || 'Delete';
+      bulkDeleteConfirmBtn.className = 'admin-button ' + (opts.buttonClass || 'admin-button-danger');
+    }
     pendingSubmit = onConfirm;
     bulkDeleteModal.removeAttribute('hidden');
     bulkDeleteModal.classList.add('is-open');
@@ -33,11 +38,20 @@
 
   function closeBulkDeleteModal() {
     if (!bulkDeleteModal) return;
+    if (bulkDeleteModal.contains(document.activeElement)) {
+      if (lastModalTrigger && typeof lastModalTrigger.focus === 'function') {
+        lastModalTrigger.focus({ preventScroll: true });
+      } else {
+        var fallback = document.querySelector('.admin-toolbar button');
+        if (fallback) fallback.focus({ preventScroll: true });
+      }
+    }
     bulkDeleteModal.classList.remove('is-open');
     bulkDeleteModal.setAttribute('aria-hidden', 'true');
     bulkDeleteModal.setAttribute('hidden', '');
     document.body.style.overflow = '';
     pendingSubmit = null;
+    lastModalTrigger = null;
   }
 
   function initBulkDeleteModal() {
@@ -101,9 +115,21 @@
 
     function updateAllButtons() {
       var ids = getSelectedIds(table);
-      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-ban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn, .admin-bulk-delete-content-btn').forEach(function(btn) {
+      var banActiveOnly = table.getAttribute('data-bulk-ban-active-only') === '1';
+      var allSelectedActive = true;
+      if (banActiveOnly && ids.length > 0) {
+        table.querySelectorAll('.admin-bulk-row-check:checked').forEach(function(cb) {
+          var row = cb.closest('tr');
+          if (row && row.getAttribute('data-is-active') !== '1') allSelectedActive = false;
+        });
+      }
+      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn, .admin-bulk-delete-content-btn').forEach(function(btn) {
         btn.style.display = ids.length > 0 ? '' : 'none';
       });
+      var banBtn = toolbar.querySelector('.admin-bulk-ban-btn');
+      if (banBtn) {
+        banBtn.style.display = (ids.length > 0 && (!banActiveOnly || allSelectedActive)) ? '' : 'none';
+      }
     }
 
     BULK_ACTIONS.forEach(function(action) {
@@ -148,7 +174,7 @@
             });
             form.appendChild(container);
             form.submit();
-          }, { title: action.modalTitle(ids.length), confirmText: action.confirmText });
+          }, { title: action.modalTitle(ids.length), confirmText: action.confirmText, buttonClass: action.btnStyle, trigger: btn });
         });
       }
 
