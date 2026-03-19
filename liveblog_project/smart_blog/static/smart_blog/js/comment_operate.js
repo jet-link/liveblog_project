@@ -233,6 +233,16 @@
     textarea?.closest('form')?.querySelector('.field-error')?.remove();
   }
 
+  function replaceCommentFormWithShadowBanMessage() {
+    const formBody = document.getElementById('commentFormBody');
+    const pt4 = formBody?.previousElementSibling;
+    if (pt4 && formBody) {
+      pt4.innerHTML = '<div class="d-inline-flex align-items-center custom-alert custom-alert-danger"><span class="small danger_" title="You have been shadow banned">You have been shadow banned. Improve your trust score to restore access.</span></div>';
+      formBody.style.display = 'none';
+    }
+    if (window.closeAllReplyForms) window.closeAllReplyForms();
+  }
+
   const COMMENT_MAX_CHARS = 500;
 
   function countCommentChars(value) {
@@ -531,14 +541,38 @@
             startCommentCooldown(itemId, btn, seconds);
           }
         }
-        showFieldError(textarea, data?.error || 'Server error');
+
+        const errMsg = data?.error || 'Server error';
+        showFieldError(textarea, errMsg);
+
+        if (resp.status === 403) {
+          replaceCommentFormWithShadowBanMessage();
+        }
 
       } catch (err) {
-        console.error('Add comment failed:', err);
+        showFieldError(textarea, 'Unable to submit. Please try again.');
       } finally {
         updateCommentButtonCooldown(btn, itemId);
       }
     });
+
+    const trustStatusUrl = form.dataset.trustStatusUrl;
+    if (trustStatusUrl) {
+      const trustPollInterval = setInterval(async () => {
+        try {
+          const resp = await fetch(trustStatusUrl, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+          });
+          if (!resp.ok) return;
+          const data = await parseJsonSafe(resp);
+          if (data?.shadow_banned) {
+            clearInterval(trustPollInterval);
+            replaceCommentFormWithShadowBanMessage();
+          }
+        } catch (e) { /* ignore */ }
+      }, 25000);
+    }
 
     // "Please write a text" исчезает только при вводе в поле, не при клике вне формы
   }
@@ -974,6 +1008,23 @@
       btnCancel.disabled = true;
 
       try {
+        const trustStatusUrl = document.body.dataset.trustStatusUrl;
+        if (trustStatusUrl) {
+          try {
+            const statusResp = await fetch(trustStatusUrl, {
+              headers: { 'Accept': 'application/json' },
+              credentials: 'same-origin'
+            });
+            if (statusResp.ok) {
+              const statusData = await statusResp.json();
+              if (statusData && statusData.shadow_banned) {
+                showFieldError(textarea, 'You have been shadow banned. Improve your trust score to restore access.');
+                return;
+              }
+            }
+          } catch (e) { /* ignore */ }
+        }
+
         const fd = new FormData();
         fd.append('text', text);
 
@@ -1009,7 +1060,7 @@
         );
 
       } catch (err) {
-        console.error('Edit comment error:', err);
+        showFieldError(textarea, 'Unable to save. Please try again.');
       } finally {
         btnSave.disabled = false;
         btnCancel.disabled = false;
@@ -1539,6 +1590,23 @@
       text = `@[user:${mentionId}], ${text}`;
     }
 
+    const trustStatusUrl = document.body.dataset.trustStatusUrl;
+    if (trustStatusUrl) {
+      try {
+        const statusResp = await fetch(trustStatusUrl, {
+          headers: { 'Accept': 'application/json' },
+          credentials: 'same-origin'
+        });
+        if (statusResp.ok) {
+          const statusData = await statusResp.json();
+          if (statusData && statusData.shadow_banned) {
+            errors.textContent = 'You have been shadow banned. Improve your trust score to restore access.';
+            return;
+          }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
     const fd = new FormData();
     fd.append('text', text);
     fd.append('parent_id', parentId);
@@ -1630,12 +1698,10 @@
         window.startReplyCooldown?.(parentId);
         closeAllReplyForms();
       } catch (renderErr) {
-        console.error('Reply render error:', renderErr);
         errors.textContent = 'Render error.';
       }
     } catch (err) {
-      console.error('Reply submit error:', err);
-      errors.textContent = err?.message || 'Network error.';
+      errors.textContent = 'Unable to submit. Please try again.';
     }
   });
 

@@ -16,7 +16,7 @@ def assistant_view(request):
     if not request.user.is_superuser:
         return render(request, 'admin/assistant/assistant.html', {'access_denied': True})
     recent_runs = list(
-        AnalysisRun.objects.order_by('-started_at').select_related()[:30]
+        AnalysisRun.objects.order_by('-started_at').select_related('started_by')[:30]
     )
     return render(request, 'admin/assistant/assistant.html', {
         'recent_runs': recent_runs,
@@ -37,6 +37,7 @@ def assistant_analyze(request):
         schedule=schedule,
         status=AnalysisRun.STATUS_RUNNING,
         progress=0,
+        started_by=request.user,
     )
 
     def run_in_background():
@@ -57,7 +58,7 @@ def assistant_status(request, pk):
     """Return analysis run status for polling."""
     if not request.user.is_superuser:
         return JsonResponse({'success': False}, status=403)
-    run = AnalysisRun.objects.filter(pk=pk).first()
+    run = AnalysisRun.objects.filter(pk=pk).select_related('started_by').first()
     if not run:
         return JsonResponse({'success': False, 'error': 'Not found'}, status=404)
     violations_count = run.violations.count() if run.pk else 0
@@ -69,6 +70,7 @@ def assistant_status(request, pk):
         'log_lines': run.log_lines or [],
         'violations_count': violations_count,
         'started_at': run.started_at.isoformat() if run.started_at else None,
+        'started_by': run.started_by.username if run.started_by else None,
     })
 
 

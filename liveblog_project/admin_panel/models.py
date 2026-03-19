@@ -100,6 +100,13 @@ class AnalysisRun(models.Model):
     progress = models.PositiveSmallIntegerField(default=0)
     log_lines = models.JSONField(default=list)
     started_at = models.DateTimeField(auto_now_add=True)
+    started_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='analysis_runs',
+    )
     finished_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

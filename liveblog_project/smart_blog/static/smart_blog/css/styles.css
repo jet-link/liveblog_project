@@ -1067,9 +1067,13 @@ input::-webkit-search-decoration {
     font-weight: 500;
 }
 .custom-alert.custom-alert-danger {
-    background-color: var(--danger-bg);
+    background-color: transparent;
     margin-bottom: 0.5rem;
+    border: 1px solid var(--danger-bg);
+    display: inline-flex;
+    align-items: center;
 }
+
 .custom-alert.custom-alert-success {
     background-color: var(--success-bg);
 }
@@ -3620,6 +3624,7 @@ pre {
 .comment-menu-action.badge_danger {
     border-color: #ff6b6b;
     color: #ff6b6b;
+    background: transparent;
 }
 
 .reply-cooldown-timer{

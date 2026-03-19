@@ -19,18 +19,25 @@ def render_mentions(text, parent_comment_id=None):
         anchor = f'#comment-anchor-{parent_comment_id}' if parent_comment_id else '#'
         try:
             user = User._base_manager.get(pk=user_id)
+            if user.is_active:
+                label = escape(user.username)
+                title_attr = f' title="{escape(user.username)}"'
+            else:
+                label = "banned-user"
+                title_attr = ' title="Banned user"'
             return (
                 f'<a href="{anchor}" '
                 f'class="mention-link" '
-                f'data-parent-id="{parent_comment_id or ""}">'
-                f'@{escape(user.username)}</a>'
+                f'data-parent-id="{parent_comment_id or ""}"{title_attr}>'
+                f'@{label}</a>'
             )
         except User.DoesNotExist:
             return (
                 f'<a href="{anchor}" '
                 f'class="mention-link" '
-                f'data-parent-id="{parent_comment_id or ""}">'
-                f'@vanished-user</a>'
+                f'data-parent-id="{parent_comment_id or ""}" '
+                f'title="Deleted user">'
+                f'@deleted-user</a>'
             )
 
     text = text.replace('\r\n', '\n').replace('\r', '\n')
@@ -56,9 +63,11 @@ def mention_names(text):
         user_id = match.group(1)
         try:
             user = User._base_manager.get(pk=user_id)
-            return f'@{user.username}'
+            if user.is_active:
+                return f'@{user.username}'
+            return '@banned-user'
         except User.DoesNotExist:
-            return '@vanished-user'
+            return '@deleted-user'
 
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     return MENTION_RE.sub(repl, text)

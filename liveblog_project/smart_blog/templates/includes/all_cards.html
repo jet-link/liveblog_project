@@ -1,5 +1,6 @@
 {% load static %}
 {% load counters %}
+{% load user_status %}
 <div class="row mb-2 g-3 align-items-stretch">
   {% for item in items %}
     <div class="col-lg-6 col-md-12 col-sm-12 col-12 item-card search-item">
@@ -22,15 +23,15 @@
                 <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
                 {% else %}
                 <div class="little-avatar">
-                  <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="30" height="30" loading="eager" decoding="async" />
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display item.author %}" class="user-avatar" width="30" height="30" loading="eager" decoding="async" />
                 </div>
-                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
+                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
                 {% endif %}
               {% else %}
                 <div class="little-avatar">
-                  <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+                  <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display item.author %}" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
                 </div>
-                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">Vanished user</small>
+                <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
               {% endif %}
             </div>
 

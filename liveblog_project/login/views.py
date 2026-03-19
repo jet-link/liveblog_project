@@ -7,8 +7,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.urls import reverse
-from smart_blog.models import Item, Like
+from urllib.parse import urlparse, parse_qs
+
+from django.urls import reverse, resolve, Resolver404
+from smart_blog.models import Comment, Item, Like
 from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
@@ -60,6 +62,78 @@ def _random_vanished_name():
     return random.choice(FUNNY_NAMES)
 
 
+def _safe_referer_url(request):
+    """Возвращает валидный referer или None."""
+    referer = request.META.get("HTTP_REFERER")
+    if referer and url_has_allowed_host_and_scheme(
+        url=referer,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure()
+    ):
+        return referer
+    return None
+
+
+def _referer_breadcrumb_info(request, referer_url):
+    """
+    Возвращает (title, url) для хлебной крошки на основе referer.
+    title — заголовок страницы, url — валидный URL для ссылки.
+    """
+    fallback_url = reverse("smart_blog:items_list")
+    if not referer_url:
+        return "BraiNews", fallback_url
+
+    parsed = urlparse(referer_url)
+    path = parsed.path or "/"
+    query = parse_qs(parsed.query)
+
+    try:
+        match = resolve(path)
+        url_name = match.url_name or ""
+        kwargs = match.kwargs or {}
+
+        if url_name == "item_detail" and kwargs.get("slug"):
+            item = Item.objects.filter(slug=kwargs["slug"]).values("title").first()
+            if item:
+                return item["title"], referer_url
+        elif url_name == "tag_list" and kwargs.get("slug"):
+            from smart_blog.models import Tag
+
+            tag = Tag.objects.filter(slug=kwargs["slug"]).values("tag_name").first()
+            if tag:
+                return tag["tag_name"], referer_url
+        elif url_name == "items_popular":
+            return "Popular", referer_url
+        elif url_name == "items_list":
+            return "BraiNews", referer_url
+        elif url_name == "global_search":
+            q = (query.get("q") or [""])[0]
+            return (f"Found - {q}" if q else "Search"), referer_url
+        elif url_name == "profile" and kwargs.get("username"):
+            return kwargs["username"], referer_url
+        elif url_name == "profile-section" and kwargs.get("username"):
+            sections = {"created": "Created", "liked": "Liked", "bookmarked": "Bookmarked"}
+            section_title = sections.get(kwargs.get("section", ""), kwargs.get("section", "Section"))
+            return f"{kwargs['username']} - {section_title}", referer_url
+        elif url_name == "home":
+            return "BrainStorm", referer_url
+        elif url_name == "comment_thread" and kwargs.get("pk"):
+            comment = (
+                Comment.objects.filter(is_draft=False)
+                .select_related("item")
+                .filter(pk=kwargs["pk"])
+                .values("item__title")
+                .first()
+            )
+            if comment and comment.get("item__title"):
+                return f"{comment['item__title']} - Replies", referer_url
+            return "Replies", referer_url
+    except Resolver404:
+        pass
+
+    return "BraiNews", referer_url
+
+
 def annotate_user_liked(qs, user):
     if user.is_authenticated:
         likes_subq = Like.objects.filter(item=OuterRef('pk'), user=user)
@@ -89,7 +163,7 @@ def _vanished_items_qs():
 
 
 def vanished_generic_view(request):
-    """Страница для author=None: аватар, Vanished user, карточки публикаций."""
+    """Страница для author=None: аватар, Deleted user, карточки публикаций."""
     qs = _vanished_items_qs()
     qs = annotate_user_liked(qs, request.user)
     SECTION_LIMIT = 10
@@ -106,8 +180,10 @@ def vanished_generic_view(request):
     apply_human_counts(created_items)
 
     vanished_name = _random_vanished_name()
+    referer = _safe_referer_url(request)
+    crumb_title, crumb_url = _referer_breadcrumb_info(request, referer)
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb(crumb_title, crumb_url),
         breadcrumb(vanished_name, None),
     )
     context = {
@@ -117,6 +193,7 @@ def vanished_generic_view(request):
         "listing_source": "vanished",
         "breadcrumbs": breadcrumbs,
         "vanished_display_name": vanished_name,
+        "vanished_status": "deleted",
     }
     return render(request, "includes/vanished.html", context)
 
@@ -134,9 +211,11 @@ def vanished_created_view(request):
         item.bookmarks_count_human = count_convert(item.bookmarks_count)
         item.comments_count_human = count_convert(item.comments_count)
 
+    referer = _safe_referer_url(request)
+    crumb_title, crumb_url = _referer_breadcrumb_info(request, referer)
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
-        breadcrumb("Vanished user", reverse("login_app:vanished")),
+        breadcrumb(crumb_title, crumb_url),
+        breadcrumb("Deleted user", reverse("login_app:vanished")),
         breadcrumb("Created", None),
     )
     return render(request, "includes/vanished_created.html", {
@@ -177,8 +256,10 @@ def user_not_found_view(request, user_obj):
     })
 
     vanished_name = _random_vanished_name()
+    referer = _safe_referer_url(request)
+    crumb_title, crumb_url = _referer_breadcrumb_info(request, referer)
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("BraiNews", reverse("smart_blog:items_list")),
+        breadcrumb(crumb_title, crumb_url),
         breadcrumb(vanished_name, None),
     )
 
@@ -191,6 +272,7 @@ def user_not_found_view(request, user_obj):
         "listing_section": "created",
         "breadcrumbs": breadcrumbs,
         "vanished_display_name": vanished_name,
+        "vanished_status": "banned",
     }
     return render(request, "includes/vanished.html", context)
 
@@ -209,18 +291,19 @@ def login_view(request):
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                login(request, user)
-                # сессия
-                if remember:
-                    request.session.set_expiry(1209600)  # 2 weeks
+                if is_user_online(user):
+                    form.add_error(None, "User already online")
                 else:
-                    request.session.set_expiry(0)  # until browser close
-
-                messages.success(request, f'Welcome back, {user.username}!')
-                next_url = request.GET.get('next', '')
-                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
-                    return redirect(next_url)
-                return redirect('login_app:profile', username=user.username)
+                    login(request, user)
+                    if remember:
+                        request.session.set_expiry(1209600)  # 2 weeks
+                    else:
+                        request.session.set_expiry(0)  # until browser close
+                    messages.success(request, f'Welcome back, {user.username}!')
+                    next_url = request.GET.get('next', '')
+                    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                        return redirect(next_url)
+                    return redirect('login_app:profile', username=user.username)
             else:
                 if not User.objects.filter(username__iexact=username).exists():
                     form.add_error(None, "User not found")
@@ -394,7 +477,7 @@ def profile_section_view(request, username, section):
         item.comments_count_human = count_convert(item.comments_count)
 
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("Vanished user" if not user_obj.is_active else user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
+        breadcrumb("Banned user" if not user_obj.is_active else user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
         breadcrumb(section_title, None),
     )
 
@@ -412,6 +495,16 @@ def profile_section_view(request, username, section):
         'listing_user': user_obj.username,
     }
     return render(request, 'accounts/profile_section.html', context)
+
+
+@login_required
+def api_trust_status(request):
+    """API: возвращает trust status для polling (shadow_banned, can_post)."""
+    profile = getattr(request.user, 'profile', None)
+    return JsonResponse({
+        "shadow_banned": getattr(profile, 'shadow_banned', False),
+        "can_post": getattr(profile, 'can_post', True),
+    })
 
 
 # Выход из профиля

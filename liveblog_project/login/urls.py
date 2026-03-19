@@ -4,6 +4,7 @@ from . import views
 app_name = "login_app"
 
 urlpatterns = [
+    path('me/trust-status/', views.api_trust_status, name='api_trust_status'),
     path('vanished/', views.vanished_generic_view, name='vanished'),
     path('vanished/created/', views.vanished_created_view, name='vanished-created'),
     path('login/', views.login_view, name='login'),

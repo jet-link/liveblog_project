@@ -391,8 +391,13 @@ def find_existing_media_path(filename, subdir=None):
 @login_required
 def create_item(request):
     if not request.user.is_superuser:
-        can_post = getattr(getattr(request.user, 'profile', None), 'can_post', True)
-        if not can_post:
+        profile = getattr(request.user, 'profile', None)
+        can_post = getattr(profile, 'can_post', True)
+        shadow_banned = getattr(profile, 'shadow_banned', False)
+        if not can_post or shadow_banned:
+            if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                msg = "You have been shadow banned. Improve your trust score to restore access." if shadow_banned else "Create post is disabled. Improve your trust score to restore access."
+                return JsonResponse({"success": False, "error": msg}, status=403)
             return redirect('smart_blog:items_list')
     if request.method == "POST":
         form = ItemCreateForm(request.POST)
@@ -978,7 +983,10 @@ def add_comment(request, slug):
     if not request.user.is_superuser:
         shadow_banned = getattr(getattr(request.user, 'profile', None), 'shadow_banned', False)
         if shadow_banned:
-            return JsonResponse({"success": False, "error": "Access denied."}, status=403)
+            return JsonResponse({
+                "success": False,
+                "error": "You have been shadow banned. Improve your trust score to restore access."
+            }, status=403)
     item = get_object_or_404(Item, slug=slug)
     # Anti-spam: per-item cooldown for main comments only (not replies)
     parent_id = request.POST.get("parent_id")
@@ -1065,6 +1073,14 @@ def edit_comment(request, pk):
     # только автор или staff
     if request.user != comment.author and not request.user.is_staff:
         return JsonResponse({'success': False, 'error': 'Permission denied.'}, status=403)
+
+    if not request.user.is_superuser:
+        shadow_banned = getattr(getattr(request.user, 'profile', None), 'shadow_banned', False)
+        if shadow_banned:
+            return JsonResponse({
+                'success': False,
+                'error': 'You have been shadow banned. Improve your trust score to restore access.'
+            }, status=403)
 
     # проверка времени
     editable_until = comment.created + timedelta(hours=EDITABLE_HOURS)

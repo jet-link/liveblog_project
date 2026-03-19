@@ -44,7 +44,10 @@
         <div id="assistantLogsContent" class="admin-assistant-logs-content">
           {% for run in recent_runs %}
           <div class="assistant-run-block" data-run-id="{{ run.pk }}">
-            <div class="assistant-run-date" style="font-weight:600; color:var(--admin-muted); margin-bottom:0.25rem;" data-iso="{{ run.started_at|date:'c' }}" data-run-id="{{ run.pk }}">—</div>
+            <div class="assistant-run-date" style="font-weight:600; color:var(--admin-muted); margin-bottom:0.25rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; flex-wrap:wrap;" data-iso="{{ run.started_at|date:'c' }}" data-run-id="{{ run.pk }}" data-started-by="{{ run.started_by.username|default:'' }}">
+              <span class="assistant-run-date-text">—</span>
+              {% if run.started_by %}<span class="admin-badge admin-badge-danger">{{ run.started_by.username }}</span>{% endif %}
+            </div>
             <div class="assistant-run-lines">
             {% for line in run.log_lines %}
             <div>{{ line }}</div>
@@ -125,28 +128,29 @@
           }
           return line
         }
-        function createRunBlock(runId, startedAt) {
+        function createRunBlock(runId, startedAt, startedBy) {
           hideEmpty()
           var block = document.createElement('div')
           block.className = 'assistant-run-block'
           block.dataset.runId = runId
           var dateStr = formatDateTimeLocal(startedAt) + ' — Run #' + runId
-          block.innerHTML = '<div class="assistant-run-date" style="font-weight:600; color:var(--admin-muted); margin-bottom:0.25rem;">' + dateStr + '</div><div class="assistant-run-lines"></div>'
+          var badgeHtml = startedBy ? '<span class="admin-badge admin-badge-danger">' + (startedBy || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' : ''
+          block.innerHTML = '<div class="assistant-run-date" style="font-weight:600; color:var(--admin-muted); margin-bottom:0.25rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; flex-wrap:wrap;"><span class="assistant-run-date-text">' + dateStr + '</span>' + badgeHtml + '</div><div class="assistant-run-lines"></div>'
           logsContent.insertBefore(block, logsContent.firstChild)
           updateClearHistoryVisibility()
           return block.querySelector('.assistant-run-lines')
         }
 
-        function getOrCreateCurrentRunLines(runId, startedAt) {
+        function getOrCreateCurrentRunLines(runId, startedAt, startedBy) {
           var block = logsContent.querySelector('.assistant-run-block[data-run-id="' + runId + '"]')
           if (block) {
             return block.querySelector('.assistant-run-lines')
           }
-          return createRunBlock(runId, startedAt)
+          return createRunBlock(runId, startedAt, startedBy)
         }
 
-        function appendLogToRun(runId, startedAt, lines) {
-          var container = getOrCreateCurrentRunLines(runId, startedAt)
+        function appendLogToRun(runId, startedAt, lines, startedBy) {
+          var container = getOrCreateCurrentRunLines(runId, startedAt, startedBy)
           if (!container) return
           while (container.children.length < lines.length) {
             var div = document.createElement('div')
@@ -181,7 +185,7 @@
               progressFill.style.width = p + '%'
               progressText.textContent = data.status === 'completed' ? 'Completed' : p + '%'
               if (data.log_lines && data.log_lines.length) {
-                appendLogToRun(currentAnalysisId, data.started_at, data.log_lines)
+                appendLogToRun(currentAnalysisId, data.started_at, data.log_lines, data.started_by)
               }
               if (data.status === 'completed') {
                 progressFill.style.background = 'var(--admin-success, #22c55e)'
@@ -311,7 +315,8 @@
           document.querySelectorAll('.assistant-run-date[data-iso]').forEach(function (el) {
             var iso = el.getAttribute('data-iso')
             var runId = el.getAttribute('data-run-id')
-            el.textContent = formatDateTimeLocal(iso) + (runId ? ' — Run #' + runId : '')
+            var textEl = el.querySelector('.assistant-run-date-text') || el
+            textEl.textContent = formatDateTimeLocal(iso) + (runId ? ' — Run #' + runId : '')
           })
           document.querySelectorAll('.assistant-run-lines div').forEach(function (el) {
             el.textContent = formatLogLineTimestamp(el.textContent)

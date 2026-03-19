@@ -35,10 +35,10 @@
             </div>
           {% endif %}
         </div>
-        
+
         <div class="errors-block">
           {% if form.non_field_errors %}
-            <div class="custom-alert custom-alert-danger mt-3" data-auto-dismiss="3000">
+            <div class="custom-alert custom-alert-danger mt-1" data-auto-dismiss="3000">
               {% for err in form.non_field_errors %}
                 {{ err }}{% if not forloop.last %}
                   <br />
@@ -47,6 +47,7 @@
             </div>
           {% endif %}
         </div>
+
         {# REMEMBER ME #}
         <div class="d-flex justify-content-between align-items-center small">
           <div class="form-check text-start my-3">

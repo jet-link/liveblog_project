@@ -106,6 +106,28 @@
       if (form) {
         form.addEventListener('submit', clearListing);
       }
+
+      const trustStatusUrl = "{% url 'login_app:api_trust_status' %}";
+      const formWrapper = document.querySelector('.create-field.form-wrapper');
+      if (formWrapper && trustStatusUrl) {
+        const pollInterval = setInterval(async function () {
+          try {
+            const resp = await fetch(trustStatusUrl, {
+              headers: { 'Accept': 'application/json' },
+              credentials: 'same-origin'
+            });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (data && (data.shadow_banned || !data.can_post)) {
+              clearInterval(pollInterval);
+              const msg = data.shadow_banned
+                ? 'You have been shadow banned. Improve your trust score to restore access.'
+                : 'Create post is disabled. Improve your trust score to restore access.';
+              formWrapper.innerHTML = '<div class="custom-alert custom-alert-danger"><p class="small danger_">' + msg + '</p></div>';
+            }
+          } catch (e) { /* ignore */ }
+        }, 25000);
+      }
     })();
   </script>
 {% endblock %}

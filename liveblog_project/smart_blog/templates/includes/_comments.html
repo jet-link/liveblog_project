@@ -2,6 +2,7 @@
 {% load static %}
 {% load mentions %}
 {% load extras %}
+{% load user_status %}
 <div id="comment-{{ comment.pk }}" class="py-3 comment-block comment-card" data-reply-url="{% url 'smart_blog:add_comment' comment.item.slug %}" data-thread-url="{% url 'smart_blog:comment_thread' comment.pk %}" data-depth="{{ depth|default:0 }}" data-raw-html="{{ comment.text|escape }}" data-edit-text="{{ comment.text|mention_names|escape }}" data-mention-id="{{ comment.text|mention_first_id }}">
   <span class="comment-anchor" id="comment-anchor-{{ comment.pk }}"></span>
 
@@ -10,11 +11,7 @@
       <div class="d-flex gap-1 align-items-center">
         <a href="{% url 'login_app:profile' comment.author.username %}"
           class="d-flex align-items-center gap-1 text-decoration-none"
-          title="{% if comment.author.is_active %}
-            {{ comment.author }}
-          {% else %}
-            Vanished user
-          {% endif %}">
+          title="{% user_status_title comment.author %}">
           <div class="little-avatar{% if user == comment.author %} avatar-ring{% endif %}">
             {% if comment.author.is_active %}
               {% if comment.author.profile.avatar_url or comment.author.profile.avatar_file %}
@@ -23,7 +20,7 @@
                 <img src="{% static 'img/no_avatar.svg' %}" alt="{{ comment.author }}" class="user-avatar no_avatar" width="38" height="38" loading="eager" decoding="async" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
               {% endif %}
             {% else %}
-              <img src="{% static 'img/user-deleted.webp' %}" alt="Vanished user" class="user-avatar" width="38" height="38" loading="eager" decoding="async" />
+              <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display comment.author %}" class="user-avatar" width="38" height="38" loading="eager" decoding="async" />
             {% endif %}
           </div>
         </a>
@@ -35,13 +32,17 @@
                   {% if comment.author.is_active %}
                     {{ comment.author }}
                   {% else %}
-                    Vanished user
+                    {% user_status_display comment.author %}
                   {% endif %}
                 </button>
                 <div class="comment-actions">
                   <i class="fa fa-angle-right mx-1 success_"></i>
                   <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
+                  {% if user|user_shadow_banned %}
+                  <span class="comment-menu-action custom_badge badge_primary fw-semibold disabled" title="You have been shadow banned">Edit</span>
+                  {% else %}
                   <button type="button" class="edit_btn comment-menu-action custom_badge badge_primary fw-semibold btn-edit-comment" data-edit-url="{% url 'smart_blog:edit_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" aria-label="Edit comment">Edit</button>
+                  {% endif %}
                   <button type="button" class="comment-menu-action custom_badge badge_danger fw-semibold btn-delete-comment" data-delete-url="{% url 'smart_blog:delete_comment' comment.pk %}" data-comment-id="{{ comment.pk }}" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" aria-label="Delete comment">Remove</button>
                 </div>
               </div>
@@ -50,7 +51,7 @@
                 {% if comment.author.is_active %}
                   {{ comment.author }}
                 {% else %}
-                  Vanished user
+                  {% user_status_display comment.author %}
                 {% endif %}
               </button>
             {% endif %}
@@ -63,7 +64,7 @@
                       {% if comment.author.is_active %}
                         {{ comment.author }}
                       {% else %}
-                        Vanished user
+                        {% user_status_display comment.author %}
                       {% endif %}
                     </button>
                     <div class="comment-actions">
@@ -84,7 +85,7 @@
                 {% else %}
                   {% if not comment.author.is_active %}
                   <div class="comment-menu">
-                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Vanished user</button>
+                    <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">{% user_status_display comment.author %}</button>
                     <div class="comment-actions">
                       <i class="fa fa-angle-right mx-1 success_"></i>
                       <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -104,7 +105,7 @@
                       {% if comment.author.is_active %}
                         {{ comment.author }}
                       {% else %}
-                        Vanished user
+                        {% user_status_display comment.author %}
                       {% endif %}
                     </button>
                     <div class="comment-actions">
@@ -131,7 +132,7 @@
             {% if comment.author.is_active %}
               {{ comment.author }}
             {% else %}
-              Vanished user
+              {% user_status_display comment.author %}
             {% endif %}
           </button>
         {% endif %}
@@ -140,16 +141,16 @@
   {% else %}
     <div class="d-flex gap-1 align-items-center">
       <div class="d-flex gap-1 align-items-center">
-        <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center text-decoration-none" title="Vanished user">
+        <a href="{% url 'login_app:vanished' %}" class="d-flex align-items-center text-decoration-none" title="{% user_status_display comment.author %}">
           <div class="little-avatar">
-            <img src="{% static 'img/user-deleted.webp' %}" alt="User deleted" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
+            <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display comment.author %}" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
           </div>
         </a>
       </div>
         {% if user.is_authenticated %}
         {% if user.is_staff %}
             <div class="comment-menu">
-              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Vanished user</button>
+              <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">{% user_status_display comment.author %}</button>
               <div class="comment-actions">
                 <i class="fa fa-angle-right mx-1 success_"></i>
                 <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -158,7 +159,7 @@
             </div>
         {% else %}
           <div class="comment-menu">
-            <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">Vanished user</button>
+            <button type="button" class="comment-menu-btn fw-semibold" aria-label="Comment actions" data-comment-id="{{ comment.pk }}">{% user_status_display comment.author %}</button>
             <div class="comment-actions">
               <i class="fa fa-angle-right mx-1 success_"></i>
               <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Share</button>
@@ -169,7 +170,7 @@
           </div>
         {% endif %}
       {% else %}
-        <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">Vanished user</button>
+        <button type="button" class="comment-menu-action custom_badge badge_primary fw-semibold" data-action="share" data-comment-id="{{ comment.pk }}">{% user_status_display comment.author %}</button>
       {% endif %}
     </div>
   {% endif %}

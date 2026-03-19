@@ -2,7 +2,7 @@
 from django.core.cache import cache
 
 ONLINE_CACHE_KEY = "user_online_{pk}"
-ONLINE_TIMEOUT = 300  # 5 minutes
+ONLINE_TIMEOUT = 60  # 1 minute — после минуты без запросов считаем офлайн
 
 
 def set_user_online(user):
