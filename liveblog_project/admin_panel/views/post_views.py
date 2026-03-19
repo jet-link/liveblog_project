@@ -101,9 +101,9 @@ def post_create(request):
 
 
 @admin_required
-def post_edit(request, slug):
+def post_edit(request, pk):
     """Edit existing post."""
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
         form = ItemAdminEditForm(request.POST, instance=item)
         if form.is_valid():
@@ -120,9 +120,9 @@ def post_edit(request, slug):
 
 
 @admin_required
-def post_delete(request, slug):
+def post_delete(request, pk):
     """Delete post."""
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'Post deleted.')
@@ -135,12 +135,12 @@ def post_delete(request, slug):
 
 
 @admin_required
-def post_view_stats(request, slug):
+def post_view_stats(request, pk):
     """View post statistics."""
     import json
     from smart_blog.models import Comment
     from admin_panel.services.analytics_service import get_post_activity_chart_data
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Item, pk=pk)
     comments_count = Comment.objects.filter(item=item, parent__isnull=True).count()
     reports_count = item.reports.count()
     activity_data = get_post_activity_chart_data(item, days=14)

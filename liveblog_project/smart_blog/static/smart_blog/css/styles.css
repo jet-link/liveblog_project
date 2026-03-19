@@ -1067,11 +1067,9 @@ input::-webkit-search-decoration {
     font-weight: 500;
 }
 .custom-alert.custom-alert-danger {
-    background-color: transparent;
+    background-color: var(--danger-bg);
     margin-bottom: 0.5rem;
-    border: 1px solid var(--danger-bg);
-    display: inline-flex;
-    align-items: center;
+    color: #ffffff;
 }
 
 .custom-alert.custom-alert-success {

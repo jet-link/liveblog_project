@@ -143,7 +143,7 @@ def items_filtered(request):
             user_bookmark_date=Subquery(bookmark_date_subq)
         ).order_by('-user_bookmark_date')
         empty_msg = 'Nothing was bookmarked'
-    items = list(qs.select_related("category").prefetch_related("images"))
+    items = list(qs.select_related("category", "author", "author__profile").prefetch_related("images")[:100])
     if search_q:
         listing_source = 'search'
         listing_query = search_q
@@ -183,7 +183,7 @@ def items_filtered(request):
 def tag_list(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
 
-    items = (
+    qs = (
         tag.items
         .filter(is_published=True)
         .with_counters()
@@ -191,7 +191,17 @@ def tag_list(request, slug):
         .order_by('-published_date')
         .prefetch_related("images")
     )
-    items = annotate_user_liked(items, request.user)
+    qs = annotate_user_liked(qs, request.user)
+    qs = annotate_user_bookmarked(qs, request.user)
+
+    paginator = Paginator(qs, 40)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_obj.number,
+        on_each_side=1,
+        on_ends=1
+    )
 
     breadcrumbs = build_breadcrumbs(
         breadcrumb(tag.tag_name, None),
@@ -199,7 +209,9 @@ def tag_list(request, slug):
 
     return render(request, "smart_blog/tag_items_list.html", {
         "tag": tag,
-        "items": items,
+        "page_obj": page_obj,
+        "page_range": page_range,
+        "items": page_obj.object_list,
         "breadcrumbs": breadcrumbs,
     })
 
@@ -246,6 +258,7 @@ def search_view(request):
         )
         # История поиска: авторизованные — БД
         if request.user.is_authenticated:
+            results_count = items.count()
             filters_dict = {
                 'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
             }
@@ -262,7 +275,7 @@ def search_view(request):
                     SearchHistory.objects.create(
                         user=request.user,
                         search_query=existing.search_query or q,
-                        results_count=items.count(),
+                        results_count=results_count,
                         search_filters=filters_dict,
                         was_clicked=was_clicked,
                     )
@@ -271,9 +284,6 @@ def search_view(request):
                         SearchHistory.objects.filter(pk__in=all_ids[25:]).delete()
             else:
                 # Новый поиск (Enter) — сохраняем или обновляем
-                filters_dict = {
-                    'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
-                }
                 existing = SearchHistory.objects.filter(
                     user=request.user,
                     search_query__iexact=q,
@@ -285,7 +295,7 @@ def search_view(request):
                     SearchHistory.objects.create(
                         user=request.user,
                         search_query=q,
-                        results_count=items.count(),
+                        results_count=results_count,
                         search_filters=filters_dict,
                         was_clicked=was_clicked,
                     )
@@ -293,7 +303,7 @@ def search_view(request):
                     SearchHistory.objects.create(
                         user=request.user,
                         search_query=q,
-                        results_count=items.count(),
+                        results_count=results_count,
                         search_filters=filters_dict,
                         was_clicked=False,
                     )
@@ -1038,6 +1048,8 @@ def add_comment(request, slug):
             parent_comment=parent,
             reply_comment=comment,
         )
+        from smart_blog.context_processors import invalidate_notifications_cache
+        invalidate_notifications_cache(parent.author.pk)
     comment = Comment.objects.annotate(
         replies_count=Count('replies')
     ).get(pk=comment.pk)
@@ -1148,6 +1160,9 @@ def toggle_like(request, slug):
             notif_type=Notification.TYPE_ITEM_LIKE,
             item=item
         ).delete()
+        if item.author:
+            from smart_blog.context_processors import invalidate_notifications_cache
+            invalidate_notifications_cache(item.author.pk)
     else:
         Like.objects.create(item=item, user=request.user)
         liked = True
@@ -1158,6 +1173,8 @@ def toggle_like(request, slug):
                 notif_type=Notification.TYPE_ITEM_LIKE,
                 item=item
             )
+            from smart_blog.context_processors import invalidate_notifications_cache
+            invalidate_notifications_cache(item.author.pk)
 
     item.refresh_from_db()
     return JsonResponse({
@@ -1215,6 +1232,9 @@ def toggle_comment_like(request, pk):
             Notification.objects.filter(**notif_filter, reply_comment=comment).delete()
         else:
             Notification.objects.filter(**notif_filter, parent_comment=comment).delete()
+        if comment.author:
+            from smart_blog.context_processors import invalidate_notifications_cache
+            invalidate_notifications_cache(comment.author.pk)
     else:
         CommentLike.objects.create(comment=comment, user=user)
         liked = True
@@ -1230,6 +1250,8 @@ def toggle_comment_like(request, pk):
             else:
                 kwargs["parent_comment"] = comment
             Notification.objects.create(**kwargs)
+            from smart_blog.context_processors import invalidate_notifications_cache
+            invalidate_notifications_cache(comment.author.pk)
 
     return JsonResponse({
         "success": True,

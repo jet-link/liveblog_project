@@ -630,6 +630,8 @@ def mark_notification_read(request):
     notif = get_object_or_404(Notification, pk=notif_id, recipient=request.user)
     notif.is_read = True
     notif.save(update_fields=["is_read"])
+    from smart_blog.context_processors import invalidate_notifications_cache
+    invalidate_notifications_cache(request.user.pk)
     return JsonResponse({"success": True})
 
 
@@ -637,6 +639,8 @@ def mark_notification_read(request):
 @require_POST
 def mark_all_notifications_read(request):
     Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    from smart_blog.context_processors import invalidate_notifications_cache
+    invalidate_notifications_cache(request.user.pk)
     return JsonResponse({"success": True})
 
 
@@ -650,4 +654,6 @@ def delete_notifications(request):
         Notification.objects.filter(id__in=ids).delete()
     else:
         qs.delete()
+    from smart_blog.context_processors import invalidate_notifications_cache
+    invalidate_notifications_cache(request.user.pk)
     return JsonResponse({"success": True})

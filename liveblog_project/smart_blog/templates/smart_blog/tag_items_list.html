@@ -10,6 +10,11 @@
     data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}"
     data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}"
     data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
+    <div class="mb-4">
+      {% if user.is_authenticated %}
+        {% include 'includes/filter_block.html' %}
+      {% endif %}
+    </div>
     <h5 id="brainewsListingTitle" class="mt-5 mb-3 text-muted d-none" aria-hidden="true">BraiNews</h5>
     <div id="filterPageContextBlock" class="filter-page-context-block filter-page-context-transition mb-4">
       <div class="d-flex justify-content-between align-items-center">
@@ -23,8 +28,8 @@
       <div class="d-flex gap-2 text-muted align-items-center small">
         <span>Total</span>
         <span>found</span>
-        <span class="custom_badge badge_primary">{{ tag.items.count }}</span>
-        {% if tag.items.count != 1 %}
+        <span class="custom_badge badge_primary">{{ page_obj.paginator.count }}</span>
+        {% if page_obj.paginator.count != 1 %}
           <span>posts</span>
         {% else %}
           <span>post</span>
@@ -34,18 +39,9 @@
     <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="tag" data-tag-slug="{{ tag.slug }}">
       {% if items %}
         {% include 'includes/all_cards.html' with listing_source='tag' listing_source_url=request.get_full_path listing_tag=tag.tag_name listing_tag_slug=tag.slug %}
-        {% if items.count > 20 %}
-          <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
-            <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-            <span id="shownCounter" class="text-muted small">
-              {% if items|length > 20 %}
-                20
-              {% else %}
-                {{ items|length }}
-              {% endif %}/ {{ items|length }}
-            </span>
-          </div>
-        {% endif %}
+        <div id="itemsListPagination" class="brainews-pagination filter-pagination-extra">
+          {% include 'includes/pagination.html' %}
+        </div>
       {% else %}
         <div class="filter-cards-wrapper" data-filter-type="">
           <div class="filter-empty-message filter-empty-message--tag">No results found.</div>

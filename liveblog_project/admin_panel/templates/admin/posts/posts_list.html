@@ -47,8 +47,8 @@
             <tbody>
                 {% for post in posts %}
                 <tr>
-                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ post.slug }}" aria-label="Select"></td>
-                    <td>{% if post.is_published %}<a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a>{% else %}<span class="admin-link admin-link-draft">{{ post.title|truncatewords:8 }}</span>{% endif %}</td>
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ post.pk }}" aria-label="Select"></td>
+                    <td>{% if post.is_published %}{% if post.slug %}<a href="{% url 'smart_blog:item_detail' post.slug %}" class="admin-link">{{ post.title|truncatewords:8 }}</a>{% else %}{{ post.title|truncatewords:8 }}{% endif %}{% else %}<span class="admin-link admin-link-draft">{{ post.title|truncatewords:8 }}</span>{% endif %}</td>
                     <td>{{ post.author.username|default:"—" }}</td>
                     <td>{{ post.category.name|default:"—" }}</td>
                     <td>{{ post.published_date|date:"M d, Y" }}</td>
@@ -61,9 +61,9 @@
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
-                                <a href="{% url 'admin_panel:post_edit' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Edit</a>
-                                <a href="{% url 'admin_panel:post_stats' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Stats</a>
-                                <a href="{% url 'admin_panel:post_delete' post.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete">Delete</a>
+                                <a href="{% url 'admin_panel:post_edit' post.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Edit</a>
+                                <a href="{% url 'admin_panel:post_stats' post.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Stats</a>
+                                <a href="{% url 'admin_panel:post_delete' post.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete">Delete</a>
                             </div>
                         </div>
                     </td>

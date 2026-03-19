@@ -10,10 +10,10 @@ urlpatterns = [
     # Posts
     path('posts/', views.posts_list, name='posts_list'),
     path('posts/create/', views.post_create, name='post_create'),
-    path('posts/<slug:slug>/edit/', views.post_edit, name='post_edit'),
-    path('posts/<slug:slug>/delete/', views.post_delete, name='post_delete'),
+    path('posts/<int:pk>/edit/', views.post_edit, name='post_edit'),
+    path('posts/<int:pk>/delete/', views.post_delete, name='post_delete'),
     path('posts/bulk-delete/', views.posts_bulk_delete, name='posts_bulk_delete'),
-    path('posts/<slug:slug>/stats/', views.post_view_stats, name='post_stats'),
+    path('posts/<int:pk>/stats/', views.post_view_stats, name='post_stats'),
 
     # Comments
     path('comments/', views.comments_list, name='comments_list'),

@@ -40,20 +40,9 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     syncIcons();
-
     var btns = document.querySelectorAll('#themeToggle, .theme-toggle-btn');
     for (var i = 0; i < btns.length; i++) {
       btns[i].addEventListener('click', handleToggle);
     }
-
-    var observer = new MutationObserver(function (mutations) {
-      for (var m = 0; m < mutations.length; m++) {
-        if (mutations[m].attributeName === 'data-theme') {
-          syncIcons();
-          break;
-        }
-      }
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   });
 })();

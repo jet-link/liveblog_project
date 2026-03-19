@@ -153,6 +153,15 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if self.slug:
             self.slug = self.slug.strip()
+        # Never allow empty slug for existing items (e.g. after admin clears it when switching to draft)
+        if self.pk and (not self.slug or not self.slug.strip()):
+            base_slug = self._generate_base_slug()
+            slug_candidate = base_slug
+            counter = 1
+            while Item.objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
 
         if self.pk:
             try:

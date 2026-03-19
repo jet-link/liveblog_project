@@ -1227,7 +1227,7 @@ a.admin-link {
 .admin-form-actions {
   display: flex;
   gap: 5px;
-  margin: 20px 0;
+  /* margin: 20px 0; */
   flex-wrap: wrap;
 }
 
@@ -1930,18 +1930,19 @@ a.admin-link {
   cursor: pointer;
 }
 
-.rescent-comment-text {
+.recent-comment-text {
   display: inline-block;
   max-width: 100%;
-  padding: 9px 20px;
-  background: #f1f1f1;
-  color: #0550ae;
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--admin-text);
   font-weight: 500;
   border-radius: 8px;
   border-left: 4px solid #0550ae;
-  font-size: .785rem;
+  font-size: .8rem;
   word-wrap: break-word;
   box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .admin-profile-list--comments {
@@ -1953,7 +1954,7 @@ a.admin-link {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px;
+  gap: 10px;
 }
 
 #assistantProgressBlock{

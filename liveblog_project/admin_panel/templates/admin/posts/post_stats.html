@@ -47,7 +47,7 @@
 </div>
 {% comment %} <div class="admin-card"> {% endcomment %}
     {% if item.is_published %}<a href="{% url 'smart_blog:item_detail' item.slug %}" class="admin-button">View Post</a>{% else %}<span class="admin-button admin-link-draft">View Post</span>{% endif %}
-    <a href="{% url 'admin_panel:post_edit' item.slug %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Edit</a>
+    <a href="{% url 'admin_panel:post_edit' item.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Edit</a>
 {% comment %} </div> {% endcomment %}
 {% endblock %}
 {% block extra_js %}

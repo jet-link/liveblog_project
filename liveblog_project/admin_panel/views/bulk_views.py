@@ -29,17 +29,21 @@ def _get_ids(request):
 
 @admin_required
 def posts_bulk_delete(request):
-    """Bulk delete posts. POST ids=slug1,slug2 (slugs)."""
+    """Bulk delete posts. POST ids=1,2,3 (pks)."""
     if request.method != 'POST':
         return redirect('admin_panel:posts_list')
     from smart_blog.models import Item
-    slugs = _get_ids(request)
+    ids = _get_ids(request)
     deleted = 0
-    for slug in slugs:
-        item = Item.objects.filter(slug=slug).first()
-        if item:
-            item.delete()
-            deleted += 1
+    for pk_str in ids:
+        try:
+            pk_int = int(pk_str)
+            item = Item.objects.filter(pk=pk_int).first()
+            if item:
+                item.delete()
+                deleted += 1
+        except (ValueError, TypeError):
+            pass
     if deleted:
         messages.success(request, f'{deleted} post(s) deleted.')
     return _redirect_with_qs('posts_list', request)
