@@ -1,126 +1,13 @@
-{% load static %}
-{% load counters %}
-{% load user_status %}
 <div class="filter-cards-wrapper" data-filter-type="{{ filter_type }}">
   {% if items %}
-    <div class="row mb-2 g-3 align-items-stretch">
-      {% for item in items %}
-        <div class="col-lg-6 col-md-12 col-sm-12 col-12 item-card search-item">
-          <span class="item-anchor" id="item-anchor-{{ item.pk }}"></span>
-          <article id="item-{{ item.pk }}" class="card w-100 h-100 shadow-sm border rounded overflow-hidden d-flex flex-column item_block" data-item-id="{{ item.pk }}">
-            <div class="card-body d-flex flex-column">
-              <div class="d-flex justify-content-between align-items-center py-2">
-                <div class="d-flex align-items-center gap-2">
-                  {% if item.author %}
-                    {% if item.author.is_active %}
-                    <div class="little-avatar{% if user == item.author %} avatar-ring{% endif %}">
-                      {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
-                        <img src="{{ item.author.profile.get_avatar }}" alt="{{ item.author }}" class="user-avatar clickable-avatar" width="30" height="30" loading="eager" decoding="async" data-full="{{ item.author.profile.get_avatar }}" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
-                      {% else %}
-                        <img src="{% static 'img/no_avatar.svg' %}" alt="{{ item.author }}" class="user-avatar no_avatar" width="30" height="30" loading="eager" decoding="async" data-username="{{ item.author.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
-                      {% endif %}
-                    </div>
-                    <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
-                    {% else %}
-                    <div class="little-avatar">
-                      <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display item.author %}" class="user-avatar" width="30" height="30" loading="eager" decoding="async" />
-                    </div>
-                    <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
-                    {% endif %}
-                  {% else %}
-                    <div class="little-avatar">
-                      <img src="{% static 'img/user-deleted.webp' %}" alt="{% user_status_display item.author %}" class="user-avatar" width="40" height="40" loading="eager" decoding="async" />
-                    </div>
-                    <small class="d-inline-block text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
-                  {% endif %}
-                </div>
-
-                {% if item.category %}
-                  <div class="d-inline-flex align-items-center gap-2">
-                    <span class="item-category-badge">{{ item.category.name }}</span>
-                  </div>
-                {% else %}
-                  <small class="primary_ fw-semibold">No category</small>
-                {% endif %}
-              </div>
-              <hr class="text-muted" />
-              <div class="py-3 px-2 d-flex gap-2 justify-content-between align-items-center">
-                <div class="text-muted">
-                  <h4 class="mb-2">{{ item.title }}</h4>
-                  <div class="small d-inline-flex align-items-center gap-2 flex-wrap">
-                    <small>{{ item.human_published }}</small>
-                  </div>
-                </div>
-
-                <div class="item_thumbnail">
-                  {% if item.images.first %}
-                    <img src="{{ item.images.first.get_thumbnail_url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
-                  {% else %}
-                    <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
-                  {% endif %}
-                </div>
-              </div>
-              <p class="card-text flex-grow-1 py-2 px-1 mb-5 excerpt-html">{{ item.short_text }}</p>
-
-              {% if item.tags.all %}
-                <div class="d-flex align-items-center flex-wrap gap-1 mt-2">
-                  <i class="fa fa-tags me-2 text-muted"></i>
-                  {% for tag in item.tags.all|slice:':5' %}
-                    <span class="badge bg-secondary text-decoration-none">{{ tag.tag_name }}</span>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <div class="d-inline-flex text-muted">
-                  <small class="fw-semibold"><i class="fa fa-tags me-2"></i>No tags</small>
-                </div>
-              {% endif %}
-              <hr class="text-muted" />
-
-              <div class="d-flex justify-content-between align-items-center pt-3">
-                {% if listing_source == 'search' and listing_source_url and listing_query %}
-                  <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
-                {% elif listing_source == 'tag' and listing_source_url and listing_tag %}
-                  <a href="{{ item.get_absolute_url }}?from=tag&amp;source_url={{ listing_source_url|urlencode }}&amp;tag={{ listing_tag|urlencode }}&amp;tag_slug={{ listing_tag_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
-                {% elif listing_source == 'items_list' and listing_source_url %}
-                  <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
-                {% else %}
-                  <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
-                {% endif %}
-
-                <div class="d-flex align-items-center VLB">
-                  <div class="item-stats text-muted d-inline-flex align-items-center">
-                    <div class="stat">
-                      <span id="views-count-{{ item.pk }}">{{ item.views_count|human }}</span>
-                      <i class="fa fa-eye text-muted"></i>
-                    </div>
-
-                    <div class="stat">
-                      <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
-                      <i class="fa fa-heart text-muted"></i>
-                    </div>
-
-                    <div class="stat">
-                      <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
-                      <i class="fa fa-bookmark text-muted"></i>
-                    </div>
-
-                    <div class="stat">
-                      <span id="reposts-count-{{ item.pk }}">{{ item.reposts_count|human }}</span>
-                      <i class="fa fa-retweet text-muted"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      {% endfor %}
+    <div class="row mb-2 g-3 align-items-stretch filter-cards-row">
+      {% include 'includes/filtered_cards_columns.html' %}
     </div>
-    {% if items|length > 20 %}
-      <div id="showMoreWrapper" class="d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra" data-total="{{ items|length }}">
-        <button id="showMoreBtn" type="button" class="show-more-btn-toggle">Show more</button>
-        <span id="shownCounter" class="small text-muted">20 / {{ items|length }}</span>
-      </div>
+    {% if page_obj.has_next %}
+    <div class="filter-load-more-wrap d-flex justify-content-center align-items-center gap-3 my-4 filter-pagination-extra">
+      <button type="button" class="show-more-btn-toggle filter-load-more-btn" data-next-page="{{ page_obj.next_page_number }}">Load more</button>
+      <span class="small text-muted filter-load-more-counter">{{ page_obj.end_index }} / {{ paginator.count }}</span>
+    </div>
     {% endif %}
   {% else %}
     <div class="filter-empty-message" data-filter-type="{{ filter_type }}">{{ empty_msg }}</div>

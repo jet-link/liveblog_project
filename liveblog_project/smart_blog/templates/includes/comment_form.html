@@ -1,9 +1,9 @@
 {% load extras %}
 {% if user.is_authenticated %}
   {% if user|user_shadow_banned %}
-    <div class="pt-4">
-      <div class="custom-alert custom-alert-danger">
-        <span class="small danger_" title="You have been shadow banned">You have been shadow banned. Improve your trust score to restore access.</span>
+    <div class="p-0">
+      <div class="d-inline-flex custom-alert custom-alert-danger">
+        <span class="small" title="You have been shadow banned">You have been shadow banned. Improve your trust score to restore access.</span>
       </div>
     </div>
   {% else %}
@@ -17,7 +17,6 @@
       </div>
       <small class="text-muted hidden" title="Max 500 characters.">(Max 500 chars)</small>
     </div>
-    {% comment %} <hr class="text-muted" /> {% endcomment %}
     <div id="commentFormBody" class="comment-form-body hidden">
       <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" data-trust-status-url="{% url 'login_app:api_trust_status' %}" class="pb-4">
         {% csrf_token %}

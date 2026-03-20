@@ -453,8 +453,8 @@
 .admin-online-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  font-size: .775rem;
+  padding: 3px 7px;
+  font-size: .7rem;
   font-weight: 500;
   color: var(--admin-success);
   background: rgba(63, 185, 80, 0.2);

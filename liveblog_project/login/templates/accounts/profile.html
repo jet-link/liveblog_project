@@ -8,7 +8,7 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
+    <div class="d-flex align-items-center mb-3 gap-3 flex-wrap">
       <div class="d-inline-flex align-items-center gap-2">
         <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
       {% comment %} {% if is_online %}

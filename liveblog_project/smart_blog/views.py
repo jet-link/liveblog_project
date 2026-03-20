@@ -26,6 +26,12 @@ import os
 import re
 from django.conf import settings
 from django.core.files.storage import default_storage
+from urllib.parse import urlencode
+
+
+# Listing page sizes (server-side bounds for DB + HTML payload)
+SEARCH_RESULTS_PER_PAGE = 40
+FILTER_AJAX_PAGE_SIZE = 20
 
 
 def annotate_user_liked(qs, user):
@@ -47,9 +53,9 @@ def items_list(request):
         Item.objects
         .filter(is_published=True)
         .with_counters()
-        .select_related("category")
+        .select_related("category", "author", "author__profile")
         .order_by('-published_date')
-        .prefetch_related("images")
+        .prefetch_related("images", "tags")
     )
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
@@ -83,8 +89,8 @@ def items_popular_list(request):
         Item.objects
         .filter(is_published=True, published_date__gte=since)
         .with_counters()
-        .select_related("category")
-        .prefetch_related("images")
+        .select_related("category", "author", "author__profile")
+        .prefetch_related("images", "tags")
     )
     qs = apply_popular_filter(qs)
     qs = annotate_user_liked(qs, request.user)
@@ -143,11 +149,15 @@ def items_filtered(request):
             user_bookmark_date=Subquery(bookmark_date_subq)
         ).order_by('-user_bookmark_date')
         empty_msg = 'Nothing was bookmarked'
-    items = list(qs.select_related("category", "author", "author__profile").prefetch_related("images")[:100])
+    qs = qs.select_related("category", "author", "author__profile").prefetch_related("images", "tags")
+    paginator = Paginator(qs, FILTER_AJAX_PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    items = list(page_obj.object_list)
+
+    append_fragment = request.GET.get("append") == "1"
     if search_q:
         listing_source = 'search'
         listing_query = search_q
-        from urllib.parse import urlencode
         search_params = {'q': search_q}
         if request.GET.get('by_title'): search_params['by_title'] = request.GET.get('by_title')
         if request.GET.get('by_text'): search_params['by_text'] = request.GET.get('by_text')
@@ -170,13 +180,20 @@ def items_filtered(request):
         'listing_source_url': listing_source_url,
         'empty_msg': empty_msg,
         'filter_type': filter_type,
+        'page_obj': page_obj,
+        'paginator': paginator,
     }
     if listing_source == 'search':
         ctx['listing_query'] = listing_query
     elif listing_source == 'tag':
         ctx['listing_tag'] = listing_tag
         ctx['listing_tag_slug'] = listing_tag_slug
-    html = render_to_string('includes/filtered_cards.html', ctx)
+    tmpl = (
+        'includes/filtered_cards_append.html'
+        if append_fragment
+        else 'includes/filtered_cards.html'
+    )
+    html = render_to_string(tmpl, ctx)
     return HttpResponse(html, content_type='text/html')
 
 
@@ -187,9 +204,9 @@ def tag_list(request, slug):
         tag.items
         .filter(is_published=True)
         .with_counters()
-        .select_related("category")
+        .select_related("category", "author", "author__profile")
         .order_by('-published_date')
-        .prefetch_related("images")
+        .prefetch_related("images", "tags")
     )
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
@@ -234,22 +251,42 @@ def search_view(request):
     if not selected_fields:
         selected_fields = ['title', 'text', 'tag']
 
+    page_obj = None
+    page_range = None
+    results_total = 0
+    pagination_base_qs = ''
+    items = []
+
     if not q:
-        items = Item.objects.none()
+        items_qs = Item.objects.none()
     else:
         if not (by_title or by_text or by_tags):
             by_title = by_text = by_tags = True
 
-        items = (
+        items_qs = (
             Item.objects
             .with_counters()
-            .select_related("category")
+            .select_related("category", "author", "author__profile")
             .filter(is_published=True)
-            .prefetch_related("images")
+            .prefetch_related("images", "tags")
         )
-        items = build_search_filter(items, q, by_title, by_text, by_tags)
-        items = annotate_user_liked(items, request.user)
-        items = annotate_user_bookmarked(items, request.user)
+        items_qs = build_search_filter(items_qs, q, by_title, by_text, by_tags)
+        items_qs = annotate_user_liked(items_qs, request.user)
+        items_qs = annotate_user_bookmarked(items_qs, request.user)
+
+        paginator = Paginator(items_qs, SEARCH_RESULTS_PER_PAGE)
+        page_obj = paginator.get_page(request.GET.get('page'))
+        page_range = paginator.get_elided_page_range(
+            number=page_obj.number,
+            on_each_side=1,
+            on_ends=1
+        )
+        items = page_obj.object_list
+        results_total = paginator.count
+
+        params = request.GET.copy()
+        params.pop('page', None)
+        pagination_base_qs = params.urlencode()
 
     if q:
         breadcrumbs = build_breadcrumbs(
@@ -258,7 +295,7 @@ def search_view(request):
         )
         # История поиска: авторизованные — БД
         if request.user.is_authenticated:
-            results_count = items.count()
+            results_count = results_total
             filters_dict = {
                 'by_title': by_title, 'by_text': by_text, 'by_tags': by_tags
             }
@@ -315,9 +352,16 @@ def search_view(request):
             breadcrumb("Search", None),
         )
 
-    # без пагинации — как ты просил, просто все результаты
-    return render(request, 'smart_blog/search_results.html',
-                  {'items': items, 'query': q, 'selected_fields': selected_fields, 'breadcrumbs': breadcrumbs})
+    return render(request, 'smart_blog/search_results.html', {
+        'items': items,
+        'query': q,
+        'selected_fields': selected_fields,
+        'breadcrumbs': breadcrumbs,
+        'page_obj': page_obj,
+        'page_range': page_range,
+        'results_total': results_total,
+        'pagination_base_qs': pagination_base_qs,
+    })
 
 
 def api_search_history_list(request):

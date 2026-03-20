@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'login.context_processors.user_obj_context',
                 'smart_blog.context_processors.notifications_context',
                 'smart_blog.context_processors.spellcheck_context',
                 'admin_panel.context_processors.admin_online_count',

@@ -31,11 +31,28 @@
         return location.pathname + location.search;
     }
 
+    /** Merge search/tag context into filter API URL (Liked/Bookmarked on Search or Tag page). */
+    function mergeFilterContextParams(u) {
+        try {
+            const cur = new URL(location.href);
+            ['q', 'by_title', 'by_text', 'by_tags'].forEach(function (k) {
+                const v = cur.searchParams.get(k);
+                if (v != null && v !== '') u.searchParams.set(k, v);
+            });
+            const wrapper = document.getElementById('filterCardsWrapper');
+            if (wrapper && wrapper.dataset && wrapper.dataset.tagSlug) {
+                u.searchParams.set('tag_slug', wrapper.dataset.tagSlug);
+            }
+        } catch { /* ignore */ }
+    }
+
     function getFilterUrl(filter) {
         const base = getFilterBaseUrl();
         try {
             const u = new URL(base, location.origin);
             u.searchParams.set('filter', filter);
+            mergeFilterContextParams(u);
+            u.searchParams.delete('page');
             return u.toString();
         } catch {
             return base + (base.includes('?') ? '&' : '?') + 'filter=' + encodeURIComponent(filter);
@@ -391,6 +408,55 @@
     document.addEventListener('brainews-filter-refresh', function () {
         removeInvalidFilterCards();
         refreshFilterIfNeeded();
+    });
+
+    /* Server-paginated filter: load next page of Liked/Bookmarked cards */
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.filter-load-more-btn');
+        if (!btn || !document.body.contains(btn)) return;
+        if (!btn.closest('.filter-cards-wrapper')) return;
+        e.preventDefault();
+        const active = getActiveFilter();
+        if (!active) return;
+        const row = document.querySelector('.filter-cards-wrapper .filter-cards-row');
+        const footer = btn.closest('.filter-load-more-wrap');
+        if (!row || !footer) return;
+        const nextPage = btn.dataset.nextPage;
+        if (!nextPage) return;
+        const u = new URL(getFilterBaseUrl(), location.origin);
+        u.searchParams.set('filter', active);
+        mergeFilterContextParams(u);
+        u.searchParams.set('page', nextPage);
+        u.searchParams.set('append', '1');
+        btn.disabled = true;
+        fetch(u.toString(), {
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            cache: 'no-store'
+        })
+            .then(function (resp) {
+                if (!resp.ok) throw new Error('load more failed');
+                return resp.text();
+            })
+            .then(function (html) {
+                footer.remove();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const chunk = doc.querySelector('.filter-append-chunk');
+                if (!chunk) return;
+                const newFooter = chunk.querySelector('.filter-load-more-wrap');
+                if (newFooter) newFooter.remove();
+                while (chunk.firstChild) {
+                    row.appendChild(chunk.firstChild);
+                }
+                if (newFooter) {
+                    const wrap = row.closest('.filter-cards-wrapper');
+                    if (wrap) wrap.appendChild(newFooter);
+                }
+                if (window.applyListingChanges) window.applyListingChanges();
+            })
+            .catch(function () {
+                btn.disabled = false;
+            });
     });
 
 })();

@@ -818,6 +818,11 @@ function renderReplyErrors(container, messages) {
 }
 
 function initFilterCardsPagination() {
+    const fcw = document.getElementById('filterCardsWrapper');
+    if (fcw && fcw.dataset.pageType === 'search') {
+        return;
+    }
+
     const STEP = 20;
 
     const wrapper = document.getElementById('showMoreWrapper');

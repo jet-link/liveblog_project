@@ -806,7 +806,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     justify-content: center;
     border-radius: 50%;
     transition: color 0.2s ease, background-color 0.2s ease;
-    font-size: 1rem;
+    font-size: .875rem;
     background: transparent;
 }
 
@@ -1068,8 +1068,7 @@ input::-webkit-search-decoration {
 }
 .custom-alert.custom-alert-danger {
     background-color: var(--danger-bg);
-    margin-bottom: 0.5rem;
-    color: #ffffff;
+    /* margin-bottom: 0.5rem; */
 }
 
 .custom-alert.custom-alert-success {
