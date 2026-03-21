@@ -1793,7 +1793,7 @@
     text.classList.add('root-mention-highlight');
   }
 
-  function highlightFromHash() {
+  function highlightCommentFromHash() {
     const hash = window.location.hash || '';
     if (!hash.startsWith('#comment-anchor-')) return;
     const id = hash.replace('#comment-anchor-', '').trim();
@@ -1808,8 +1808,8 @@
     setTimeout(() => highlightComment(comment), 120);
   }
 
-  window.addEventListener('hashchange', highlightFromHash);
-  document.addEventListener('DOMContentLoaded', highlightFromHash);
+  window.highlightCommentFromHash = highlightCommentFromHash;
+  window.addEventListener('hashchange', highlightCommentFromHash);
 })();
 
 
@@ -1896,11 +1896,16 @@ function buildShortHTML(fullHTML, maxLen = 400) {
 })();
 
 
-// comments-root-pagination.js
+// comments-root-pagination.js (STEP must match COMMENT_ROOT_PAGINATION_STEP in views.py)
 (function () {
   const STEP = 50;
   let paginationState = null; // Сохраняем состояние пагинации
   let collapseMode = false;
+
+  function initialVisibleCount(container) {
+    const parsed = parseInt(container?.dataset?.minRootVisible || '', 10);
+    return Number.isFinite(parsed) && parsed > 0 ? Math.max(STEP, parsed) : STEP;
+  }
 
   function initRootCommentsPagination(preserveState = false) {
     const container = document.getElementById('commentsList');
@@ -1915,6 +1920,7 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     );
 
     const total = rootComments.length;
+    const chunkStart = preserveState ? STEP : initialVisibleCount(container);
 
     // 👉 если комментариев <= STEP — скрываем кнопку (если она есть)
     if (total <= STEP) {
@@ -1957,10 +1963,10 @@ function buildShortHTML(fullHTML, maxLen = 400) {
     const forceCollapse = total > STEP && (!paginationState || paginationState.total <= STEP);
 
     // Если нужно сохранить состояние и оно есть - используем его
-    // Иначе начинаем с первых 10
+    // Иначе — STEP или server data-min-root-visible (уведомления / focus_comment)
     let visibleCount = (preserveState && paginationState && !forceCollapse)
       ? Math.min(paginationState.visibleCount, total)
-      : STEP;
+      : chunkStart;
 
     // Если сохраненное состояние больше текущего total, корректируем
     if (visibleCount > total) {
@@ -2079,7 +2085,10 @@ function buildShortHTML(fullHTML, maxLen = 400) {
   window.ensureRootCommentVisible = window.ensureCommentVisible;
 
   document.addEventListener('DOMContentLoaded', () => {
-    initRootCommentsPagination(false); // При первой загрузке не сохраняем состояние
+    initRootCommentsPagination(false);
+    if (window.highlightCommentFromHash) {
+      window.highlightCommentFromHash();
+    }
   });
 })();
 

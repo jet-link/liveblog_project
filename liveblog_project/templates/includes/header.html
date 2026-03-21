@@ -25,11 +25,11 @@
               <div class="user-tooltip">
                 <a href="{% url 'login_app:profile' user.username %}" class="text-muted"><i class="fa fa-user-circle-o me-3" aria-hidden="true"></i>View profile</a>
                 <a href="{% url 'login_app:profile-edit' request.user.username %}" class="text-muted"><i class="fa fa-cog me-3" aria-hidden="true"></i>Edit profile</a>
-                {% comment %} {% if user|user_cannot_create_post %}
+                {% if user|user_cannot_create_post %}
                   <span class="text-muted disabled" title="You have been shadow banned"><i class="fa fa-plus me-3"></i>Create post</span>
                 {% else %}
                   <a href="{% url 'smart_blog:create_item' %}" class="text-muted"><i class="fa fa-plus me-3"></i>Create post</a>
-                {% endif %} {% endcomment %}
+                {% endif %}
                 <a href="{% url 'login_app:notifications' user.username %}" class="text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}">
                   <i class="fa fa-bell me-2" aria-hidden="true"></i>
                   Notifications

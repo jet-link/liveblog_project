@@ -644,21 +644,23 @@ class Notification(models.Model):
             return f"{created_at.strftime("%d.%m.%Y")} at {created_at.strftime('%H:%M')}"
 
     def get_absolute_url(self):
+        def _item_comment_url(path, focus_pk, anchor_pk):
+            sep = '&' if '?' in path else '?'
+            return f"{path}{sep}focus_comment={focus_pk}#comment-anchor-{anchor_pk}"
+
         if self.reply_comment_id:
             reply = self.reply_comment
-            chain = [reply]
-            current = reply
-            while current and current.parent_id:
-                current = current.parent
-                chain.append(current)
             if reply.parent_id:
                 # If reply is directly under root, it's visible on item page.
                 if reply.parent and reply.parent.parent_id is None:
-                    return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"
+                    return _item_comment_url(
+                        self.item.get_absolute_url(), reply.pk, reply.pk
+                    )
                 # Otherwise go to thread page for its parent.
                 thread_url = reverse("smart_blog:comment_thread", args=[reply.parent_id])
-                return f"{thread_url}#comment-anchor-{reply.pk}"
-            return f"{self.item.get_absolute_url()}#comment-anchor-{reply.pk}"
+                return _item_comment_url(thread_url, reply.pk, reply.pk)
+            return _item_comment_url(self.item.get_absolute_url(), reply.pk, reply.pk)
         if self.parent_comment_id:
-            return f"{self.item.get_absolute_url()}#comment-anchor-{self.parent_comment.pk}"
+            pc = self.parent_comment.pk
+            return _item_comment_url(self.item.get_absolute_url(), pc, pc)
         return self.item.get_absolute_url()

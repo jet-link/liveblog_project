@@ -42,11 +42,15 @@ class Backup(models.Model):
     CONTENT_MEDIA = 'media'
     CONTENT_DATABASE_MEDIA = 'database_media'
     CONTENT_FULL = 'full'
+    CONTENT_SETTINGS = 'settings'
+    CONTENT_MIXED = 'mixed'
     CONTENT_CHOICES = [
         (CONTENT_DATABASE, 'Database'),
         (CONTENT_MEDIA, 'Media'),
         (CONTENT_DATABASE_MEDIA, 'Database + Media'),
-        (CONTENT_FULL, 'Full system'),
+        (CONTENT_FULL, 'Full (DB + Media + Settings)'),
+        (CONTENT_SETTINGS, 'Settings only'),
+        (CONTENT_MIXED, 'Mixed selection'),
     ]
 
     INTEGRITY_UNKNOWN = 'unknown'
@@ -88,6 +92,9 @@ class Backup(models.Model):
         default=CONTENT_DATABASE_MEDIA,
         verbose_name='Content',
     )
+    include_database = models.BooleanField(default=True, verbose_name='Include database')
+    include_media = models.BooleanField(default=True, verbose_name='Include media')
+    include_settings = models.BooleanField(default=False, verbose_name='Include settings')
     integrity_status = models.CharField(
         max_length=20,
         choices=INTEGRITY_CHOICES,
@@ -111,6 +118,42 @@ class Backup(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.created_at})'
+
+    def derive_content_type(self):
+        """Маппинг флагов в content_type для списков и фильтров."""
+        d, m, s = self.include_database, self.include_media, self.include_settings
+        if d and m and s:
+            return self.CONTENT_FULL
+        if d and m and not s:
+            return self.CONTENT_DATABASE_MEDIA
+        if d and not m and not s:
+            return self.CONTENT_DATABASE
+        if not d and m and not s:
+            return self.CONTENT_MEDIA
+        if not d and not m and s:
+            return self.CONTENT_SETTINGS
+        return self.CONTENT_MIXED
+
+    def save(self, *args, **kwargs):
+        self.content_type = self.derive_content_type()
+        update_fields = kwargs.get('update_fields')
+        if update_fields is not None:
+            uf = list(update_fields)
+            if 'content_type' not in uf:
+                uf.append('content_type')
+            kwargs['update_fields'] = uf
+        super().save(*args, **kwargs)
+
+    def get_components_label(self):
+        """Краткая метка для UI: DB / Media / Settings."""
+        parts = []
+        if self.include_database:
+            parts.append('DB')
+        if self.include_media:
+            parts.append('Media')
+        if self.include_settings:
+            parts.append('Settings')
+        return ' / '.join(parts) if parts else '—'
 
     @property
     def file_size_human(self):

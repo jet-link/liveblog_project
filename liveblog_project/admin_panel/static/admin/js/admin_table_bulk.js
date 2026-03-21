@@ -104,6 +104,9 @@
     }
     if (!toolbar) return;
 
+    /* Backups page: bulk forms go next to «Create backup» inside this row */
+    var bulkAppendParent = toolbar.querySelector('.admin-backups-create-actions-row');
+
     function getSelectedIds(tbl) {
       var ids = [];
       tbl.querySelectorAll('.admin-bulk-row-check:checked').forEach(function(cb) {
@@ -142,7 +145,7 @@
         form.method = 'post';
         form.action = bulkUrl + (window.location.search ? window.location.search : '');
         form.className = action.formClass;
-        form.style.display = 'inline';
+        /* display: let CSS (.admin-bulk-delete-form { inline-flex }) control; inline would break flex alignment in toolbars */
         var csrf = document.createElement('input');
         csrf.type = 'hidden';
         csrf.name = 'csrfmiddlewaretoken';
@@ -154,7 +157,8 @@
         btn.style.display = 'none';
         btn.textContent = action.btnText;
         form.appendChild(btn);
-        toolbar.appendChild(form);
+        var appendTarget = bulkAppendParent || toolbar;
+        appendTarget.appendChild(form);
 
         btn.addEventListener('click', function() {
           var ids = getSelectedIds(table);

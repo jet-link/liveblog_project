@@ -30,7 +30,8 @@ class BackupAdmin(admin.ModelAdmin):
     )
     list_filter = ('status', 'schedule_type', 'backup_type', 'created_at')
     readonly_fields = (
-        'name', 'schedule_type', 'backup_type', 'content_type', 'created_at',
+        'name', 'schedule_type', 'backup_type', 'content_type', 'include_database', 'include_media',
+        'include_settings', 'created_at',
         'file_size', 'file_path_display', 'status', 'duration_seconds', 'integrity_status',
         'error_message', 'restore_log', 'created_by',
     )
@@ -81,10 +82,9 @@ class BackupAdmin(admin.ModelAdmin):
     duration_display.short_description = 'Duration'
 
     def content_type_display(self, obj):
-        ct = getattr(obj, 'content_type', None)
-        if ct and hasattr(obj, 'get_content_type_display'):
-            return obj.get_content_type_display()
-        return 'Database + Media'
+        if obj is None:
+            return '-'
+        return obj.get_components_label()
 
     content_type_display.short_description = 'Content'
 

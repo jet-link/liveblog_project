@@ -202,7 +202,7 @@
     <hr class="text-muted" />
 
     <!-- ===== Список комментариев ===== -->
-    <div id="commentsList">
+    <div id="commentsList"{% if comments_min_visible %} data-min-root-visible="{{ comments_min_visible }}"{% endif %}>
       {% for comment in comments %}
         {% include 'includes/_comments.html' with comment=comment depth=0 %}
       {% endfor %}

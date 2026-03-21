@@ -32,6 +32,35 @@ from urllib.parse import urlencode
 # Listing page sizes (server-side bounds for DB + HTML payload)
 SEARCH_RESULTS_PER_PAGE = 40
 FILTER_AJAX_PAGE_SIZE = 20
+# Must match STEP in smart_blog/static/smart_blog/js/comment_operate.js (root comment pagination)
+COMMENT_ROOT_PAGINATION_STEP = 50
+
+
+def _comments_min_visible_for_focus(item, focus_comment_id):
+    """How many root comments must be visible so focus_comment is shown (JS paginates roots)."""
+    if not focus_comment_id:
+        return None
+    try:
+        fid = int(focus_comment_id)
+    except (TypeError, ValueError):
+        return None
+    try:
+        focus = Comment.objects.get(pk=fid, item=item, is_draft=False)
+    except Comment.DoesNotExist:
+        return None
+    root = focus
+    while root.parent_id:
+        root = root.parent
+    root_ids = list(
+        Comment.objects.filter(item=item, parent__isnull=True, is_draft=False)
+        .order_by('-created')
+        .values_list('pk', flat=True)
+    )
+    try:
+        idx = root_ids.index(root.pk)
+    except ValueError:
+        return None
+    return max(COMMENT_ROOT_PAGINATION_STEP, idx + 1)
 
 
 def annotate_user_liked(qs, user):
@@ -59,6 +88,7 @@ def items_list(request):
     )
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
+    qs = qs.order_by('-published_date', '-pk')
 
     paginator = Paginator(qs, 40)
     page_number = request.GET.get('page')
@@ -140,14 +170,14 @@ def items_filtered(request):
         like_date_subq = Like.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
         qs = qs.filter(Exists(like_exists)).annotate(
             user_like_date=Subquery(like_date_subq)
-        ).order_by('-user_like_date')
+        ).order_by('-user_like_date', '-pk')
         empty_msg = 'Nothing was liked'
     else:  # bookmarked
         bookmark_exists = Bookmark.objects.filter(item=OuterRef('pk'), user=request.user)
         bookmark_date_subq = Bookmark.objects.filter(item=OuterRef('pk'), user=request.user).values('created_at')[:1]
         qs = qs.filter(Exists(bookmark_exists)).annotate(
             user_bookmark_date=Subquery(bookmark_date_subq)
-        ).order_by('-user_bookmark_date')
+        ).order_by('-user_bookmark_date', '-pk')
         empty_msg = 'Nothing was bookmarked'
     qs = qs.select_related("category", "author", "author__profile").prefetch_related("images", "tags")
     paginator = Paginator(qs, FILTER_AJAX_PAGE_SIZE)
@@ -210,6 +240,7 @@ def tag_list(request, slug):
     )
     qs = annotate_user_liked(qs, request.user)
     qs = annotate_user_bookmarked(qs, request.user)
+    qs = qs.order_by('-published_date', '-pk')
 
     paginator = Paginator(qs, 40)
     page_number = request.GET.get('page')
@@ -273,6 +304,8 @@ def search_view(request):
         items_qs = build_search_filter(items_qs, q, by_title, by_text, by_tags)
         items_qs = annotate_user_liked(items_qs, request.user)
         items_qs = annotate_user_bookmarked(items_qs, request.user)
+        if not items_qs.ordered:
+            items_qs = items_qs.order_by('-published_date', '-pk')
 
         paginator = Paginator(items_qs, SEARCH_RESULTS_PER_PAGE)
         page_obj = paginator.get_page(request.GET.get('page'))
@@ -694,6 +727,8 @@ def item_detail(request, slug):
             breadcrumb(item.title, None),
         )
 
+    comments_min_visible = _comments_min_visible_for_focus(item, request.GET.get("focus_comment"))
+
     return render(request, "smart_blog/item_detail.html", {
         "item": item,                 # ← ВСЕ СЧЁТЧИКИ УЖЕ ЗДЕСЬ
         "form": CommentForm(),
@@ -706,6 +741,7 @@ def item_detail(request, slug):
         "editable_until_iso": editable_until.isoformat(),
         "is_editable": is_editable,
         "breadcrumbs": breadcrumbs,
+        "comments_min_visible": comments_min_visible,
     })
 
 

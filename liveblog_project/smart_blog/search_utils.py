@@ -99,7 +99,7 @@ def build_search_filter(qs, q, by_title, by_text, by_tags):
                 select={'rank': "ts_rank(({0}), to_tsquery('simple', %s))".format(vector_sql)},
                 params=[raw_query, raw_query],
             )
-            qs = qs.order_by('-rank', '-published_date')
+            qs = qs.order_by('-rank', '-published_date', '-pk')
         except Exception:
             qs = _search_icontains(qs, q, by_title, by_text, by_tags)
     else:
@@ -125,7 +125,8 @@ def _search_icontains(qs, q, by_title, by_text, by_tags):
             queries.append(Q(tags__tag_name__icontains=q[:5]))
     if not queries:
         return qs
-    return qs.filter(reduce(or_, queries)).distinct()
+    # distinct() + M2M joins can clear default Meta.ordering; Paginator needs a deterministic order
+    return qs.filter(reduce(or_, queries)).distinct().order_by('-published_date', '-pk')
 
 
 def get_popularity_queryset(qs, min_likes=None):

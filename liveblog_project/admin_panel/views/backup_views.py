@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import FileResponse, Http404, JsonResponse
 from django.conf import settings
+from django.utils.dateparse import parse_date
 
 from admin_panel.decorators import admin_required
 from backups.models import Backup
@@ -15,11 +16,29 @@ from backups.services import create_backup_async, create_backup_sync
 
 @admin_required
 def backups_list(request):
-    """List backups."""
+    """List backups with optional date range filter (YYYY-MM-DD)."""
     if not request.user.is_superuser:
         return redirect('admin_panel:dashboard')
     qs = Backup.objects.select_related('created_by').order_by('-created_at')
-    return render(request, 'admin/backups/backups_list.html', {'backups': qs})
+    date_from_raw = (request.GET.get('date_from') or '').strip()
+    date_to_raw = (request.GET.get('date_to') or '').strip()
+    df = parse_date(date_from_raw) if date_from_raw else None
+    dt = parse_date(date_to_raw) if date_to_raw else None
+    if df is not None:
+        qs = qs.filter(created_at__date__gte=df)
+    if dt is not None:
+        qs = qs.filter(created_at__date__lte=dt)
+    total_count = qs.count()
+    return render(
+        request,
+        'admin/backups/backups_list.html',
+        {
+            'backups': qs,
+            'total_count': total_count,
+            'date_from': date_from_raw,
+            'date_to': date_to_raw,
+        },
+    )
 
 
 @admin_required
@@ -51,13 +70,24 @@ def backup_status(request):
 
 @admin_required
 def backup_create(request):
-    """Create new backup."""
+    """Create new backup (POST): include_database, include_media, include_settings checkboxes."""
     if not request.user.is_superuser:
         raise Http404
-    if request.method == 'POST':
-        backup = create_backup_async(user=request.user)
-        messages.success(request, f'Backup "{backup.name}" started. It will complete in background.')
+    if request.method != 'POST':
         return redirect('admin_panel:backups_list')
+    include_database = request.POST.get('include_database') == 'on'
+    include_media = request.POST.get('include_media') == 'on'
+    include_settings = request.POST.get('include_settings') == 'on'
+    if not include_database and not include_media and not include_settings:
+        messages.error(request, 'Select at least one: Database, Media, or Settings.')
+        return redirect('admin_panel:backups_list')
+    backup = create_backup_async(
+        user=request.user,
+        include_database=include_database,
+        include_media=include_media,
+        include_settings=include_settings,
+    )
+    messages.success(request, f'Backup "{backup.name}" started. It will complete in background.')
     return redirect('admin_panel:backups_list')
 
 

@@ -4,8 +4,33 @@
 {% block page_title %}Backups{% endblock %}
 {% block content %}
 {% if request.user.is_superuser %}
-<div class="admin-toolbar">
-    <form method="post" action="{% url 'admin_panel:backup_create' %}">{% csrf_token %}<button type="submit" class="admin-button admin-button-primary">Create Backup</button></form>
+<div class="admin-toolbar admin-backups-toolbar">
+    <form class="admin-backups-filter-form" method="get" action="{% url 'admin_panel:backups_list' %}">
+        <label class="admin-backups-filter-label"><span>From</span>
+            <input type="date" name="date_from" value="{{ date_from|default:'' }}" class="admin-input">
+        </label>
+        <label class="admin-backups-filter-label"><span>To</span>
+            <input type="date" name="date_to" value="{{ date_to|default:'' }}" class="admin-input">
+        </label>
+        <button type="submit" class="admin-button admin-button-secondary">Filter</button>
+        {% comment %} <a href="{% url 'admin_panel:backups_list' %}" class="admin-button admin-button-secondary">Reset</a> {% endcomment %}
+    </form>
+    <div class="admin-backups-create-bulk-row">
+        <form id="admin-backup-create-form" class="admin-backups-create-form" method="post" action="{% url 'admin_panel:backup_create' %}">
+            {% csrf_token %}
+            <fieldset class="admin-backups-create-fieldset">
+                <legend class="admin-backups-create-legend">Create backup</legend>
+                <label class="admin-backups-checkbox-label"><input type="checkbox" name="include_database" value="on" checked> Database</label>
+                <label class="admin-backups-checkbox-label"><input type="checkbox" name="include_media" value="on" checked> Media</label>
+                <label class="admin-backups-checkbox-label"><input type="checkbox" name="include_settings" value="on"> Settings
+                  <span class="admin-text-muted">(settings may include secrets from .env)</span>
+                </label>
+            </fieldset>
+        </form>
+        <div class="admin-backups-create-actions-row">
+            <button type="submit" form="admin-backup-create-form" class="admin-button admin-button-primary">Create backup</button>
+        </div>
+    </div>
 </div>
 <div class="admin-card">
     <div class="admin-table-wrapper">
@@ -21,7 +46,7 @@
                     <td>{{ b.created_at|date:"M d, Y H:i" }}</td>
                     <td class="admin-backup-size-cell"><span class="admin-backup-size-value">{% if b.status == 'completed' and b.file_size %}{{ b.file_size_human }}{% else %}—{% endif %}</span></td>
                     <td class="admin-backup-status-cell"><span class="admin-badge admin-badge-{% if b.status == 'completed' %}success{% elif b.status == 'failed' %}danger{% else %}warning{% endif %}">{{ b.get_status_display }}</span></td>
-                    <td>{{ b.get_content_type_display }}</td>
+                    <td>{{ b.get_components_label }}</td>
                     <td class="admin-actions-cell admin-backup-actions-cell">
                         <div class="admin-dropdown">
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
@@ -41,7 +66,7 @@
             </tbody>
         </table>
     </div>
-    <div class="admin-table-total">Total: {{ backups.count }}</div>
+    <div class="admin-table-total">Total: {{ total_count }}</div>
 </div>
 <script>
 (function() {
