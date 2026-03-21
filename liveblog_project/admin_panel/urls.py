@@ -89,7 +89,9 @@ urlpatterns = [
     # Logs (placeholder)
     path('logs/', views.logs_view, name='logs'),
 
-    # Pages / FAQ
+    # Pages / FAQ / static site pages
+    path('pages/about/', views.about_page_edit, name='about_page_edit'),
+    path('pages/contacts/', views.contacts_page_edit, name='contacts_page_edit'),
     path('faq/', views.faq_list, name='faq_list'),
     path('faq/create/', views.faq_create, name='faq_create'),
     path('faq/<int:pk>/edit/', views.faq_edit, name='faq_edit'),

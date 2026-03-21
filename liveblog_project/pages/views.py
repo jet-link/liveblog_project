@@ -4,6 +4,7 @@ from django.template import TemplateDoesNotExist
 from smart_blog.models import Item
 from smart_blog.search_utils import get_popularity_queryset
 from pages.models import FAQItem
+from pages.static_pages import get_about_page, get_contacts_page
 from django.http import Http404
 
 
@@ -24,6 +25,10 @@ def home_page(request):
 
 class PageView(View):
     def get(self, request, slug, *args, **kwargs):
+        if slug == 'about':
+            return render(request, 'pages/about.html', {'about': get_about_page()})
+        if slug == 'contacts':
+            return render(request, 'pages/contacts.html', {'contacts': get_contacts_page()})
         template_name = f'pages/{slug}.html'
         try:
             return render(request, template_name, {})

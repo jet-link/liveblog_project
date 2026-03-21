@@ -76,6 +76,14 @@
 
         <div class="admin-nav-group">
             <div class="admin-nav-group-title">Pages</div>
+            <a href="{% url 'admin_panel:about_page_edit' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'about_page_edit' %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-file-lines"></i>
+                <span class="admin-nav-text">About</span>
+            </a>
+            <a href="{% url 'admin_panel:contacts_page_edit' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'contacts_page_edit' %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-address-book"></i>
+                <span class="admin-nav-text">Contacts</span>
+            </a>
             <a href="{% url 'admin_panel:faq_list' %}" class="admin-nav-item {% if 'faq' in request.resolver_match.url_name %}active{% endif %}">
                 <i class="admin-nav-icon fa-regular fa-circle-question"></i>
                 <span class="admin-nav-text">FAQ</span>
