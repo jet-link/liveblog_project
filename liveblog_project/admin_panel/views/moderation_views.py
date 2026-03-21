@@ -134,25 +134,15 @@ def content_violation_clear(request, pk):
     if not request.user.is_superuser:
         return JsonResponse({'success': False}, status=403)
     v = get_object_or_404(ContentViolation, pk=pk)
-    # #region agent log
-    import json
-    try:
-        with open('/Users/glaze_4life/pyPROJECTS/live-chat-blog/.cursor/debug-007047.log', 'a') as f:
-            f.write(json.dumps({
-                "sessionId": "007047", "hypothesisId": "E",
-                "location": "moderation_views.py:content_violation_clear",
-                "message": "Single clear before v.delete",
-                "data": {"violation_pk": pk, "item_id": v.item_id, "comment_id": v.comment_id},
-                "timestamp": __import__('time').time() * 1000
-            }) + "\n")
-    except Exception:
-        pass
-    # #endregion
     v.delete()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True, 'removed': True})
     messages.success(request, 'Violation cleared from table.')
-    return redirect('admin_panel:content_violations_list')
+    filter_qs = request.GET.urlencode()
+    url = reverse('admin_panel:content_violations_list')
+    if filter_qs:
+        url += '?' + filter_qs
+    return redirect(url)
 
 
 @admin_required

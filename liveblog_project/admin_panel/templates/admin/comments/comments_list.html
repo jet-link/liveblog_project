@@ -16,6 +16,10 @@
         <option value="root" {% if filter_type == 'root' %}selected{% endif %}>Root only</option>
         <option value="child" {% if filter_type == 'child' %}selected{% endif %}>Child only</option>
       </select>
+      <select name="sort" class="admin-select">
+        <option value="date" {% if current_sort == 'date' %}selected{% endif %}>By date</option>
+        <option value="likes" {% if current_sort == 'likes' %}selected{% endif %}>By likes</option>
+      </select>
       <button type="submit" class="admin-button">Search</button>
     </form>
   </div>
@@ -29,6 +33,7 @@
             <th>Comment</th>
             <th>Author</th>
             <th>Post</th>
+            <th>Likes</th>
             <th>Published</th>
             <th>Status</th>
             <th>Actions</th>
@@ -43,6 +48,7 @@
               </td>
               <td>{{ c.author.username|default:'Vanished' }}</td>
               <td>{{ c.item.title|truncatewords:5 }}</td>
+              <td>{{ c.likes_count|default:0 }}</td>
               <td>{{ c.created|date:'M d, H:i' }}</td>
               <td>
                 <span class="admin-badge {% if c.is_draft %}admin-badge-warning{% else %}admin-badge-success{% endif %}">{% if c.is_draft %}Draft{% else %}Active{% endif %}</span>
@@ -59,7 +65,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="7" class="admin-empty">No comments.</td>
+              <td colspan="8" class="admin-empty">No comments.</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -69,11 +75,11 @@
     {% if comments.has_other_pages %}
       <div class="admin-pagination">
         {% if comments.has_previous %}
-          <a href="?page={{ comments.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button admin-button-sm">Previous</a>
+          <a href="?page={{ comments.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}&sort={{ current_sort }}" class="admin-button admin-button-sm">Previous</a>
         {% endif %}
         <span class="admin-pagination-info">Page {{ comments.number }} of {{ comments.paginator.num_pages }}</span>
         {% if comments.has_next %}
-          <a href="?page={{ comments.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}" class="admin-button admin-button-sm">Next</a>
+          <a href="?page={{ comments.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}&sort={{ current_sort }}" class="admin-button admin-button-sm">Next</a>
         {% endif %}
       </div>
     {% endif %}

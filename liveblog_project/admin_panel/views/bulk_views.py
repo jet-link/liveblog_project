@@ -140,7 +140,7 @@ def banned_users_bulk_delete(request):
             pass
     if deleted:
         messages.success(request, f'{deleted} user(s) deleted.')
-    return redirect('admin_panel:banned_users')
+    return _redirect_with_qs('banned_users', request)
 
 
 @admin_required
@@ -332,4 +332,4 @@ def backups_bulk_delete(request):
             pass
     if deleted:
         messages.success(request, f'{deleted} backup(s) deleted.')
-    return redirect('admin_panel:backups_list')
+    return _redirect_with_qs('backups_list', request)

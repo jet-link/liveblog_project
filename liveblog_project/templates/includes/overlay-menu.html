@@ -2,11 +2,11 @@
 <div id="bottomMenuOverlay" class="bottom-menu-overlay hidden"></div>
 <aside id="bottomSideMenu" class="bottom-side-menu hidden" aria-hidden="true" inert>
   <div class="bottom-menu-header d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-2">
       <div class="bottom-left-nav header-brand">
         <a href="/" class="brand-minimal">BrainStorm</a>
       </div>
-      <button type="button" class="theme-toggle-btn theme-toggle-overlay" aria-label="Toggle theme" title="Light/Dark theme"><i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i></button>
+      <button type="button" class="theme-toggle-btn theme-toggle-overlay p-0" aria-label="Toggle theme" title="Light/Dark theme"><i class="fa fa-moon-o theme-toggle-icon" aria-hidden="true"></i></button>
     </div>
     <button id="bottomMenuClose" class="text-muted p-0" aria-label="Close menu">×</button>
   </div>
@@ -16,21 +16,21 @@
     <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted">Popular</a>
     <a href="#" class="header-menu-item text-decoration-none text-muted">Trending</a>
     <a href="#" class="header-menu-item text-decoration-none text-muted">
-      Сategories
+      Categories
       <i class="fa fa-angle-down ms-1"></i>
       <i class="fa fa-angle-up ms-1 hidden"></i>
     </a>
   </nav>
 
-  <nav class="social-block">
-    <span class="text-muted">Subscribe us</span>
+  {% comment %} <nav class="social-block">
+    <span class="text-muted">Subscribe to us</span>
     <hr />
     <div class="social-nav">
       <a href="#"><i class="fa fa-twitter"></i></a>
       <a href="#"><i class="fa fa-instagram"></i></a>
       <a href="#"><i class="fa fa-facebook"></i></a>
       <a href="#"><i class="fa fa-youtube-play"></i></a>
-      <a href="#"><i class="fa fa-envelope-o"></i></a>
+      <a href="#"><i class="fa fa-telegram"></i></a>
     </div>
-  </nav>
+  </nav> {% endcomment %}
 </aside>

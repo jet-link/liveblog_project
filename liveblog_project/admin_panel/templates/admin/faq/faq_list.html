@@ -29,7 +29,7 @@
                             <button type="button" class="admin-dropdown-trigger admin-button">Actions <i class="fa-solid fa-chevron-down"></i></button>
                             <div class="admin-dropdown-menu">
                                 <a href="{% url 'admin_panel:faq_edit' item.pk %}">Edit</a>
-                                <a href="{% url 'admin_panel:faq_delete' item.pk %}" class="admin-action-delete">Delete</a>
+                                <a href="{% url 'admin_panel:faq_delete' item.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete">Delete</a>
                             </div>
                         </div>
                     </td>

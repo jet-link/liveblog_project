@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import JsonResponse
 
 from admin_panel.decorators import admin_required
@@ -16,7 +16,11 @@ User = get_user_model()
 @admin_required
 def comments_list(request):
     """List comments with search, filter, pagination."""
-    qs = Comment.objects.select_related('item', 'author', 'parent').order_by('-created')
+    qs = (
+        Comment.objects.select_related('item', 'author', 'parent')
+        .annotate(likes_count=Count('likes'))
+        .order_by('-created')
+    )
 
     search = request.GET.get('q', '').strip()
     if search:
@@ -32,11 +36,20 @@ def comments_list(request):
     elif filter_type == 'child':
         qs = qs.filter(parent__isnull=False)
 
+    sort = request.GET.get('sort', 'date')
+    if sort == 'likes':
+        qs = qs.order_by('-likes_count', '-created')
+
     paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     comments = paginator.get_page(page)
 
-    context = {'comments': comments, 'search': search, 'filter_type': filter_type}
+    context = {
+        'comments': comments,
+        'search': search,
+        'filter_type': filter_type,
+        'current_sort': sort,
+    }
     return render(request, 'admin/comments/comments_list.html', context)
 
 

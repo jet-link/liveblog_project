@@ -8,7 +8,7 @@
 <div class="admin-card admin-modal-card">
     <h3>Delete {{ item.title }}?</h3>
     <p>This action cannot be undone.</p>
-    <form method="post" class="admin-form-actions">
+    <form method="post" action="{% url 'admin_panel:post_delete' item.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-form-actions">
         {% csrf_token %}
         <button type="submit" class="admin-button admin-button-danger">Delete</button>
         <a href="{% url 'admin_panel:posts_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a>

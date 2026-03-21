@@ -9,6 +9,6 @@
     <hr />
     <p class="admin-text-muted">The comment will be hidden everywhere and shown as Draft in the comments table.</p>
     <blockquote class="admin-comment-blockquote">{{ comment.text|strip_mentions }}</blockquote>
-    <form method="post" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-warning">Draft</button><a href="{% url 'admin_panel:comments_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
+    <form method="post" action="{% url 'admin_panel:comment_confirm_draft' comment.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-form-actions">{% csrf_token %}<button type="submit" class="admin-button admin-button-warning">Draft</button><a href="{% url 'admin_panel:comments_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a></form>
 </div>
 {% endblock %}

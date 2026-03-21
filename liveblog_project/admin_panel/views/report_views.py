@@ -147,7 +147,7 @@ def report_ban_user(request, pk):
         user = report.comment.author
     if not user:
         messages.error(request, 'No user to ban.')
-        return redirect('admin_panel:reports_list')
+        return _reports_redirect_with_filters(request)
     if request.method == 'POST':
         if user == request.user:
             messages.error(request, 'You cannot ban yourself.')
@@ -159,5 +159,10 @@ def report_ban_user(request, pk):
             messages.success(request, f'User {user.username} has been banned.')
         report.status = ContentReport.STATUS_RESOLVED
         report.save()
-        return redirect('admin_panel:reports_list')
-    return render(request, 'admin/reports/report_confirm_ban.html', {'report': report, 'user_obj': user})
+        return _reports_redirect_with_filters(request)
+    next_qs = request.GET.urlencode()
+    return render(request, 'admin/reports/report_confirm_ban.html', {
+        'report': report,
+        'user_obj': user,
+        'next_qs': next_qs,
+    })

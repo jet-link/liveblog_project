@@ -813,6 +813,31 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     /* border: 1px solid var(--border-muted); */
 }
 
+/* Как .page-static__link — только на больших экранах (меню видно с min-width: 993px) */
+@media (min-width: 993px) {
+    .header-menu .header-menu-item {
+        color: var(--text-link) !important;
+        text-decoration: none;
+        font-weight: 500;
+        border-radius: 0;
+        border-bottom: 1px solid transparent;
+        transition: color 0.15s ease, border-color 0.15s ease;
+        background-color: transparent;
+        padding: 0.25rem 0.65rem;
+    }
+
+    .header-menu .header-menu-item:hover {
+        color: var(--text-link-hover) !important;
+        border-bottom-color: currentColor;
+    }
+
+    .header-menu .header-menu-item.active {
+        color: var(--text-link) !important;
+        background-color: transparent !important;
+        border-bottom-color: currentColor;
+    }
+}
+
 .search-btn,
 .theme-toggle-btn {
     border: none;
@@ -947,15 +972,191 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     flex-shrink: 0;
     border-top: 1px solid var(--border-subtle);
     background: var(--bg-default);
+    overflow: visible;
     /* background: #f1f2f6; */
 }
 
 .footer-blocks {
     flex-wrap: wrap;
+    overflow: visible;
 }
 
 .footer-block a:hover {
     color: var(--text-link) !important;
+}
+
+/* Subscribe: popover above trigger + arrow toward button */
+
+.footer-subscribe-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.footer-subscribe-trigger {
+    cursor: pointer;
+    font: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    text-align: inherit;
+}
+
+.footer-subscribe-trigger:hover,
+.footer-subscribe-trigger:focus-visible {
+    color: var(--text-link) !important;
+}
+
+.footer-subscribe-trigger:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+
+.footer-subscribe-popover {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 12px);
+    z-index: 1080;
+    width: max-content;
+    max-width: min(calc(100vw - 24px), 95vw);
+    padding: 12px 16px;
+    box-sizing: border-box;
+    background: var(--bg-default);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--card-shadow-lg);
+}
+
+/* Одна линия иконок — без переноса */
+.footer-subscribe-social {
+    flex-wrap: nowrap !important;
+    white-space: nowrap;
+}
+
+.footer-subscribe-social-icon {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+/* Arrow pointing down to the Subscribe button */
+.footer-subscribe-popover::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    margin-left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--border-default);
+}
+
+.footer-subscribe-popover::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -7px;
+    margin-left: -7px;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid var(--bg-default);
+}
+
+.footer-subscribe-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.footer-subscribe-social-link:hover {
+    color: var(--text-link) !important;
+    background: var(--bg-subtle);
+}
+
+.footer-subscribe-popover[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 576px) {
+    /* Поповер справа от кнопки; стрелка слева — указывает на Subscribe */
+    .footer-subscribe-popover {
+        left: 100%;
+        right: auto;
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 10px;
+        padding: 8px 10px;
+        max-width: calc(100vw - 3.5rem);
+    }
+
+    .footer-subscribe-popover::before {
+        /* треугольник влево (обводка) */
+        left: -8px;
+        right: auto;
+        bottom: auto;
+        top: 50%;
+        margin-left: 0;
+        margin-top: -8px;
+        border-left: none;
+        border-right: 8px solid var(--border-default);
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+    }
+
+    .footer-subscribe-popover::after {
+        /* треугольник влево (заливка) */
+        left: -7px;
+        right: auto;
+        bottom: auto;
+        top: 50%;
+        margin-left: 0;
+        margin-top: -7px;
+        border-left: none;
+        border-right: 7px solid var(--bg-default);
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+    }
+
+    .footer-subscribe-social {
+        gap: 0.35rem !important;
+    }
+
+    .footer-subscribe-social-link {
+        min-width: 1.75rem;
+        min-height: 1.75rem;
+        padding: 0;
+    }
+
+    .footer-subscribe-social-icon {
+        font-size: 0.95rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .footer-subscribe-popover {
+        padding: 6px 8px;
+    }
+
+    .footer-subscribe-social {
+        gap: 0.25rem !important;
+    }
+
+    .footer-subscribe-social-icon {
+        font-size: 0.85rem !important;
+    }
+
+    .footer-subscribe-social-link {
+        min-width: 1.5rem;
+        min-height: 1.5rem;
+    }
 }
 
 .footer-subscribe {

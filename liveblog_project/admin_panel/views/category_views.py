@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from admin_panel.decorators import admin_required
+from admin_panel.utils import redirect_preserve_query
 from smart_blog.models import Category
 
 
@@ -57,5 +58,5 @@ def category_delete(request, pk):
     if request.method == 'POST':
         cat.delete()
         messages.success(request, 'Category deleted.')
-        return redirect('admin_panel:categories_list')
+        return redirect_preserve_query(request, 'categories_list')
     return render(request, 'admin/categories/category_confirm_delete.html', {'category': cat})

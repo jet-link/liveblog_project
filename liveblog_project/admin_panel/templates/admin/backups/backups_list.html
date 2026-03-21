@@ -55,7 +55,7 @@
                                 <a href="{% url 'admin_panel:backup_download' b.pk %}">Download</a>
                                 <a href="{% url 'admin_panel:backup_restore' b.pk %}">Restore</a>
                                 {% endif %}
-                                <a href="{% url 'admin_panel:backup_delete' b.pk %}" class="admin-action-delete" data-no-confirm>Delete</a>
+                                <a href="{% url 'admin_panel:backup_delete' b.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-action-delete" data-no-confirm>Delete</a>
                             </div>
                         </div>
                     </td>

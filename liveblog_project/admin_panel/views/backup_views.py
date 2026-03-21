@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils.dateparse import parse_date
 
 from admin_panel.decorators import admin_required
+from admin_panel.utils import redirect_preserve_query
 from backups.models import Backup
 from backups.services import create_backup_async, create_backup_sync
 
@@ -164,5 +165,5 @@ def backup_delete(request, pk):
                 pass
         backup.delete()
         messages.success(request, 'Backup deleted.')
-        return redirect('admin_panel:backups_list')
+        return redirect_preserve_query(request, 'backups_list')
     return render(request, 'admin/backups/backup_confirm_delete.html', {'backup': backup})

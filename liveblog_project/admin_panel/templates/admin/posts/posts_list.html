@@ -40,6 +40,7 @@
                     <th>Author</th>
                     <th>Category</th>
                     <th>Published</th>
+                    <th>Likes</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -52,6 +53,7 @@
                     <td>{{ post.author.username|default:"—" }}</td>
                     <td>{{ post.category.name|default:"—" }}</td>
                     <td>{{ post.published_date|date:"M d, Y" }}</td>
+                    <td>{{ post.likes_count|default:0 }}</td>
                     <td>
                         <span class="admin-badge {% if post.is_published %}admin-badge-success{% else %}admin-badge-warning{% endif %}">
                             {% if post.is_published %}Published{% else %}Draft{% endif %}
@@ -69,7 +71,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" class="admin-empty">No posts found.</td></tr>
+                <tr><td colspan="8" class="admin-empty">No posts found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

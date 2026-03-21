@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from admin_panel.decorators import admin_required
+from admin_panel.utils import redirect_preserve_query
 from pages.models import FAQItem
 
 
@@ -68,5 +69,5 @@ def faq_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'FAQ item deleted.')
-        return redirect('admin_panel:faq_list')
+        return redirect_preserve_query(request, 'faq_list')
     return render(request, 'admin/faq/faq_confirm_delete.html', {'item': item})

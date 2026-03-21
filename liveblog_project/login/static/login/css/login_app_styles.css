@@ -519,6 +519,9 @@ html[data-theme="dark"] .block-quote {
     width: min(620px, 94vw);
     max-height: 80vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     background: var(--card-bg);
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -547,11 +550,22 @@ html[data-theme="dark"] .block-quote {
 .liked-users-list-container {
     position: relative;
     padding: 0 20px 20px 20px;
-    min-height: 60px;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .liked-users-header {
     padding: 20px 20px 0 20px;
+    flex-shrink: 0;
+}
+
+.liked-users-panel > hr {
+    flex-shrink: 0;
+    /* margin: 1rem 0 0 0; */
+    /* padding-bottom: 1rem; */
 }
 
 .liked-users-header-actions {
@@ -563,7 +577,10 @@ html[data-theme="dark"] .block-quote {
     flex-direction: column;
     gap: 10px;
     padding-bottom: 16px;
-    /* min/max height, overflow set by JS */
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* min/max height задаёт JS; overflow-y auto дублируется в JS для надёжности */
 }
 
 .liked-users-empty-msg {

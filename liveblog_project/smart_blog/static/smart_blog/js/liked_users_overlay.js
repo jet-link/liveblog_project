@@ -16,7 +16,8 @@
   const searchWrap = overlay?.querySelector('.liked-users-search-wrap');
   const container = overlay?.querySelector('.liked-users-list-container');
   const current = document.getElementById('likedUsersCurrent');
-  const MAX_VISIBLE = 11;
+  /** Высота окна — под столько рядов; если лайков больше — скролл внутри списка */
+  const MAX_VISIBLE = 10;
   const SEARCH_MIN_USERS = 6;
   let initialOrder = [];
   let searchActiveWithMany = false; /* true when search open and count >= 6 */
@@ -92,7 +93,9 @@
     container.style.maxHeight = h + 'px';
     list.style.minHeight = h + 'px';
     list.style.maxHeight = h + 'px';
-    list.style.overflowY = count > MAX_VISIBLE ? 'auto' : 'visible';
+    /* Всегда auto: иначе при «visible» + overflow:hidden у панели контент обрезается без скролла;
+       расчёт h по одному sample-ряду часто занижает суммарную высоту; при resize (DevTools) то же. */
+    list.style.overflowY = 'auto';
   }
 
   function updateSearchWrapVisibility(count) {
@@ -111,7 +114,9 @@
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(function () {
-      updateModalHeight(count, false);
+      requestAnimationFrame(function () {
+        updateModalHeight(count, false);
+      });
     });
   }
 
@@ -252,7 +257,12 @@
   window.addEventListener('pagehide', closeOverlay);
   window.addEventListener('pageshow', closeOverlay);
   window.addEventListener('resize', () => {
-    updateModalHeight(getLikedCount(), searchActiveWithMany, isEmptyStateActive());
+    /* Два rAF после смены viewport (открытие DevTools и т.д.), чтобы measureItemHeight видел финальный layout */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        updateModalHeight(getLikedCount(), searchActiveWithMany, isEmptyStateActive());
+      });
+    });
   });
 
   function upsertListItem(username, avatarUrl, profileUrl) {

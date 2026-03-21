@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from admin_panel.decorators import admin_required
+from admin_panel.utils import redirect_preserve_query
 from smart_blog.models import Tag
 
 
@@ -63,5 +64,5 @@ def tag_delete(request, pk):
     if request.method == 'POST':
         tag.delete()
         messages.success(request, 'Tag deleted.')
-        return redirect('admin_panel:tags_list')
+        return redirect_preserve_query(request, 'tags_list')
     return render(request, 'admin/tags/tag_confirm_delete.html', {'tag': tag})

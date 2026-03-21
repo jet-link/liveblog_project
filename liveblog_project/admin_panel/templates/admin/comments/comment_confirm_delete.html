@@ -8,7 +8,7 @@
 <div class="admin-card admin-modal-card">
     <h3>Delete comment?</h3>
     <blockquote class="admin-comment-blockquote">{{ comment.text|strip_mentions|truncatewords:30 }}</blockquote>
-    <form method="post" class="admin-form-actions">
+    <form method="post" action="{% url 'admin_panel:comment_delete' comment.pk %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-form-actions">
         {% csrf_token %}
         <button type="submit" class="admin-button admin-button-danger">Delete</button>
         <a href="{% url 'admin_panel:comments_list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="admin-button admin-button-outline">Cancel</a>
