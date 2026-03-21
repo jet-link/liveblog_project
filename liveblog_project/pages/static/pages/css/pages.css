@@ -379,3 +379,221 @@ html[data-theme="dark"] .faq-item-header:hover .faq-toggle-line {
 html[data-theme="dark"] .faq-item-answer {
     background: var(--bg-muted);
 }
+
+/* ========== Static pages: About / Contacts (minimal, informative) ========== */
+/* Верхний отступ как у BraiNews/Popular: родитель .container.content_block (styles.css) */
+.page-static {
+    --page-static-max: 42rem;
+    padding: 0 0 clamp(2.5rem, 6vw, 4rem);
+    color: var(--text-default, #1f2328);
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.page-static__inner {
+    max-width: var(--page-static-max);
+    margin: 0 auto;
+}
+
+.page-static__header {
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-default, #e6e6e6);
+}
+
+.page-static__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+    color: var(--text-default);
+}
+
+.page-static__lede {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 0;
+    color: var(--text-muted, #6c757d);
+    max-width: 38rem;
+}
+
+.page-static__lede strong {
+    color: var(--text-default);
+    font-weight: 600;
+}
+
+.page-static__section {
+    margin-bottom: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.page-static__section--muted .page-static__p {
+    color: var(--text-muted);
+}
+
+.page-static__h2 {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 1rem;
+    color: var(--text-muted-alt, #8b949e);
+}
+
+.page-static__list {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.65;
+    color: var(--text-default);
+}
+
+.page-static__list li {
+    margin-bottom: 0.5rem;
+}
+
+.page-static__list li:last-child {
+    margin-bottom: 0;
+}
+
+.page-static__facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 1.25rem;
+    margin: 0;
+}
+
+.page-static__fact {
+    margin: 0;
+    padding: 1rem 1rem 1.1rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-muted, #f6f8fa);
+}
+
+.page-static__fact-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted-alt);
+    margin: 0 0 0.35rem;
+}
+
+.page-static__fact-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.45;
+    margin: 0;
+    color: var(--text-default);
+}
+
+.page-static__contact-list {
+    margin: 0;
+}
+
+.page-static__contact-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, 10rem) 1fr;
+    gap: 0.75rem 1.25rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border-subtle, #f1f2f3);
+    align-items: start;
+}
+
+.page-static__contact-row:last-child {
+    border-bottom: none;
+}
+
+.page-static__contact-key {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.page-static__contact-val {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-default);
+}
+
+.page-static__contact-note {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted-alt);
+    margin-top: 0.25rem;
+}
+
+.page-static__p {
+    margin: 0;
+    line-height: 1.65;
+    font-size: 0.95rem;
+}
+
+.page-static__footer {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-default);
+}
+
+.page-static__cta {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.page-static__cta-hint {
+    color: var(--text-muted);
+}
+
+.page-static__meta {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.page-static__link {
+    color: var(--text-link, #2980b9);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.page-static__link:hover {
+    color: var(--text-link-hover, #58a6ff);
+    border-bottom-color: currentColor;
+}
+
+.page-static__link--subtle {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.page-static__link--subtle:hover {
+    color: var(--text-link);
+}
+
+@media (max-width: 640px) {
+    .page-static__facts {
+        grid-template-columns: 1fr;
+    }
+
+    .page-static__contact-row {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        min-height: 0;
+        padding: 1rem 0;
+    }
+
+    .page-static__contact-key {
+        margin-bottom: 0.15rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-static__contact-row .page-static__contact-val {
+        min-height: 2.75rem;
+    }
+}

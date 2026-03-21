@@ -1,15 +1,51 @@
-{# pages/templates/pages/about.html #}
+{# pages/templates/pages/contacts.html #}
 {% extends 'base.html' %}
-{% block title %}
-  Contacts
-{% endblock %}
+{% block title %}Contacts — BrainStorm{% endblock %}
 {% block content %}
-  <div class="container content_block">
-    <h4 class="text-muted mb-3">Contacts</h4>
-    <p class="text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque repellendus accusantium animi voluptatibus vero pariatur quidem sapiente, eos inventore doloribus. Debitis voluptate iusto enim excepturi quisquam omnis, necessitatibus voluptatibus rem?
-    Minus vel non iusto enim nihil exercitationem ut quisquam possimus omnis error totam at rerum quidem, ab culpa officiis labore eos explicabo laboriosam molestias recusandae architecto tempore porro nostrum? Obcaecati.
-    Nobis esse earum animi? Temporibus doloribus deserunt pariatur nesciunt officiis sequi incidunt in reprehenderit veritatis, optio, accusantium quaerat aliquid cupiditate ratione accusamus ullam eius, sed enim debitis repellendus quae? Deleniti.
-    Hic sint pariatur, id ducimus nam eveniet, voluptate sed totam, aperiam ipsa neque veniam eos perspiciatis voluptatibus architecto qui ut minus nesciunt. Unde nam velit neque laudantium sunt cumque tempore?
-    Maiores at illum vel minus, blanditiis perferendis ipsa voluptatem repellendus. Praesentium eos repellendus mollitia iusto laborum, a, commodi sint dolor ut assumenda quis rem explicabo. Reiciendis amet sequi consectetur dolores!</p>
+<div class="container content_block">
+<article class="page-static page-static--contacts">
+  <div class="page-static__inner">
+    <header class="page-static__header">
+      <h1 class="page-static__title">Contacts</h1>
+      <p class="page-static__lede">
+        We usually reply within <strong>1–2 business days</strong>. For urgent technical issues,
+        say so briefly in the email subject line.
+      </p>
+    </header>
+
+    <section class="page-static__section" aria-labelledby="contacts-channels-heading">
+      <h2 id="contacts-channels-heading" class="page-static__h2">How to reach us</h2>
+      <dl class="page-static__contact-list">
+        <div class="page-static__contact-row">
+          <dt class="page-static__contact-key">Email</dt>
+          <dd class="page-static__contact-val">
+            <a href="mailto:discover@brainstorm.com" class="page-static__link">discover@brainstorm.com</a>
+            <span class="page-static__contact-note">General questions and suggestions</span>
+          </dd>
+        </div>
+        <div class="page-static__contact-row">
+          <dt class="page-static__contact-key">Community</dt>
+          <dd class="page-static__contact-val">
+            <span class="page-static__contact-note">Add social links here when you have them.</span>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="page-static__section page-static__section--muted" aria-labelledby="contacts-no-heading">
+      <h2 id="contacts-no-heading" class="page-static__h2">What we don’t handle</h2>
+      <p class="page-static__p">
+        Support for third-party personal accounts, unsolicited advertising without editorial approval,
+        and bulk mail we didn’t ask for—we won’t respond to these.
+      </p>
+    </section>
+
+    <footer class="page-static__footer">
+      <p class="page-static__meta">
+        <a href="{% url 'pages:page' 'about' %}" class="page-static__link page-static__link--subtle">About</a>
+      </p>
+    </footer>
   </div>
+</article>
+</div>
 {% endblock %}

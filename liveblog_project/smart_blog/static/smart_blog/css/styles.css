@@ -4,6 +4,9 @@
     --font-body: 'Inter', sans-serif;
     --font-heading: 'Space Grotesk', sans-serif;
 
+    /* Fixed header (см. .header-wrapper) — для отступа контента под шапку */
+    --header-height: 72px;
+
     /* Spacing & Layout */
     --gap: 13px;
     --gap-sm: 8px;
@@ -752,14 +755,13 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     margin-top: 10px;
 }
 
-/* Фиксированный header — высота учитывается через --header-height для padding контента */
+/* Фиксированный header — высота учитывается через --header-height (:root) для padding контента */
 .header-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1050;
-    --header-height: 72px;
 }
 
 .header {
