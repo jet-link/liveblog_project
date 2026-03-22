@@ -16,6 +16,8 @@ CONTENT_WEIGHTS = {
 }
 RECOVERY_PER_DAY = 0.05
 MAX_SCORE = 10.0
+# Below this score, non-staff accounts are auto-deactivated (trust ban).
+TRUST_BAN_THRESHOLD = 1.5
 
 
 def time_decay(days):
@@ -79,6 +81,39 @@ def calculate_user_score(user):
     return min(score, MAX_SCORE)
 
 
+def estimate_trust_recovery_eta_for_score(score):
+    """
+    Rough datetime when score may reach TRUST_BAN_THRESHOLD if recovery (+0.05/day)
+    is the limiting factor (upper bound; decay of old violations may restore faster).
+    """
+    from math import ceil
+
+    score = float(score)
+    if score >= TRUST_BAN_THRESHOLD:
+        return None
+    need = TRUST_BAN_THRESHOLD - score
+    days = max(1, ceil(need / RECOVERY_PER_DAY))
+    return timezone.now() + timedelta(days=days)
+
+
+def format_trust_ban_login_message(user):
+    """Message for inactive users banned due to low trust (shown on login)."""
+    try:
+        score = float(user.profile.trust_score)
+    except Exception:
+        score = 10.0
+    eta = estimate_trust_recovery_eta_for_score(score)
+    if eta:
+        local = timezone.localtime(eta)
+        hint = local.strftime("%b %d, %Y %H:%M")
+    else:
+        hint = "—"
+    return (
+        "You have been banned. Wait your recovery period. "
+        f"(Approximate earliest access restoration ~ {hint})"
+    )
+
+
 def update_user_trust_score(user, set_last_violation=False):
     """
     Calculate score, update profile (trust_score, can_post, shadow_banned).
@@ -107,8 +142,21 @@ def update_user_trust_score(user, set_last_violation=False):
     else:
         profile.can_post = score >= 5
         profile.shadow_banned = score < 3
+        # Auto trust-ban: deactivate account when score falls below threshold (staff exempt)
+        if not getattr(user, 'is_staff', False):
+            if score < TRUST_BAN_THRESHOLD:
+                profile.trust_banned = True
+                if user.is_active:
+                    user.is_active = False
+                    user.save(update_fields=['is_active'])
+            else:
+                if profile.trust_banned:
+                    profile.trust_banned = False
+                    if not user.is_active:
+                        user.is_active = True
+                        user.save(update_fields=['is_active'])
 
-    update_fields = ["trust_score", "can_post", "shadow_banned"]
+    update_fields = ["trust_score", "can_post", "shadow_banned", "trust_banned"]
     if set_last_violation:
         update_fields.append("last_violation_at")
     profile.save(update_fields=update_fields)

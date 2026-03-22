@@ -289,7 +289,10 @@ def login_view(request):
             password = form.cleaned_data['password']
             remember = form.cleaned_data.get('remember')
 
+            lookup = User.objects.select_related('profile').filter(username__iexact=username).first()
             user = authenticate(request, username=username, password=password)
+            if user is None and lookup and lookup.is_active and lookup.check_password(password):
+                user = authenticate(request, username=lookup.username, password=password)
             if user is not None:
                 if is_user_online(user):
                     form.add_error(None, "User already online")
@@ -305,8 +308,19 @@ def login_view(request):
                         return redirect(next_url)
                     return redirect('login_app:profile', username=user.username)
             else:
-                if not User.objects.filter(username__iexact=username).exists():
+                if not lookup:
                     form.add_error(None, "User not found")
+                elif not lookup.check_password(password):
+                    form.add_error(None, "Incorrect password")
+                elif not lookup.is_active:
+                    try:
+                        if lookup.profile.trust_banned:
+                            from admin_panel.services.trust_score_service import format_trust_ban_login_message
+                            form.add_error(None, format_trust_ban_login_message(lookup))
+                        else:
+                            form.add_error(None, "Your account has been disabled.")
+                    except Exception:
+                        form.add_error(None, "Your account has been disabled.")
                 else:
                     form.add_error(None, "Incorrect password")
         # если form.is_valid() == False — будут показаны ошибки required и т.д.

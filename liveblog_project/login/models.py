@@ -42,6 +42,11 @@ class Profile(models.Model):
     last_violation_at = models.DateTimeField(null=True, blank=True)
     can_post = models.BooleanField(default=True)
     shadow_banned = models.BooleanField(default=False)
+    trust_banned = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text='Account auto-deactivated because trust score fell below site threshold.',
+    )
 
     def __str__(self):
         return f'Profile: {self.user.username}'
