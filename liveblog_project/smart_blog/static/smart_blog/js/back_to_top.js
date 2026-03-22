@@ -9,8 +9,13 @@
     }
 
     const SCROLL_THRESHOLD = 0.8;
+    /** Comment thread page: show after small scroll (global #backToTop scrolls to page top, not comments). */
+    const THREAD_PAGE_MIN_SCROLL_PX = 500;
 
     function getThreshold() {
+        if (document.body.classList.contains('thread-comment-page')) {
+            return THREAD_PAGE_MIN_SCROLL_PX;
+        }
         return window.innerHeight * SCROLL_THRESHOLD;
     }
 

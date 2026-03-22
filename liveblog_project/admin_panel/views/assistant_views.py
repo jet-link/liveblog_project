@@ -12,7 +12,7 @@ from admin_panel.services.content_analyzer import run_content_analysis
 @admin_required
 @require_GET
 def assistant_view(request):
-    """Assistant page: schedule options, Analyze button, progress, logs."""
+    """Assistant page: Analyze button, progress, logs."""
     if not request.user.is_superuser:
         return render(request, 'admin/assistant/assistant.html', {'access_denied': True})
     recent_runs = list(

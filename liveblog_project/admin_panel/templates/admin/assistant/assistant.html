@@ -23,17 +23,14 @@
     <div class="admin-card admin-assistant-card">
       <h3>Content Moderation Analysis</h3>
       <p>Run AI-powered analysis to detect violations in posts and comments (banned words, regex patterns, Detoxify).</p>
-      <div style="display:flex; align-items:center; gap:0.2rem; flex-wrap:wrap;">
-        <button type="button" id="assistantAnalyzeBtn" class="admin-button admin-button-primary">Analyze</button>
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+        <button type="button" id="assistantAnalyzeBtn" class="admin-button admin-button-primary assistant-analyze-btn" aria-label="Run analysis">
+          <span id="assistantAnalyzeFill" class="assistant-analyze-btn__fill" aria-hidden="true"></span>
+          <span id="assistantAnalyzeLabel" class="assistant-analyze-btn__label">Analyze</span>
+        </button>
         <a href="{% url 'admin_panel:content_violations_list' %}" id="assistantNewViolationsBtn" class="admin-button" style="display:none;">New violations</a>
       </div>
 
-      <div id="assistantProgressBlock" style="display:none;">
-        <div class="admin-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height:24px; border-radius:6px; background:var(--admin-border); overflow:hidden">
-          <div id="assistantProgressFill" style="width:0%; height:100%; background:var(--admin-success, #22c55e); transition:width 0.3s"></div>
-        </div>
-        <div id="assistantProgressText" style="margin-top:0.5rem; font-size:0.9rem">0%</div>
-      </div>
       <div id="assistantLogsBlock" class="admin-card admin-assistant-logs-block">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-shrink:0;">
           <h4 style="margin:0;">Analysis Logs</h4>
@@ -83,9 +80,8 @@
         }
 
         var analyzeBtn = document.getElementById('assistantAnalyzeBtn')
-        var progressBlock = document.getElementById('assistantProgressBlock')
-        var progressFill = document.getElementById('assistantProgressFill')
-        var progressText = document.getElementById('assistantProgressText')
+        var analyzeFill = document.getElementById('assistantAnalyzeFill')
+        var analyzeLabel = document.getElementById('assistantAnalyzeLabel')
         var logsContent = document.getElementById('assistantLogsContent')
         var clearHistoryBtn = document.getElementById('assistantClearHistoryBtn')
         var clearHistoryBtnWrap = document.getElementById('assistantClearHistoryBtnWrap')
@@ -93,12 +89,54 @@
 
         var currentAnalysisId = null
 
+        function setAnalyzeBusy(busy) {
+          analyzeBtn.disabled = busy
+          if (busy) {
+            analyzeBtn.classList.add('is-analyzing')
+            analyzeBtn.setAttribute('aria-busy', 'true')
+          } else {
+            analyzeBtn.classList.remove('is-analyzing')
+            analyzeBtn.removeAttribute('aria-busy')
+          }
+        }
+
+        function resetAnalyzeButton() {
+          clearAnalyzeResetTimeout()
+          if (analyzeFill) {
+            analyzeFill.style.width = '0%'
+            analyzeFill.style.removeProperty('background')
+          }
+          if (analyzeLabel) {
+            analyzeLabel.textContent = 'Analyze'
+            analyzeLabel.style.color = ''
+          }
+          analyzeBtn.classList.remove('is-failed')
+          setAnalyzeBusy(false)
+          analyzeBtn.removeAttribute('aria-valuenow')
+        }
+
         function updateClearHistoryVisibility() {
           if (!clearHistoryBtnWrap) return
           var hasBlocks = logsContent && logsContent.querySelectorAll('.assistant-run-block').length > 0
           clearHistoryBtnWrap.style.display = hasBlocks ? 'flex' : 'none'
         }
         var pollInterval = null
+        var analyzeResetTimeout = null
+
+        function clearAnalyzeResetTimeout() {
+          if (analyzeResetTimeout) {
+            clearTimeout(analyzeResetTimeout)
+            analyzeResetTimeout = null
+          }
+        }
+
+        function scheduleAnalyzeButtonReset() {
+          clearAnalyzeResetTimeout()
+          analyzeResetTimeout = setTimeout(function () {
+            analyzeResetTimeout = null
+            resetAnalyzeButton()
+          }, 5000)
+        }
 
         function hideEmpty() {
           var empty = document.getElementById('assistantLogsEmpty')
@@ -182,27 +220,41 @@
             .then(function (data) {
               if (!data.success) return
               var p = data.progress || 0
-              progressFill.style.width = p + '%'
-              progressText.textContent = data.status === 'completed' ? 'Completed' : p + '%'
+              var pct = Math.round(p)
+              if (analyzeFill) analyzeFill.style.width = pct + '%'
+              analyzeBtn.setAttribute('aria-valuenow', String(pct))
               if (data.log_lines && data.log_lines.length) {
                 appendLogToRun(currentAnalysisId, data.started_at, data.log_lines, data.started_by)
               }
               if (data.status === 'completed') {
-                progressFill.style.background = 'var(--admin-success, #22c55e)'
-                progressText.style.color = 'var(--admin-success, #22c55e)'
+                if (analyzeFill) {
+                  analyzeFill.style.width = '100%'
+                  analyzeFill.style.background = 'var(--admin-success, #22c55e)'
+                }
+                if (analyzeLabel) {
+                  analyzeLabel.textContent = 'Completed'
+                  analyzeLabel.style.color = ''
+                }
+                analyzeBtn.removeAttribute('aria-busy')
+                analyzeBtn.setAttribute('aria-valuenow', '100')
                 finishRunBlock(currentAnalysisId)
                 stopPolling()
-                analyzeBtn.disabled = false
+                scheduleAnalyzeButtonReset()
                 if (data.violations_count > 0) {
                   newViolationsBtn.href = "{% url 'admin_panel:content_violations_list' %}"
                   newViolationsBtn.style.display = 'inline-block'
                   try { sessionStorage.setItem('admin_new_analysis_id', String(currentAnalysisId)) } catch (e) {}
                 }
               } else if (data.status === 'failed') {
-                progressText.textContent = 'Failed'
+                analyzeBtn.classList.add('is-failed')
+                if (analyzeFill) analyzeFill.style.width = '100%'
+                if (analyzeLabel) analyzeLabel.textContent = 'Failed'
+                analyzeBtn.removeAttribute('aria-busy')
                 finishRunBlock(currentAnalysisId)
                 stopPolling()
-                analyzeBtn.disabled = false
+                scheduleAnalyzeButtonReset()
+              } else {
+                if (analyzeLabel) analyzeLabel.textContent = pct + '%'
               }
             })
             .catch(function () {})
@@ -236,11 +288,11 @@
           document.body.style.overflow = ''
         }
 
-        clearHistoryBtn.addEventListener('click', openClearHistoryModal)
-        clearHistoryBackdrop.addEventListener('click', closeClearHistoryModal)
-        clearHistoryCancelBtn.addEventListener('click', closeClearHistoryModal)
+        if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', openClearHistoryModal)
+        if (clearHistoryBackdrop) clearHistoryBackdrop.addEventListener('click', closeClearHistoryModal)
+        if (clearHistoryCancelBtn) clearHistoryCancelBtn.addEventListener('click', closeClearHistoryModal)
 
-        clearHistoryConfirmBtn.addEventListener('click', function () {
+        if (clearHistoryConfirmBtn) clearHistoryConfirmBtn.addEventListener('click', function () {
           closeClearHistoryModal()
           fetch("{% url 'admin_panel:assistant_clear_history' %}", {
             method: 'POST',
@@ -268,16 +320,18 @@
         })
 
         analyzeBtn.addEventListener('click', function () {
-          var scheduleEl = document.querySelector('input[name="schedule"]:checked')
-          var schedule = scheduleEl ? scheduleEl.value : 'now'
+          var schedule = 'now'
 
-          analyzeBtn.disabled = true
+          clearAnalyzeResetTimeout()
+          if (analyzeFill) {
+            analyzeFill.style.width = '0%'
+            analyzeFill.style.removeProperty('background')
+          }
+          if (analyzeLabel) analyzeLabel.textContent = '0%'
+          analyzeBtn.classList.remove('is-failed')
+          analyzeBtn.setAttribute('aria-valuenow', '0')
+          setAnalyzeBusy(true)
           newViolationsBtn.style.display = 'none'
-          progressBlock.style.display = 'block'
-          progressFill.style.width = '0%'
-          progressFill.style.background = 'var(--admin-success, #22c55e)'
-          progressText.textContent = '0%'
-          progressText.style.color = ''
 
           var formData = new URLSearchParams()
           formData.append('schedule', schedule)
@@ -296,14 +350,14 @@
                 pollInterval = setInterval(pollStatus, 1000)
                 pollStatus()
               } else {
-                analyzeBtn.disabled = false
+                resetAnalyzeButton()
                 var errId = 'err-' + Date.now()
                 appendLogToRun(errId, null, ['Error: ' + (data.error || 'Failed to start')])
                 finishRunBlock(errId)
               }
             })
             .catch(function (e) {
-              analyzeBtn.disabled = false
+              resetAnalyzeButton()
               var errId = 'err-' + Date.now()
               appendLogToRun(errId, null, ['Error: ' + e.message])
               finishRunBlock(errId)
@@ -329,8 +383,9 @@
             .then(function (data) {
               if (data.success && data.running && data.analysis_id) {
                 currentAnalysisId = data.analysis_id
-                analyzeBtn.disabled = true
-                progressBlock.style.display = 'block'
+                setAnalyzeBusy(true)
+                if (analyzeLabel) analyzeLabel.textContent = '0%'
+                if (analyzeFill) analyzeFill.style.width = '0%'
                 pollInterval = setInterval(pollStatus, 1000)
                 pollStatus()
               }

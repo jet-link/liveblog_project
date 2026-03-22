@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block body_class %}thread-comment-page{% endblock %}
 {% block title %}
   Replies thread
 {% endblock %}
@@ -14,8 +15,6 @@
     </div>
 
     <div id="threadEmpty" class="text-muted{% if comment.replies.all %} d-none{% endif %}">There are no replies yet!</div>
-
-    {% comment %} <button id="commentsBackToTop" type="button" aria-label="Back to comments top" title="Back to comments top"><span>↑</span></button> {% endcomment %}
   </div>
   {% include 'includes/comment_modal.html' %}
   {% include 'includes/report_modal.html' %}
