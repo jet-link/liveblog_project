@@ -8,31 +8,18 @@
 {% block content %}
   <div class="container content_block">
     {% url 'login_app:profile-section' user_obj.username 'created' as profile_created_url %}
-    <div class="d-flex align-items-center mb-3 gap-3 flex-wrap">
-      <div class="d-inline-flex align-items-center gap-2">
-        <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
+    <div class="profile-page-header d-flex align-items-center justify-content-between mb-3 gap-2 flex-wrap" data-profile-username="{{ user_obj.username }}">
+      <h5 class="m-0 primary_">{{ user_obj.username }}</h5>
+      {% if show_profile_avatar_thumbs %}
+        <button type="button" class="profile-mobile-avatar-thumb d-lg-none" title="View avatar" aria-label="View full avatar" data-username="{{ user_obj.username }}">
+          <img src="{{ user_obj.profile.get_avatar }}" alt="" width="40" height="40" loading="lazy" decoding="async" data-full="{{ user_obj.profile.get_avatar }}" data-username="{{ user_obj.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+        </button>
+      {% endif %}
       {% comment %} {% if is_online %}
         <span id="profileOnlineBadge" class="custom_badge badge_reserved">Online</span>
       {% else %}
         <span class="custom_badge badge_danger">Offline</span>
       {% endif %} {% endcomment %}
-      </div>
-      <div class="d-flex align-items-center gap-1">
-      {% if is_owner or user.is_authenticated %}
-      {% with trust_score=trust_score %}
-        <span class="custom_badge {% if trust_score >= 8 %}badge_success{% elif trust_score >= 5 %}badge_muted{% elif trust_score >= 3 %}badge_warning{% else %}badge_danger{% endif %} trust-level-badge fw-semibold">Rating: {{ trust_score|floatformat:1 }}</span>
-        {% if trust_score >= 8 %}
-        <span class="custom_badge badge_success trust-zone-badge">Trusted</span>
-        {% elif trust_score >= 5 %}
-        <span class="custom_badge badge_muted trust-zone-badge">Normal</span>
-        {% elif trust_score >= 3 %}
-        <span class="custom_badge badge_warning trust-zone-badge">Risk</span>
-        {% else %}
-        <span class="custom_badge badge_danger trust-zone-badge">Dangerous</span>
-        {% endif %}
-      {% endwith %}
-      {% endif %}
-      </div>
     </div>
     {% include 'includes/personal_info.html' %}
 

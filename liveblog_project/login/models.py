@@ -48,6 +48,12 @@ class Profile(models.Model):
         help_text='Account auto-deactivated because trust score fell below site threshold.',
     )
 
+    # Public profile: which personal-info rows are visible to other users (owner always sees all in edit UI).
+    public_username = models.BooleanField(default=True)
+    public_first_name = models.BooleanField(default=True)
+    public_last_name = models.BooleanField(default=True)
+    public_email = models.BooleanField(default=True)
+
     def __str__(self):
         return f'Profile: {self.user.username}'
 

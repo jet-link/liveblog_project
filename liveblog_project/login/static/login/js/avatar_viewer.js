@@ -4,6 +4,7 @@
     'use strict';
 
     const SELECTOR = '.personal_avatar .avatar-wrapper';
+    const THUMB_SELECTOR = '.profile-mobile-avatar-thumb';
 
     const __avatarPrevOverflow = {
         html: '',
@@ -13,6 +14,16 @@
 
     function init() {
         document.addEventListener('click', function (e) {
+            const thumbBtn = e.target.closest(THUMB_SELECTOR);
+            if (thumbBtn) {
+                const img = thumbBtn.querySelector('img');
+                if (!img) return;
+                if (img.classList.contains('avatar-load-failed') || img.src.includes('no_avatar') || img.src.includes('no_image')) return;
+                e.preventDefault();
+                openLightbox(img.dataset.full || img.src, img.alt || 'Avatar');
+                return;
+            }
+
             const wrapper = e.target.closest(SELECTOR);
             if (!wrapper) return;
 
@@ -392,6 +403,15 @@
 
                 // убираем сегмент удаления
                 overlay.remove();
+
+                var profileHdr = document.querySelector(
+                    '.profile-page-header[data-profile-username="' + safeUser + '"]'
+                );
+                if (profileHdr) {
+                    profileHdr.querySelectorAll('.profile-mobile-avatar-thumb').forEach(function (btn) {
+                        btn.remove();
+                    });
+                }
             });
     });
 

@@ -234,6 +234,35 @@ class UserEditForm(forms.ModelForm):
     }),
     )
 
+    public_username = forms.IntegerField(
+        min_value=0,
+        max_value=1,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    public_first_name = forms.IntegerField(
+        min_value=0,
+        max_value=1,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    public_last_name = forms.IntegerField(
+        min_value=0,
+        max_value=1,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    public_email = forms.IntegerField(
+        min_value=0,
+        max_value=1,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+
     class Meta:
         model = User
         # avatar_url добавлен в список полей
@@ -280,6 +309,18 @@ class UserEditForm(forms.ModelForm):
                 self.initial.setdefault('avatar_url', user.profile.avatar_url or '')
             except Exception:
                 self.initial.setdefault('avatar_url', '')
+
+            try:
+                prof = user.profile
+                self.initial.setdefault('public_username', 1 if prof.public_username else 0)
+                self.initial.setdefault('public_first_name', 1 if prof.public_first_name else 0)
+                self.initial.setdefault('public_last_name', 1 if prof.public_last_name else 0)
+                self.initial.setdefault('public_email', 1 if prof.public_email else 0)
+            except Exception:
+                self.initial.setdefault('public_username', 1)
+                self.initial.setdefault('public_first_name', 1)
+                self.initial.setdefault('public_last_name', 1)
+                self.initial.setdefault('public_email', 1)
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '').strip()
@@ -341,6 +382,20 @@ class UserEditForm(forms.ModelForm):
 
         from .models import Profile
         profile, _ = Profile.objects.get_or_create(user=user)
+
+        def _bool_public(key):
+            v = self.cleaned_data.get(key)
+            if v is None:
+                return True
+            try:
+                return bool(int(v))
+            except (TypeError, ValueError):
+                return True
+
+        profile.public_username = _bool_public('public_username')
+        profile.public_first_name = _bool_public('public_first_name')
+        profile.public_last_name = _bool_public('public_last_name')
+        profile.public_email = _bool_public('public_email')
 
         if clear_avatar:
             if profile.avatar_file:

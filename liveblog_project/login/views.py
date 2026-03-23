@@ -22,6 +22,7 @@ from smart_blog.models import Notification
 from django.core.exceptions import PermissionDenied
 from login.middleware import is_user_online, clear_user_online
 import random
+from collections import OrderedDict
 
 FUNNY_NAMES = [
     "Bobby McWobble",
@@ -148,6 +149,29 @@ def build_profile_field(value, field_type, is_owner=False):
         "type": field_type,
         "is_owner": is_owner,
         "is_empty": is_empty,
+    }
+
+
+def build_trust_rating_field(score):
+    s = float(score)
+    if s >= 8:
+        zone = "Trusted"
+        zone_class = "badge_success"
+    elif s >= 5:
+        zone = "Normal"
+        zone_class = "badge_muted"
+    elif s >= 3:
+        zone = "Risk"
+        zone_class = "badge_warning"
+    else:
+        zone = "Dangerous"
+        zone_class = "badge_danger"
+    return {
+        "type": "trust_rating",
+        "score": s,
+        "zone": zone,
+        "zone_class": zone_class,
+        "is_empty": False,
     }
 
 
@@ -376,7 +400,7 @@ MAIN_COMMENTS_ANNOTATION = {
 
 # detail profile view
 def profile_view(request, username):
-    user_obj = User._base_manager.filter(username__iexact=username).first()
+    user_obj = User._base_manager.select_related('profile').filter(username__iexact=username).first()
     if not user_obj:
         raise Http404
     if not user_obj.is_active:
@@ -411,20 +435,9 @@ def profile_view(request, username):
     # ----------------------------
     # ПЕРСОНАЛЬНЫЕ ДАННЫЕ (CLEAN)
     # ----------------------------
-    fields = {
-        "Username": build_profile_field(user_obj.username, "text"),
-        "First name": build_profile_field(user_obj.first_name, "text"),
-        "Last name": build_profile_field(user_obj.last_name, "text"),
-    }
-
-    # Email
-    fields["Email"] = build_profile_field(
-        user_obj.email,
-        "email",
-        is_owner=request.user == user_obj,
-    )
-
-    is_online = is_user_online(user_obj) if user_obj else False
+    profile = getattr(user_obj, 'profile', None)
+    if profile is None:
+        profile, _ = Profile.objects.get_or_create(user=user_obj)
 
     trust_score = 10.0
     if user_obj:
@@ -433,8 +446,53 @@ def profile_view(request, username):
         except Exception:
             pass
 
+    def _non_empty(value):
+        return bool(value and str(value).strip())
+
+    personal_fields = {}
+    if is_owner:
+        personal_fields["Username"] = build_profile_field(user_obj.username, "text")
+    elif profile.public_username and _non_empty(user_obj.username):
+        personal_fields["Username"] = build_profile_field(user_obj.username, "text")
+
+    if is_owner:
+        personal_fields["First name"] = build_profile_field(user_obj.first_name, "text")
+    elif profile.public_first_name and _non_empty(user_obj.first_name):
+        personal_fields["First name"] = build_profile_field(user_obj.first_name, "text")
+
+    if is_owner:
+        personal_fields["Last name"] = build_profile_field(user_obj.last_name, "text")
+    elif profile.public_last_name and _non_empty(user_obj.last_name):
+        personal_fields["Last name"] = build_profile_field(user_obj.last_name, "text")
+
+    if is_owner:
+        personal_fields["Email"] = build_profile_field(
+            user_obj.email,
+            "email",
+            is_owner=request.user == user_obj,
+        )
+    elif profile.public_email and _non_empty(user_obj.email):
+        personal_fields["Email"] = build_profile_field(
+            user_obj.email,
+            "email",
+            is_owner=False,
+        )
+
+    fields = OrderedDict()
+    fields["Trust rating"] = build_trust_rating_field(trust_score)
+    fields.update(personal_fields)
+
+    show_no_public_details = (not is_owner) and len(personal_fields) == 0
+
+    # Mobile header thumb only when user has a real avatar (not default placeholder).
+    has_uploaded_avatar = bool(profile.avatar_file or profile.avatar_url)
+
+    is_online = is_user_online(user_obj) if user_obj else False
+
     context = {
         'fields': fields,
+        'show_no_public_details': show_no_public_details,
+        'show_profile_avatar_thumbs': has_uploaded_avatar,
         'user_obj': user_obj,
         'created_items': created_items,
         'is_owner': is_owner,

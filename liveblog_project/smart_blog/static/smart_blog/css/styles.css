@@ -123,9 +123,8 @@ html[data-theme="dark"] .ck.ck-button:focus {
 /* Dark theme — element overrides (Bootstrap, etc.) */
 html[data-theme="dark"] .card,
 html[data-theme="dark"] .modal-content,
-html[data-theme="dark"] .personal_info .list-group li {
-    background: var(--card-bg);
-    border-color: var(--border-default) !important;
+html[data-theme="dark"] .personal-info-row {
+    border-color: var(--border-default);
 }
 
 html[data-theme="dark"] .card-title,
@@ -332,6 +331,71 @@ html[data-theme="dark"] .tag-badge-option.tag-badge-selected {
 html[data-theme="dark"] .item-category-badge {
     background: rgba(88, 166, 255, 0.15);
     color: var(--text-link);
+}
+
+/* BraiNews / filter listings in dark theme: dark cards (match --card-bg / page chrome) */
+html[data-theme="dark"] article.item_block.card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-default);
+    border-color: var(--border-default) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+html[data-theme="dark"] article.item_block.card h4 {
+    color: var(--text-default) !important;
+}
+
+html[data-theme="dark"] article.item_block.card .text-muted {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] article.item_block.card .excerpt-html {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] article.item_block.card .excerpt-html::after {
+    background: linear-gradient(to top, var(--card-bg) 0%, var(--excerpt-fade) 40%, transparent 100%);
+}
+
+html[data-theme="dark"] article.item_block.card .excerpt-html blockquote {
+    background: var(--bg-muted);
+    color: var(--text-default);
+    border-left-color: var(--border-default);
+}
+
+html[data-theme="dark"] article.item_block.card .item-category-badge {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--text-link);
+}
+
+html[data-theme="dark"] article.item_block.card .badge.bg-secondary {
+    background-color: var(--bg-subtle) !important;
+    color: var(--text-muted) !important;
+    border: 1px solid var(--border-default);
+    font-weight: 500;
+}
+
+html[data-theme="dark"] article.item_block.card hr.text-muted {
+    border-color: var(--border-default) !important;
+    opacity: 1;
+}
+
+html[data-theme="dark"] article.item_block.card .item-stats {
+    background: var(--bg-muted);
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    gap: 18px;
+}
+
+html[data-theme="dark"] article.item_block.card .item-stats .stat,
+html[data-theme="dark"] article.item_block.card .item-stats .stat span,
+html[data-theme="dark"] article.item_block.card .item-stats .fa {
+    color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] article.item_block.card .stretched-link.item-link {
+    color: var(--text-link) !important;
 }
 
 body,
