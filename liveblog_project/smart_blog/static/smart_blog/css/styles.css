@@ -1049,6 +1049,21 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     color: var(--text-link) !important;
 }
 
+/* Active state — как .header-menu-item.active (остальные стили footer без изменений) */
+.footer-block a.footer-link-item.active {
+    color: var(--text-link) !important;
+    background-color: var(--bg-subtle);
+}
+
+@media (min-width: 993px) {
+    .footer-links .footer-link-item.active {
+        color: var(--text-link) !important;
+        background-color: transparent !important;
+        border-bottom: 1px solid transparent;
+        border-bottom-color: currentColor;
+    }
+}
+
 /* Subscribe: popover above trigger + arrow toward button */
 
 .footer-subscribe-wrap {
