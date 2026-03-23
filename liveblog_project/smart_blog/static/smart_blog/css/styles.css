@@ -3946,6 +3946,12 @@ pre {
     background: transparent;
 }
 
+.rating_badge_danger{
+    border-color: #eb0029;
+    background-color: rgb(225 92 115 / 20%);
+    color: #eb0029;
+}
+
 .reply-cooldown-timer {
     font-size: .7rem !important;
 }

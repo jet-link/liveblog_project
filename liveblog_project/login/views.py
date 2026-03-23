@@ -165,7 +165,7 @@ def build_trust_rating_field(score):
         zone_class = "badge_warning"
     else:
         zone = "Dangerous"
-        zone_class = "badge_danger"
+        zone_class = "rating_badge_danger"
     return {
         "type": "trust_rating",
         "score": s,
