@@ -165,7 +165,7 @@
         {% endif %}
       </div>
     </div>
-    <hr />
+    {% comment %} <hr /> {% endcomment %}
     {% if user.is_authenticated and user.is_staff %}
       {% if item.reports_count|default:0 >= 10 or not item.author or item.author and not item.author.is_active %}
       <div class="d-flex justify-content-start align-items-center mb-3">

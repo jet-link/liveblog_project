@@ -18,7 +18,7 @@
       <small class="text-muted hidden" title="Max 500 characters.">(Max 500 chars)</small>
     </div>
     <div id="commentFormBody" class="comment-form-body hidden">
-      <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" data-trust-status-url="{% url 'login_app:api_trust_status' %}" class="pb-4">
+      <form id="commentForm" action="{% url 'smart_blog:add_comment' item.slug %}" method="post" novalidate data-validate="true" data-ajax="true" data-item-id="{{ item.pk }}" data-user-id="{{ user.pk }}" data-trust-status-url="{% url 'login_app:api_trust_status' %}" class="pb-4">
         {% csrf_token %}
 
         <div id="commentFormErrors" class="mb-2"></div>

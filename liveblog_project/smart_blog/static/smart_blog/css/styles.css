@@ -1128,6 +1128,17 @@ article.item_block.card:hover {
     justify-content: center;
 }
 
+/* Rising / Feed: centered gray circle only (Hot uses .placeholder-icon + fire) */
+.trending-card__placeholder:not(.trending-card__placeholder--hot)::after {
+    content: "";
+    width: 48px;
+    height: 48px;
+    background: var(--border-muted);
+    border-radius: 50%;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
 .trending-card__placeholder-icon {
     width: 48px;
     height: 48px;
@@ -1273,20 +1284,17 @@ html[data-theme="dark"] .trending-card__placeholder {
     background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-subtle) 100%);
 }
 
+html[data-theme="dark"] .trending-card__placeholder:not(.trending-card__placeholder--hot)::after {
+    background: rgba(255, 255, 255, 0.12);
+    opacity: 0.75;
+}
+
 html[data-theme="dark"] .trending-card__placeholder-icon {
     background: rgba(255, 255, 255, 0.12);
 }
 
 html[data-theme="dark"] .trending-card__placeholder--hot .trending-card__placeholder-icon .fa {
     color: #ff8787 !important;
-}
-
-html[data-theme="dark"] .trending-card__placeholder--rising .trending-card__placeholder-icon .fa {
-    color: #56d364 !important;
-}
-
-html[data-theme="dark"] .trending-card__placeholder--feed .trending-card__placeholder-icon .fa {
-    color: var(--text-link) !important;
 }
 
 /* Responsive: Hot hero on mobile */

@@ -7,15 +7,16 @@
      id="trendingPageRoot"
      data-trending-api-url="{{ trending_api_url|escape }}">
   <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-    <h1 class="h4 text-muted m-0">Trending Now</h1>
+    {% comment %} <h1 class="h4 text-muted m-0">Trending Now</h1> {% endcomment %}
+    <h3 id="trending-hot-heading" class="trending-section-title mb-3"><i class="fa fa-fire text-danger me-3"></i>Hot Now</h3>
     <span class="small text-muted" id="trendingPollStatus" aria-live="polite"></span>
   </div>
-  <hr class="text-muted" />
+  {% comment %} <hr class="text-muted" /> {% endcomment %}
   {% comment %} <p class="text-muted small mb-4">Fast-moving posts right now — not just all-time popular.</p> {% endcomment %}
 
   {% if hot_rows %}
   <section class="mb-5" id="trendingHotSection" aria-labelledby="trending-hot-heading">
-    <h2 id="trending-hot-heading" class="trending-section-title mb-3 mt-4"><i class="fa fa-fire text-danger me-3"></i>Hot Now</h2>
+    {% comment %} <h2 id="trending-hot-heading" class="trending-section-title mb-3 mt-4"><i class="fa fa-fire text-danger me-3"></i>Hot Now</h2> {% endcomment %}
     <div class="row g-3">
       {% for t in hot_rows %}
         {% with item=t.item %}
@@ -66,7 +67,7 @@
 
   {% if rising_rows %}
   <section class="mb-5" id="trendingRisingSection" aria-labelledby="trending-rising-heading">
-    <h2 id="trending-rising-heading" class="trending-section-title mb-3"><i class="fa fa-line-chart text-success me-3"></i>Rising</h2>
+    <h3 id="trending-rising-heading" class="trending-section-title mb-3"><i class="fa fa-line-chart text-success me-3"></i>Rising</h3>
     <div class="row g-3">
       {% for t in rising_rows %}
         {% with item=t.item %}
@@ -78,9 +79,7 @@
                 {% if item.images.first %}
                   <img src="{{ item.images.first.get_thumbnail_url }}" alt="" class="trending-card__img" loading="lazy" decoding="async" />
                 {% else %}
-                  <div class="trending-card__placeholder trending-card__placeholder--rising" aria-hidden="true">
-                    <span class="trending-card__placeholder-icon"><i class="fa fa-line-chart text-success"></i></span>
-                  </div>
+                  <div class="trending-card__placeholder" aria-hidden="true"></div>
                 {% endif %}
               </a>
               <span class="trending-badge trending-badge--rising">Rising</span>
@@ -102,7 +101,7 @@
   {% endif %}
 
   <section class="mb-5" id="trendingFeedSection" aria-labelledby="trending-feed-heading">
-    <h2 id="trending-feed-heading" class="trending-section-title mb-3"><i class="fa fa-rss text-primary me-3"></i>Trending Feed</h2>
+    <h3 id="trending-feed-heading" class="trending-section-title mb-3"><i class="fa fa-rss text-primary me-3"></i>Trending Feed</h3>
     {% if feed_page.object_list %}
     <div class="row g-3" id="trendingFeedCards">
       {% for t in feed_page %}
@@ -116,9 +115,7 @@
                   {% if item.images.first %}
                     <img src="{{ item.images.first.get_thumbnail_url }}" alt="" class="trending-card__img" loading="lazy" decoding="async" />
                   {% else %}
-                    <div class="trending-card__placeholder trending-card__placeholder--feed" aria-hidden="true">
-                      <span class="trending-card__placeholder-icon"><i class="fa fa-rss text-primary"></i></span>
-                    </div>
+                    <div class="trending-card__placeholder" aria-hidden="true"></div>
                   {% endif %}
                 </a>
               </div>

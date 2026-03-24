@@ -273,18 +273,24 @@
   const COMMENT_COOLDOWN_SEC = 30;
   const COMMENT_COOLDOWN_KEY_PREFIX = 'comment_cooldown_until_';
 
-  function getCooldownRemaining(itemId) {
-    if (!itemId) return 0;
-    const key = `${COMMENT_COOLDOWN_KEY_PREFIX}${itemId}`;
+  /** Per-user + per-item; otherwise another account on same browser inherits the timer. */
+  function commentCooldownStorageKey(itemId, userId) {
+    if (!itemId || userId === undefined || userId === null || userId === '') return null;
+    return `${COMMENT_COOLDOWN_KEY_PREFIX}${userId}_${itemId}`;
+  }
+
+  function getCooldownRemaining(itemId, userId) {
+    const key = commentCooldownStorageKey(itemId, userId);
+    if (!key) return 0;
     const until = Number(localStorage.getItem(key) || 0);
     const diff = Math.ceil((until - Date.now()) / 1000);
     return diff > 0 ? diff : 0;
   }
 
-  function updateCommentButtonCooldown(btn, itemId) {
+  function updateCommentButtonCooldown(btn, itemId, userId) {
     if (!btn || !itemId) return;
 
-    const remaining = getCooldownRemaining(itemId);
+    const remaining = getCooldownRemaining(itemId, userId);
     const originalText =
       btn.dataset.originalText || btn.textContent || 'Comment';
 
@@ -299,12 +305,12 @@
 
       if (!btn.__cooldownTimer) {
         btn.__cooldownTimer = setInterval(() => {
-          const left = getCooldownRemaining(itemId);
+          const left = getCooldownRemaining(itemId, userId);
           if (left <= 0) {
             clearInterval(btn.__cooldownTimer);
             btn.__cooldownTimer = null;
-            const key = `${COMMENT_COOLDOWN_KEY_PREFIX}${itemId}`;
-            localStorage.removeItem(key);
+            const key = commentCooldownStorageKey(itemId, userId);
+            if (key) localStorage.removeItem(key);
             btn.disabled = false;
             btn.classList.remove('is-blocked');
             btn.textContent = btn.dataset.originalText;
@@ -331,13 +337,14 @@
     clearFieldError(textarea);
   }
 
-  function startCommentCooldown(itemId, btn = null, seconds = COMMENT_COOLDOWN_SEC) {
+  function startCommentCooldown(itemId, btn = null, seconds = COMMENT_COOLDOWN_SEC, userId = null) {
     if (!itemId) return;
+    const key = commentCooldownStorageKey(itemId, userId);
+    if (!key) return;
     const until = Date.now() + seconds * 1000;
-    const key = `${COMMENT_COOLDOWN_KEY_PREFIX}${itemId}`;
     localStorage.setItem(key, String(until));
     const targetBtn = btn || document.getElementById('submitCommentBtn');
-    updateCommentButtonCooldown(targetBtn, itemId);
+    updateCommentButtonCooldown(targetBtn, itemId, userId);
   }
 
   /* ===============================
@@ -455,10 +462,11 @@
     const textarea = form.querySelector('textarea[name="text"]');
     const commentsList = document.getElementById('commentsList');
     const itemId = form.dataset.itemId;
+    const userId = form.dataset.userId;
     const clearBtn = document.getElementById('clearComment');
 
     initClearCommentButton(textarea, clearBtn);
-    updateCommentButtonCooldown(btn, itemId);
+    updateCommentButtonCooldown(btn, itemId, userId);
     textarea.addEventListener('input', () => {
       if (textarea.value.trim()) {
         clearFieldError(textarea);
@@ -483,8 +491,8 @@
     btn.addEventListener('click', async (e) => {
       e.preventDefault();
       if (btn.disabled) return;
-      if (getCooldownRemaining(itemId) > 0) {
-        updateCommentButtonCooldown(btn, itemId);
+      if (getCooldownRemaining(itemId, userId) > 0) {
+        updateCommentButtonCooldown(btn, itemId, userId);
         return;
       }
 
@@ -530,7 +538,7 @@
           updateCardCounter(itemId, count);
           updateListingComments(itemId, count);
           updateCommentsHeader(count);
-          startCommentCooldown(itemId, btn);
+          startCommentCooldown(itemId, btn, COMMENT_COOLDOWN_SEC, userId);
 
           return;
         }
@@ -538,7 +546,7 @@
         if (resp.status === 429) {
           const seconds = parseCooldownSeconds(data?.error);
           if (seconds) {
-            startCommentCooldown(itemId, btn, seconds);
+            startCommentCooldown(itemId, btn, seconds, userId);
           }
         }
 
@@ -552,7 +560,7 @@
       } catch (err) {
         showFieldError(textarea, 'Unable to submit. Please try again.');
       } finally {
-        updateCommentButtonCooldown(btn, itemId);
+        updateCommentButtonCooldown(btn, itemId, userId);
       }
     });
 
