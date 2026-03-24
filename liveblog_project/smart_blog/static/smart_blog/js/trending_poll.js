@@ -54,7 +54,12 @@
       const map = mergeRows(data);
       Object.keys(map).forEach((slug) => applyRow(slug, map[slug]));
       if (statusEl) {
-        statusEl.textContent = "Live · " + new Date().toLocaleTimeString();
+        statusEl.textContent =
+          "Live · " +
+          new Date().toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
       }
     } catch (e) {
       /* ignore */
