@@ -11,6 +11,7 @@ urlpatterns = [
     path('brainews/popular/', views.items_popular_list, name='items_popular'),
     path('brainews/filter/', views.items_filtered, name='items_filtered'),
     path('tag/<slug:slug>/', views.tag_list, name='tag_list'),
+    path('brainews/category/<slug:slug>/', views.category_list, name='category_list'),
     # path('search/', views.search_view, name='search'),
     path("item/create/", views.create_item, name="create_item"),
     path("item/<slug:slug>/edit/", views.edit_item, name="edit_item"),

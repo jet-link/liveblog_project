@@ -38,6 +38,9 @@ class Category(models.Model):
 
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("smart_blog:category_list", kwargs={"slug": self.slug})
+
 
 class ItemQuerySet(models.QuerySet):
     def with_counters(self):

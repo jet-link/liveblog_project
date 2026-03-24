@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, Tag, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification, SearchHistory, PostRepost
+from .models import Item, ItemImage, Tag, Category, Like, Comment, Bookmark, ItemView, CommentLike, ContentReport, Notification, SearchHistory, PostRepost
 from .forms import CommentForm, ItemCreateForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -257,6 +257,43 @@ def tag_list(request, slug):
 
     return render(request, "smart_blog/tag_items_list.html", {
         "tag": tag,
+        "page_obj": page_obj,
+        "page_range": page_range,
+        "items": page_obj.object_list,
+        "breadcrumbs": breadcrumbs,
+    })
+
+
+def category_list(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+
+    qs = (
+        Item.objects
+        .filter(is_published=True, category=category)
+        .with_counters()
+        .select_related("category", "author", "author__profile")
+        .order_by('-published_date')
+        .prefetch_related("images", "tags")
+    )
+    qs = annotate_user_liked(qs, request.user)
+    qs = annotate_user_bookmarked(qs, request.user)
+    qs = qs.order_by('-published_date', '-pk')
+
+    paginator = Paginator(qs, 40)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_obj.number,
+        on_each_side=1,
+        on_ends=1
+    )
+
+    breadcrumbs = build_breadcrumbs(
+        breadcrumb(category.name, None),
+    )
+
+    return render(request, "smart_blog/category_items_list.html", {
+        "category": category,
         "page_obj": page_obj,
         "page_range": page_range,
         "items": page_obj.object_list,

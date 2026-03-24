@@ -1045,8 +1045,9 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     margin-bottom: 120px;
 }
 
-/* Trending page: card-body as stretched-link container */
-.trending-page .trending-card .card-body {
+/* Trending page + categories modal: card-body as stretched-link container */
+.trending-page .trending-card .card-body,
+.categories-modal-popular .trending-card .card-body {
     position: relative;
 }
 
@@ -1057,14 +1058,16 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     font-family: var(--font-heading);
 }
 
-.trending-page .trending-card {
+.trending-page .trending-card,
+.categories-modal-popular .trending-card {
     background: var(--card-bg);
     box-shadow: var(--card-shadow);
     border-radius: var(--radius-md);
     transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.trending-page .trending-card:hover {
+.trending-page .trending-card:hover,
+.categories-modal-popular .trending-card:hover {
     transform: translateY(-6px);
     box-shadow: var(--card-shadow-lg);
 }
@@ -1152,17 +1155,22 @@ article.item_block.card:hover {
 }
 
 /* Same FA + utilities as section titles; no underline on stretched image link */
-.trending-page .trending-card__img-link {
+.trending-page .trending-card__img-link,
+.categories-modal-popular .trending-card__img-link {
     text-decoration: none;
 }
 
 .trending-page .trending-card__img-link:hover,
 .trending-page .trending-card__img-link:focus,
-.trending-page .trending-card__img-link:focus-visible {
+.trending-page .trending-card__img-link:focus-visible,
+.categories-modal-popular .trending-card__img-link:hover,
+.categories-modal-popular .trending-card__img-link:focus,
+.categories-modal-popular .trending-card__img-link:focus-visible {
     text-decoration: none;
 }
 
-.trending-page .trending-card__img-link .trending-card__placeholder-icon .fa {
+.trending-page .trending-card__img-link .trending-card__placeholder-icon .fa,
+.categories-modal-popular .trending-card__img-link .trending-card__placeholder-icon .fa {
     text-decoration: none;
 }
 
@@ -4345,3 +4353,246 @@ pre {
     align-items: center;
     justify-content: center;
 } */
+
+/* =========================
+   CATEGORIES MODAL
+========================= */
+.categories-modal-root {
+    position: fixed;
+    inset: 0;
+    z-index: 1700;
+    pointer-events: none;
+}
+
+.categories-modal-root:not(.hidden) {
+    pointer-events: auto;
+}
+
+/* Blurred scrim — click outside still closes */
+.categories-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+html[data-theme="dark"] .categories-modal-backdrop {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.categories-modal-dialog {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--header-height) + 1rem);
+    transform: translateX(-50%);
+    z-index: 1;
+    width: min(100% - 1.5rem, 56rem);
+    max-height: min(calc(100vh - var(--header-height) - 1rem), 42rem);
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg, var(--bg-default));
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="dark"] .categories-modal-dialog {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.categories-modal-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.categories-modal-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-default);
+}
+
+.categories-modal-close {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0.125rem 0.35rem;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.categories-modal-close:hover {
+    color: var(--text-default);
+}
+
+.categories-modal-close:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+
+.categories-modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.75rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.categories-modal-all-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 0.75rem;
+    align-items: start;
+}
+
+@media (min-width: 480px) {
+    .categories-modal-all-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .categories-modal-all-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Small category links — same visual as item-category-badge on cards */
+a.categories-modal-chip-link {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+}
+
+a.categories-modal-chip-link:hover {
+    filter: brightness(0.95);
+}
+
+html[data-theme="dark"] a.categories-modal-chip-link:hover {
+    filter: brightness(1.08);
+}
+
+.categories-modal-subtitle {
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-default);
+}
+
+.categories-modal-popular-hint {
+    margin: 0;
+}
+
+.categories-modal-popular-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+@media (min-width: 576px) {
+    .categories-modal-popular-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 900px) {
+    .categories-modal-popular-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.categories-modal-posts-count {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Categories modal: compact media column; same hover as In trend (lift + image zoom) */
+.categories-modal-trending-card .trending-card__img-wrap {
+    min-height: 96px;
+}
+
+.categories-modal-card-link {
+    color: inherit;
+    cursor: pointer;
+    min-height: 150px;
+}
+
+.categories-modal-card__media {
+    position: relative;
+    min-height: 96px;
+    height: 100%;
+    background: var(--bg-muted);
+    overflow: hidden;
+}
+
+.categories-modal-card__media .trending-card__img {
+    min-height: 96px;
+}
+
+/* Rising-style placeholder: gradient + centered gray circle (same idea as trending_list) */
+.categories-modal-card__media-empty {
+    width: 100%;
+    height: 100%;
+    min-height: 96px;
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-subtle) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.categories-modal-card__media-empty::after {
+    content: "";
+    width: 48px;
+    height: 48px;
+    background: var(--border-muted);
+    border-radius: 50%;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+html[data-theme="dark"] .categories-modal-card__media-empty {
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-subtle) 100%);
+}
+
+html[data-theme="dark"] .categories-modal-card__media-empty::after {
+    background: rgba(255, 255, 255, 0.12);
+    opacity: 0.75;
+}
+
+.categories-modal-card-link:hover .trending-card__title {
+    color: var(--text-link) !important;
+}
+
+/* Title clamp in narrow columns (size comes from h6 / trending-card__title) */
+.categories-modal-popular .trending-card .trending-card__title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.categories-modal-empty {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.9rem;
+}

@@ -74,6 +74,7 @@ TEMPLATES = [
                 'login.context_processors.user_obj_context',
                 'smart_blog.context_processors.notifications_context',
                 'smart_blog.context_processors.spellcheck_context',
+                'smart_blog.context_processors.nav_categories_context',
                 'admin_panel.context_processors.admin_online_count',
             ],
         },

@@ -14,23 +14,22 @@
   <nav class="bottom-menu-nav">
     <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
     <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted">Popular</a>
-    <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted">In trade</a>
-    <a href="#" class="header-menu-item text-decoration-none text-muted">
+    <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted">In trend</a>
+    <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">
       Categories
-      <i class="fa fa-angle-down ms-1"></i>
-      <i class="fa fa-angle-up ms-1 hidden"></i>
+      <i class="fa fa-angle-down ms-1" aria-hidden="true"></i>
+      <i class="fa fa-angle-up ms-1 hidden" aria-hidden="true"></i>
     </a>
   </nav>
 
-  {% comment %} <nav class="social-block">
+ <nav class="social-block">
     <span class="text-muted">Subscribe to us</span>
     <hr />
     <div class="social-nav">
       <a href="#"><i class="fa fa-twitter"></i></a>
-      <a href="#"><i class="fa fa-instagram"></i></a>
       <a href="#"><i class="fa fa-facebook"></i></a>
-      <a href="#"><i class="fa fa-youtube-play"></i></a>
-      <a href="#"><i class="fa fa-telegram"></i></a>
+      <a href="#"><i class="fa fa-paper-plane"></i></a>
+      <a href="#"><i class="fa fa-instagram"></i></a>
     </div>
-  </nav> {% endcomment %}
+  </nav>
 </aside>

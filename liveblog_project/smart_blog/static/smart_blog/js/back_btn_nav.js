@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 sessionStorage.setItem('tag_return_url', location.pathname + location.search);
             } catch (err) { }
         }
+        var cat = e.target.closest('a[href*="/blog/brainews/category/"]');
+        if (cat && cat.href) {
+            try {
+                sessionStorage.setItem('category_return_url', location.pathname + location.search);
+            } catch (err) { }
+        }
     }, true);
 
     // Back-btn click handler

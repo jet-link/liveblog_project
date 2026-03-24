@@ -1,8 +1,12 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.utils import timezone
 
-from .models import Notification
+from .models import Notification, Category, Item
+from .search_utils import apply_popular_filter
 
 NOTIFICATIONS_CACHE_TIMEOUT = 30  # seconds
 NOTIFICATIONS_CACHE_KEY = "notifications_count_{user_id}"
@@ -46,3 +50,57 @@ def spellcheck_context(request):
     if request.path.startswith("/admin/"):
         return {"spellcheck_lang": "en"}
     return {"spellcheck_lang": getattr(settings, "SPELLCHECK_LANG", "ru")}
+
+
+def nav_categories_context(request):
+    """
+    Header modal: all categories + up to 6 cards — one popular post per top category
+    (categories ranked by published post count; post ranked like /brainews/popular/).
+    """
+    nav_categories = Category.objects.all()
+
+    top_categories = (
+        Category.objects.annotate(
+            posts_count=Count("items", filter=Q(items__is_published=True)),
+        )
+        .filter(posts_count__gt=0)
+        .order_by("-posts_count", "name")[:6]
+    )
+
+    since = timezone.now() - timedelta(days=15)
+    categories_modal_popular_cards = []
+
+    for cat in top_categories:
+        scoped = (
+            Item.objects.filter(
+                category=cat,
+                is_published=True,
+                published_date__gte=since,
+            )
+            .with_counters()
+            .select_related("category", "author", "author__profile")
+            .prefetch_related("images", "tags")
+        )
+        popular_item = apply_popular_filter(scoped).first()
+        if not popular_item:
+            popular_item = (
+                Item.objects.filter(category=cat, is_published=True)
+                .with_counters()
+                .select_related("category", "author", "author__profile")
+                .prefetch_related("images", "tags")
+                .order_by("-published_date", "-pk")
+                .first()
+            )
+        if popular_item:
+            categories_modal_popular_cards.append(
+                {
+                    "category": cat,
+                    "posts_count": cat.posts_count,
+                    "item": popular_item,
+                }
+            )
+
+    return {
+        "nav_categories": nav_categories,
+        "categories_modal_popular_cards": categories_modal_popular_cards,
+    }

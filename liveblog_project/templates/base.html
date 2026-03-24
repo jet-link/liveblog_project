@@ -35,6 +35,7 @@
 
   <body class="{% block body_class %}{% endblock %}" data-item-slug="{% if item %}{{ item.slug }}{% endif %}"{% if item %} data-item-id="{{ item.pk }}" data-views-count="{{ item.views_count }}" data-reposts-count="{{ item.reposts_count }}"{% endif %} data-user-id="{% if user.is_authenticated %}{{ user.pk }}{% endif %}" data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-spellcheck-lang="{{ spellcheck_lang|default:'ru' }}" data-search-history-url="{% url 'smart_blog:api_search_history_list' %}" data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}" data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}" data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}" data-trust-status-url="{% url 'login_app:api_trust_status' %}">
     {% include 'includes/header.html' %}
+    {% include 'includes/categories_modal.html' %}
     <div class="container messages-container">
       {% include 'includes/messages.html' %}
     </div>
@@ -81,6 +82,7 @@
     </script>
     <script defer src="{% static 'smart_blog/js/search_operate.js' %}"></script>
     <script defer src="{% static 'smart_blog/js/header_search_toggle.js' %}"></script>
+    <script defer src="{% static 'smart_blog/js/categories_modal.js' %}"></script>
     <script defer src="{% static 'smart_blog/js/back_to_top.js' %}"></script>
     <script defer src="{% static 'smart_blog/js/back_btn_nav.js' %}"></script>
 
