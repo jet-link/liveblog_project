@@ -221,6 +221,20 @@ def get_last_1h_stats(item: Item, now=None) -> dict:
     return {"views": views, "likes": likes, "comments": comments}
 
 
+def live_display_metrics_for_item(item: Item, now=None) -> dict:
+    """Live rolling counts for API and templates (avoids stale TrendingItem snapshots)."""
+    s24 = get_last_24h_stats(item, now)
+    s1 = get_last_1h_stats(item, now)
+    return {
+        "views_24h": s24["views"],
+        "likes_24h": s24["likes"],
+        "comments_24h": s24["comments"],
+        "views_last_hour": s1["views"],
+        "likes_1h": s1["likes"],
+        "comments_1h": s1["comments"],
+    }
+
+
 def growth_rate_from_hourly(item: Item, now=None) -> float | None:
     """Growth from last two completed hourly buckets in ItemStatsHourly (if any data)."""
     now = now or timezone.now()

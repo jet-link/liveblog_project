@@ -7,7 +7,10 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from smart_blog.models import TrendingItem
-from smart_blog.services.trending_service import TRENDING_API_CACHE_KEY
+from smart_blog.services.trending_service import (
+    TRENDING_API_CACHE_KEY,
+    live_display_metrics_for_item,
+)
 
 HOT_LIMIT = 5
 RISING_LIMIT = 10
@@ -36,6 +39,7 @@ def _get_trending_page_data(page=1):
 
 def _serialize_item(request, t: TrendingItem, rank=None):
     item = t.item
+    live = live_display_metrics_for_item(item)
     img = item.images.first()
     thumb = img.get_thumbnail_url() if img else ""
     url = item.get_absolute_url()
@@ -49,13 +53,13 @@ def _serialize_item(request, t: TrendingItem, rank=None):
         "preview": item.short_text(220),
         "category": item.category.name if item.category else None,
         "trend_score": round(t.trend_score, 6),
-        "views_24h": t.views_24h,
-        "likes_24h": t.likes_24h,
-        "comments_24h": t.comments_24h,
+        "views_24h": live["views_24h"],
+        "likes_24h": live["likes_24h"],
+        "comments_24h": live["comments_24h"],
         "growth_rate": round(t.growth_rate, 4),
-        "views_last_hour": t.views_last_hour,
-        "likes_1h": t.likes_1h,
-        "comments_1h": t.comments_1h,
+        "views_last_hour": live["views_last_hour"],
+        "likes_1h": live["likes_1h"],
+        "comments_1h": live["comments_1h"],
         "thumbnail": thumb,
         "author": item.author.username if item.author else None,
     }

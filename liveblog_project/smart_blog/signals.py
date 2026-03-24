@@ -1,17 +1,24 @@
 """Signals to keep Item.likes_count, views_count, bookmarks_count, search_vector in sync."""
+from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from django.db.models import F
 from django.db.models.functions import Greatest
 
-from .models import Like, Item, ItemView, Bookmark, PostRepost
+from .models import Like, Item, ItemView, Bookmark, PostRepost, Comment
 from .search_utils import refresh_item_search_vector
+from smart_blog.services.trending_service import TRENDING_API_CACHE_KEY
+
+
+def _invalidate_trending_api_cache():
+    cache.delete(TRENDING_API_CACHE_KEY)
 
 
 @receiver(post_save, sender=Like)
 def like_created(sender, instance, created, **kwargs):
     if created:
         Item.objects.filter(pk=instance.item_id).update(likes_count=F('likes_count') + 1)
+        _invalidate_trending_api_cache()
 
 
 @receiver(post_delete, sender=Like)
@@ -19,6 +26,7 @@ def like_deleted(sender, instance, **kwargs):
     Item.objects.filter(pk=instance.item_id).update(
         likes_count=Greatest(F('likes_count') - 1, 0)
     )
+    _invalidate_trending_api_cache()
 
 
 @receiver(post_save, sender=ItemView)
@@ -52,6 +60,16 @@ def bookmark_deleted(sender, instance, **kwargs):
 def repost_created(sender, instance, created, **kwargs):
     if created:
         Item.objects.filter(pk=instance.item_id).update(reposts_count=F('reposts_count') + 1)
+
+
+@receiver(post_save, sender=Comment)
+def comment_changed_trending_cache(sender, instance, **kwargs):
+    _invalidate_trending_api_cache()
+
+
+@receiver(post_delete, sender=Comment)
+def comment_deleted_trending_cache(sender, instance, **kwargs):
+    _invalidate_trending_api_cache()
 
 
 @receiver(post_save, sender=Item)

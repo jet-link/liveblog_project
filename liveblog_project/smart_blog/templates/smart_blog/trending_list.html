@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load trending_live %}
 {% block title %}Trending Now{% endblock %}
 {% block content %}
 <div class="container content_block trending-page"
@@ -9,7 +10,7 @@
     <h1 class="h4 text-muted m-0">Trending Now</h1>
     <span class="small text-muted" id="trendingPollStatus" aria-live="polite"></span>
   </div>
-  <p class="text-muted small mb-4">Fast-moving posts right now — not just all-time popular.</p>
+  {% comment %} <p class="text-muted small mb-4">Fast-moving posts right now — not just all-time popular.</p> {% endcomment %}
 
   {% if hot_rows %}
   <section class="mb-5" id="trendingHotSection" aria-labelledby="trending-hot-heading">
@@ -17,6 +18,7 @@
     <div class="row g-3">
       {% for t in hot_rows %}
         {% with item=t.item %}
+        {% trending_live_metrics item as m %}
         <div class="col-12 {% if forloop.first %}col-lg-12{% else %}col-md-6{% endif %}">
           <article class="trending-card trending-card--hot card border-0 overflow-hidden h-100 {% if forloop.first %}trending-card--hero{% endif %}" data-trending-slug="{{ item.slug }}">
             <div class="row g-0 h-100 flex-wrap flex-md-nowrap">
@@ -41,10 +43,10 @@
                   <h3 class="{% if forloop.first %}h4{% else %}h5{% endif %} mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
                   <p class="text-muted small mb-3 flex-grow-1">{{ item.short_text|truncatechars:280 }}</p>
                   <div class="trending-metrics d-flex flex-wrap gap-3 small" data-trending-slug="{{ item.slug }}">
-                    <span data-metric="views_24h" class="trending-metric"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ t.views_24h }}</strong> views</span>
-                    <span data-metric="likes_24h" class="trending-metric"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ t.likes_24h }}</strong> likes</span>
-                    <span data-metric="comments_24h" class="trending-metric"><i class="fa fa-comment me-2"></i><strong class="trending-val">{{ t.comments_24h }}</strong> comments</span>
-                    <span data-metric="views_last_hour" class="trending-metric trending-metric--1h"><i class="fa fa-clock-o me-2"></i><strong class="trending-val">{{ t.views_last_hour }}</strong> 1h</span>
+                    <span data-metric="views_24h" class="trending-metric" title="Views in 24h"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_24h }}</strong> (24h)</span>
+                    <span data-metric="likes_24h" class="trending-metric" title="Likes in 24h"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ m.likes_24h }}</strong> (24h)</span>
+                    <span data-metric="comments_24h" class="trending-metric" title="Comments in 24h"><i class="fa fa-comment me-2"></i><strong class="trending-val">{{ m.comments_24h }}</strong> (24h)</span>
+                    <span data-metric="likes_1h" class="trending-metric trending-metric--1h" title="Likes in the last hour (rolling 1h window)"><i class="fa fa-clock-o me-2"></i><strong class="trending-val">{{ m.likes_1h }}</strong><span class="text-muted ms-1">likes · last 1h</span></span>
                   </div>
                 </div>
               </div>
@@ -65,6 +67,7 @@
     <div class="row g-3">
       {% for t in rising_rows %}
         {% with item=t.item %}
+        {% trending_live_metrics item as m %}
         <div class="col-md-6 col-lg-4">
           <article class="trending-card trending-card--rising card border-0 overflow-hidden h-100" data-trending-slug="{{ item.slug }}">
             <div class="trending-card__img-wrap trending-card__img-wrap--sm">
@@ -81,8 +84,8 @@
             <div class="card-body">
               <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
               <div class="trending-metrics d-flex flex-wrap gap-2 small" data-trending-slug="{{ item.slug }}">
-                <span data-metric="views_last_hour" class="trending-metric"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ t.views_last_hour }}</strong></span>
-                <span data-metric="likes_1h" class="trending-metric"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ t.likes_1h }}</strong></span>
+                <span data-metric="views_last_hour" class="trending-metric" title="Views in the last hour (rolling 1h window)"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_last_hour }}</strong> (1h)</span>
+                <span data-metric="likes_1h" class="trending-metric" title="Likes in the last hour (rolling 1h window)"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ m.likes_1h }}</strong> (1h)</span>
               </div>
             </div>
           </article>
@@ -99,6 +102,7 @@
     <div class="row g-3" id="trendingFeedCards">
       {% for t in feed_page %}
         {% with item=t.item %}
+        {% trending_live_metrics item as m %}
         <div class="col-lg-6 col-md-12">
           <article class="trending-card trending-card--feed card border-0 overflow-hidden h-100" data-trending-slug="{{ item.slug }}">
             <div class="row g-0 h-100">
@@ -122,9 +126,9 @@
                   <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
                   <p class="text-muted small flex-grow-1 mb-2">{{ item.short_text|truncatechars:200 }}</p>
                   <div class="trending-metrics d-flex flex-wrap gap-2 small" data-trending-slug="{{ item.slug }}">
-                    <span data-metric="views_24h" class="trending-metric"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ t.views_24h }}</strong></span>
-                    <span data-metric="likes_24h" class="trending-metric"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ t.likes_24h }}</strong></span>
-                    <span data-metric="comments_24h" class="trending-metric"><i class="fa fa-comment me-2"></i><strong class="trending-val">{{ t.comments_24h }}</strong></span>
+                    <span data-metric="views_24h" class="trending-metric" title="Views in 24h"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_24h }}</strong> (24h)</span>
+                    <span data-metric="likes_24h" class="trending-metric" title="Likes in 24h"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ m.likes_24h }}</strong> (24h)</span>
+                    <span data-metric="comments_24h" class="trending-metric" title="Comments in 24h"><i class="fa fa-comment me-2"></i><strong class="trending-val">{{ m.comments_24h }}</strong> (24h)</span>
                   </div>
                 </div>
               </div>

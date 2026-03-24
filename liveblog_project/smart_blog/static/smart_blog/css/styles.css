@@ -1065,6 +1065,17 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 }
 
 .trending-page .trending-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-shadow-lg);
+}
+
+/* BraiNews all_cards — hover lift + shadow (same as trending) */
+article.item_block.card {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+article.item_block.card:hover {
+    transform: translateY(-6px);
     box-shadow: var(--card-shadow-lg);
 }
 
@@ -1204,7 +1215,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     display: inline-flex;
     align-items: center;
     color: var(--text-muted);
-    gap: 2px;
+    /* gap: 2px; */
 }
 
 .trending-metric i {
