@@ -826,6 +826,19 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     left: 0;
     right: 0;
     z-index: 1050;
+    transition: transform 0.28s ease;
+    will-change: transform;
+}
+
+.header-wrapper--hidden {
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .header-wrapper {
+        transition: none;
+    }
 }
 
 .header {
@@ -1030,6 +1043,255 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     position: relative;
     padding-top: 200px;
     margin-bottom: 120px;
+}
+
+/* Trending page: card-body as stretched-link container */
+.trending-page .trending-card .card-body {
+    position: relative;
+}
+
+/* ========== Trending Cards UI ========== */
+.trending-section-title {
+    font-weight: 600;
+    color: var(--text-default);
+    font-family: var(--font-heading);
+}
+
+.trending-page .trending-card {
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.trending-page .trending-card:hover {
+    box-shadow: var(--card-shadow-lg);
+}
+
+/* Hot / Hero cards — horizontal layout */
+.trending-card--hot {
+    border: 1px solid var(--border-default);
+}
+
+.trending-card--hero .trending-card__img-wrap {
+    min-height: 260px;
+}
+
+.trending-card__img-wrap {
+    position: relative;
+    min-height: 160px;
+    overflow: hidden;
+    background: var(--bg-muted);
+}
+
+.trending-card__img-wrap--sm {
+    min-height: 140px;
+}
+
+.trending-card__img-link {
+    position: relative;
+    display: block;
+    height: 100%;
+    min-height: 140px;
+}
+
+.trending-card__img {
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.trending-card:hover .trending-card__img {
+    transform: scale(1.05);
+}
+
+.trending-card__placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-subtle) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trending-card__placeholder::after {
+    content: "";
+    width: 48px;
+    height: 48px;
+    background: var(--border-muted);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.trending-card__rank {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.trending-card__category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.trending-card__title {
+    color: var(--text-default) !important;
+    transition: color 0.2s ease;
+}
+
+.trending-card__title:hover {
+    color: var(--text-link) !important;
+}
+
+/* Badges */
+.trending-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25em 0.6em;
+    border-radius: var(--radius-sm);
+}
+
+.trending-badge--hot {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: #fff;
+}
+
+.trending-badge--rising {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    color: #fff;
+    z-index: 2;
+}
+
+.trending-badge--feed {
+    background: linear-gradient(135deg, var(--text-primary) 0%, #1e2f5c 100%);
+    color: #fff;
+}
+
+.trending-growth-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #2ecc71;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.2em 0.5em;
+    border-radius: var(--radius-sm);
+    z-index: 2;
+}
+
+/* Metrics */
+.trending-metric {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-muted);
+    gap: 2px;
+}
+
+.trending-metric i {
+    opacity: 0.8;
+}
+
+.trending-metric .trending-val {
+    color: var(--text-default);
+}
+
+.trending-metric__suffix {
+    margin-left: 0.15em;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+/* Rising card: image on top */
+.trending-card--rising .trending-card__img-wrap {
+    position: relative;
+}
+
+.trending-card--rising .trending-card__img-wrap .trending-card__img-link {
+    min-height: 120px;
+}
+
+.trending-card--rising .trending-card__img {
+    min-height: 120px;
+}
+
+/* Dark theme adjustments */
+html[data-theme="dark"] .trending-card__rank,
+html[data-theme="dark"] .trending-growth-badge {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+html[data-theme="dark"] .trending-card__placeholder {
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-subtle) 100%);
+}
+
+/* Responsive: Hot hero on mobile */
+/* Trending: вертикальная раскладка при ширине ≤1191px */
+@media (max-width: 1191px) {
+    .trending-card--hot .row,
+    .trending-card--feed .row {
+        flex-direction: column !important;
+    }
+
+    .trending-card--hot .trending-card__img-wrap,
+    .trending-card--feed .trending-card__img-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 auto !important;
+        min-height: 200px;
+    }
+
+    .trending-card--hot .row > .col,
+    .trending-card--feed .row > .col {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 auto !important;
+    }
+
+    .trending-card--hero .trending-card__img-wrap {
+        min-height: 220px;
+    }
+
+    .trending-card__img,
+    .trending-card__img-link {
+        min-height: 200px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .trending-card--hero .trending-card__img-wrap {
+        min-height: 200px;
+    }
+
+    .trending-card--hot .trending-card__img-wrap,
+    .trending-card--feed .trending-card__img-wrap,
+    .trending-card--rising .trending-card__img-wrap {
+        min-height: 180px;
+    }
+
+    .trending-card__img,
+    .trending-card__img-link {
+        min-height: 180px !important;
+    }
 }
 
 .footer {

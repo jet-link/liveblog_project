@@ -1,6 +1,6 @@
 """Analytics service for admin dashboard."""
 from django.utils import timezone
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.db.models.functions import TruncDate
 
 from smart_blog.models import Item, Comment
@@ -11,22 +11,23 @@ User = get_user_model()
 
 def get_activity_chart_data(days=14):
     """Get daily activity (posts, comments, users) for chart."""
+    _tz = timezone.get_current_timezone()
     since = timezone.now() - timezone.timedelta(days=days)
-    # Posts per day
+    # Posts per day (bucket by local calendar day — matches TIME_ZONE)
     posts = Item.objects.filter(published_date__gte=since).annotate(
-        date=TruncDate('published_date')
+        date=TruncDate('published_date', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     posts_map = {str(p['date']): p['count'] for p in posts}
 
     # Comments per day
     comments = Comment.objects.filter(created__gte=since).annotate(
-        date=TruncDate('created')
+        date=TruncDate('created', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     comments_map = {str(c['date']): c['count'] for c in comments}
 
     # Users per day (use _base_manager to include all, including inactive)
     users = User._base_manager.filter(date_joined__gte=since).annotate(
-        date=TruncDate('date_joined')
+        date=TruncDate('date_joined', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     users_map = {str(u['date']): u['count'] for u in users}
 
@@ -34,8 +35,9 @@ def get_activity_chart_data(days=14):
     posts_data = []
     comments_data = []
     users_data = []
+    anchor = timezone.localdate()
     for i in range(days):
-        d = (timezone.now() - timezone.timedelta(days=days - 1 - i)).date()
+        d = anchor - timezone.timedelta(days=days - 1 - i)
         labels.append(d.isoformat())
         posts_data.append(posts_map.get(str(d), 0))
         comments_data.append(comments_map.get(str(d), 0))
@@ -53,6 +55,7 @@ def get_post_activity_chart_data(item, days=14):
     """Per-post activity: views, likes, comments per day for chart."""
     from smart_blog.models import ItemView, Like
 
+    _tz = timezone.get_current_timezone()
     since = timezone.now() - timezone.timedelta(days=days)
     labels = []
     views_data = []
@@ -61,24 +64,25 @@ def get_post_activity_chart_data(item, days=14):
 
     # Views per day (ItemView)
     views_qs = ItemView.objects.filter(item=item, viewed_at__gte=since).annotate(
-        date=TruncDate('viewed_at')
+        date=TruncDate('viewed_at', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     views_map = {str(v['date']): v['count'] for v in views_qs}
 
     # Likes per day
     likes_qs = Like.objects.filter(item=item, created_at__gte=since).annotate(
-        date=TruncDate('created_at')
+        date=TruncDate('created_at', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     likes_map = {str(l['date']): l['count'] for l in likes_qs}
 
     # Comments per day
     comments_qs = Comment.objects.filter(item=item, created__gte=since).annotate(
-        date=TruncDate('created')
+        date=TruncDate('created', tzinfo=_tz)
     ).values('date').annotate(count=Count('pk')).order_by('date')
     comments_map = {str(c['date']): c['count'] for c in comments_qs}
 
+    anchor = timezone.localdate()
     for i in range(days):
-        d = (timezone.now() - timezone.timedelta(days=days - 1 - i)).date()
+        d = anchor - timezone.timedelta(days=days - 1 - i)
         labels.append(d.isoformat())
         views_data.append(views_map.get(str(d), 0))
         likes_data.append(likes_map.get(str(d), 0))

@@ -7,8 +7,8 @@
           <dt class="personal-info-label">{{ label }}</dt>
           {% if field.type == 'trust_rating' %}
             <dd class="personal-info-value personal-info-value--trust">
-              <span class="d-inline-flex flex-wrap align-items-center gap-2">
-                <span class="custom_badge {{ field.zone_class }} trust-level-badge fw-semibold">Rating: {{ field.score|floatformat:1 }}</span>
+              <span class="d-inline-flex flex-wrap align-items-center gap-1">
+                <span class="custom_badge {{ field.zone_class }} trust-level-badge fw-semibold">{{ field.score|floatformat:1 }}</span>
                 <span class="custom_badge {{ field.zone_class }} trust-zone-badge">{{ field.zone }}</span>
               </span>
             </dd>

@@ -144,6 +144,59 @@ BACKUP_MONTHLY_COUNT = 12
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Cache (LocMem for dev; set REDIS_URL + django-redis for production)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'liveblog-default',
+    }
+}
+_redis_cache_url = os.environ.get('REDIS_URL') or os.environ.get('DJANGO_CACHE_REDIS_URL')
+if _redis_cache_url:
+    try:
+        import django_redis  # noqa: F401
+
+        CACHES = {
+            'default': {
+                'BACKEND': 'django_redis.cache.RedisCache',
+                'LOCATION': _redis_cache_url,
+                'OPTIONS': {
+                    'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+                },
+            }
+        }
+    except ImportError:
+        pass
+
+# Celery (broker Redis by default; requires celery package)
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+try:
+    from datetime import timedelta
+
+    from celery.schedules import crontab
+
+    CELERY_BEAT_SCHEDULE = {
+        'update-trending': {
+            'task': 'smart_blog.tasks.update_trending',
+            'schedule': timedelta(minutes=12),
+        },
+        'rollup-hourly-stats': {
+            'task': 'smart_blog.tasks.rollup_hourly_stats',
+            'schedule': crontab(minute=7),
+        },
+    }
+except ImportError:
+    CELERY_BEAT_SCHEDULE = {}
+
+# Trending JSON cache TTL (seconds); 300–600 matches “5–10 min” refresh window
+TRENDING_API_CACHE_SECONDS = int(os.environ.get("TRENDING_API_CACHE_SECONDS", "420"))
+
 # Admin panel login redirect
 LOGIN_URL = '/profile/login/'
 

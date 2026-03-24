@@ -2,7 +2,6 @@
 import json
 from django.shortcuts import render
 from django.utils import timezone
-from django.db.models import Count
 from django.contrib.auth import get_user_model
 
 from admin_panel.decorators import admin_required
@@ -14,7 +13,7 @@ User = get_user_model()
 @admin_required
 def dashboard_view(request):
     """Main dashboard at /admin."""
-    today = timezone.now().date()
+    today = timezone.localdate()
 
     # Main stats
     from smart_blog.models import Item, Comment, ContentReport, Like, Bookmark

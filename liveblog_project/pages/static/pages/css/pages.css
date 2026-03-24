@@ -72,11 +72,11 @@ h6 {
     margin-bottom: 120px;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .faq-section {
         padding-bottom: 6rem;
     }
-}
+} */
 
 
 .centered {

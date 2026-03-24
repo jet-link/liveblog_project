@@ -1,6 +1,9 @@
 Django>=4.2
 psycopg2-binary>=2.9
 python-dotenv>=1.0
+celery>=5.3
+redis>=5.0
+django-redis>=5.4
 django-ckeditor
 django-translit
 Pillow

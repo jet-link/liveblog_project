@@ -15,10 +15,10 @@
           <img src="{{ user_obj.profile.get_avatar }}" alt="" width="40" height="40" loading="lazy" decoding="async" data-full="{{ user_obj.profile.get_avatar }}" data-username="{{ user_obj.username }}" onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
         </button>
       {% endif %}
-      {% comment %} {% if is_online %}
-        <span id="profileOnlineBadge" class="custom_badge badge_reserved">Online</span>
+     {% comment %} {% if is_online %}
+        <span id="profileOnlineBadge" class="custom_badge rating_badge_reserved">Online</span>
       {% else %}
-        <span class="custom_badge badge_danger">Offline</span>
+        <span class="custom_badge rating_badge_danger">Offline</span>
       {% endif %} {% endcomment %}
     </div>
     {% include 'includes/personal_info.html' %}

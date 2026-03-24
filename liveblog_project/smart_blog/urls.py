@@ -1,11 +1,13 @@
 from django.urls import path
 from . import views
 from . import views_reports
+from . import views_trending
 
 app_name = "smart_blog"
 
 urlpatterns = [
     path('brainews/', views.items_list, name='items_list'),
+    path('brainews/trending/', views_trending.trending_list, name='trending_list'),
     path('brainews/popular/', views.items_popular_list, name='items_popular'),
     path('brainews/filter/', views.items_filtered, name='items_filtered'),
     path('tag/<slug:slug>/', views.tag_list, name='tag_list'),
@@ -35,4 +37,5 @@ urlpatterns = [
     path("api/search-history/<int:pk>/clicked/", views.api_search_history_clicked, name="api_search_history_clicked"),
     path("api/search-history/clear/", views.api_search_history_clear, name="api_search_history_clear"),
     path("api/search-history/<int:pk>/delete/", views.api_search_history_delete, name="api_search_history_delete"),
+    path("api/trending/", views_trending.trending_api, name="api_trending"),
 ]

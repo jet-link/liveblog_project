@@ -664,3 +664,52 @@ class Notification(models.Model):
             pc = self.parent_comment.pk
             return _item_comment_url(self.item.get_absolute_url(), pc, pc)
         return self.item.get_absolute_url()
+
+
+class ItemStatsHourly(models.Model):
+    """Aggregated views/likes/comments per item per calendar hour (TIME_ZONE-aware bucket)."""
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="stats_hourly")
+    hour_start = models.DateTimeField(db_index=True)
+    views = models.PositiveIntegerField(default=0)
+    likes = models.PositiveIntegerField(default=0)
+    comments = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["item", "hour_start"],
+                name="unique_item_stats_hourly_item_hour",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["hour_start"]),
+        ]
+        ordering = ("-hour_start",)
+
+    def __str__(self):
+        return f"ItemStatsHourly(item={self.item_id}, hour_start={self.hour_start})"
+
+
+class TrendingItem(models.Model):
+    """Materialized trending scores for published items (velocity ranking)."""
+
+    item = models.OneToOneField(Item, on_delete=models.CASCADE, related_name="trending")
+    trend_score = models.FloatField(default=0)
+    views_24h = models.PositiveIntegerField(default=0)
+    likes_24h = models.PositiveIntegerField(default=0)
+    comments_24h = models.PositiveIntegerField(default=0)
+    growth_rate = models.FloatField(default=0)
+    views_last_hour = models.PositiveIntegerField(default=0)  # rolling ~1h (see trending_service)
+    likes_1h = models.PositiveIntegerField(default=0)
+    comments_1h = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["trend_score"]),
+            models.Index(fields=["growth_rate"]),
+        ]
+
+    def __str__(self):
+        return f"TrendingItem(item={self.item_id}, score={self.trend_score:.4f})"

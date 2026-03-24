@@ -1,6 +1,22 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Tag, Category, Item, ItemImage, Comment, CommentLike, Like, ItemView, Bookmark, ContentReport, Notification, SearchHistory, PostRepost
+from .models import (
+    Tag,
+    Category,
+    Item,
+    ItemImage,
+    Comment,
+    CommentLike,
+    Like,
+    ItemView,
+    Bookmark,
+    ContentReport,
+    Notification,
+    SearchHistory,
+    PostRepost,
+    ItemStatsHourly,
+    TrendingItem,
+)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 
@@ -49,6 +65,33 @@ class PostRepostAdmin(admin.ModelAdmin):
     search_fields = ('item__title', 'ip_address')
     readonly_fields = ('item', 'user', 'ip_address', 'platform', 'user_agent', 'created_at')
     ordering = ('-created_at',)
+
+
+@admin.register(ItemStatsHourly)
+class ItemStatsHourlyAdmin(admin.ModelAdmin):
+    list_display = ("item", "hour_start", "views", "likes", "comments")
+    list_filter = ("hour_start",)
+    ordering = ("-hour_start",)
+    raw_id_fields = ("item",)
+
+
+@admin.register(TrendingItem)
+class TrendingItemAdmin(admin.ModelAdmin):
+    list_display = (
+        "item",
+        "trend_score",
+        "views_24h",
+        "likes_24h",
+        "comments_24h",
+        "growth_rate",
+        "views_last_hour",
+        "likes_1h",
+        "comments_1h",
+        "updated_at",
+    )
+    ordering = ("-trend_score",)
+    raw_id_fields = ("item",)
+    readonly_fields = ("updated_at",)
 
 
 @admin.register(SearchHistory)
