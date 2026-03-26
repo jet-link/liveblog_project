@@ -1,0 +1,59 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item">Notifications</li></ol></nav>{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="admin-toolbar">
+    <form class="admin-search-form" method="get" action="{% url 'admin_panel:notifications_list' %}">
+        <input type="text" name="q" value="{{ search }}" placeholder="Recipient, actor, post title…" class="admin-input admin-search-input">
+        <button type="submit" class="admin-button">Search</button>
+    </form>
+</div>
+
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table" data-bulk-clear-url="{% url 'admin_panel:notifications_bulk_clear' %}" data-bulk-delete-url="{% url 'admin_panel:notifications_bulk_delete' %}">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="admin-bulk-select-all" aria-label="Select all on page"></th>
+                    <th>Recipient</th>
+                    <th>Reason</th>
+                    <th>Link</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for n in rows %}
+                <tr>
+                    <td><input type="checkbox" class="admin-bulk-row-check" value="{{ n.pk }}" aria-label="Select"></td>
+                    <td>{{ n.recipient.username }}</td>
+                    <td>{{ n.admin_reason_label }}</td>
+                    <td><a href="{{ n.get_absolute_url }}" class="admin-link" target="_blank" rel="noopener">{{ n.item.title|truncatechars:40 }}</a></td>
+                    <td>{{ n.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        {% if n.is_read %}
+                            <span class="admin-badge admin-badge-success">Has been read</span>
+                        {% else %}
+                            <span class="admin-badge admin-badge-pending">Unread</span>
+                        {% endif %}
+                        {% if n.cleared_from_inbox %}<span class="admin-badge admin-badge-warning">Cleared inbox</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="admin-empty">No notifications.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-table-total">Total: {{ rows.paginator.count }}</div>
+    {% if rows.has_other_pages %}
+    <div class="admin-pagination">
+        {% if rows.has_previous %}<a href="?page={{ rows.previous_page_number }}{% if search %}&q={{ search|urlencode }}{% endif %}" class="admin-button admin-button-sm">Previous</a>{% endif %}
+        <span class="admin-pagination-info">Page {{ rows.number }} of {{ rows.paginator.num_pages }}</span>
+        {% if rows.has_next %}<a href="?page={{ rows.next_page_number }}{% if search %}&q={{ search|urlencode }}{% endif %}" class="admin-button admin-button-sm">Next</a>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

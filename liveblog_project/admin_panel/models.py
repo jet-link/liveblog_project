@@ -7,7 +7,14 @@ User = get_user_model()
 
 
 class DeletedUserLog(models.Model):
-    """Log of deleted users for 'Recently deleted' admin page."""
+    """Queue of users marked for deletion from the Users list; account row kept until purged here."""
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='deleted_queue_entry',
+        null=True,
+        blank=True,
+    )
     username = models.CharField(max_length=150)
     deleted_at = models.DateTimeField(auto_now_add=True)
     deleted_by = models.ForeignKey(
@@ -162,6 +169,7 @@ class ContentViolation(models.Model):
     confidence = models.FloatField(default=1.0)
     detected_word = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
     analysis_run = models.ForeignKey(
         AnalysisRun,
         null=True,
@@ -177,12 +185,12 @@ class ContentViolation(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['item'],
-                condition=Q(item__isnull=False),
+                condition=Q(item__isnull=False, deleted_at__isnull=True),
                 name='uq_violation_item',
             ),
             models.UniqueConstraint(
                 fields=['comment'],
-                condition=Q(comment__isnull=False),
+                condition=Q(comment__isnull=False, deleted_at__isnull=True),
                 name='uq_violation_comment',
             ),
         ]

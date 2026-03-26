@@ -16,7 +16,7 @@ def faq_list(request):
     search = request.GET.get('q', '').strip()
     if search:
         qs = qs.filter(Q(question__icontains=search) | Q(answer__icontains=search))
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     items = paginator.get_page(page)
     return render(request, 'admin/faq/faq_list.html', {'items': items, 'search': search})

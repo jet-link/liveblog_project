@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from admin_panel.decorators import admin_required
@@ -55,8 +56,9 @@ def content_violations_list(request):
         except (ValueError, TypeError):
             pass
 
+    qs = qs.filter(deleted_at__isnull=True)
     qs = qs.order_by('-created_at')
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     violations = paginator.get_page(page)
 
@@ -130,14 +132,15 @@ def content_violation_ignore(request, pk):
 @admin_required
 @require_POST
 def content_violation_clear(request, pk):
-    """Clear violation record (delete from table, do NOT delete post/comment)."""
+    """Move violation to Recent deleted (soft), do NOT delete post/comment."""
     if not request.user.is_superuser:
         return JsonResponse({'success': False}, status=403)
     v = get_object_or_404(ContentViolation, pk=pk)
-    v.delete()
+    v.deleted_at = timezone.now()
+    v.save(update_fields=['deleted_at'])
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True, 'removed': True})
-    messages.success(request, 'Violation cleared from table.')
+    messages.success(request, 'Violation moved to Recent deleted.')
     filter_qs = request.GET.urlencode()
     url = reverse('admin_panel:content_violations_list')
     if filter_qs:
@@ -228,34 +231,8 @@ def content_violations_bulk_clear(request):
         except (ValueError, TypeError):
             pass
     if valid_ids:
-        # QuerySet.delete() does NOT fire post_delete; collect authors before delete and recalc after
-        viols_qs = ContentViolation.objects.filter(pk__in=valid_ids).select_related('item', 'comment')
-        authors_to_recalc = set()
-        for v in viols_qs:
-            if v.item_id and v.item:
-                authors_to_recalc.add(v.item.author_id)
-            elif v.comment_id and v.comment:
-                authors_to_recalc.add(v.comment.author_id)
-        deleted = ContentViolation.objects.filter(pk__in=valid_ids).delete()[0]
-        messages.success(request, f'{deleted} violation(s) cleared.')
-        # Recalc trust scores; QuerySet.delete doesn't fire post_delete
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        for uid in authors_to_recalc:
-            if not uid:
-                continue
-            try:
-                u = User.objects.filter(pk=uid).first()
-                if u:
-                    def _recalc(usr=u):
-                        try:
-                            from admin_panel.services.trust_score_service import update_user_trust_score
-                            update_user_trust_score(usr)
-                        except Exception:
-                            pass
-                    transaction.on_commit(_recalc)
-            except Exception:
-                pass
+        n = ContentViolation.objects.filter(pk__in=valid_ids).update(deleted_at=timezone.now())
+        messages.success(request, f'{n} violation(s) moved to Recent deleted.')
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True})
     filter_qs = request.GET.urlencode()

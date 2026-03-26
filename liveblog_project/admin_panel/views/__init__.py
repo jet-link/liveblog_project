@@ -1,7 +1,17 @@
 from .dashboard_views import dashboard_view
 from .post_views import posts_list, post_edit, post_create, post_delete, post_view_stats
 from .comment_views import comments_list, comment_delete, comment_confirm_draft, comment_confirm_activate
-from .user_views import users_list, user_profile, user_ban, user_unban, user_delete, banned_users_list, recently_deleted_list
+from .user_views import (
+    users_list,
+    user_profile,
+    user_ban,
+    user_unban,
+    user_delete,
+    banned_users_list,
+    recently_deleted_list,
+    deleted_users_recover,
+    deleted_users_permanent_delete,
+)
 from .category_views import categories_list, category_create, category_edit, category_delete
 from .tag_views import tags_list, tag_create, tag_edit, tag_delete
 from .report_views import reports_list, report_resolve, report_dismiss, report_delete_content, report_ban_user
@@ -19,6 +29,12 @@ from .moderation_views import (
 from .backup_views import backups_list, backup_status, backup_create, backup_download, backup_restore, backup_delete
 from .analytics_views import analytics_view
 from .logs_views import logs_view
+from .notification_views import (
+    notifications_list,
+    notifications_bulk_clear,
+    notifications_bulk_delete,
+)
+from .recent_deleted_views import recent_deleted_content, recent_deleted_restore, recent_deleted_purge
 from .faq_views import faq_list, faq_create, faq_edit, faq_delete
 from .static_pages_views import about_page_edit, contacts_page_edit
 from .bulk_views import (
@@ -41,6 +57,7 @@ __all__ = [
     'dashboard_view', 'posts_list', 'post_edit', 'post_create', 'post_delete', 'post_view_stats',
     'comments_list', 'comment_delete', 'comment_confirm_draft', 'comment_confirm_activate',
     'users_list', 'user_profile', 'user_ban', 'user_unban', 'user_delete', 'banned_users_list', 'recently_deleted_list',
+    'deleted_users_recover', 'deleted_users_permanent_delete',
     'categories_list', 'category_create', 'category_edit', 'category_delete',
     'tags_list', 'tag_create', 'tag_edit', 'tag_delete',
     'reports_list', 'report_resolve', 'report_dismiss', 'report_delete_content', 'report_ban_user',
@@ -50,6 +67,8 @@ __all__ = [
     'backups_list', 'backup_status', 'backup_create', 'backup_download', 'backup_restore', 'backup_delete',
     'analytics_view',
     'logs_view',
+    'notifications_list', 'notifications_bulk_clear', 'notifications_bulk_delete',
+    'recent_deleted_content', 'recent_deleted_restore', 'recent_deleted_purge',
     'faq_list', 'faq_create', 'faq_edit', 'faq_delete',
     'about_page_edit', 'contacts_page_edit',
     'posts_bulk_delete', 'comments_bulk_delete', 'users_bulk_delete', 'users_bulk_ban',

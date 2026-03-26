@@ -13,15 +13,20 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Subqueries for target reports count (exclude admin_hidden for consistency)
-_item_reports_subq = ContentReport.objects.filter(item_id=OuterRef('item_id'), admin_hidden=False).values('item_id').annotate(cnt=Count('id')).values('cnt')[:1]
-_comment_reports_subq = ContentReport.objects.filter(comment_id=OuterRef('comment_id'), admin_hidden=False).values('comment_id').annotate(cnt=Count('id')).values('cnt')[:1]
+# Subqueries for target reports count (exclude admin_hidden and soft-deleted)
+_item_reports_subq = ContentReport.objects.filter(
+    item_id=OuterRef('item_id'), admin_hidden=False, deleted_at__isnull=True,
+).values('item_id').annotate(cnt=Count('id')).values('cnt')[:1]
+_comment_reports_subq = ContentReport.objects.filter(
+    comment_id=OuterRef('comment_id'), admin_hidden=False, deleted_at__isnull=True,
+).values('comment_id').annotate(cnt=Count('id')).values('cnt')[:1]
 
 
 @admin_required
 def reports_list(request):
     """List content reports with filters and sorting."""
     qs = ContentReport.objects.select_related('reporter', 'item', 'comment')
+    qs = qs.filter(deleted_at__isnull=True)
     qs = qs.exclude(admin_hidden=True)
     qs = qs.exclude(item__is_published=False).exclude(comment__is_draft=True)
 
@@ -54,7 +59,7 @@ def reports_list(request):
     else:
         qs = qs.order_by('-created_at')
 
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     reports = paginator.get_page(page)
 

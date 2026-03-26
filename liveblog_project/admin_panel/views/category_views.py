@@ -16,7 +16,7 @@ def categories_list(request):
     search = request.GET.get('q', '').strip()
     if search:
         qs = qs.filter(Q(name__icontains=search) | Q(slug__icontains=search))
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     categories = paginator.get_page(page)
     return render(request, 'admin/categories/categories_list.html', {'categories': categories, 'search': search})
@@ -56,7 +56,10 @@ def category_delete(request, pk):
     """Delete category."""
     cat = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
-        cat.delete()
-        messages.success(request, 'Category deleted.')
+        from django.utils import timezone
+
+        cat.deleted_at = timezone.now()
+        cat.save(update_fields=['deleted_at'])
+        messages.success(request, 'Category moved to Recent deleted.')
         return redirect_preserve_query(request, 'categories_list')
     return render(request, 'admin/categories/category_confirm_delete.html', {'category': cat})

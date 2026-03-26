@@ -26,6 +26,8 @@ urlpatterns = [
     path('users/', views.users_list, name='users_list'),
     path('users/banned/', views.banned_users_list, name='banned_users'),
     path('users/recently-deleted/', views.recently_deleted_list, name='recently_deleted'),
+    path('users/recently-deleted/recover/', views.deleted_users_recover, name='deleted_users_recover'),
+    path('users/recently-deleted/purge/', views.deleted_users_permanent_delete, name='deleted_users_permanent_delete'),
     path('users/recently-deleted/bulk-delete/', views.deleted_logs_bulk_delete, name='deleted_logs_bulk_delete'),
     path('users/<int:pk>/', views.user_profile, name='user_profile'),
     path('users/<int:pk>/ban/', views.user_ban, name='user_ban'),
@@ -65,6 +67,10 @@ urlpatterns = [
     path('content-violations/bulk-clear/', views.content_violations_bulk_clear, name='content_violations_bulk_clear'),
     path('content-violations/bulk-delete-content/', views.content_violations_bulk_delete_content, name='content_violations_bulk_delete_content'),
 
+    path('moderation/notifications/', views.notifications_list, name='notifications_list'),
+    path('moderation/notifications/bulk-clear/', views.notifications_bulk_clear, name='notifications_bulk_clear'),
+    path('moderation/notifications/bulk-delete/', views.notifications_bulk_delete, name='notifications_bulk_delete'),
+
     # Reports
     path('reports/', views.reports_list, name='reports_list'),
     path('reports/<int:pk>/resolve/', views.report_resolve, name='report_resolve'),
@@ -76,6 +82,10 @@ urlpatterns = [
 
     # Analytics
     path('analytics/', views.analytics_view, name='analytics'),
+
+    path('system/recent-deleted/', views.recent_deleted_content, name='recent_deleted_content'),
+    path('system/recent-deleted/restore/', views.recent_deleted_restore, name='recent_deleted_restore'),
+    path('system/recent-deleted/purge/', views.recent_deleted_purge, name='recent_deleted_purge'),
 
     # Backups
     path('backups/', views.backups_list, name='backups_list'),

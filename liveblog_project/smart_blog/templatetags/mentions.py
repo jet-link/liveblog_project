@@ -23,8 +23,12 @@ def render_mentions(text, parent_comment_id=None):
                 label = escape(user.username)
                 title_attr = f' title="{escape(user.username)}"'
             else:
-                label = "banned-user"
-                title_attr = ' title="Banned user"'
+                if getattr(user, "deleted_queue_entry", None):
+                    label = "deleted-user"
+                    title_attr = ' title="Deleted user"'
+                else:
+                    label = "banned-user"
+                    title_attr = ' title="Banned user"'
             return (
                 f'<a href="{anchor}" '
                 f'class="mention-link" '

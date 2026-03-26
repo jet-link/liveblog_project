@@ -58,8 +58,11 @@ def comment_delete(request, pk):
     """Delete comment."""
     comment = get_object_or_404(Comment, pk=pk)
     if request.method == 'POST':
-        comment.delete()
-        messages.success(request, 'Comment deleted.')
+        from django.utils import timezone
+
+        comment.deleted_at = timezone.now()
+        comment.save(update_fields=['deleted_at'])
+        messages.success(request, 'Comment moved to Recent deleted.')
         url = reverse('admin_panel:comments_list')
         qs = request.GET.urlencode()
         if qs:

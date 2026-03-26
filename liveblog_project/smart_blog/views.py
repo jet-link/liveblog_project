@@ -1245,11 +1245,9 @@ def toggle_like(request, slug):
         Like.objects.create(item=item, user=request.user)
         liked = True
         if item.author and item.author != request.user:
-            Notification.objects.create(
-                recipient=item.author,
-                actor=request.user,
-                notif_type=Notification.TYPE_ITEM_LIKE,
-                item=item
+            from smart_blog.notification_utils import upsert_item_like_notification
+            upsert_item_like_notification(
+                recipient=item.author, actor=request.user, item=item
             )
             from smart_blog.context_processors import invalidate_notifications_cache
             invalidate_notifications_cache(item.author.pk)
@@ -1317,17 +1315,23 @@ def toggle_comment_like(request, pk):
         CommentLike.objects.create(comment=comment, user=user)
         liked = True
         if comment.author and comment.author != request.user:
-            kwargs = {
-                "recipient": comment.author,
-                "actor": request.user,
-                "notif_type": Notification.TYPE_COMMENT_LIKE,
-                "item": comment.item,
-            }
+            from smart_blog.notification_utils import upsert_comment_like_notification
             if comment.parent_id:
-                kwargs["reply_comment"] = comment
+                upsert_comment_like_notification(
+                    recipient=comment.author,
+                    actor=request.user,
+                    item=comment.item,
+                    reply_comment=comment,
+                    parent_comment=None,
+                )
             else:
-                kwargs["parent_comment"] = comment
-            Notification.objects.create(**kwargs)
+                upsert_comment_like_notification(
+                    recipient=comment.author,
+                    actor=request.user,
+                    item=comment.item,
+                    parent_comment=comment,
+                    reply_comment=None,
+                )
             from smart_blog.context_processors import invalidate_notifications_cache
             invalidate_notifications_cache(comment.author.pk)
 

@@ -263,8 +263,8 @@ def vanished_created_view(request):
     })
 
 
-def user_not_found_view(request, user_obj):
-    """Страница удалённого пользователя: аватар, Vanished user, список публикаций."""
+def user_not_found_view(request, user_obj, vanished_status="banned"):
+    """Inactive user public page: banned or deleted-in-queue (vanished_status)."""
     user_items_qs = (
         Item.objects
         .filter(is_published=True, author=user_obj)
@@ -309,7 +309,7 @@ def user_not_found_view(request, user_obj):
         "listing_section": "created",
         "breadcrumbs": breadcrumbs,
         "vanished_display_name": vanished_name,
-        "vanished_status": "banned",
+        "vanished_status": vanished_status,
     }
     return render(request, "includes/vanished.html", context)
 
@@ -413,11 +413,12 @@ MAIN_COMMENTS_ANNOTATION = {
 
 # detail profile view
 def profile_view(request, username):
-    user_obj = User._base_manager.select_related('profile').filter(username__iexact=username).first()
+    user_obj = User._base_manager.select_related("profile", "deleted_queue_entry").filter(username__iexact=username).first()
     if not user_obj:
         raise Http404
     if not user_obj.is_active:
-        return user_not_found_view(request, user_obj)
+        status = "deleted" if getattr(user_obj, "deleted_queue_entry", None) else "banned"
+        return user_not_found_view(request, user_obj, vanished_status=status)
 
     is_owner = request.user.is_authenticated and request.user == user_obj
 
@@ -525,7 +526,7 @@ def profile_online_status(request, username):
 
 
 def profile_section_view(request, username, section):
-    user_obj = User._base_manager.filter(username__iexact=username).first()
+    user_obj = User._base_manager.select_related("deleted_queue_entry").filter(username__iexact=username).first()
     if not user_obj:
         raise Http404
     if not user_obj.is_active:
@@ -561,8 +562,15 @@ def profile_section_view(request, username, section):
         item.bookmarks_count_human = count_convert(item.bookmarks_count)
         item.comments_count_human = count_convert(item.comments_count)
 
+    if not user_obj.is_active:
+        if getattr(user_obj, "deleted_queue_entry", None):
+            crumb_user_label = "Deleted user"
+        else:
+            crumb_user_label = "Banned user"
+    else:
+        crumb_user_label = user_obj.username
     breadcrumbs = build_breadcrumbs(
-        breadcrumb("Banned user" if not user_obj.is_active else user_obj.username, reverse("login_app:profile", kwargs={"username": user_obj.username})),
+        breadcrumb(crumb_user_label, reverse("login_app:profile", kwargs={"username": user_obj.username})),
         breadcrumb(section_title, None),
     )
 
@@ -616,7 +624,7 @@ def notifications_view(request, username):
 
     notifications = (
         Notification.objects
-        .filter(recipient=request.user)
+        .filter(recipient=request.user, cleared_from_inbox=False)
         .exclude(item__isnull=True)
         .exclude(
             Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |
@@ -723,7 +731,9 @@ def mark_notification_read(request):
 @login_required
 @require_POST
 def mark_all_notifications_read(request):
-    Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    Notification.objects.filter(
+        recipient=request.user, is_read=False, cleared_from_inbox=False
+    ).update(is_read=True)
     from smart_blog.context_processors import invalidate_notifications_cache
     invalidate_notifications_cache(request.user.pk)
     return JsonResponse({"success": True})
@@ -733,12 +743,12 @@ def mark_all_notifications_read(request):
 @require_POST
 def delete_notifications(request):
     mode = request.POST.get("mode")
-    qs = Notification.objects.filter(recipient=request.user)
+    qs = Notification.objects.filter(recipient=request.user, cleared_from_inbox=False)
     if mode == "last5":
-        ids = list(qs.values_list("id", flat=True)[:5])
-        Notification.objects.filter(id__in=ids).delete()
+        ids = list(qs.order_by("-created_at").values_list("id", flat=True)[:5])
+        Notification.objects.filter(id__in=ids).update(cleared_from_inbox=True)
     else:
-        qs.delete()
+        qs.update(cleared_from_inbox=True)
     from smart_blog.context_processors import invalidate_notifications_cache
     invalidate_notifications_cache(request.user.pk)
     return JsonResponse({"success": True})

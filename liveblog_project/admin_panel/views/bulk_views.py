@@ -1,10 +1,9 @@
 """Bulk delete views for admin tables."""
-from pathlib import Path
-
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from admin_panel.decorators import admin_required
 
@@ -40,12 +39,14 @@ def posts_bulk_delete(request):
             pk_int = int(pk_str)
             item = Item.objects.filter(pk=pk_int).first()
             if item:
-                item.delete()
+                item.deleted_at = timezone.now()
+                item.is_published = False
+                item.save(update_fields=["deleted_at", "is_published"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} post(s) deleted.')
+        messages.success(request, f"{deleted} post(s) moved to Recent deleted.")
     return _redirect_with_qs('posts_list', request)
 
 
@@ -62,18 +63,19 @@ def comments_bulk_delete(request):
             pk_int = int(pk)
             comment = Comment.objects.filter(pk=pk_int).first()
             if comment:
-                comment.delete()
+                comment.deleted_at = timezone.now()
+                comment.save(update_fields=["deleted_at"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} comment(s) deleted.')
+        messages.success(request, f"{deleted} comment(s) moved to Recent deleted.")
     return _redirect_with_qs('comments_list', request)
 
 
 @admin_required
 def users_bulk_delete(request):
-    """Bulk delete users. Skips staff, superuser, self. POST ids=1,2,3."""
+    """Bulk move users to Deleted queue (deactivate, keep rows)."""
     if request.method != 'POST':
         return redirect('admin_panel:users_list')
     ids = _get_ids(request)
@@ -84,13 +86,21 @@ def users_bulk_delete(request):
             user = User.objects.filter(pk=pk_int).first()
             if user and not user.is_staff and not user.is_superuser and user != request.user:
                 from admin_panel.models import DeletedUserLog
-                DeletedUserLog.objects.create(username=user.username, deleted_by=request.user)
-                user.delete()
+
+                DeletedUserLog.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        "username": user.username,
+                        "deleted_by": request.user,
+                    },
+                )
+                user.is_active = False
+                user.save(update_fields=["is_active"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} user(s) deleted.')
+        messages.success(request, f"{deleted} user(s) moved to Deleted.")
     return _redirect_with_qs('users_list', request)
 
 
@@ -122,7 +132,7 @@ def banned_users_bulk_unban(request):
 
 @admin_required
 def banned_users_bulk_delete(request):
-    """Bulk delete banned users. Same logic as users_bulk_delete."""
+    """Bulk move banned users to Deleted queue (same soft path as users list)."""
     if request.method != 'POST':
         return redirect('admin_panel:banned_users')
     ids = _get_ids(request)
@@ -133,19 +143,27 @@ def banned_users_bulk_delete(request):
             user = User.objects.filter(pk=pk_int).first()
             if user and not user.is_staff and not user.is_superuser and user != request.user:
                 from admin_panel.models import DeletedUserLog
-                DeletedUserLog.objects.create(username=user.username, deleted_by=request.user)
-                user.delete()
+
+                DeletedUserLog.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        "username": user.username,
+                        "deleted_by": request.user,
+                    },
+                )
+                user.is_active = False
+                user.save(update_fields=["is_active"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} user(s) deleted.')
+        messages.success(request, f"{deleted} user(s) moved to Deleted.")
     return _redirect_with_qs('banned_users', request)
 
 
 @admin_required
 def deleted_logs_bulk_delete(request):
-    """Bulk delete DeletedUserLog records (remove from Recently deleted list)."""
+    """Legacy: permanently remove selected DeletedUserLog rows (no User rows)."""
     if request.method != 'POST':
         return redirect('admin_panel:recently_deleted')
     ids = _get_ids(request)
@@ -156,9 +174,14 @@ def deleted_logs_bulk_delete(request):
         except (ValueError, TypeError):
             pass
     from admin_panel.models import DeletedUserLog
-    deleted = DeletedUserLog.objects.filter(pk__in=valid_ids).delete()[0]
-    if deleted:
-        messages.success(request, f'{deleted} record(s) deleted.')
+
+    removed = 0
+    for log in DeletedUserLog.objects.filter(pk__in=valid_ids):
+        if log.user_id is None:
+            log.delete()
+            removed += 1
+    if removed:
+        messages.success(request, f"Removed {removed} legacy log record(s).")
     url = reverse('admin_panel:recently_deleted')
     qs = request.GET.urlencode()
     if qs:
@@ -203,12 +226,13 @@ def tags_bulk_delete(request):
             pk_int = int(pk)
             tag = Tag.objects.filter(pk=pk_int).first()
             if tag:
-                tag.delete()
+                tag.deleted_at = timezone.now()
+                tag.save(update_fields=["deleted_at"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} tag(s) deleted.')
+        messages.success(request, f"{deleted} tag(s) moved to Recent deleted.")
     return _redirect_with_qs('tags_list', request)
 
 
@@ -225,12 +249,13 @@ def categories_bulk_delete(request):
             pk_int = int(pk)
             cat = Category.objects.filter(pk=pk_int).first()
             if cat:
-                cat.delete()
+                cat.deleted_at = timezone.now()
+                cat.save(update_fields=["deleted_at"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} categor(y/ies) deleted.')
+        messages.success(request, f"{deleted} categor(y/ies) moved to Recent deleted.")
     return _redirect_with_qs('categories_list', request)
 
 
@@ -314,6 +339,7 @@ def backups_bulk_delete(request):
         from django.http import Http404
         raise Http404
     from backups.models import Backup
+
     ids = _get_ids(request)
     deleted = 0
     for pk in ids:
@@ -321,15 +347,11 @@ def backups_bulk_delete(request):
             pk_int = int(pk)
             backup = Backup.objects.filter(pk=pk_int).first()
             if backup:
-                if backup.file_path and Path(backup.file_path).exists():
-                    try:
-                        Path(backup.file_path).unlink()
-                    except OSError:
-                        pass
-                backup.delete()
+                backup.deleted_at = timezone.now()
+                backup.save(update_fields=["deleted_at"])
                 deleted += 1
         except (ValueError, TypeError):
             pass
     if deleted:
-        messages.success(request, f'{deleted} backup(s) deleted.')
+        messages.success(request, f"{deleted} backup(s) moved to Recent deleted.")
     return _redirect_with_qs('backups_list', request)

@@ -26,7 +26,7 @@ def notifications_context(request):
     if count is None:
         count = (
             Notification.objects
-            .filter(recipient=request.user, is_read=False)
+            .filter(recipient=request.user, is_read=False, cleared_from_inbox=False)
             .exclude(item__isnull=True)
             .exclude(
                 Q(notif_type=Notification.TYPE_REPLY, reply_comment__isnull=True) |

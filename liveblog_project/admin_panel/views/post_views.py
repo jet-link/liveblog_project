@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.utils import timezone
 
 from admin_panel.decorators import admin_required
 from admin_panel.forms import ItemAdminEditForm, ItemAdminCreateForm
@@ -46,7 +47,7 @@ def posts_list(request):
     elif sort == 'comments':
         qs = qs.order_by('-comments_count')
 
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     posts = paginator.get_page(page)
     categories = Category.objects.order_by('name')
@@ -124,8 +125,10 @@ def post_delete(request, pk):
     """Delete post."""
     item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
-        item.delete()
-        messages.success(request, 'Post deleted.')
+        item.deleted_at = timezone.now()
+        item.is_published = False
+        item.save(update_fields=['deleted_at', 'is_published'])
+        messages.success(request, 'Post moved to Recent deleted.')
         url = reverse('admin_panel:posts_list')
         qs = request.GET.urlencode()
         if qs:

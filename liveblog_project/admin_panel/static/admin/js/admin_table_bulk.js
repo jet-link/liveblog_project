@@ -78,14 +78,15 @@
   var BULK_ACTIONS = [
     { attr: 'data-bulk-unban-url', formClass: 'admin-bulk-unban-form', btnClass: 'admin-bulk-unban-btn', btnText: 'Unban', btnStyle: 'admin-button-primary', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to unban this user?' : 'Are you sure you want to unban ' + n + ' users?'; }, confirmText: 'Unban' },
     { attr: 'data-bulk-ban-url', formClass: 'admin-bulk-ban-form', btnClass: 'admin-bulk-ban-btn', btnText: 'Ban', btnStyle: 'admin-button-warning', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to ban this user?' : 'Are you sure you want to ban ' + n + ' users?'; }, confirmText: 'Ban' },
-    { attr: 'data-bulk-delete-url', formClass: 'admin-bulk-delete-form', btnClass: 'admin-bulk-delete-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to delete this item?' : 'Are you sure you want to delete ' + n + ' items?'; }, confirmText: 'Delete' },
+    { attr: 'data-bulk-restore-url', formClass: 'admin-bulk-restore-form', btnClass: 'admin-bulk-recover-btn', btnText: 'Recovery', btnStyle: 'admin-button-primary', modalTitle: function(n) { return n === 1 ? 'Recover this item?' : 'Recover ' + n + ' selected items?'; }, confirmText: 'Recovery' },
     { attr: 'data-bulk-clear-url', formClass: 'admin-bulk-clear-form', btnClass: 'admin-bulk-clear-btn', btnText: 'Clear', btnStyle: 'admin-button-warning', modalTitle: function() { return 'Are you sure about cleaning?'; }, confirmText: 'Clear' },
+    { attr: 'data-bulk-delete-url', formClass: 'admin-bulk-delete-form', btnClass: 'admin-bulk-delete-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to permanently delete this item?' : 'Are you sure you want to permanently delete ' + n + ' items?'; }, confirmText: 'Delete' },
     { attr: 'data-bulk-delete-content-url', formClass: 'admin-bulk-delete-content-form', btnClass: 'admin-bulk-delete-content-btn', btnText: 'Delete', btnStyle: 'admin-button-danger', modalTitle: function(n) { return n === 1 ? 'Are you sure you want to delete this content (post/comment)?' : 'Are you sure you want to delete ' + n + ' selected posts/comments?'; }, confirmText: 'Delete' }
   ];
 
   function init() {
     initBulkDeleteModal();
-    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url], .admin-table[data-bulk-delete-content-url], .admin-table[data-bulk-unban-url], .admin-table[data-bulk-ban-url]');
+    var tables = document.querySelectorAll('.admin-table[data-bulk-delete-url], .admin-table[data-bulk-clear-url], .admin-table[data-bulk-delete-content-url], .admin-table[data-bulk-unban-url], .admin-table[data-bulk-ban-url], .admin-table[data-bulk-restore-url]');
     tables.forEach(function(table) {
       setupTable(table);
     });
@@ -96,6 +97,7 @@
     var rowChecks = table.querySelectorAll('.admin-bulk-row-check');
     var card = table.closest('.admin-card');
     var toolbar = document.querySelector('.admin-toolbar');
+    var recentDeletedKind = table.getAttribute('data-recent-deleted-kind');
 
     if (!toolbar && card) {
       toolbar = document.createElement('div');
@@ -126,7 +128,7 @@
           if (row && row.getAttribute('data-is-active') !== '1') allSelectedActive = false;
         });
       }
-      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn, .admin-bulk-delete-content-btn').forEach(function(btn) {
+      toolbar.querySelectorAll('.admin-bulk-unban-btn, .admin-bulk-delete-btn, .admin-bulk-clear-btn, .admin-bulk-delete-content-btn, .admin-bulk-recover-btn').forEach(function(btn) {
         btn.style.display = ids.length > 0 ? '' : 'none';
       });
       var banBtn = toolbar.querySelector('.admin-bulk-ban-btn');
@@ -164,6 +166,16 @@
           var ids = getSelectedIds(table);
           if (ids.length === 0) return;
           openBulkModal(ids.length, function() {
+            var prevKind = form.querySelector('input.admin-bulk-kind-field');
+            if (prevKind) prevKind.remove();
+            if (recentDeletedKind) {
+              var kindInp = document.createElement('input');
+              kindInp.type = 'hidden';
+              kindInp.name = 'kind';
+              kindInp.value = recentDeletedKind;
+              kindInp.className = 'admin-bulk-kind-field';
+              form.appendChild(kindInp);
+            }
             var container = form.querySelector('.admin-bulk-ids');
             if (container) container.remove();
             container = document.createElement('div');

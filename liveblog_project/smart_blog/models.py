@@ -17,10 +17,49 @@ from django.db.models import Q, Count
 User = get_user_model()
 
 
+class ItemQuerySet(models.QuerySet):
+    def with_counters(self):
+        """Annotate comments_count. views_count and bookmarks_count use denormalized model fields."""
+        return self.annotate(
+            comments_count=Count(
+                "comments",
+                filter=Q(comments__parent__isnull=True),
+                distinct=True,
+            ),
+        )
+
+
+class ItemManager(models.Manager):
+    def get_queryset(self):
+        return ItemQuerySet(self.model, using=self._db).filter(deleted_at__isnull=True)
+
+    def with_counters(self):
+        return self.get_queryset().with_counters()
+
+
+class TagManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
+class CategoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
+class CommentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    objects = CategoryManager()
+    all_objects = models.Manager()
 
     class Meta:
         verbose_name = "Category"
@@ -42,27 +81,13 @@ class Category(models.Model):
         return reverse("smart_blog:topic_detail", kwargs={"slug": self.slug})
 
 
-class ItemQuerySet(models.QuerySet):
-    def with_counters(self):
-        """Annotate comments_count. views_count and bookmarks_count use denormalized model fields."""
-        return self.annotate(
-            comments_count=Count(
-                'comments',
-                filter=Q(comments__parent__isnull=True),
-                distinct=True
-            ),
-        )
-    
-class ItemManager(models.Manager):
-    def get_queryset(self):
-        return ItemQuerySet(self.model, using=self._db)
-
-    def with_counters(self):
-        return self.get_queryset().with_counters()
-
 class Tag(models.Model):
     tag_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=60, unique=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    objects = TagManager()
+    all_objects = models.Manager()
 
     class Meta:
         verbose_name = "Tag"
@@ -115,7 +140,9 @@ class Item(models.Model):
     updated = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
     objects = ItemManager()
+    all_objects = models.Manager()
 
     class Meta:
         ordering = ("-published_date",)
@@ -161,7 +188,7 @@ class Item(models.Model):
             base_slug = self._generate_base_slug()
             slug_candidate = base_slug
             counter = 1
-            while Item.objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
+            while Item.all_objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug_candidate
@@ -180,7 +207,7 @@ class Item(models.Model):
                     base_slug = self._generate_base_slug()
                     slug_candidate = base_slug
                     counter = 1
-                    while Item.objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
+                    while Item.all_objects.filter(slug=slug_candidate).exclude(pk=self.pk).exists():
                         slug_candidate = f"{base_slug}-{counter}"
                         counter += 1
                     self.slug = slug_candidate
@@ -194,7 +221,7 @@ class Item(models.Model):
             base_slug = self._generate_base_slug()
             slug_candidate = base_slug
             counter = 1
-            while Item.objects.filter(slug=slug_candidate).exists():
+            while Item.all_objects.filter(slug=slug_candidate).exists():
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug_candidate
@@ -303,6 +330,10 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
     is_draft = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    objects = CommentManager()
+    all_objects = models.Manager()
 
     @property
     def human_published(self):
@@ -436,18 +467,19 @@ class ContentReport(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
     admin_hidden = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     class Meta:
         ordering = ("-created_at",)
         constraints = [
             models.UniqueConstraint(
                 fields=["reporter", "item"],
-                condition=Q(item__isnull=False),
+                condition=Q(item__isnull=False, deleted_at__isnull=True),
                 name="unique_user_item_report",
             ),
             models.UniqueConstraint(
                 fields=["reporter", "comment"],
-                condition=Q(comment__isnull=False),
+                condition=Q(comment__isnull=False, deleted_at__isnull=True),
                 name="unique_user_comment_report",
             ),
             models.CheckConstraint(
@@ -624,6 +656,11 @@ class Notification(models.Model):
     parent_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reply_notifications", null=True, blank=True)
     reply_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="notifications", null=True, blank=True)
     is_read = models.BooleanField(default=False)
+    cleared_from_inbox = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Hidden from the recipient inbox but kept for deduplication when likes/replies repeat.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -631,7 +668,15 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.recipient} on {self.item}"
-    
+
+    @property
+    def admin_reason_label(self):
+        if self.notif_type == self.TYPE_REPLY:
+            return "Comment reply"
+        if self.notif_type == self.TYPE_COMMENT_LIKE:
+            return "Comment like"
+        return "Post like"
+
     @property
     def human_added(self):
         created_at = timezone.localtime(self.created_at)

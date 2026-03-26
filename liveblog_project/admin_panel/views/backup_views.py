@@ -157,13 +157,11 @@ def backup_delete(request, pk):
     if not request.user.is_superuser:
         raise Http404
     backup = get_object_or_404(Backup, pk=pk)
-    if request.method == 'POST':
-        if backup.file_path and Path(backup.file_path).exists():
-            try:
-                Path(backup.file_path).unlink()
-            except OSError:
-                pass
-        backup.delete()
-        messages.success(request, 'Backup deleted.')
-        return redirect_preserve_query(request, 'backups_list')
+    if request.method == "POST":
+        from django.utils import timezone
+
+        backup.deleted_at = timezone.now()
+        backup.save(update_fields=["deleted_at"])
+        messages.success(request, "Backup moved to Recent deleted.")
+        return redirect_preserve_query(request, "backups_list")
     return render(request, 'admin/backups/backup_confirm_delete.html', {'backup': backup})

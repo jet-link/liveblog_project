@@ -2,6 +2,11 @@ from django.db import models
 from django.conf import settings
 
 
+class BackupManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
 class Backup(models.Model):
     """Модель для хранения информации о backup."""
 
@@ -110,6 +115,10 @@ class Backup(models.Model):
         related_name='created_backups',
         verbose_name='Created by',
     )
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True, verbose_name='Deleted at')
+
+    objects = BackupManager()
+    all_objects = models.Manager()
 
     class Meta:
         ordering = ['-created_at']

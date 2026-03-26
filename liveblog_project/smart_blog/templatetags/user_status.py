@@ -12,13 +12,13 @@ def user_status_display(user):
     if user is None:
         return "Deleted user"
     if not user.is_active:
+        if getattr(user, "deleted_queue_entry", None):
+            return "Deleted user"
         return "Banned user"
     return str(user.username)
 
 
 @register.simple_tag
 def user_status_title(user):
-    """
-    Return title for hover: Username / Banned user / Deleted user.
-    """
+    """Title for hover: same label as display."""
     return user_status_display(user)

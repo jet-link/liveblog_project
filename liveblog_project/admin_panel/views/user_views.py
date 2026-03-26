@@ -34,7 +34,7 @@ def users_list(request):
     else:
         qs = qs.filter(is_active=True)
 
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     users = paginator.get_page(page)
 
@@ -44,8 +44,8 @@ def users_list(request):
 
 @admin_required
 def banned_users_list(request):
-    """List banned users only. Search + bulk Unban."""
-    qs = User.objects.filter(is_active=False).annotate(
+    """List banned users only (inactive, not in Deleted queue). Search + bulk Unban."""
+    qs = User.objects.filter(is_active=False, deleted_queue_entry__isnull=True).annotate(
         posts_count=Count('items', distinct=True),
         comments_count=Count('comments', distinct=True),
     ).order_by('-date_joined')
@@ -56,7 +56,7 @@ def banned_users_list(request):
             Q(username__icontains=search) | Q(email__icontains=search)
         )
 
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     users = paginator.get_page(page)
     return render(request, 'admin/users/banned_users_list.html', {'users': users, 'search': search})
@@ -145,7 +145,7 @@ def user_unban(request, pk):
 
 @admin_required
 def user_delete(request, pk):
-    """Delete user account."""
+    """Move user to Deleted queue (deactivate, keep DB row)."""
     user = get_object_or_404(User, pk=pk)
     if user.is_staff:
         messages.error(request, 'Cannot delete admin users.')
@@ -161,9 +161,16 @@ def user_delete(request, pk):
             messages.error(request, 'Cannot delete superuser.')
         else:
             username = user.username
-            DeletedUserLog.objects.create(username=username, deleted_by=request.user)
-            user.delete()
-            messages.success(request, f'User {username} has been deleted.')
+            DeletedUserLog.objects.update_or_create(
+                user=user,
+                defaults={
+                    'username': username,
+                    'deleted_by': request.user,
+                },
+            )
+            user.is_active = False
+            user.save(update_fields=['is_active'])
+            messages.success(request, f'User {username} moved to Deleted.')
         url = reverse('admin_panel:users_list')
         qs = request.GET.urlencode()
         if qs:
@@ -174,17 +181,74 @@ def user_delete(request, pk):
 
 @admin_required
 def recently_deleted_list(request):
-    """List recently deleted users (from DeletedUserLog)."""
-    qs = DeletedUserLog.objects.select_related('deleted_by').order_by('-deleted_at')
+    """Deleted queue: recover or purge user accounts."""
+    qs = DeletedUserLog.objects.select_related('deleted_by', 'user').order_by('-deleted_at')
 
     search = request.GET.get('q', '').strip()
     if search:
         qs = qs.filter(username__icontains=search)
 
-    paginator = Paginator(qs, 25)
+    paginator = Paginator(qs, 30)
     page = request.GET.get('page', 1)
     logs = paginator.get_page(page)
     return render(request, 'admin/users/recently_deleted_list.html', {
         'logs': logs,
         'search': search,
     })
+
+
+@admin_required
+def deleted_users_recover(request):
+    if request.method != 'POST':
+        return redirect('admin_panel:recently_deleted')
+    ids = []
+    for x in request.POST.getlist('ids'):
+        try:
+            ids.append(int(x))
+        except (ValueError, TypeError):
+            pass
+    recovered = 0
+    for log in DeletedUserLog.objects.filter(pk__in=ids).select_related('user'):
+        if log.user_id:
+            u = log.user
+            log.delete()
+            u.is_active = True
+            u.save(update_fields=['is_active'])
+            recovered += 1
+    if recovered:
+        messages.success(request, f'Recovered {recovered} user(s).')
+    url = reverse('admin_panel:recently_deleted')
+    qs = request.GET.urlencode()
+    if qs:
+        url += '?' + qs
+    return redirect(url)
+
+
+@admin_required
+def deleted_users_permanent_delete(request):
+    if request.method != 'POST':
+        return redirect('admin_panel:recently_deleted')
+    ids = []
+    for x in request.POST.getlist('ids'):
+        try:
+            ids.append(int(x))
+        except (ValueError, TypeError):
+            pass
+    purged = 0
+    for log in DeletedUserLog.objects.filter(pk__in=ids).select_related('user'):
+        u = log.user
+        if u:
+            if u.is_staff or u.is_superuser or u == request.user:
+                continue
+            u.delete()
+            purged += 1
+        else:
+            log.delete()
+            purged += 1
+    if purged:
+        messages.success(request, f'Permanently removed {purged} record(s).')
+    url = reverse('admin_panel:recently_deleted')
+    qs = request.GET.urlencode()
+    if qs:
+        url += '?' + qs
+    return redirect(url)

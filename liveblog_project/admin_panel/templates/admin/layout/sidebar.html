@@ -56,6 +56,10 @@
                 <i class="admin-nav-icon fa-regular fa-flag"></i>
                 <span class="admin-nav-text">Reports</span>
             </a>
+            <a href="{% url 'admin_panel:notifications_list' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'notifications_list' %}active{% endif %}">
+                <i class="admin-nav-icon fa-regular fa-bell"></i>
+                <span class="admin-nav-text">Notifications</span>
+            </a>
             <a href="{% url 'admin_panel:content_violations_list' %}" class="admin-nav-item {% if 'content_violation' in request.resolver_match.url_name %}active{% endif %}">
                 <i class="admin-nav-icon fa-solid fa-triangle-exclamation"></i>
                 <span class="admin-nav-text">Violations</span>
@@ -92,6 +96,10 @@
 
         <div class="admin-nav-group">
             <div class="admin-nav-group-title">System</div>
+            <a href="{% url 'admin_panel:recent_deleted_content' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'recent_deleted_content' %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-clock-rotate-left"></i>
+                <span class="admin-nav-text">Recent deleted</span>
+            </a>
             <a href="{% url 'admin_panel:backups_list' %}" class="admin-nav-item {% if 'backup' in request.resolver_match.url_name %}active{% endif %}">
                 <i class="admin-nav-icon fa-regular fa-floppy-disk"></i>
                 <span class="admin-nav-text">Backups</span>

@@ -76,6 +76,7 @@ def strip_mention_tokens(text: str) -> str:
     if not text:
         return ""
     text = normalize_comment_text(text)
-    text = re.sub(r'@\[\s*user\s*:\s*\d+\s*\], ', '', text)
+    # Remove @[user:ID] with optional ", " after (same token format as render_mentions)
+    text = re.sub(r'@\[\s*user\s*:\s*\d+\s*\](?:,\s*)?', '', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
