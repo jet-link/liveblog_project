@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block content %}
+  <div
+    id="topicHubPageRoot"
+    class="container content_block"
+    data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+    data-search-history-url="{% url 'smart_blog:api_search_history_list' %}"
+    data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}"
+    data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}"
+    data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}"
+  >
+    {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
+
+    <div class="mb-4">
+      <h4 class="text-muted m-0">{{ category.name }}</h4>
+      {% comment %} <p class="text-muted small mb-0">{{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}</p> {% endcomment %}
+    </div>
+
+    <div id="topicSortBar" class="topic-sort-bar filter-select d-flex flex-wrap gap-1 mb-4" role="tablist" aria-label="Sort posts">
+      {% url 'smart_blog:topic_detail' slug=category.slug as topic_base %}
+      <button
+        type="button"
+        class="filter-reason-btn topic-sort-btn{% if topic_sort == 'latest' %} is-selected{% endif %}"
+        data-sort="latest"
+        data-topic-base="{{ topic_base }}"
+      >Latest</button>
+      <button
+        type="button"
+        class="filter-reason-btn topic-sort-btn{% if topic_sort == 'liked' %} is-selected{% endif %}"
+        data-sort="liked"
+        data-topic-base="{{ topic_base }}"
+      >Most liked</button>
+      <button
+        type="button"
+        class="filter-reason-btn topic-sort-btn{% if topic_sort == 'discussed' %} is-selected{% endif %}"
+        data-sort="discussed"
+        data-topic-base="{{ topic_base }}"
+      >Most discussed</button>
+    </div>
+
+    <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="topic" data-category-slug="{{ category.slug }}">
+      <div id="topicHubFeedRoot">
+        {% include 'smart_blog/includes/topic_hub_feed.html' %}
+      </div>
+    </div>
+
+    <div class="hidden">
+      {% include 'includes/overlay_search.html' %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script defer src="{% static 'smart_blog/js/topic_hub_sort.js' %}"></script>
+{% endblock %}

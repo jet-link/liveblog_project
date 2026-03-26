@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 sessionStorage.setItem('category_return_url', location.pathname + location.search);
             } catch (err) { }
         }
+        var topic = e.target.closest('a[href*="/blog/topics/"]');
+        if (topic && topic.href && !topic.href.match(/\/blog\/topics\/?$/)) {
+            try {
+                sessionStorage.setItem('category_return_url', location.pathname + location.search);
+            } catch (err) { }
+        }
     }, true);
 
     // Back-btn click handler

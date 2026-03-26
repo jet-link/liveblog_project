@@ -25,7 +25,7 @@
           <article class="trending-card trending-card--hot card border-0 overflow-hidden h-100 {% if forloop.first %}trending-card--hero{% endif %}" data-trending-slug="{{ item.slug }}">
             <div class="row g-0 h-100 flex-wrap flex-md-nowrap">
               <div class="trending-card__img-wrap col-12 col-md-{% if forloop.first %}5{% else %}4{% endif %}">
-                <a href="{{ item.get_absolute_url }}" class="d-block h-100 stretched-link trending-card__img-link text-decoration-none">
+                <a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="d-block h-100 stretched-link trending-card__img-link text-decoration-none">
                   {% if item.images.first %}
                     <img src="{{ item.images.first.get_thumbnail_url }}" alt="" class="trending-card__img" loading="lazy" decoding="async" />
                   {% else %}
@@ -44,7 +44,7 @@
                     {% endif %}
                     <span class="badge trending-badge trending-badge--hot">In trend</span>
                   </div>
-                  <h3 class="{% if forloop.first %}h4{% else %}h5{% endif %} mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
+                  <h3 class="{% if forloop.first %}h4{% else %}h5{% endif %} mb-2"><a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
                   <p class="text-muted small mb-3 flex-grow-1">{{ item.short_text|truncatechars:280 }}</p>
                   <div class="trending-metrics d-flex flex-wrap gap-3 small" data-trending-slug="{{ item.slug }}">
                     <span data-metric="views_24h" class="trending-metric" title="Views in 24h"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_24h }}</strong> (24h)</span>
@@ -75,7 +75,7 @@
         <div class="col-md-6 col-lg-4">
           <article class="trending-card trending-card--rising card border-0 overflow-hidden h-100" data-trending-slug="{{ item.slug }}">
             <div class="trending-card__img-wrap trending-card__img-wrap--sm">
-              <a href="{{ item.get_absolute_url }}" class="d-block stretched-link trending-card__img-link text-decoration-none">
+              <a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="d-block stretched-link trending-card__img-link text-decoration-none">
                 {% if item.images.first %}
                   <img src="{{ item.images.first.get_thumbnail_url }}" alt="" class="trending-card__img" loading="lazy" decoding="async" />
                 {% else %}
@@ -86,7 +86,7 @@
               <span class="trending-growth-badge">+<span data-metric="growth_rate"><span class="trending-val">{{ t.growth_rate|floatformat:2 }}</span></span>×</span>
             </div>
             <div class="card-body">
-              <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
+              <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
               <div class="trending-metrics d-flex flex-wrap gap-2 small" data-trending-slug="{{ item.slug }}">
                 <span data-metric="views_last_hour" class="trending-metric" title="Views in the last hour (rolling 1h window)"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_last_hour }}</strong> (1h)</span>
                 <span data-metric="likes_1h" class="trending-metric" title="Likes in the last hour (rolling 1h window)"><i class="fa fa-heart me-2"></i><strong class="trending-val">{{ m.likes_1h }}</strong> (1h)</span>
@@ -111,7 +111,7 @@
           <article class="trending-card trending-card--feed card border-0 overflow-hidden h-100" data-trending-slug="{{ item.slug }}">
             <div class="row g-0 h-100">
               <div class="trending-card__img-wrap col-12 col-md-4">
-                <a href="{{ item.get_absolute_url }}" class="d-block h-100 stretched-link trending-card__img-link text-decoration-none">
+                <a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="d-block h-100 stretched-link trending-card__img-link text-decoration-none">
                   {% if item.images.first %}
                     <img src="{{ item.images.first.get_thumbnail_url }}" alt="" class="trending-card__img" loading="lazy" decoding="async" />
                   {% else %}
@@ -127,7 +127,7 @@
                     {% endif %}
                     <span class="badge trending-badge trending-badge--feed">In trend</span>
                   </div>
-                  <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
+                  <h3 class="h6 mb-2"><a href="{{ item.get_absolute_url }}?from=trending&amp;source_url={{ request.get_full_path|urlencode }}" class="text-decoration-none stretched-link trending-card__title">{{ item.title }}</a></h3>
                   <p class="text-muted small flex-grow-1 mb-2">{{ item.short_text|truncatechars:200 }}</p>
                   <div class="trending-metrics d-flex flex-wrap gap-2 small" data-trending-slug="{{ item.slug }}">
                     <span data-metric="views_24h" class="trending-metric" title="Views in 24h"><i class="fa fa-eye me-2"></i><strong class="trending-val">{{ m.views_24h }}</strong> (24h)</span>

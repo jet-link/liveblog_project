@@ -10,7 +10,7 @@ import json
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponse, Http404
+from django.http import HttpResponseForbidden, HttpResponse, Http404, HttpResponsePermanentRedirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import timedelta
 from django.db.models import Exists, OuterRef, Count, Q, Subquery
@@ -19,7 +19,7 @@ from .utils import count_convert, build_breadcrumbs, breadcrumb
 from .selectors import has_user_reported_item, has_user_reported_comment
 from .services.report_limits import can_user_report
 from .services.reports import ReportService
-from .search_utils import build_search_filter, apply_popular_filter, refresh_item_search_vector
+from .search_utils import build_search_filter, refresh_item_search_vector
 from .image_utils import process_image_legacy_safe, MAX_FILE_SIZE_BYTES, ALLOWED_MIME_TYPES as IMAGE_ALLOWED_MIME
 import logging
 import os
@@ -108,31 +108,6 @@ def items_list(request):
         "page_obj": page_obj,
         "page_range": page_range,
         "items": page_obj.object_list,
-        "breadcrumbs": breadcrumbs,
-    })
-
-
-def items_popular_list(request):
-    """Public page: top 20 popular posts from the last 15 days (no pagination)."""
-    since = timezone.now() - timedelta(days=15)
-    qs = (
-        Item.objects
-        .filter(is_published=True, published_date__gte=since)
-        .with_counters()
-        .select_related("category", "author", "author__profile")
-        .prefetch_related("images", "tags")
-    )
-    qs = apply_popular_filter(qs)
-    qs = annotate_user_liked(qs, request.user)
-    qs = annotate_user_bookmarked(qs, request.user)
-    items = list(qs[:20])
-
-    breadcrumbs = build_breadcrumbs(
-        breadcrumb("Popular", None),
-    )
-
-    return render(request, "smart_blog/popular_items_list.html", {
-        "items": items,
         "breadcrumbs": breadcrumbs,
     })
 
@@ -265,40 +240,10 @@ def tag_list(request, slug):
 
 
 def category_list(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-
-    qs = (
-        Item.objects
-        .filter(is_published=True, category=category)
-        .with_counters()
-        .select_related("category", "author", "author__profile")
-        .order_by('-published_date')
-        .prefetch_related("images", "tags")
+    """301: legacy /brainews/category/<slug>/ → /topics/<slug>/"""
+    return HttpResponsePermanentRedirect(
+        reverse("smart_blog:topic_detail", kwargs={"slug": slug})
     )
-    qs = annotate_user_liked(qs, request.user)
-    qs = annotate_user_bookmarked(qs, request.user)
-    qs = qs.order_by('-published_date', '-pk')
-
-    paginator = Paginator(qs, 40)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    page_range = paginator.get_elided_page_range(
-        number=page_obj.number,
-        on_each_side=1,
-        on_ends=1
-    )
-
-    breadcrumbs = build_breadcrumbs(
-        breadcrumb(category.name, None),
-    )
-
-    return render(request, "smart_blog/category_items_list.html", {
-        "category": category,
-        "page_obj": page_obj,
-        "page_range": page_range,
-        "items": page_obj.object_list,
-        "breadcrumbs": breadcrumbs,
-    })
 
 
 def search_view(request):
@@ -706,6 +651,7 @@ def item_detail(request, slug):
     source_query = request.GET.get("query")
     source_tag = request.GET.get("tag")
     source_tag_slug = request.GET.get("tag_slug")
+    source_category_slug = (request.GET.get("category_slug") or "").strip()
     section_titles = {
         "created": "Created",
         "liked": "Liked",
@@ -731,9 +677,24 @@ def item_detail(request, slug):
             breadcrumb("BraiNews", safe_source_url or reverse("smart_blog:items_list")),
             breadcrumb(item.title, None),
         )
-    elif source == "popular":
+    elif source == "trending":
         breadcrumbs = build_breadcrumbs(
-            breadcrumb("Popular", safe_source_url or reverse("smart_blog:items_popular")),
+            breadcrumb("In trend", safe_source_url or reverse("smart_blog:trending_list")),
+            breadcrumb(item.title, None),
+        )
+    elif source in ("for_you", "popular"):
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb("For you", safe_source_url or reverse("smart_blog:for_you_list")),
+            breadcrumb(item.title, None),
+        )
+    elif source in ("category", "topic") and source_category_slug:
+        topic_src = safe_source_url or reverse(
+            "smart_blog:topic_detail", kwargs={"slug": source_category_slug}
+        )
+        cat_row = Category.objects.filter(slug=source_category_slug).values("name").first()
+        crumb_label = cat_row["name"] if cat_row else source_category_slug
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb(crumb_label, topic_src),
             breadcrumb(item.title, None),
         )
     elif source == "search" and source_query:

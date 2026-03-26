@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}For you{% endblock %}
+{% block content %}
+  <div class="container content_block for-you-page" data-brainews-listing data-user-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-search-history-url="{% url 'smart_blog:api_search_history_list' %}" data-search-history-clicked-pattern="{% url 'smart_blog:api_search_history_clicked' pk=999999 %}" data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}" data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div>
+        <h4 class="text-muted mb-2">For you</h4>
+        <p class="text-muted small mb-5">Recommended for you{% if user.is_authenticated %} — based on your activity...{% endif %}</p>
+      </div>
+    </div>
+
+    {% if low_personal_signal %}
+      <div class="alert alert-secondary small for-you-empty-hint mb-4" role="status">
+        We’re still learning your interests. Here are some recommended and trending stories to get started.
+      </div>
+    {% endif %}
+
+    {% if items %}
+      <div id="filterCardsWrapper" class="brainews-cards-wrapper">
+        {% include 'includes/all_cards.html' with listing_source='for_you' listing_source_url=request.get_full_path %}
+      </div>
+      <div id="itemsListPagination" class="brainews-pagination filter-pagination-extra">
+        {% include 'includes/pagination.html' %}
+      </div>
+    {% else %}
+      <p class="text-muted pt-4 mb-0">Nothing to recommend yet. Try <a href="{% url 'smart_blog:items_list' %}">BraiNews</a> or <a href="{% url 'smart_blog:topics_list' %}">Topics</a>.</p>
+    {% endif %}
+
+    <div class="hidden">
+      {% include 'includes/overlay_search.html' %}
+    </div>
+  </div>
+{% endblock %}

@@ -104,7 +104,20 @@ def _referer_breadcrumb_info(request, referer_url):
             if tag:
                 return tag["tag_name"], referer_url
         elif url_name == "items_popular":
-            return "Popular", referer_url
+            return "For you", referer_url
+        elif url_name == "for_you_list":
+            return "For you", referer_url
+        elif url_name == "topics_list":
+            return "Topics", referer_url
+        elif url_name == "topic_detail" and kwargs.get("slug"):
+            from smart_blog.models import Category
+
+            cat = Category.objects.filter(slug=kwargs["slug"]).values("name").first()
+            if cat:
+                return cat["name"], referer_url
+            return "Topics", referer_url
+        elif url_name == "trending_list":
+            return "In trend", referer_url
         elif url_name == "items_list":
             return "BraiNews", referer_url
         elif url_name == "global_search":

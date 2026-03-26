@@ -15,7 +15,7 @@
       {% if nav_categories %}
         <nav class="categories-modal-all-grid" aria-label="All categories">
           {% for cat in nav_categories %}
-            <a href="{% url 'smart_blog:category_list' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link">{{ cat.name }}</a>
+            <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link">{{ cat.name }}</a>
           {% endfor %}
         </nav>
       {% else %}

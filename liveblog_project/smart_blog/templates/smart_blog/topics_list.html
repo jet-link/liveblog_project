@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Topics{% endblock %}
+{% block content %}
+  <div class="container content_block topics-page">
+    <div class="mb-4">
+      <h4 class="text-muted m-0">Topics</h4>
+    </div>
+
+    <div class="topics-local-search-wrap mb-4">
+      <label class="visually-hidden" for="topicsLocalFilter">Filter topics</label>
+      <div class="topics-local-search-inner position-relative">
+        <input
+          type="search"
+          id="topicsLocalFilter"
+          class="form-control topics-local-search-input"
+          placeholder="Filter topics by name…"
+          autocomplete="off"
+          data-topics-filter-input
+          enterkeyhint="search"
+        />
+        <span class="topics-local-search-sign" aria-hidden="true"><i class="fa fa-search"></i></span>
+      </div>
+    </div>
+
+    <div id="topicsFilterEmpty" class="custom-alert custom-alert-info d-none" role="status">
+      No topics match this filter.
+    </div>
+
+    {% if topics_featured %}
+      <section id="topicsFeaturedSection" class="mb-5" aria-labelledby="topicsFeaturedHeading">
+        <h5 id="topicsFeaturedHeading" class="text-muted mb-3">Featured topics</h5>
+        <div class="row g-3 topics-featured-row">
+          {% for t in topics_featured %}
+            <div class="col-md-6 col-lg-4">
+              {% include 'smart_blog/includes/topic_tile.html' with topic=t %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <section id="topicsAllSection" aria-labelledby="topicsAllHeading">
+      <h5 id="topicsAllHeading" class="text-muted mb-3">All topics</h5>
+      {% if topics_all %}
+        <div class="row g-3" id="topicsAllGrid">
+          {% for t in topics_all %}
+            <div class="col-md-6 col-lg-4 topics-grid-col">
+              {% include 'smart_blog/includes/topic_tile.html' with topic=t %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No topics with posts yet.</p>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script defer src="{% static 'smart_blog/js/topics_filter.js' %}"></script>
+{% endblock %}

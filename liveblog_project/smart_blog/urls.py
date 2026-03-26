@@ -1,6 +1,10 @@
 from django.urls import path
+from django.views.generic import RedirectView
+
 from . import views
+from . import views_for_you
 from . import views_reports
+from . import views_topics
 from . import views_trending
 
 app_name = "smart_blog"
@@ -8,7 +12,14 @@ app_name = "smart_blog"
 urlpatterns = [
     path('brainews/', views.items_list, name='items_list'),
     path('brainews/trending/', views_trending.trending_list, name='trending_list'),
-    path('brainews/popular/', views.items_popular_list, name='items_popular'),
+    path(
+        'brainews/popular/',
+        RedirectView.as_view(pattern_name='smart_blog:for_you_list', permanent=True),
+        name='items_popular',
+    ),
+    path('for-you/', views_for_you.for_you_list, name='for_you_list'),
+    path('topics/', views_topics.topics_list, name='topics_list'),
+    path('topics/<slug:slug>/', views_topics.topic_detail, name='topic_detail'),
     path('brainews/filter/', views.items_filtered, name='items_filtered'),
     path('tag/<slug:slug>/', views.tag_list, name='tag_list'),
     path('brainews/category/<slug:slug>/', views.category_list, name='category_list'),

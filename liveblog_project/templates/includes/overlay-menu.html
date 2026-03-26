@@ -12,14 +12,12 @@
   </div>
 
   <nav class="bottom-menu-nav">
-    <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted">BraiNews</a>
-    <a href="{% url 'smart_blog:items_popular' %}" class="header-menu-item text-decoration-none text-muted">Popular</a>
-    <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted">In trend</a>
-    <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">
-      Categories
-      <i class="fa fa-angle-down ms-1" aria-hidden="true"></i>
-      <i class="fa fa-angle-up ms-1 hidden" aria-hidden="true"></i>
-    </a>
+    {% with nav_name=request.resolver_match.url_name|default:'' %}
+    <a href="{% url 'smart_blog:items_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'items_list' %} active{% endif %}">BraiNews</a>
+    <a href="{% url 'smart_blog:for_you_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'for_you_list' %} active{% endif %}">For you</a>
+    <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'trending_list' %} active{% endif %}">In trend</a>
+    <a href="{% url 'smart_blog:topics_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'topics_list' or nav_name == 'topic_detail' %} active{% endif %}">Topics</a>
+    {% endwith %}
   </nav>
 
  <nav class="social-block">
