@@ -54,10 +54,18 @@ def spellcheck_context(request):
 
 def nav_categories_context(request):
     """
-    Header modal: all categories + up to 6 cards — one popular post per top category
-    (categories ranked by published post count; post ranked like /brainews/popular/).
+    Header modal: categories ordered by popularity; first 12 chips + show more in same grid;
+    up to 6 cards — one popular post per top category (same as before).
     """
-    nav_categories = Category.objects.all()
+    ranked = (
+        Category.objects.annotate(
+            posts_count=Count("items", filter=Q(items__is_published=True)),
+        )
+        .order_by("-posts_count", "name")
+    )
+    nav_categories_all = list(ranked)
+    nav_categories_first = nav_categories_all[:12]
+    nav_categories_rest = nav_categories_all[12:]
 
     top_categories = (
         Category.objects.annotate(
@@ -101,6 +109,8 @@ def nav_categories_context(request):
             )
 
     return {
-        "nav_categories": nav_categories,
+        "nav_categories": nav_categories_all,
+        "nav_categories_first": nav_categories_first,
+        "nav_categories_rest": nav_categories_rest,
         "categories_modal_popular_cards": categories_modal_popular_cards,
     }

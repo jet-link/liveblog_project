@@ -15,6 +15,47 @@
 
     const prevOverflow = { html: '', body: '' };
 
+    const chipsBtn = document.getElementById('categoriesModalChipsMoreBtn');
+
+    function getExtraChips() {
+        return root.querySelectorAll('a.categories-modal-chip--extra');
+    }
+
+    function setExpandIcon(btn, up) {
+        if (!btn) return;
+        const i = btn.querySelector('i');
+        if (!i) return;
+        i.className = up ? 'fa fa-angle-up' : 'fa fa-angle-down';
+    }
+
+    function closeChipsExpand() {
+        const extraChips = getExtraChips();
+        if (!chipsBtn || !extraChips.length) return;
+        extraChips.forEach(function (a) {
+            a.hidden = true;
+        });
+        chipsBtn.setAttribute('aria-expanded', 'false');
+        setExpandIcon(chipsBtn, false);
+    }
+
+    function toggleChipsExpand() {
+        const extraChips = getExtraChips();
+        if (!chipsBtn || !extraChips.length) return;
+        const willOpen = extraChips[0].hidden;
+        extraChips.forEach(function (a) {
+            a.hidden = !willOpen;
+        });
+        chipsBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        setExpandIcon(chipsBtn, willOpen);
+    }
+
+    if (chipsBtn) {
+        chipsBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleChipsExpand();
+        });
+    }
+
     function setTriggersExpanded(open) {
         document.querySelectorAll(TRIG_SEL).forEach(function (el) {
             el.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -41,6 +82,8 @@
         root.classList.remove('hidden');
         root.setAttribute('aria-hidden', 'false');
         setTriggersExpanded(true);
+
+        closeChipsExpand();
 
         closeBtn.focus();
     }

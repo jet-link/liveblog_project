@@ -104,9 +104,34 @@ def recent_deleted_restore(request):
             deleted_at=None, is_draft=False
         )
     elif kind == TAB_TAGS:
-        n = Tag.all_objects.filter(pk__in=id_ints, deleted_at__isnull=False).update(deleted_at=None)
+        tags_qs = Tag.all_objects.filter(pk__in=id_ints, deleted_at__isnull=False)
+        for tag in tags_qs:
+            through_ids = set(
+                Item.tags.through.objects.filter(tag_id=tag.pk).values_list("item_id", flat=True)
+            )
+            snapshot_ids = set(tag.pending_restore_item_ids or [])
+            item_ids = through_ids | snapshot_ids
+            tag.deleted_at = None
+            tag.pending_restore_item_ids = None
+            tag.save(update_fields=["deleted_at", "pending_restore_item_ids"])
+            n += 1
+            for item_id in item_ids:
+                item = Item.all_objects.filter(pk=item_id, deleted_at__isnull=True).first()
+                if item:
+                    item.tags.add(tag)
     elif kind == TAB_CATEGORIES:
-        n = Category.all_objects.filter(pk__in=id_ints, deleted_at__isnull=False).update(deleted_at=None)
+        cats_qs = Category.all_objects.filter(pk__in=id_ints, deleted_at__isnull=False)
+        for cat in cats_qs:
+            snapshot_ids = set(cat.pending_restore_item_ids or [])
+            cat.deleted_at = None
+            cat.pending_restore_item_ids = None
+            cat.save(update_fields=["deleted_at", "pending_restore_item_ids"])
+            n += 1
+            for item_id in snapshot_ids:
+                item = Item.all_objects.filter(pk=item_id, deleted_at__isnull=True).first()
+                if item:
+                    item.category = cat
+                    item.save(update_fields=["category"])
     elif kind == TAB_REPORTS:
         n = ContentReport.objects.filter(pk__in=id_ints, deleted_at__isnull=False).update(deleted_at=None)
     elif kind == TAB_VIOLATIONS:

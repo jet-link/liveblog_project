@@ -76,6 +76,10 @@
                 <i class="admin-nav-icon fa-solid fa-chart-simple"></i>
                 <span class="admin-nav-text">Statistics</span>
             </a>
+            <a href="{% url 'admin_panel:sitemap_stats' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'sitemap_stats' %}active{% endif %}">
+                <i class="admin-nav-icon fa-solid fa-sitemap"></i>
+                <span class="admin-nav-text">Sitemap</span>
+            </a>
         </div>
 
         <div class="admin-nav-group">

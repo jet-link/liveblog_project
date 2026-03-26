@@ -226,8 +226,7 @@ def tags_bulk_delete(request):
             pk_int = int(pk)
             tag = Tag.objects.filter(pk=pk_int).first()
             if tag:
-                tag.deleted_at = timezone.now()
-                tag.save(update_fields=["deleted_at"])
+                tag.soft_delete()
                 deleted += 1
         except (ValueError, TypeError):
             pass
@@ -249,8 +248,7 @@ def categories_bulk_delete(request):
             pk_int = int(pk)
             cat = Category.objects.filter(pk=pk_int).first()
             if cat:
-                cat.deleted_at = timezone.now()
-                cat.save(update_fields=["deleted_at"])
+                cat.soft_delete()
                 deleted += 1
         except (ValueError, TypeError):
             pass

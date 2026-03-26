@@ -82,6 +82,7 @@ urlpatterns = [
 
     # Analytics
     path('analytics/', views.analytics_view, name='analytics'),
+    path('analytics/sitemap/', views.sitemap_stats_view, name='sitemap_stats'),
 
     path('system/recent-deleted/', views.recent_deleted_content, name='recent_deleted_content'),
     path('system/recent-deleted/restore/', views.recent_deleted_restore, name='recent_deleted_restore'),

@@ -18,8 +18,8 @@ class FAQItem(models.Model):
 class AboutPageContent(models.Model):
     """Singleton row (pk=1): public About page copy."""
 
-    browser_title = models.CharField(max_length=120, default='About — BrainStorm')
-    title_h1 = models.CharField(max_length=200, default='BrainStorm')
+    browser_title = models.CharField(max_length=120, default='About — brainstorm.org')
+    title_h1 = models.CharField(max_length=200, default='brainstorm.org')
     lede = models.TextField(default='')
     mission_heading = models.CharField(max_length=200, default='Why we’re here')
     mission_item_1 = models.TextField(default='')
@@ -58,14 +58,14 @@ class AboutPageContent(models.Model):
 class ContactsPageContent(models.Model):
     """Singleton row (pk=1): public Contacts page copy."""
 
-    browser_title = models.CharField(max_length=120, default='Contacts — BrainStorm')
+    browser_title = models.CharField(max_length=120, default='Contacts — brainstorm.org')
     title_h1 = models.CharField(max_length=200, default='Contacts')
     lede_before = models.CharField(max_length=255, default='We usually reply within ')
     lede_emphasis = models.CharField(max_length=120, default='1–2 business days')
     lede_after = models.TextField(default='')
     channels_heading = models.CharField(max_length=200, default='How to reach us')
     email_key = models.CharField(max_length=120, default='Email')
-    email_address = models.CharField(max_length=255, default='discover@brainstorm.com')
+    email_address = models.CharField(max_length=255, default='discover@brainstorm.org')
     email_note = models.CharField(max_length=255, default='General questions and suggestions')
     community_key = models.CharField(max_length=120, default='Community')
     community_text = models.TextField(default='')

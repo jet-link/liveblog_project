@@ -28,6 +28,7 @@ from .moderation_views import (
 )
 from .backup_views import backups_list, backup_status, backup_create, backup_download, backup_restore, backup_delete
 from .analytics_views import analytics_view
+from .sitemap_views import sitemap_stats_view
 from .logs_views import logs_view
 from .notification_views import (
     notifications_list,
@@ -66,6 +67,7 @@ __all__ = [
     'content_violation_clear', 'content_violation_confirm_delete', 'content_violation_delete_content', 'content_violations_bulk_clear', 'content_violations_bulk_delete_content',
     'backups_list', 'backup_status', 'backup_create', 'backup_download', 'backup_restore', 'backup_delete',
     'analytics_view',
+    'sitemap_stats_view',
     'logs_view',
     'notifications_list', 'notifications_bulk_clear', 'notifications_bulk_delete',
     'recent_deleted_content', 'recent_deleted_restore', 'recent_deleted_purge',

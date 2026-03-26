@@ -56,10 +56,7 @@ def category_delete(request, pk):
     """Delete category."""
     cat = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
-        from django.utils import timezone
-
-        cat.deleted_at = timezone.now()
-        cat.save(update_fields=['deleted_at'])
+        cat.soft_delete()
         messages.success(request, 'Category moved to Recent deleted.')
         return redirect_preserve_query(request, 'categories_list')
     return render(request, 'admin/categories/category_confirm_delete.html', {'category': cat})

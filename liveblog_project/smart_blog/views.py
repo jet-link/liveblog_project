@@ -716,7 +716,7 @@ def item_detail(request, slug):
         )
     elif source == "home":
         breadcrumbs = build_breadcrumbs(
-            breadcrumb("BrainStorm", safe_source_url or "/"),
+            breadcrumb("brainstorm.org", safe_source_url or "/"),
             breadcrumb(item.title, None),
         )
     else:

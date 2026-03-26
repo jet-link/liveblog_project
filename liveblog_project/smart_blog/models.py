@@ -57,6 +57,8 @@ class Category(models.Model):
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    # Item IDs that had this category before soft-delete (FK cleared to show "No category").
+    pending_restore_item_ids = models.JSONField(null=True, blank=True)
 
     objects = CategoryManager()
     all_objects = models.Manager()
@@ -80,11 +82,28 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse("smart_blog:topic_detail", kwargs={"slug": self.slug})
 
+    def soft_delete(self):
+        """Soft-delete, snapshot posts that used this category, clear Item.category (public: No category)."""
+        from django.apps import apps
+        from django.utils import timezone
+
+        Item = apps.get_model("smart_blog", "Item")
+        ids = list(
+            Item.all_objects.filter(category_id=self.pk).values_list("pk", flat=True)
+        )
+        self.deleted_at = timezone.now()
+        self.pending_restore_item_ids = ids
+        self.save(update_fields=["deleted_at", "pending_restore_item_ids"])
+        if ids:
+            Item.all_objects.filter(pk__in=ids).update(category=None)
+
 
 class Tag(models.Model):
     tag_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=60, unique=True)
     deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    # Item IDs that had this tag at soft-delete time (M2M rows may be cleared later by forms).
+    pending_restore_item_ids = models.JSONField(null=True, blank=True)
 
     objects = TagManager()
     all_objects = models.Manager()
@@ -113,6 +132,19 @@ class Tag(models.Model):
                 slug_candidate = f"{base}-{counter}"
             self.slug = slug_candidate
         super().save(*args, **kwargs)
+
+    def soft_delete(self):
+        """Soft-delete and remember post IDs so restore can re-link M2M."""
+        from django.apps import apps
+        from django.utils import timezone
+
+        Item = apps.get_model("smart_blog", "Item")
+        ids = list(
+            Item.tags.through.objects.filter(tag_id=self.pk).values_list("item_id", flat=True)
+        )
+        self.deleted_at = timezone.now()
+        self.pending_restore_item_ids = ids
+        self.save(update_fields=["deleted_at", "pending_restore_item_ids"])
 
 # Item model
 class Item(models.Model):

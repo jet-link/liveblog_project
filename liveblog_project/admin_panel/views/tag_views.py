@@ -62,10 +62,7 @@ def tag_delete(request, pk):
     """Delete tag."""
     tag = get_object_or_404(Tag, pk=pk)
     if request.method == 'POST':
-        from django.utils import timezone
-
-        tag.deleted_at = timezone.now()
-        tag.save(update_fields=['deleted_at'])
+        tag.soft_delete()
         messages.success(request, 'Tag moved to Recent deleted.')
         return redirect_preserve_query(request, 'tags_list')
     return render(request, 'admin/tags/tag_confirm_delete.html', {'tag': tag})

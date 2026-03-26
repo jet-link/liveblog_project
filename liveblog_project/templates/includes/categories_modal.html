@@ -12,18 +12,27 @@
       <button type="button" class="categories-modal-close" id="categoriesModalClose" aria-label="Close">×</button>
     </div>
     <div class="categories-modal-body">
-      {% if nav_categories %}
-        <nav class="categories-modal-all-grid" aria-label="All categories">
-          {% for cat in nav_categories %}
+      {% if nav_categories_first %}
+        <nav id="categoriesModalChipsNav" class="categories-modal-all-grid" aria-label="All categories">
+          {% for cat in nav_categories_first %}
             <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link">{{ cat.name }}</a>
           {% endfor %}
+          {% for cat in nav_categories_rest %}
+            <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link categories-modal-chip--extra" hidden>{{ cat.name }}</a>
+          {% endfor %}
         </nav>
+        {% if nav_categories_rest %}
+          <button type="button" class="categories-modal-expand-btn" id="categoriesModalChipsMoreBtn" aria-expanded="false" aria-controls="categoriesModalChipsNav">
+            <i class="fa fa-angle-down" aria-hidden="true"></i>
+          </button>
+        {% endif %}
       {% else %}
         <p class="categories-modal-empty text-muted mb-0">No categories yet.</p>
       {% endif %}
 
       {% if categories_modal_popular_cards %}
         <section class="categories-modal-popular" aria-labelledby="categoriesModalPopularHeading">
+          <h2 id="categoriesModalPopularHeading" class="visually-hidden">Popular posts by category</h2>
           <div class="categories-modal-popular-grid">
             {% for row in categories_modal_popular_cards %}
               <article class="trending-card trending-card--hot card border-0 overflow-hidden h-100 categories-modal-trending-card">

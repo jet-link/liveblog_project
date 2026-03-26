@@ -130,7 +130,7 @@ def _referer_breadcrumb_info(request, referer_url):
             section_title = sections.get(kwargs.get("section", ""), kwargs.get("section", "Section"))
             return f"{kwargs['username']} - {section_title}", referer_url
         elif url_name == "home":
-            return "BrainStorm", referer_url
+            return "brainstorm.org", referer_url
         elif url_name == "comment_thread" and kwargs.get("pk"):
             comment = (
                 Comment.objects.filter(is_draft=False)

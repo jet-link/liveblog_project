@@ -11,10 +11,10 @@ def breadcrumb(title, url=None):
 
 def build_breadcrumbs(*crumbs):
     breadcrumbs = []
-    if crumbs and crumbs[0].get("title") == "BrainStorm":
+    if crumbs and crumbs[0].get("title") == "brainstorm.org":
         breadcrumbs.extend(crumbs)
     else:
-        breadcrumbs = [breadcrumb("BrainStorm", "/")]
+        breadcrumbs = [breadcrumb("brainstorm.org", "/")]
         breadcrumbs.extend(crumbs)
     return breadcrumbs
 

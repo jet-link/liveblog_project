@@ -68,7 +68,7 @@ h6 {
 }
 
 .faq-section {
-    padding-top: 200px;
+    padding-top: max(200px, var(--main-pad-top, 128px));
     margin-bottom: 120px;
 }
 

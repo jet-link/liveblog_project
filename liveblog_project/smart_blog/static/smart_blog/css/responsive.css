@@ -1,0 +1,316 @@
+/* smart_blog — listings, post detail, gallery, comments, modals, filters */
+
+/* Main content vertical rhythm (below fixed header + air before footer) */
+@media (max-width: 991px) {
+    .content_block {
+        padding-top: var(--main-pad-top, 128px);
+        margin-bottom: 104px;
+    }
+}
+
+@media (max-width: 575px) {
+    .content_block {
+        padding-top: var(--main-pad-top, 128px);
+        margin-bottom: 88px;
+    }
+}
+
+/* ---------- Post image gallery ---------- */
+@media (max-width: 991px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+    }
+
+    .gallery-cell {
+        height: auto;
+    }
+
+    .gallery-img {
+        height: auto;
+        object-fit: cover;
+        transform: none;
+    }
+}
+
+@media (max-width: 575px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1199px) {
+    .gallery-slideshow {
+        height: 420px;
+    }
+}
+
+@media (max-width: 575px) {
+    .gallery-slideshow {
+        height: 320px;
+    }
+}
+
+@media (min-width: 1500px) {
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 20px);
+    }
+}
+
+@media (max-width: 1199px) {
+    .gallery-overlay-img {
+        max-width: calc(100% - 80px);
+        max-height: calc(100% - 80px);
+    }
+}
+
+@media (max-width: 991px) {
+    .gallery-overlay-inner {
+        padding: 28px;
+        height: 150%;
+    }
+
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 30px);
+    }
+}
+
+@media (max-width: 767px) {
+    .gallery-overlay-inner {
+        padding: 16px;
+    }
+
+    .gallery-overlay-img {
+        max-width: calc(100% - 30px);
+        max-height: calc(100% - 30px);
+    }
+}
+
+@media (max-width: 991px) {
+    .gallery-grid,
+    .gallery-grid.flex {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: var(--gap);
+        align-items: stretch;
+    }
+
+    .gallery-cell {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-shadow: var(--card-shadow);
+        border-radius: var(--card-radius);
+        overflow: hidden;
+    }
+
+    .gallery-img,
+    .gallery-slide-img {
+        width: 100% !important;
+        height: auto !important;
+        object-fit: cover;
+        object-position: 50% 40%;
+        border-radius: 0;
+        transform: none !important;
+    }
+
+    .gallery-slideshow {
+        display: none !important;
+    }
+
+    .item-gallery {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+/* Floating search (overlay) */
+@media (max-width: 575px) {
+    .floating-search-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 14px;
+        font-size: 18px;
+    }
+
+    .floating-search-btn .floating-search-label {
+        display: none;
+    }
+
+    .overlay-panel {
+        top: 6%;
+        width: calc(100% - 24px);
+        padding: 14px;
+    }
+
+    .floating-search-btn {
+        bottom: 18px;
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+/* Mobile slide menu */
+@media (max-width: 575px) {
+    .bottom-side-menu {
+        width: 100vw;
+    }
+
+    .bottom-menu-overlay {
+        display: none;
+    }
+}
+
+/* Card columns: Bootstrap col-md-6 on listings — tighten card padding on phones */
+@media (max-width: 575px) {
+    .item_block .card-body {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+}
+
+/* ---------- Item detail typography ---------- */
+@media (max-width: 991px) {
+    .item-detail-title {
+        font-size: var(--fs-page-title);
+    }
+}
+
+@media (max-width: 575px) {
+    .item-detail-title {
+        font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+
+    .item-detail-head {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .comment_likes_badge {
+        font-size: 0.58rem;
+        padding: 1px 6px;
+        right: 4px;
+        top: -6px;
+    }
+}
+
+/* ---------- Comments: nesting depth + overflow ---------- */
+@media (max-width: 767px) {
+    .replies .replies {
+        margin-left: 12px;
+    }
+
+    .replies::before {
+        left: -12px;
+    }
+
+    .replies > .comment-block::before {
+        left: -12px;
+        width: 10px;
+    }
+
+    .comment-text {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .comment-block {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 575px) {
+    .comment-menu-btn,
+    .comment-menu-action,
+    .comment-form-btn {
+        min-height: 40px;
+        min-width: 40px;
+    }
+}
+
+/* ---------- Modals (public) ---------- */
+@media (max-width: 575px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        max-height: min(90vh, 100%);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-body {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .categories-modal-dialog {
+        max-width: calc(100vw - 32px);
+        margin: 1rem auto;
+    }
+
+    .categories-modal-body {
+        max-height: min(70vh, 560px);
+        overflow-y: auto;
+    }
+}
+
+/* ---------- Topics grid ---------- */
+@media (max-width: 991px) {
+    .topics-page .topics-grid,
+    .topics-page [class*="topic"] {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 575px) {
+    .topic-tile,
+    .topic-hub-card {
+        min-width: 0;
+    }
+}
+
+/* ---------- Filters / toolbar ---------- */
+@media (max-width: 767px) {
+    .filter-block,
+    .brainews-filter-bar {
+        flex-wrap: wrap;
+        gap: var(--space-2, 8px);
+    }
+}
+
+/* Long code blocks in posts */
+@media (max-width: 767px) {
+    .main .item-text.ck-content pre,
+    .main .ck-content pre {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+}
+
+/* ---------- Touch targets ---------- */
+@media (max-width: 991px) {
+    .search-btn,
+    .theme-toggle-btn {
+        min-width: var(--touch-target-min, 44px);
+        min-height: var(--touch-target-min, 44px);
+    }
+
+    .bottom-burger {
+        min-width: 40px;
+        min-height: 40px;
+    }
+}

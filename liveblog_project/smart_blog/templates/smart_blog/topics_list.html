@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Topics{% endblock %}
 {% block content %}
-  <div class="container content_block topics-page">
+  <div class="container-main content_block topics-page">
     <div class="mb-4">
       <h4 class="text-muted m-0">Topics</h4>
     </div>
@@ -32,7 +32,7 @@
         <h5 id="topicsFeaturedHeading" class="text-muted mb-3">Featured topics</h5>
         <div class="row g-3 topics-featured-row">
           {% for t in topics_featured %}
-            <div class="col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-4">
               {% include 'smart_blog/includes/topic_tile.html' with topic=t %}
             </div>
           {% endfor %}
@@ -45,7 +45,7 @@
       {% if topics_all %}
         <div class="row g-3" id="topicsAllGrid">
           {% for t in topics_all %}
-            <div class="col-md-6 col-lg-4 topics-grid-col">
+            <div class="col-12 col-md-6 col-lg-4 topics-grid-col">
               {% include 'smart_blog/includes/topic_tile.html' with topic=t %}
             </div>
           {% endfor %}

@@ -1,8 +1,8 @@
-<div class="container">
+<div class="container-main">
   <div class="footer-blocks d-flex flex-column flex-md-row flex-md-nowrap align-items-stretch align-items-md-end justify-content-between gap-5 pt-5 pb-3">
     <div class="footer-links d-flex flex-column flex-sm-row gap-4 gap-sm-4">
       <div class="footer-block">
-        <a href="#" class="footer-link-item text-decoration-none text-muted">Sitemap</a>
+        <a href="{% url 'sitemap_index' %}" class="footer-link-item text-decoration-none text-muted">Sitemap</a>
       </div>
       <div class="footer-block">
         <a href="{% url 'pages:faq' %}" class="footer-link-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'faq' %} active{% endif %}">FAQ</a>
@@ -22,36 +22,36 @@
         <div class="footer-subscribe-popover" id="footerSubscribePopover" role="dialog" aria-label="Follow us" hidden>
           <ul class="footer-subscribe-social list-unstyled mb-0 d-flex flex-nowrap gap-2 gap-sm-3 justify-content-center align-items-center">
             <li class="flex-shrink-0">
-              <a href="https://twitter.com/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="BrainStorm on X (Twitter)">
+              <a href="https://twitter.com/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="brainstorm.org on X (Twitter)">
                 <i class="fa fa-twitter fa-lg footer-subscribe-social-icon" aria-hidden="true"></i>
               </a>
             </li>
             <li class="flex-shrink-0">
-              <a href="https://www.facebook.com/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="BrainStorm on Facebook">
+              <a href="https://www.facebook.com/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="brainstorm.org on Facebook">
                 <i class="fa fa-facebook fa-lg footer-subscribe-social-icon" aria-hidden="true"></i>
               </a>
             </li>
             <li class="flex-shrink-0">
-              <a href="https://t.me/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="BrainStorm on Telegram">
+              <a href="https://t.me/brainstorm" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="brainstorm.org on Telegram">
                 <i class="fa fa-paper-plane fa-lg footer-subscribe-social-icon" aria-hidden="true"></i>
               </a>
             </li>
             <li class="flex-shrink-0">
-              <a href="#" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="BrainStorm on YouTube">
+              <a href="#" class="footer-subscribe-social-link text-muted text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="brainstorm.org on Instagram">
                 <i class="fa fa-instagram fa-lg footer-subscribe-social-icon" aria-hidden="true"></i>
               </a>
             </li>
           </ul>
         </div>
       </div>
-      <a href="#" class="text-muted text-decoration-none">Language<i class="fa fa-angle-down ms-2"></i></a>
+      <a href="#" class="footer-link-item text-muted text-decoration-none">Language<i class="fa fa-angle-down ms-2" aria-hidden="true"></i></a>
     </div>
   </div>
   <hr />
-  <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between pb-5 pt-3">
-    <p class="text-muted small mb-0">&copy; 2025 BrainStorm, Inc. All rights reserved.</p>
+  <div class="footer-meta-row d-flex flex-column flex-sm-row align-items-center justify-content-sm-between pb-4 pt-4">
+    <p class="text-muted small mb-0">&copy; 2025 brainstorm.org. All rights reserved.</p>
     <div class="d-flex align-items-center">
-      <a href="#" class="text-muted text-decoration-none small mt-2">Policy and rights</a>
+      <a href="#" class="footer-link-item text-muted text-decoration-none small">Policy and rights</a>
     </div>
   </div>
 </div>

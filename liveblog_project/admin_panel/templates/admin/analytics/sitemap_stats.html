@@ -1,0 +1,106 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %}Sitemap{% endblock %}
+{% block breadcrumbs %}<nav class="admin-breadcrumbs" aria-label="Breadcrumb"><ol class="admin-breadcrumbs-list"><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li><li class="admin-breadcrumbs-item"><a href="{% url 'admin_panel:analytics' %}">Statistics</a></li><li class="admin-breadcrumbs-item">Sitemap</li></ol></nav>{% endblock %}
+{% block page_title %}Sitemap{% endblock %}
+{% block content %}
+<section class="admin-analytics-section mb-4">
+    <h2 class="admin-section-title">Public index</h2>
+    <p class="text-muted small mb-3">Search engines use the public sitemap only (not the admin panel). Update the <strong>Site</strong> domain in Django admin after deployment so URLs are correct.</p>
+    <p class="mb-0">
+        <a href="{{ sitemap_public_url }}" class="admin-link" target="_blank" rel="noopener">sitemap.xml</a>
+        <span class="text-muted mx-2">·</span>
+        <a href="{{ robots_url }}" class="admin-link" target="_blank" rel="noopener">robots.txt</a>
+    </p>
+</section>
+
+<section class="admin-analytics-section mb-4">
+    <h2 class="admin-section-title">Totals</h2>
+    <div class="admin-stats-grid">
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ summary.total_urls }}</div>
+            <div class="admin-stat-label">URLs in index (all sections)</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ summary.posts }}</div>
+            <div class="admin-stat-label">Published posts</div>
+        </div>
+        <div class="admin-card admin-stat-card">
+            <div class="admin-stat-value">{{ summary.tags }}</div>
+            <div class="admin-stat-label">Tag pages</div>
+        </div>
+    </div>
+</section>
+
+<section class="admin-analytics-section mb-4">
+    <h2 class="admin-section-title">By segment</h2>
+    <div class="admin-card">
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Section</th><th class="text-end">URLs</th><th>Maps to</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>static</td>
+                        <td class="text-end">{{ summary.static_and_list }}</td>
+                        <td class="text-muted small">Home, FAQ, listings, about, contacts</td>
+                    </tr>
+                    <tr>
+                        <td>posts</td>
+                        <td class="text-end">{{ summary.posts }}</td>
+                        <td class="text-muted small">Published posts only</td>
+                    </tr>
+                    <tr>
+                        <td>topics</td>
+                        <td class="text-end">{{ summary.topics }}</td>
+                        <td class="text-muted small">Topic hub per category</td>
+                    </tr>
+                    <tr>
+                        <td>categories</td>
+                        <td class="text-end">{{ summary.category_lists }}</td>
+                        <td class="text-muted small">Category post list per category</td>
+                    </tr>
+                    <tr>
+                        <td>tags</td>
+                        <td class="text-end">{{ summary.tags }}</td>
+                        <td class="text-muted small">Tag listing pages</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="admin-analytics-section mb-4">
+    <h2 class="admin-section-title">Health</h2>
+    <div class="admin-card">
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Check</th><th class="text-end">Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Published posts (live) vs in sitemap</td>
+                        <td class="text-end">
+                            {% if summary.counts_match %}
+                                <span class="text-success">Match ({{ summary.published_live }})</span>
+                            {% else %}
+                                <span class="text-warning">{{ summary.published_in_sitemap }} vs {{ summary.published_live }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Drafts (excluded from sitemap)</td>
+                        <td class="text-end">{{ summary.drafts }}</td>
+                    </tr>
+                    <tr>
+                        <td>Posts in trash (excluded)</td>
+                        <td class="text-end">{{ summary.trashed_posts }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

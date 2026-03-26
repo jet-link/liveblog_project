@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     # Third-party
     'rest_framework',
     # Local apps
@@ -144,6 +146,9 @@ BACKUP_WEEKLY_COUNT = 4
 BACKUP_MONTHLY_COUNT = 12
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django.contrib.sites — canonical domain for sitemap absolute URLs (update Site in admin after deploy)
+SITE_ID = 1
 
 # Cache (LocMem for dev; set REDIS_URL + django-redis for production)
 CACHES = {
