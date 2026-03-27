@@ -14,7 +14,7 @@
             <button type="button" class="cstm-btn-sm custom-primary-btn">Send question</button>
           {% endif %}
         </div>
-        <hr class="text-muted" />
+        {% comment %} <hr class="text-muted" /> {% endcomment %}
         <div class="faq-accordion-custom">
           {% for item in faq_items %}
             <div class="faq-item" data-faq-id="{{ item.id }}">

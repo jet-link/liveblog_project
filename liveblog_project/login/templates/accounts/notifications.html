@@ -55,7 +55,7 @@
       <div class="notifications-list">
         {% for n in notifications %}
           <div class="notification-row notif-{{ n.notif_type }}{% if n.is_read %} is-read{% endif %}" data-notification-id="{{ n.id }}" data-is-read="{{ n.is_read|yesno:'1,0' }}">
-            <!-- заголовок -->
+            <!-- Header row -->
             <div class="notification-header small">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted small d-flex align-items-center gap-2">
@@ -85,7 +85,7 @@
             <!-- ───────── line ───────── -->
             <div class="notification-divider"></div>
 
-            <!-- тело + действия -->
+            <!-- Body + actions -->
             <div class="notification-content d-flex align-items-center gap-3">
               <!-- body -->
               <div class="notification-body flex-grow-1">

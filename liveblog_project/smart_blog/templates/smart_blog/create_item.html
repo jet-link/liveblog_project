@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block extra_head %}
-  {# если у тебя base.html поддерживает блок extra_head, хорошо сюда положить form.media #}
+  {# form.media belongs in extra_head when base.html supports it #}
   {{ form.media }}
 {% endblock %}
 

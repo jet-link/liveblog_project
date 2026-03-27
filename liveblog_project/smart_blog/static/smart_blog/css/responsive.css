@@ -198,10 +198,16 @@
     }
 
     .comment_likes_badge {
-        font-size: 0.58rem;
-        padding: 1px 6px;
+        font-size: 0.55rem;
+        padding: 1px 5px;
         right: 4px;
-        top: -6px;
+        top: -5px;
+        gap: 2px !important;
+        line-height: 1.15;
+    }
+
+    .comment_likes_badge span {
+        font-weight: 600;
     }
 }
 
@@ -231,11 +237,57 @@
 }
 
 @media (max-width: 575px) {
-    .comment-menu-btn,
-    .comment-menu-action,
+    .comment-block > .d-flex.justify-content-between {
+        flex-wrap: wrap;
+        align-items: flex-start !important;
+        gap: 6px;
+    }
+
+    /*
+     * Comment header actions: keep compact on narrow viewports.
+     * Do not force 40×40 min on text pills — that made Reply/Share/Report huge.
+     */
+    .comment-menu {
+        flex-wrap: wrap;
+        row-gap: 4px;
+        column-gap: 4px;
+        max-width: 100%;
+    }
+
+    .comment-actions {
+        flex-wrap: wrap;
+        gap: 3px;
+        margin-left: 2px;
+    }
+
+    .comment-menu-btn {
+        min-height: 0;
+        min-width: 0;
+        padding: 4px 10px;
+        font-size: 0.65rem;
+    }
+
+    .comment-menu-action {
+        min-height: 0 !important;
+        min-width: 0 !important;
+        padding: 3px 9px !important;
+        font-size: 0.62rem !important;
+        line-height: 1.2;
+        border-radius: 999px;
+    }
+
     .comment-form-btn {
-        min-height: 40px;
-        min-width: 40px;
+        min-height: 0 !important;
+        min-width: 0 !important;
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 767px) {
+    .comment-menu-action {
+        padding: 4px 10px;
+        font-size: 0.64rem;
     }
 }
 

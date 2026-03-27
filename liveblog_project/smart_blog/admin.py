@@ -17,9 +17,6 @@ from .models import (
     ItemStatsHourly,
     TrendingItem,
 )
-from django_ckeditor_5.widgets import CKEditor5Widget
-from django import forms
-
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('tag_name', 'slug')

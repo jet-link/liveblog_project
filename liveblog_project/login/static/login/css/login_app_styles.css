@@ -1274,37 +1274,20 @@ html[data-theme="dark"] .block-quote {
     /* padding: 6px 0; */
 /* } */
 
-/* Колокольчик: при непрочитанных — анимация звона; при нуле — цвет #e84393, без анимации */
-@keyframes bell-ring {
-    0% { transform: rotate(0deg); }
-    /* 10% { transform: rotate(-8deg); } */
-    20% { transform: rotate(-8deg); }
-    /* 30% { transform: rotate(-12deg); } */
-    40% { transform: rotate(0deg); }
-    /* 50% { transform: rotate(-8deg); } */
-    60% { transform: rotate(8deg); }
-    /* 70% { transform: rotate(-4deg); } */
-    /* 80% { transform: rotate(-8deg); } */
-    100% { transform: rotate(0deg); }
+/* Колокольчик: при непрочитанных — красный акцент, без анимации (header + overlay) */
+.notification-btn .fa-bell {
+    display: inline-block;
+    transform-origin: top center;
 }
 
 .user-tooltip .notification-btn .fa-bell {
-    display: inline-block;
-    transform-origin: top center;
     margin-right: 14px;
 }
 
-/* При непрочитанных — колокольчик трясётся */
-.user-tooltip .notification-btn.has-unread .fa-bell {
-    animation: bell-ring 0.8s ease-in-out infinite;
+.notification-btn.has-unread .fa-bell {
     color: #e74c3c;
-}
-
-/* При нуле — без анимации, цвет #e84393 */
-/* .user-tooltip .notification-btn:not(.has-unread) .fa-bell {
     animation: none;
-    color: #e84393;
-} */
+}
 
 .block-quote {
     padding: 20px;

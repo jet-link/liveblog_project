@@ -20,9 +20,46 @@ except ImportError:
     pass
 
 # SECURITY
-SECRET_KEY = 'django-insecure-qhg*izwtd!%(3up6bh=s#gt7!@g1t5z=0e*02=-5&^80h51+-h'
-DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('1', 'true', 'yes')
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '').strip()
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-dev-only-not-for-production'
+    else:
+        raise ValueError(
+            'Set DJANGO_SECRET_KEY in the environment for production deployments.'
+        )
+
+_allowed_raw = os.environ.get('DJANGO_ALLOWED_HOSTS', '').strip()
+if _allowed_raw:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed_raw.split(',') if h.strip()]
+elif DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+else:
+    ALLOWED_HOSTS = []
+    raise ValueError(
+        'Set DJANGO_ALLOWED_HOSTS (comma-separated hostnames, e.g. '
+        '"example.com,www.example.com") for production.'
+    )
+
+_csrf_origins = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').strip()
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in _csrf_origins.split(',') if o.strip()
+]
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    _ssl_redirect = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'true').lower()
+    SECURE_SSL_REDIRECT = _ssl_redirect in ('1', 'true', 'yes')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '31536000'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'false').lower() in ('1', 'true', 'yes')
 
 # Applications
 INSTALLED_APPS = [
@@ -119,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Localization
 LANGUAGE_CODE = 'en'
-TIME_ZONE = 'Asia/Tashkent'   # или 'UTC'
+TIME_ZONE = 'Asia/Tashkent'  # or 'UTC'
 USE_I18N = True
 USE_TZ = True
 
@@ -138,7 +175,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Backups (outside media/static, not publicly accessible)
-# Отдельная папка для архивов, не путать с приложением backups/
+# Archive files directory (not the backups app package)
 BACKUPS_ROOT = BASE_DIR / "backup_archives"
 BACKUP_MAX_COUNT = 20
 BACKUP_DAILY_COUNT = 7
@@ -207,7 +244,7 @@ TRENDING_API_CACHE_SECONDS = int(os.environ.get("TRENDING_API_CACHE_SECONDS", "4
 LOGIN_URL = '/profile/login/'
 
 # Spellcheck language (ru/en) - used by spellcheck.js via data-spellcheck-lang
-SPELLCHECK_LANG = os.environ.get('SPELLCHECK_LANG', 'ru')
+SPELLCHECK_LANG = os.environ.get('SPELLCHECK_LANG', 'en')
 
 # Logging
 LOGGING = {

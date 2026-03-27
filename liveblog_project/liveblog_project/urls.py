@@ -30,13 +30,13 @@ urlpatterns = [
     ),
     path('robots.txt', robots_txt, name='robots_txt'),
 
-    # Глобальный поиск доступен по /search/
+    # Global search at /search/
     path('search/', smart_views.search_view, name='global_search'),
 
-    # blog routes (с префиксом /blog/)
+    # Blog routes (prefix /blog/)
     path('blog/', include('smart_blog.urls')),
 
-    # pages last — чтобы slug-паттерн не перекрывал другие пути
+    # Pages last so slug patterns do not shadow other routes
     path('', include('pages.urls', namespace='pages')),
     path('profile/', include('login.urls')),
 ]

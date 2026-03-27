@@ -67,14 +67,13 @@
   }
 
   function updateHeaderCount(count) {
-    const btn = document.querySelector('.notification-btn');
-    if (btn) {
+    document.querySelectorAll('.notification-btn').forEach(function (btn) {
       if (count > 0) {
         btn.classList.add('has-unread');
       } else {
         btn.classList.remove('has-unread');
       }
-    }
+    });
     // Badge возле заголовка "Notifications" на странице notifications.html
     const pageBadgeWrap = document.getElementById('notificationsPageBadgeWrap');
     if (!pageBadgeWrap) return;

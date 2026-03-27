@@ -1,7 +1,7 @@
 <div class="modal fade" id="confirmItemDeleteModal-{{ item.pk }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ item.pk }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <!-- Форма внутри модалки: запасной вариант для no-JS (и основной — так как мы не используем кастомный JS) -->
+      <!-- Form in modal: works without JS; primary path uses native submit -->
       <form method="post" action="{% url 'smart_blog:delete_item' item.slug %}" data-delete-item="1">
         {% csrf_token %}
         <input type="hidden" name="redirect_to" class="delete-redirect" value="" />
@@ -17,7 +17,7 @@
 
         <div class="modal-footer">
           <button type="button" class="cstm-btn custom-secondary-btn cstm-btn-sm" data-bs-dismiss="modal">Cancel</button>
-          <!-- Обычный submit: при нажатии выполнится POST на delete_item -->
+          <!-- Native submit → POST delete_item -->
           <button type="submit" class="cstm-btn custom-danger-btn cstm-btn-sm">Remove</button>
         </div>
       </form>

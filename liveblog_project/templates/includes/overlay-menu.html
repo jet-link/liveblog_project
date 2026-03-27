@@ -32,7 +32,7 @@
       {% else %}
         <a href="{% url 'smart_blog:create_item' %}" class="header-menu-item text-decoration-none text-muted"><i class="fa fa-plus me-2" aria-hidden="true"></i>Create post</a>
       {% endif %}
-      <a href="{% url 'login_app:notifications' user.username %}" class="header-menu-item text-decoration-none text-muted notification-btn{% if notifications_count %} has-unread{% endif %}"><i class="fa fa-bell me-2" aria-hidden="true"></i>Notifications</a>
+      <a href="{% url 'login_app:notifications' user.username %}" class="header-menu-item text-decoration-none text-muted notification-btn{% if notifications_count %} has-unread{% endif %}" data-notifications-count="{{ notifications_count }}"><i class="fa fa-bell me-2" aria-hidden="true"></i>Notifications</a>
       <a href="#" class="header-menu-item text-decoration-none danger signout-trigger"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Sign out</a>
     {% else %}
       <a href="{% url 'login_app:login' %}" class="header-menu-item text-decoration-none text-muted">Sign in</a>

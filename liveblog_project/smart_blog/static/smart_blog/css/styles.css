@@ -2466,7 +2466,7 @@ textarea {
 
 /* header */
 .bottom-menu-header {
-    padding: 20px 18px;
+    padding: 20px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;

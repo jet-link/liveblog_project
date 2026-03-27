@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const STALE_MS = 90000;
 
     function updateBellCountFromStorage(forceCount) {
-        const btn = document.querySelector('.notification-btn');
-        if (!btn) return;
+        const btns = document.querySelectorAll('.notification-btn');
+        if (!btns.length) return;
 
         if (typeof forceCount !== 'number' && document.getElementById('notificationsState')) {
             return;
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 updatedAt = localStorage.getItem('notification_count_updated_at');
             } catch (err) {}
 
-            const serverRaw = btn.dataset?.notificationsCount;
+            const serverRaw = btns[0].dataset?.notificationsCount;
             const serverCount = serverRaw !== undefined && serverRaw !== null && serverRaw !== ''
                 ? parseInt(serverRaw, 10)
                 : NaN;
@@ -101,11 +101,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (err) {}
         }
 
-        if (count > 0) {
-            btn.classList.add('has-unread');
-        } else {
-            btn.classList.remove('has-unread');
-        }
+        btns.forEach(function (btn) {
+            if (count > 0) {
+                btn.classList.add('has-unread');
+            } else {
+                btn.classList.remove('has-unread');
+            }
+        });
     }
 
     window.updateBellCountFromStorage = updateBellCountFromStorage;

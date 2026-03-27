@@ -1,28 +1,25 @@
-{% extends 'errors/base_errors.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-  Page not found - 404
-{% endblock %}
+{% block title %}Page not found — brainstorm.org{% endblock %}
+
+{% block body_class %}error-page{% endblock %}
 
 {% block content %}
-  <div class="container-main content_block">
-    <div class="error-page-wrapper text-center">
-      <div class="error-code">
-        <h1 class="display-1 fw-bold text-muted mb-0">404</h1>
-      </div>
-      <div class="error-icon my-4">
-        <i class="fa fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
-      </div>
-      <div class="error-message">
-        <h2 class="h3 mb-3 text-muted">Page Not Found</h2>
-        <p class="text-muted fs-5 mb-4">The page you are looking for does not exist or has been moved.</p>
-      </div>
-      <div class="error-actions d-flex justify-content-center align-items-center">
-        <a href="{% url 'pages:home' %}" class="btn btn-primary">
-            {% comment %} <i class="fa fa-home fs-5 me-2"></i> {% endcomment %}
-            Go home</a>
+  <section class="error-page-section">
+    <div class="container-main">
+      <div class="error-page-card">
+        <p class="error-page-brand"><a href="{% url 'pages:home' %}" class="error-page-brand-link">brainstorm.org</a></p>
+        <p class="error-page-code" aria-hidden="true">404</p>
+        <h1 class="error-page-title">Page not found</h1>
+        <p class="error-page-lead">
+          This address may have changed or contain a typo. Check the URL or return to the home page and open a section from the menu.
+        </p>
+        <div class="error-page-actions">
+          <a href="{% url 'pages:home' %}" class="btn btn-primary btn-lg error-page-btn-primary">Home</a>
+          <a href="{% url 'smart_blog:items_list' %}" class="btn btn-outline-secondary btn-lg error-page-btn-secondary">BraiNews</a>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 {% endblock %}

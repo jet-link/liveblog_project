@@ -81,22 +81,22 @@ h6 {
 
 .centered {
     display: flex;
-    /* центровка */
+    /* center horizontally */
     flex-direction: column;
     justify-content: center;
-    /* по вертикали */
+    /* center vertically */
     align-items: center;
 }
 
 .faq_answer {
     white-space: pre-wrap;
-    /* КЛЮЧЕВО */
+    /* important: preserve line breaks */
     line-height: 1.5;
 }
 
 
 /* ====================== SECONDARY SECTION (updated) ====================== */
-/* секция вторичная — фон чуть затемнить (overlay) */
+/* Secondary section — slightly darkened background (overlay) */
 .cosmo_section {
     position: relative;
     /* min-height: 100vh; */
@@ -109,7 +109,7 @@ h6 {
     z-index: 200;
 }
 
-/* затемнение фона (над фоном, под астро/текстом) */
+/* Darken background layer (above bg, below astronauts/text) */
 .cosmo_section::before {
     content: '';
     position: absolute;
@@ -135,11 +135,11 @@ h6 {
     z-index: 100;
 }
 
-/* текст внутри */
+/* Inner text block */
 .sec-inner {
     position: relative;
     z-index: 6;
-    /* выше астро */
+    /* above astronaut layers */
     text-align: center;
     max-width: 900px;
     margin: 0 auto;
@@ -159,17 +159,17 @@ h6 {
     max-width: 550px;
 }
 
-/* общий стиль для всех астронавтов */
+/* Shared style for astronaut figures */
 .sec-astro {
     position: absolute;
     transform: translateX(-50%) translateY(0) scale(1);
     width: 220px;
     max-width: 24vw;
     z-index: 3;
-    /* будет переопределяться per-element */
+    /* overridden per element */
     pointer-events: none;
     transition: none;
-    /* управление анимацией в JS */
+    /* animation driven from JS */
     will-change: transform, filter;
     mix-blend-mode: normal;
     filter: saturate(1) contrast(1);
@@ -178,7 +178,7 @@ h6 {
 
 .flip-h {
     scale: -1 1;
-    /* отражаем по X */
+    /* mirror on X axis */
 }
 
 .hero-snap {
@@ -232,7 +232,7 @@ h6 {
     color: #fff;
 }
 
-/* планшет — 2 карточки */
+/* Tablet — 2 cards */
 @media (max-width: 1024px) {
     .hero-card {
         flex: 0 0 calc((100vw - 16vw - 32px) / 2);
@@ -240,7 +240,7 @@ h6 {
     }
 }
 
-/* мобильный — 1 карточка */
+/* Mobile — 1 card */
 @media (max-width: 640px) {
     .hero-card {
         flex: 0 0 88vw;
@@ -382,7 +382,7 @@ html[data-theme="dark"] .faq-item-answer {
 }
 
 /* ========== Static pages: About / Contacts (minimal, informative) ========== */
-/* Верхний отступ как у BraiNews/Popular: родитель .container.content_block (styles.css) */
+/* Top spacing like BraiNews/Popular: parent .container.content_block (styles.css) */
 .page-static {
     --page-static-max: 55rem;
     padding: 0 0 clamp(2.5rem, 6vw, 4rem);
@@ -596,5 +596,105 @@ html[data-theme="dark"] .faq-item-answer {
 @media (max-width: 768px) {
     .page-static__contact-row .page-static__contact-val {
         min-height: 2.75rem;
+    }
+}
+
+/* Error pages (404 / 403) — same tokens as smart_blog theme */
+.error-page-section {
+    padding: clamp(2rem, 6vw, 4rem) 0 clamp(3rem, 8vw, 5rem);
+    min-height: min(70vh, calc(100vh - var(--header-height, 72px) - 120px));
+    display: flex;
+    align-items: center;
+}
+
+body.error-page .main {
+    flex: 1;
+}
+
+.error-page-card {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-default, #e6e6e6);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: var(--card-shadow, 0 3px 12px rgba(0, 0, 0, 0.08));
+    text-align: center;
+}
+
+[data-theme='dark'] .error-page-card {
+    background: var(--card-bg);
+    border-color: var(--border-strong, #30363d);
+}
+
+.error-page-brand {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 0.9rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+.error-page-brand-link {
+    color: var(--text-primary, #273c75);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.error-page-brand-link:hover {
+    color: var(--text-link-hover, #58a6ff);
+}
+
+.error-page-code {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(3.5rem, 12vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 0.75rem;
+    color: var(--text-muted-alt, #8b949e);
+    letter-spacing: -0.06em;
+}
+
+.error-page-code--denied {
+    color: var(--orange-color, #e67e22);
+}
+
+.error-page-title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.35rem, 4vw, 1.75rem);
+    font-weight: 600;
+    color: var(--text-default, #1f2328);
+    margin: 0 0 0.75rem;
+}
+
+.error-page-lead {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-muted, #6c757d);
+    margin: 0 auto 1.75rem;
+    max-width: 32rem;
+}
+
+.error-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.error-page-btn-primary,
+.error-page-btn-secondary {
+    border-radius: var(--btn-radius, 8px);
+    font-weight: 500;
+}
+
+@media (max-width: 480px) {
+    .error-page-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .error-page-actions .btn {
+        width: 100%;
     }
 }
