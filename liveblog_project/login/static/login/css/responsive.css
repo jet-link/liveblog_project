@@ -52,4 +52,10 @@
         padding-left: 15px;
         padding-right: 15px;
     }
+
+    /* Auth pages: form card already has padding — avoid double gutter */
+    .auth-form-layout .edit-profile-field {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }

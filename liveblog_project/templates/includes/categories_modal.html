@@ -17,9 +17,17 @@
           {% for cat in nav_categories_first %}
             <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link">{{ cat.name }}</a>
           {% endfor %}
-          {% for cat in nav_categories_rest %}
-            <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link categories-modal-chip--extra" hidden>{{ cat.name }}</a>
-          {% endfor %}
+          {% if nav_categories_rest %}
+            <div id="categoriesModalChipsExtrasWrap" class="categories-modal-extras" inert aria-hidden="true">
+              <div class="categories-modal-extras-clip">
+                <div class="categories-modal-extras-grid">
+                  {% for cat in nav_categories_rest %}
+                    <a href="{% url 'smart_blog:topic_detail' slug=cat.slug %}" class="item-category-badge categories-modal-chip-link">{{ cat.name }}</a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
         </nav>
         {% if nav_categories_rest %}
           <button type="button" class="categories-modal-expand-btn" id="categoriesModalChipsMoreBtn" aria-expanded="false" aria-controls="categoriesModalChipsNav">

@@ -1370,3 +1370,104 @@ html[data-theme="dark"] .block-quote {
 .form-check{
     padding-left: 0 !important;
 }
+
+/* ========== Auth: login / register — centered layout, compact readable fields ========== */
+.auth-form-layout.content_block {
+    padding-top: calc(var(--header-height, 72px) + 28px);
+    margin-bottom: 48px;
+    min-height: calc(100vh - var(--header-height, 72px) - 96px);
+    min-height: calc(100svh - var(--header-height, 72px) - 96px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.auth-form-layout .edit-profile-field {
+    max-width: 420px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auth-form-layout .form-wrapper {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auth-form-layout .form-wrapper h5 {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.35;
+}
+
+/* Floating labels: Bootstrap-like geometry (label shrinks + sits on top edge), extra air for typed text */
+.auth-form-layout .form-floating > label {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    padding: 1rem 0.85rem;
+}
+
+.auth-form-layout .form-floating > .form-control {
+    height: auto;
+    min-height: calc(3.5rem + 2px);
+    padding: 1rem .85rem .7rem .85rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+}
+
+/* Floated: smaller caption above the value, same transform as Bootstrap (no full-size label crowding input) */
+.auth-form-layout .form-floating > .form-control:focus ~ label,
+.auth-form-layout .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.auth-form-layout .form-floating > .form-control:-webkit-autofill ~ label {
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.auth-form-layout .form-floating.mb-2 {
+    margin-bottom: 0.65rem !important;
+}
+
+.auth-form-layout .d-flex.justify-content-between.align-items-center.small {
+    font-size: 0.8125rem;
+}
+
+.auth-form-layout .d-flex.justify-content-between.mb-4 {
+    margin-bottom: 1.1rem !important;
+}
+
+@media (max-width: 575px) {
+    .auth-form-layout.content_block {
+        padding-top: calc(var(--header-height, 72px) + 16px);
+        min-height: calc(100vh - var(--header-height, 72px) - 80px);
+        min-height: calc(100svh - var(--header-height, 72px) - 80px);
+        margin-bottom: 40px;
+    }
+
+    .auth-form-layout .form-wrapper {
+        padding: 1.1rem 1rem 1.35rem;
+    }
+
+    .auth-form-layout .form-wrapper h5 {
+        font-size: 1.05rem;
+    }
+
+    .auth-form-layout .form-floating > label {
+        font-size: 0.8125rem;
+        padding: 0.9rem 0.8rem;
+    }
+
+    .auth-form-layout .form-floating > .form-control {
+        min-height: calc(3.35rem + 2px);
+        padding: 0.9rem 0.8rem;
+        font-size: 0.8125rem;
+    }
+}

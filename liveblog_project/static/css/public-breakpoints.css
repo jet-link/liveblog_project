@@ -13,9 +13,10 @@
 
 :root {
     --container-max: 1320px;
+    /* Horizontal gutters: tighter on narrow viewports so content uses more width */
     --container-px: 24px;
-    --container-px-tablet: 24px;
-    --container-px-mobile: 24px;
+    --container-px-tablet: 16px;
+    --container-px-mobile: 12px;
 
     /* Spacing scale (4px grid) */
     --space-1: 4px;
@@ -95,7 +96,7 @@
 .main {
     min-width: 0;
     /* воздух перед футером на всех страницах */
-    padding-bottom: var(--main-pad-bottom, 88px);
+    /* padding-bottom: var(--main-pad-bottom, 88px); */
 }
 
 @media (max-width: 575px) {

@@ -123,9 +123,58 @@ html[data-theme="dark"] .ck.ck-button:focus {
 
 /* Dark theme — element overrides (Bootstrap, etc.) */
 html[data-theme="dark"] .card,
-html[data-theme="dark"] .modal-content,
 html[data-theme="dark"] .personal-info-row {
     border-color: var(--border-default);
+}
+
+/* Bootstrap modals: surface + text (otherwise .modal-content stays light) */
+html[data-theme="dark"] .modal-content {
+    border-color: var(--border-default);
+    background-color: var(--card-bg);
+    color: var(--text-default);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="dark"] .modal-header {
+    background-color: var(--card-bg);
+    border-bottom-color: var(--border-default);
+}
+
+html[data-theme="dark"] .modal-footer {
+    background-color: var(--card-bg);
+    border-top-color: var(--border-default);
+}
+
+html[data-theme="dark"] .modal-body {
+    background-color: var(--card-bg);
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] .modal .modal-title,
+html[data-theme="dark"] .modal .modal-title.text-muted {
+    color: var(--text-default) !important;
+}
+
+html[data-theme="dark"] .modal-backdrop {
+    --bs-backdrop-bg: rgba(0, 0, 0, 0.72);
+    --bs-backdrop-opacity: 1;
+}
+
+html[data-theme="dark"] .modal-backdrop.show {
+    background-color: rgba(0, 0, 0, 0.72);
+}
+
+html[data-theme="dark"] .modal .btn-outline-secondary {
+    color: var(--text-default);
+    border-color: var(--border-default);
+    background-color: var(--bg-muted);
+}
+
+html[data-theme="dark"] .modal .btn-outline-secondary:hover,
+html[data-theme="dark"] .modal .btn-outline-secondary:focus {
+    color: var(--text-default);
+    background-color: var(--bg-subtle);
+    border-color: var(--border-strong);
 }
 
 html[data-theme="dark"] .card-title,
@@ -160,11 +209,6 @@ html[data-theme="dark"] .footer-subscribe-input:focus {
     border-bottom-color: var(--text-link) !important;
     box-shadow: 0 2px 0 0 var(--text-link);
 } */
-
-html[data-theme="dark"] .modal-header,
-html[data-theme="dark"] .modal-footer {
-    border-color: var(--border-default);
-}
 
 html[data-theme="dark"] .bottom-side-menu {
     background: var(--bg-default);
@@ -1273,7 +1317,7 @@ article.item_block.card:hover {
     display: inline-flex;
     align-items: center;
     color: var(--text-muted);
-    /* gap: 2px; */
+    gap: 3px;
 }
 
 .trending-metric i {
@@ -2748,9 +2792,9 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
 
 .replies {
     position: relative;
-    margin-left: 24px;
+    margin-left: 18px;
     padding-left: 0;
-    margin-top: 7px;
+    margin-top: 4px;
 }
 
 .replies-circle {
@@ -2781,9 +2825,9 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
     content: "";
     position: absolute;
     top: 2px;
-    left: -20px;
+    left: -14px;
     width: 1px;
-    height: calc(100% - 10px);
+    height: calc(100% - 8px);
     background: #c8d6e5;
     border-radius: 3px;
 }
@@ -2792,20 +2836,20 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
     position: relative;
     border: none;
     border-radius: 0;
-    /* padding: 8px 0; */
     margin-top: 0;
     margin-bottom: 0;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.45rem !important;
     background: transparent;
-    /* padding-left: 0; */
 }
 
 /* горизонтальная линия от каждого reply к вертикальной линии */
 .replies>.comment-block::before {
     content: "";
     position: absolute;
-    left: -20px;
-    top: 34px;
-    width: 14px;
+    left: -14px;
+    top: 26px;
+    width: 11px;
     height: 1px;
     background: #c8d6e5;
     border-radius: 3px;
@@ -2814,12 +2858,18 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
 
 /* поддержка вложенных replies - увеличиваем отступ */
 .replies .replies {
-    margin-left: 24px;
+    margin-left: 16px;
+    margin-top: 2px;
 }
 
 /* для вложенных replies вертикальная линия должна быть смещена */
 .replies .replies::before {
-    left: -20px;
+    left: -14px;
+}
+
+html[data-theme="dark"] .replies::before,
+html[data-theme="dark"] .replies > .comment-block::before {
+    background: var(--border-strong);
 }
 
 /* тело comment */
@@ -2874,7 +2924,7 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
 
 .show-more-btn-toggle {
     padding: 8px 14px;
-    border-radius: 5px;
+    border-radius: 6px;
     border: 1px solid #ddd;
     background: var(--bg-default);
     cursor: pointer;
@@ -3237,7 +3287,7 @@ html[data-theme="dark"] .form-wrapper {
     line-height: 1;
 }
 
-/* Сделаем ссылку Continue reading видимой и без смещения */
+/* Ссылка Read (карточки листинга) — видимая и без смещения */
 .stretched-link {
     color: var(--bs-primary);
     font-weight: 500;
@@ -3439,10 +3489,7 @@ html[data-theme="dark"] .tags_block {
 
 /* Views Comments Likes Bookmark */
 .VLB {
-    padding: 12px 15px;
-    box-shadow: var(--card-shadow);
-    border-radius: 5px;
-    font-size: .8rem;
+    font-size: .750rem;
     font-weight: 600;
 }
 
@@ -3488,7 +3535,7 @@ html[data-theme="dark"] .tags_block {
     z-index: 2;
     color: var(--text-muted-alt, #747d8c);
     border: 1px solid var(--border-default, #c4c4c4);
-    padding: 2px 8px;
+    padding: 5px 8px;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     font-size: 0.62rem;
@@ -4339,7 +4386,7 @@ pre {
 }
 
 .item-stats {
-    gap: 25px;
+    gap: 20px;
     /* font-size: 13px; */
     /* font-weight: 500; */
 }
@@ -4347,7 +4394,7 @@ pre {
 .item-stats .stat {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
     position: relative;
 }
 
@@ -4572,6 +4619,52 @@ html[data-theme="dark"] .categories-modal-dialog {
     }
 }
 
+/* Extra category chips: smooth expand/collapse (categoriesModalChipsMoreBtn) */
+.categories-modal-extras {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.42s cubic-bezier(0.33, 1, 0.68, 1),
+        opacity 0.32s ease;
+}
+
+.categories-modal-extras.is-expanded {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.categories-modal-extras-clip {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.categories-modal-extras-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 0.75rem;
+    align-items: start;
+    padding-top: 0.35rem;
+}
+
+@media (min-width: 480px) {
+    .categories-modal-extras-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .categories-modal-extras-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .categories-modal-extras {
+        transition: none;
+    }
+}
+
 /* Small category links — same visual as item-category-badge on cards */
 a.categories-modal-chip-link {
     display: inline-block;
@@ -4598,10 +4691,10 @@ html[data-theme="dark"] a.categories-modal-chip-link:hover {
     width: 100%;
     align-items: center;
     justify-content: center;
-    margin-top: 0.5rem;
+    /* margin-top: 0.5rem; */
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--border-default);
-    border-radius: 8px;
+    border-radius: 5px;
     background: var(--bg-muted);
     color: var(--text-muted);
     cursor: pointer;

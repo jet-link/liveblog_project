@@ -16,10 +16,7 @@
     const prevOverflow = { html: '', body: '' };
 
     const chipsBtn = document.getElementById('categoriesModalChipsMoreBtn');
-
-    function getExtraChips() {
-        return root.querySelectorAll('a.categories-modal-chip--extra');
-    }
+    const chipsExtrasWrap = document.getElementById('categoriesModalChipsExtrasWrap');
 
     function setExpandIcon(btn, up) {
         if (!btn) return;
@@ -29,22 +26,25 @@
     }
 
     function closeChipsExpand() {
-        const extraChips = getExtraChips();
-        if (!chipsBtn || !extraChips.length) return;
-        extraChips.forEach(function (a) {
-            a.hidden = true;
-        });
+        if (!chipsBtn || !chipsExtrasWrap) return;
+        chipsExtrasWrap.classList.remove('is-expanded');
+        chipsExtrasWrap.setAttribute('inert', '');
+        chipsExtrasWrap.setAttribute('aria-hidden', 'true');
         chipsBtn.setAttribute('aria-expanded', 'false');
         setExpandIcon(chipsBtn, false);
     }
 
     function toggleChipsExpand() {
-        const extraChips = getExtraChips();
-        if (!chipsBtn || !extraChips.length) return;
-        const willOpen = extraChips[0].hidden;
-        extraChips.forEach(function (a) {
-            a.hidden = !willOpen;
-        });
+        if (!chipsBtn || !chipsExtrasWrap) return;
+        const willOpen = !chipsExtrasWrap.classList.contains('is-expanded');
+        chipsExtrasWrap.classList.toggle('is-expanded', willOpen);
+        if (willOpen) {
+            chipsExtrasWrap.removeAttribute('inert');
+            chipsExtrasWrap.setAttribute('aria-hidden', 'false');
+        } else {
+            chipsExtrasWrap.setAttribute('inert', '');
+            chipsExtrasWrap.setAttribute('aria-hidden', 'true');
+        }
         chipsBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         setExpandIcon(chipsBtn, willOpen);
     }

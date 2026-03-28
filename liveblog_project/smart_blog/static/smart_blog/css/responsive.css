@@ -187,15 +187,107 @@
     }
 }
 
+@media (max-width: 767px) {
+    .item-detail-meta-row {
+        align-items: flex-start !important;
+    }
+
+    .VLB {
+        padding: 7px 10px;
+        font-size: 0.74rem;
+    }
+
+    .VLB .item-stats {
+        gap: 12px;
+    }
+
+    .VLB .item-stats .stat {
+        gap: 4px;
+    }
+
+    .VLB .item-stats .stat i {
+        font-size: 0.8rem;
+    }
+
+    .main .item-text.ck-content {
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+}
+
 @media (max-width: 575px) {
     .item-detail-title {
-        font-size: clamp(1.25rem, 5vw, 1.75rem);
+        font-size: clamp(1.15rem, 4.5vw, 1.65rem);
     }
 
     .item-detail-head {
         flex-direction: column;
         align-items: flex-start !important;
     }
+
+    .VLB {
+        padding: 7px;
+        font-size: 0.68rem;
+        line-height: 1.2;
+    }
+
+    .VLB .item-stats {
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        row-gap: 2px;
+    }
+
+    .VLB .item-stats .stat {
+        gap: 5px;
+    }
+
+    .VLB .item-stats .stat span {
+        font-size: 0.64rem;
+        font-weight: 600;
+    }
+
+    .VLB .item-stats .stat .fa {
+        font-size: 0.72rem;
+    }
+
+    .main .item-text.ck-content {
+        font-size: 0.88rem !important;
+        line-height: 1.58;
+        margin-top: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .main .item-text.ck-content h1 {
+        font-size: 1.35rem !important;
+    }
+
+    .main .item-text.ck-content h2 {
+        font-size: 1.2rem !important;
+    }
+
+    .main .item-text.ck-content h3 {
+        font-size: 1.08rem !important;
+    }
+
+    .main .item-text.ck-content h4 {
+        font-size: 1rem !important;
+    }
+
+    .main .item-text.ck-content p,
+    .main .item-text.ck-content li {
+        font-size: 0.88rem !important;
+    }
+
+    .main .item-text.ck-content small {
+        font-size: 0.8rem !important;
+    }
+
+    #commentsHeader h5 {
+        font-size: 1rem !important;
+    }
+
+
 
     .comment_likes_badge {
         font-size: 0.55rem;
@@ -214,16 +306,17 @@
 /* ---------- Comments: nesting depth + overflow ---------- */
 @media (max-width: 767px) {
     .replies .replies {
-        margin-left: 12px;
+        margin-left: 10px;
     }
 
     .replies::before {
-        left: -12px;
+        left: -10px;
     }
 
     .replies > .comment-block::before {
-        left: -12px;
-        width: 10px;
+        left: -10px;
+        width: 8px;
+        top: 24px;
     }
 
     .comment-text {

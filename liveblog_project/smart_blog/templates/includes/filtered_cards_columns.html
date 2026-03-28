@@ -76,15 +76,15 @@
 
         <div class="d-flex justify-content-between align-items-center pt-3">
           {% if listing_source == 'search' and listing_source_url and listing_query %}
-            <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
           {% elif listing_source == 'tag' and listing_source_url and listing_tag %}
-            <a href="{{ item.get_absolute_url }}?from=tag&amp;source_url={{ listing_source_url|urlencode }}&amp;tag={{ listing_tag|urlencode }}&amp;tag_slug={{ listing_tag_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            <a href="{{ item.get_absolute_url }}?from=tag&amp;source_url={{ listing_source_url|urlencode }}&amp;tag={{ listing_tag|urlencode }}&amp;tag_slug={{ listing_tag_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
           {% elif listing_source == 'category' and listing_source_url and listing_category %}
-            <a href="{{ item.get_absolute_url }}?from=topic&amp;source_url={{ listing_source_url|urlencode }}&amp;category={{ listing_category|urlencode }}&amp;category_slug={{ listing_category_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            <a href="{{ item.get_absolute_url }}?from=topic&amp;source_url={{ listing_source_url|urlencode }}&amp;category={{ listing_category|urlencode }}&amp;category_slug={{ listing_category_slug|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
           {% elif listing_source == 'items_list' and listing_source_url %}
-            <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
           {% else %}
-            <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Continue reading<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            <a href="{{ item.get_absolute_url }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
           {% endif %}
 
           <div class="d-flex align-items-center VLB">

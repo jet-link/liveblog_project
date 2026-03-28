@@ -326,10 +326,9 @@ def login_view(request):
             password = form.cleaned_data['password']
             remember = form.cleaned_data.get('remember')
 
-            lookup = User.objects.select_related('profile').filter(username__iexact=username).first()
+            # Exact username match only (case-sensitive; "daddy" ≠ "Daddy")
+            lookup = User.objects.select_related('profile').filter(username=username).first()
             user = authenticate(request, username=username, password=password)
-            if user is None and lookup and lookup.is_active and lookup.check_password(password):
-                user = authenticate(request, username=lookup.username, password=password)
             if user is not None:
                 if is_user_online(user):
                     form.add_error(None, "User already online")
@@ -413,7 +412,7 @@ MAIN_COMMENTS_ANNOTATION = {
 
 # detail profile view
 def profile_view(request, username):
-    user_obj = User._base_manager.select_related("profile", "deleted_queue_entry").filter(username__iexact=username).first()
+    user_obj = User._base_manager.select_related("profile", "deleted_queue_entry").filter(username=username).first()
     if not user_obj:
         raise Http404
     if not user_obj.is_active:
@@ -519,14 +518,14 @@ def profile_view(request, username):
 
 def profile_online_status(request, username):
     """API: возвращает online статус пользователя для polling."""
-    user_obj = User._base_manager.filter(username__iexact=username).first()
+    user_obj = User._base_manager.filter(username=username).first()
     if not user_obj:
         return JsonResponse({"online": False})
     return JsonResponse({"online": is_user_online(user_obj)})
 
 
 def profile_section_view(request, username, section):
-    user_obj = User._base_manager.select_related("deleted_queue_entry").filter(username__iexact=username).first()
+    user_obj = User._base_manager.select_related("deleted_queue_entry").filter(username=username).first()
     if not user_obj:
         raise Http404
     if not user_obj.is_active:

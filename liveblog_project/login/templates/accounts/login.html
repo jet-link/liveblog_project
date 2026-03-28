@@ -3,7 +3,7 @@
   Login
 {% endblock %}
 {% block content %}
-  <div class="container-main content_block">
+  <div class="container-main content_block auth-form-layout">
     <main class="edit-profile-field form-wrapper mx-auto">
       <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
         {% csrf_token %}
