@@ -19,7 +19,7 @@
     <a href="{% url 'smart_blog:for_you_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'for_you_list' %} active{% endif %}">For you</a>
     <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'trending_list' %} active{% endif %}">In trend</a>
     <a href="{% url 'smart_blog:topics_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'topics_list' or nav_name == 'topic_detail' %} active{% endif %}">Topics</a>
-    <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">Categories</a>
+    {% comment %} <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">Categories</a> {% endcomment %}
     {% endwith %}
   </nav>
 

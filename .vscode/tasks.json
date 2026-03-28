@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Django: migrate",
+      "type": "shell",
+      "command": "${workspaceFolder}/venv/bin/python manage.py migrate",
+      "options": {
+        "cwd": "${workspaceFolder}/liveblog_project"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Django: collectstatic",
+      "type": "shell",
+      "command": "${workspaceFolder}/venv/bin/python manage.py collectstatic --noinput",
+      "options": {
+        "cwd": "${workspaceFolder}/liveblog_project"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Django: check",
+      "type": "shell",
+      "command": "${workspaceFolder}/venv/bin/python manage.py check",
+      "options": {
+        "cwd": "${workspaceFolder}/liveblog_project"
+      },
+      "group": "test"
+    },
+    {
+      "label": "Restart Gunicorn (user service)",
+      "type": "shell",
+      "command": "systemctl --user restart liveblog-gunicorn && systemctl --user status liveblog-gunicorn --no-pager",
+      "options": {
+        "cwd": "${workspaceFolder}/liveblog_project"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

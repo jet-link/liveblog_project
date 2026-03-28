@@ -2,7 +2,7 @@
   <div class="footer-blocks d-flex flex-column flex-md-row flex-md-nowrap align-items-stretch align-items-md-end justify-content-between gap-5 pt-5 pb-3">
     <div class="footer-links d-flex flex-column flex-sm-row gap-4 gap-sm-4">
       <div class="footer-block">
-        <a href="{% url 'sitemap_index' %}" class="footer-link-item text-decoration-none text-muted">Sitemap</a>
+        <a href="{% url 'pages:sitemap_page' %}" class="footer-link-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.namespace == 'pages' and request.resolver_match.url_name == 'sitemap_page' %} active{% endif %}">Sitemap</a>
       </div>
       <div class="footer-block">
         <a href="{% url 'pages:faq' %}" class="footer-link-item text-decoration-none text-muted{% if request.resolver_match and request.resolver_match.url_name == 'faq' %} active{% endif %}">FAQ</a>
@@ -16,7 +16,7 @@
     </div>
     <div class="footer-links d-flex flex-column flex-sm-row gap-4 gap-sm-4 align-items-start">
       <div class="footer-subscribe-wrap">
-        <button type="button" class="footer-subscribe-trigger text-muted text-decoration-none border-0 bg-transparent p-0" id="footerSubscribeTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="footerSubscribePopover">
+        <button type="button" class="footer-subscribe-trigger text-muted text-decoration-none border-0 bg-transparent" id="footerSubscribeTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="footerSubscribePopover">
           Subscribe
         </button>
         <div class="footer-subscribe-popover" id="footerSubscribePopover" role="dialog" aria-label="Follow us" hidden>

@@ -19,7 +19,6 @@ db.sqlite3
 
 # IDE / OS
 .idea/
-.vscode/
 *.swp
 *.swo
 .DS_Store

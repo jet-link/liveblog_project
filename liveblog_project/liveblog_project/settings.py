@@ -12,10 +12,13 @@ MESSAGE_TAGS = {
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load .env if python-dotenv is installed (optional)
+# .env: repo root (../.env) then app dir (./.env); latter overrides for server layouts
 try:
     from dotenv import load_dotenv
-    load_dotenv(BASE_DIR.parent / '.env')
+
+    for _env_path in (BASE_DIR.parent / '.env', BASE_DIR / '.env'):
+        if _env_path.is_file():
+            load_dotenv(_env_path, override=True)
 except ImportError:
     pass
 
@@ -37,7 +40,6 @@ if _allowed_raw:
 elif DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 else:
-    ALLOWED_HOSTS = []
     raise ValueError(
         'Set DJANGO_ALLOWED_HOSTS (comma-separated hostnames, e.g. '
         '"example.com,www.example.com") for production.'
@@ -49,7 +51,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 if not DEBUG:
+    if not CSRF_TRUSTED_ORIGINS:
+        raise ValueError(
+            'Set DJANGO_CSRF_TRUSTED_ORIGINS for production (comma-separated full URLs), '
+            'e.g. https://example.com,https://www.example.com — required behind HTTPS / nginx.'
+        )
+
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
     _ssl_redirect = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'true').lower()
     SECURE_SSL_REDIRECT = _ssl_redirect in ('1', 'true', 'yes')
     SESSION_COOKIE_SECURE = True
@@ -94,7 +103,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Manifest storage fails collectstatic if any referenced file (e.g. *.js.map) is missing.
+if os.environ.get('DJANGO_MANIFEST_STATICFILES', 'true').lower() in ('1', 'true', 'yes'):
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 ROOT_URLCONF = 'liveblog_project.urls'
 
@@ -124,25 +137,40 @@ TEMPLATES = [
 WSGI_APPLICATION = 'liveblog_project.wsgi.application'
 
 
-# Database — PostgreSQL only
-_db_user = os.environ.get('DJANGO_DB_USER') or os.environ.get('USER', 'postgres')
-_db_password = os.environ.get('DJANGO_DB_PASSWORD', '')
-if not _db_password:
-    raise ValueError(
-        'DJANGO_DB_PASSWORD is not set. This is the PostgreSQL user password, '
-        'NOT your Mac login. Set it in .env or: export DJANGO_DB_PASSWORD="your_postgres_password"'
-    )
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'liveblog'),
-        'USER': _db_user,
-        'PASSWORD': _db_password,
-        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
-        'OPTIONS': {'connect_timeout': 10},
+# Database — PostgreSQL in production; SQLite only for explicit local dev (never in prod)
+_use_sqlite = os.environ.get('DJANGO_USE_SQLITE', '').lower() in ('1', 'true', 'yes')
+if _use_sqlite:
+    if not DEBUG:
+        raise ValueError(
+            'DJANGO_USE_SQLITE is only valid with DJANGO_DEBUG=true. '
+            'Use PostgreSQL on the server.'
+        )
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    _db_user = os.environ.get('DJANGO_DB_USER') or os.environ.get('USER', 'postgres')
+    _db_password = os.environ.get('DJANGO_DB_PASSWORD', '')
+    if not _db_password:
+        raise ValueError(
+            'DJANGO_DB_PASSWORD is not set. Set PostgreSQL credentials in the environment, '
+            'or for local dev without Postgres set DJANGO_DEBUG=true and DJANGO_USE_SQLITE=true.'
+        )
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DJANGO_DB_NAME', 'liveblog'),
+            'USER': _db_user,
+            'PASSWORD': _db_password,
+            'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+            'OPTIONS': {'connect_timeout': 10},
+            'CONN_MAX_AGE': int(os.environ.get('DJANGO_DB_CONN_MAX_AGE', '60')),
+        }
+    }
 
 
 # Password validators
@@ -197,7 +225,7 @@ CACHES = {
 _redis_cache_url = os.environ.get('REDIS_URL') or os.environ.get('DJANGO_CACHE_REDIS_URL')
 if _redis_cache_url:
     try:
-        import django_redis  # noqa: F401
+        import django_redis  # noqa: F401  # type: ignore[import-untyped]
 
         CACHES = {
             'default': {

@@ -1389,45 +1389,73 @@ html[data-theme="dark"] .trending-card__placeholder--hot .trending-card__placeho
     overflow: visible;
 }
 
-/* Первичные ссылки футера: аккуратная зона нажатия, без «плашки» на всю ширину */
-.footer-block a.footer-link-item {
+/* Ссылки и Subscribe в футере — как .header-menu-item: на узких экранах плавный цвет + фон у .active; от 992px — нижняя граница */
+.footer-links a.footer-link-item,
+.footer-links .footer-subscribe-trigger {
     display: inline-flex;
     align-items: center;
-    padding: 0.35rem 0.55rem;
-    border-radius: var(--radius-md);
-    transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* Текущая страница: подчёркивание, без заливки блока */
-.footer-block a.footer-link-item.active {
-    color: var(--text-link) !important;
-    background-color: transparent !important;
-    font-weight: 600;
+    padding: 8px 15px;
+    transition: 0.3s ease-in-out;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 5px;
     text-decoration: none;
-    box-shadow: inset 0 -2px 0 0 var(--text-link);
-    border-radius: 2px;
 }
 
-/* Hover только для fine pointer */
-@media (hover: hover) and (pointer: fine) {
-    .footer-block a.footer-link-item:not(.active):hover {
-        color: var(--text-link) !important;
-        background-color: var(--bg-subtle) !important;
-    }
+.footer-links .footer-subscribe-trigger {
+    cursor: pointer;
+    font-family: inherit;
+    line-height: inherit;
+    text-align: inherit;
+}
 
-    .footer-block a.footer-link-item.active:hover {
-        background-color: transparent !important;
-        color: var(--text-link-hover, var(--text-link)) !important;
-    }
+.footer-links a.footer-link-item:hover,
+.footer-links .footer-subscribe-trigger:hover {
+    color: var(--text-link) !important;
+}
+
+.footer-links a.footer-link-item.active {
+    color: var(--text-link) !important;
+    background-color: var(--bg-subtle);
+}
+
+.footer-links a.footer-link-item:focus-visible,
+.footer-links .footer-subscribe-trigger:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
 }
 
 @media (min-width: 992px) {
-    .footer-links .footer-link-item.active {
-        box-shadow: none !important;
+    .footer-links a.footer-link-item,
+    .footer-links .footer-subscribe-trigger {
+        color: var(--text-muted) !important;
+        font-weight: 500;
         border-radius: 0;
-        border-bottom: 2px solid currentColor;
-        padding-bottom: 0.2rem;
-        font-weight: 600;
+        border-bottom: 1px solid transparent;
+        transition: color 0.15s ease, border-color 0.15s ease;
+        background-color: transparent;
+        padding: 0.25rem 0.65rem;
+    }
+
+    .footer-links a.footer-link-item:hover,
+    .footer-links .footer-subscribe-trigger:hover {
+        color: var(--text-link-hover) !important;
+        border-bottom-color: currentColor;
+        background-color: transparent !important;
+    }
+
+    .footer-links a.footer-link-item.active {
+        color: var(--text-link) !important;
+        background-color: transparent !important;
+        border-bottom-color: currentColor;
+    }
+
+    .footer-links a.footer-link-item:focus-visible,
+    .footer-links .footer-subscribe-trigger:focus-visible {
+        color: var(--text-link-hover) !important;
+        border-bottom-color: currentColor;
+        outline: 2px solid var(--text-link);
+        outline-offset: 2px;
     }
 }
 
@@ -1436,26 +1464,6 @@ html[data-theme="dark"] .trending-card__placeholder--hot .trending-card__placeho
 .footer-subscribe-wrap {
     position: relative;
     display: inline-block;
-}
-
-.footer-subscribe-trigger {
-    cursor: pointer;
-    font: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    text-align: inherit;
-}
-
-.footer-subscribe-trigger:focus-visible {
-    color: var(--text-link) !important;
-    outline: 2px solid var(--text-link);
-    outline-offset: 2px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .footer-subscribe-trigger:hover {
-        color: var(--text-link) !important;
-    }
 }
 
 .footer-subscribe-popover {

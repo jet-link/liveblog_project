@@ -72,6 +72,50 @@ h6 {
     margin-bottom: 120px;
 }
 
+/* Human-readable /sitemap/ (aligned with FAQ spacing) */
+.sitemap-html-grid {
+    display: grid;
+    gap: 2rem 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.sitemap-html-block--wide {
+    grid-column: 1 / -1;
+}
+
+.sitemap-html-block-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+}
+
+.sitemap-html-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sitemap-html-list--tags {
+    flex-flow: row wrap;
+    flex-direction: row;
+    gap: 0.35rem 1rem;
+}
+
+.sitemap-html-link {
+    transition: color 0.2s ease;
+}
+
+.sitemap-html-link:hover {
+    color: var(--text-link) !important;
+}
+
+.sitemap-html-header .text-body {
+    font-weight: 500;
+    color: inherit;
+}
+
 /* @media (max-width: 768px) {
     .faq-section {
         padding-bottom: 6rem;

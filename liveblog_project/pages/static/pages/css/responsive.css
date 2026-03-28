@@ -100,10 +100,5 @@
         flex-direction: column !important;
         gap: var(--space-4, 16px) !important;
     }
-
-    .footer .footer-block a.footer-link-item {
-        display: inline-flex;
-        padding: 0.45rem 0.65rem;
-    }
 }
 
