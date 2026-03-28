@@ -1,6 +1,7 @@
 """Trending page and JSON API (velocity ranking)."""
 from django.conf import settings
 from django.core.cache import cache
+from django_ratelimit.decorators import ratelimit
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -105,7 +106,10 @@ def trending_list(request):
     )
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_TRENDING_RATE, method='GET', block=False)
 def trending_api(request):
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited', 'ok': False}, status=429)
     try:
         page = int(request.GET.get("page", 1))
     except (TypeError, ValueError):

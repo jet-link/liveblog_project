@@ -1,8 +1,10 @@
 """Report API views."""
 
 import json
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django_ratelimit.decorators import ratelimit
 from django.views.decorators.http import require_http_methods, require_POST
 from django.shortcuts import get_object_or_404
 
@@ -34,9 +36,12 @@ def _get_csrf_token(request):
 # ---------------------------------------------------------------------------
 
 @login_required
+@ratelimit(key='ip', rate='90/m', method='GET', block=False)
 @require_http_methods(["GET"])
 def api_report_item(request, pk):
     """GET /api/report/item/<pk>/ - return current user's report for item or exists: false."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited'}, status=429)
     item = get_object_or_404(Item.objects.filter(is_published=True), pk=pk)
     report = ReportService.get_user_report(request.user, item=item)
     if not report:
@@ -55,9 +60,12 @@ def api_report_item(request, pk):
 
 
 @login_required
+@ratelimit(key='ip', rate='90/m', method='GET', block=False)
 @require_http_methods(["GET"])
 def api_report_comment(request, pk):
     """GET /api/report/comment/<pk>/ - return current user's report for comment or exists: false."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited'}, status=429)
     comment = get_object_or_404(Comment.objects.filter(is_draft=False), pk=pk)
     report = ReportService.get_user_report(request.user, comment=comment)
     if not report:
@@ -80,9 +88,12 @@ def api_report_comment(request, pk):
 # ---------------------------------------------------------------------------
 
 @login_required
+@ratelimit(key='ip', rate=settings.RATELIMIT_REPORT_POST_RATE, method='POST', block=False)
 @require_POST
 def report_item(request, pk):
     """POST /report/item/<pk>/ - create or update report for item."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'success': False, 'error': 'rate_limited'}, status=429)
     item = get_object_or_404(Item.objects.filter(is_published=True), pk=pk)
     allowed, err = can_user_report(request.user)
     if not allowed:
@@ -106,9 +117,12 @@ def report_item(request, pk):
 
 
 @login_required
+@ratelimit(key='ip', rate=settings.RATELIMIT_REPORT_POST_RATE, method='POST', block=False)
 @require_POST
 def report_comment(request, pk):
     """POST /report/comment/<pk>/ - create or update report for comment."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'success': False, 'error': 'rate_limited'}, status=429)
     comment = get_object_or_404(Comment.objects.filter(is_draft=False), pk=pk)
     allowed, err = can_user_report(request.user)
     if not allowed:

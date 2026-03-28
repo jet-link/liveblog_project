@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.contrib.auth import get_user_model
 
-from admin_panel.decorators import admin_required
+from admin_panel.decorators import admin_required, superuser_required
 from admin_panel.models import DeletedUserLog
 from smart_blog.models import Item, Comment
 
@@ -225,6 +225,7 @@ def deleted_users_recover(request):
 
 
 @admin_required
+@superuser_required
 def deleted_users_permanent_delete(request):
     if request.method != 'POST':
         return redirect('admin_panel:recently_deleted')

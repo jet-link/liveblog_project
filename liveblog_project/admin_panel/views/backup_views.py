@@ -3,6 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import FileResponse, Http404, JsonResponse
@@ -19,7 +20,7 @@ from backups.services import create_backup_async, create_backup_sync
 def backups_list(request):
     """List backups with optional date range filter (YYYY-MM-DD)."""
     if not request.user.is_superuser:
-        return redirect('admin_panel:dashboard')
+        raise PermissionDenied
     qs = Backup.objects.select_related('created_by').order_by('-created_at')
     date_from_raw = (request.GET.get('date_from') or '').strip()
     date_to_raw = (request.GET.get('date_to') or '').strip()
@@ -46,7 +47,7 @@ def backups_list(request):
 def backup_status(request):
     """Return backup status as JSON for polling. GET ?ids=1,2,3"""
     if not request.user.is_superuser:
-        raise Http404
+        raise PermissionDenied
     ids_str = request.GET.get('ids', '')
     ids = []
     for x in ids_str.split(','):
@@ -73,7 +74,7 @@ def backup_status(request):
 def backup_create(request):
     """Create new backup (POST): include_database, include_media, include_settings checkboxes."""
     if not request.user.is_superuser:
-        raise Http404
+        raise PermissionDenied
     if request.method != 'POST':
         return redirect('admin_panel:backups_list')
     include_database = request.POST.get('include_database') == 'on'
@@ -96,7 +97,7 @@ def backup_create(request):
 def backup_download(request, pk):
     """Download backup file."""
     if not request.user.is_superuser:
-        raise Http404
+        raise PermissionDenied
     backup = get_object_or_404(Backup, pk=pk)
     if backup.status != Backup.STATUS_COMPLETED or not backup.file_path:
         raise Http404('Backup not available for download')
@@ -115,7 +116,7 @@ def backup_download(request, pk):
 def backup_restore(request, pk):
     """Restore from backup."""
     if not request.user.is_superuser:
-        raise Http404
+        raise PermissionDenied
     backup = get_object_or_404(Backup, pk=pk)
     if backup.status != Backup.STATUS_COMPLETED or not backup.file_path:
         raise Http404('Backup not available for restore')
@@ -155,7 +156,7 @@ def backup_restore(request, pk):
 def backup_delete(request, pk):
     """Delete backup."""
     if not request.user.is_superuser:
-        raise Http404
+        raise PermissionDenied
     backup = get_object_or_404(Backup, pk=pk)
     if request.method == "POST":
         from django.utils import timezone

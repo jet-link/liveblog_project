@@ -1,5 +1,7 @@
 """Admin panel access control."""
 from functools import wraps
+
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 
 
@@ -19,6 +21,16 @@ def admin_required(view_func):
             next_url = quote(request.get_full_path(), safe='/')
             return redirect(f'{login_url}?next={next_url}')
         if not request.user.is_staff:
-            return redirect('pages:home')
+            raise PermissionDenied('You do not have access to the administration area.')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def superuser_required(view_func):
+    """Use after admin_required for destructive backups, permanent user purge, etc."""
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            raise PermissionDenied('Superuser access is required for this action.')
         return view_func(request, *args, **kwargs)
     return _wrapped

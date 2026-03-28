@@ -26,6 +26,7 @@ import os
 import re
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django_ratelimit.decorators import ratelimit
 from urllib.parse import urlencode
 
 
@@ -246,7 +247,10 @@ def category_list(request, slug):
     )
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_SEARCH_RATE, method='GET', block=False)
 def search_view(request):
+    if getattr(request, 'limited', False):
+        return render(request, 'errors/429.html', status=429)
     q = request.GET.get('q', '').strip()
     by_title = request.GET.get('by_title') in ('1', 'true', 'True')
     by_text  = request.GET.get('by_text')  in ('1', 'true', 'True')
@@ -379,8 +383,11 @@ def search_view(request):
     })
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_SEARCH_HISTORY_RATE, method='GET', block=False)
 def api_search_history_list(request):
     """Список последних поисковых запросов пользователя (только GET)."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited', 'items': []}, status=429)
     if not request.user.is_authenticated:
         return JsonResponse({'items': []})
     items = list(
@@ -393,9 +400,12 @@ def api_search_history_list(request):
     return JsonResponse({'items': items})
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_SEARCH_HISTORY_RATE, method='POST', block=False)
 @require_POST
 def api_search_history_clicked(request, pk):
     """Отметить запись истории как clicked (при клике из дропдауна)."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'ok': False, 'error': 'rate_limited'}, status=429)
     if not request.user.is_authenticated:
         return JsonResponse({'ok': False}, status=403)
     try:
@@ -407,18 +417,24 @@ def api_search_history_clicked(request, pk):
         return JsonResponse({'ok': False}, status=404)
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_SEARCH_HISTORY_RATE, method='POST', block=False)
 @require_POST
 def api_search_history_clear(request):
     """Очистить всю историю поиска пользователя."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'ok': False, 'error': 'rate_limited'}, status=429)
     if not request.user.is_authenticated:
         return JsonResponse({'ok': False}, status=403)
     SearchHistory.objects.filter(user=request.user).delete()
     return JsonResponse({'ok': True})
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_SEARCH_HISTORY_RATE, method='POST', block=False)
 @require_POST
 def api_search_history_delete(request, pk):
     """Удалить один запрос из истории."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'ok': False, 'error': 'rate_limited'}, status=429)
     if not request.user.is_authenticated:
         return JsonResponse({'ok': False}, status=403)
     try:
@@ -1344,7 +1360,10 @@ def toggle_comment_like(request, pk):
 
 
 
+@ratelimit(key='ip', rate=settings.RATELIMIT_ITEM_COUNTERS_RATE, method='GET', block=False)
 def item_counters(request, item_id):
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited'}, status=429)
     item = get_object_or_404(Item.objects.with_counters(), pk=item_id)
     return JsonResponse({
         "views": item.views_count,
@@ -1362,13 +1381,12 @@ def _get_client_ip(request):
     return request.META.get('REMOTE_ADDR', '')
 
 
+@ratelimit(key='ip', rate='30/m', method='POST', block=False)
 @require_POST
 def api_repost(request):
-    """
-    POST /api/repost
-    Body: {"post_id": int, "platform": "telegram"|"twitter"|"facebook"|"linkedin"|"copy_link"|"other"}
-    Rate limits: IP 10s/post, User 5s, copy_link 15s
-    """
+    """POST /api/repost — also rate-limited per IP (middleware); body analytics see PostRepost."""
+    if getattr(request, 'limited', False):
+        return JsonResponse({'error': 'rate_limited'}, status=429)
     try:
         data = json.loads(request.body) if request.body else {}
     except json.JSONDecodeError:

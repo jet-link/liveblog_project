@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from admin_panel.decorators import admin_required
+from admin_panel.decorators import admin_required, superuser_required
 
 User = get_user_model()
 
@@ -329,13 +329,11 @@ def faq_bulk_delete(request):
 
 
 @admin_required
+@superuser_required
 def backups_bulk_delete(request):
     """Bulk delete backups. Superuser only. POST ids=1,2,3."""
     if request.method != 'POST':
         return redirect('admin_panel:backups_list')
-    if not request.user.is_superuser:
-        from django.http import Http404
-        raise Http404
     from backups.models import Backup
 
     ids = _get_ids(request)

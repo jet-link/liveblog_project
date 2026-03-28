@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django_ratelimit.decorators import ratelimit
+from django.shortcuts import render, redirect, get_object_or_404
 from login.forms import CustomUserCreationForm, LoginForm, UserEditForm, PasswordChangeSimpleForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from urllib.parse import urlparse, parse_qs
 
@@ -315,11 +315,19 @@ def user_not_found_view(request, user_obj, vanished_status="banned"):
 
 
 # Авторизация пользователя
+@ratelimit(key='ip', rate=settings.RATELIMIT_LOGIN_RATE, method='POST', block=False)
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('login_app:profile', username=request.user.username)
 
     if request.method == 'POST':
+        if getattr(request, 'limited', False):
+            form = LoginForm(request.POST or None)
+            form.add_error(
+                None,
+                'Too many login attempts from this network. Please wait and try again later.',
+            )
+            return render(request, 'accounts/login.html', {'form': form})
         form = LoginForm(request.POST or None)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -344,10 +352,8 @@ def login_view(request):
                         return redirect(next_url)
                     return redirect('login_app:profile', username=user.username)
             else:
-                if not lookup:
-                    form.add_error(None, "User not found")
-                elif not lookup.check_password(password):
-                    form.add_error(None, "Incorrect password")
+                if not lookup or not lookup.check_password(password):
+                    form.add_error(None, 'Invalid username or password.')
                 elif not lookup.is_active:
                     try:
                         if lookup.profile.trust_banned:
@@ -358,7 +364,7 @@ def login_view(request):
                     except Exception:
                         form.add_error(None, "Your account has been disabled.")
                 else:
-                    form.add_error(None, "Incorrect password")
+                    form.add_error(None, 'Invalid username or password.')
         # если form.is_valid() == False — будут показаны ошибки required и т.д.
     else:
         form = LoginForm()
@@ -367,11 +373,19 @@ def login_view(request):
 
 
 # Регистация пользователя
+@ratelimit(key='ip', rate=settings.RATELIMIT_REGISTER_RATE, method='POST', block=False)
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('login_app:profile', username=request.user.username)
 
     if request.method == 'POST':
+        if getattr(request, 'limited', False):
+            form = CustomUserCreationForm(request.POST)
+            form.add_error(
+                None,
+                'Too many registration attempts from this network. Please try again later.',
+            )
+            return render(request, 'accounts/register.html', {'form': form})
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # сохраняем User

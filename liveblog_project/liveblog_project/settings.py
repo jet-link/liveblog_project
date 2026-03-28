@@ -70,6 +70,34 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'false').lower() in ('1', 'true', 'yes')
 
+# Session / cookies (public site)
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = os.environ.get('SESSION_COOKIE_SAMESITE', 'Lax')
+SESSION_COOKIE_AGE = int(os.environ.get('SESSION_COOKIE_AGE', str(60 * 60 * 24 * 14)))  # 14 days
+SESSION_SAVE_EVERY_REQUEST = os.environ.get('SESSION_SAVE_EVERY_REQUEST', '').lower() in (
+    '1',
+    'true',
+    'yes',
+)
+
+# django-ratelimit: use default cache (Redis in prod when REDIS_URL set)
+RATELIMIT_USE_CACHE = os.environ.get('RATELIMIT_USE_CACHE', 'default')
+RATELIMIT_LOGIN_RATE = os.environ.get('RATELIMIT_LOGIN_RATE', '5/15m')
+# security_middleware reads DJANGO_SECURITY_CSP / DJANGO_SECURITY_CSP_REPORT_ONLY.
+RATELIMIT_REGISTER_RATE = os.environ.get('RATELIMIT_REGISTER_RATE', '5/h')
+RATELIMIT_SEARCH_RATE = os.environ.get('RATELIMIT_SEARCH_RATE', '60/m')
+RATELIMIT_TRENDING_RATE = os.environ.get('RATELIMIT_TRENDING_RATE', '120/m')
+RATELIMIT_ITEM_COUNTERS_RATE = os.environ.get('RATELIMIT_ITEM_COUNTERS_RATE', '90/m')
+RATELIMIT_SEARCH_HISTORY_RATE = os.environ.get('RATELIMIT_SEARCH_HISTORY_RATE', '120/m')
+RATELIMIT_REPORT_POST_RATE = os.environ.get('RATELIMIT_REPORT_POST_RATE', '40/m')
+
+SECURITY_HEADERS_ENABLED = os.environ.get('DJANGO_SECURITY_HEADERS', 'true').lower() in (
+    '1',
+    'true',
+    'yes',
+    '',
+)
+
 # Applications
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -94,10 +122,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'liveblog_project.security_middleware.SecurityHeadersMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'liveblog_project.security_middleware.AdminAuditMiddleware',
     'login.middleware.UserOnlineMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -294,6 +324,16 @@ LOGGING = {
         'backups': {
             'handlers': ['console'],
             'level': 'INFO',
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'security.admin': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }
