@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.urls import reverse
 from django.contrib.sites.models import Site
-from smart_blog.models import Item
+from smart_blog.models import Item, TrendingItem
 from smart_blog.search_utils import get_popularity_queryset
 from smart_blog.sitemaps import (
     categories_for_sitemap,
@@ -11,26 +11,84 @@ from smart_blog.sitemaps import (
     static_sitemap_entries,
     tags_for_sitemap,
 )
-from pages.models import FAQItem
+from pages.models import FAQItem, HomePageContent, HomeQuickLink
+from pages.home_content import get_home_page
 from pages.static_pages import get_about_page, get_contacts_page
 from django.http import Http404
 
 RECENT_POSTS_ON_SITEMAP_HTML = 40
 
 
-def home_page(request):
-    """Home page with top popular items (time-decayed popularity, DB-level when PostgreSQL)."""
+def _ordered_editor_picks(home):
+    if not home.show_editor_picks:
+        return []
+    id_order = [
+        pk
+        for pk in (
+            home.editor_pick_1_id,
+            home.editor_pick_2_id,
+            home.editor_pick_3_id,
+        )
+        if pk
+    ]
+    if not id_order:
+        return []
     qs = (
-        Item.objects
-        .filter(is_published=True)
+        Item.objects.filter(pk__in=id_order, is_published=True)
         .with_counters()
+        .prefetch_related("images")
     )
-    qs = get_popularity_queryset(qs, min_likes=6)
-    popular_items = list(qs[:10])
+    by_id = {i.pk: i for i in qs}
+    return [by_id[i] for i in id_order if i in by_id]
 
-    return render(request, 'pages/home.html', {
-        'popular_items': popular_items
-    })
+
+def home_page(request):
+    """Home page: copy and layout from HomePageContent; strip popular or trending."""
+    home = get_home_page()
+    quick_links = []
+    if home.show_quick_links:
+        quick_links = list(
+            HomeQuickLink.objects.filter(is_active=True).order_by("order", "pk")
+        )
+
+    strip_items = []
+    strip_heading = ""
+    mode = home.content_strip_mode
+    if mode == HomePageContent.STRIP_POPULAR:
+        qs = (
+            Item.objects.filter(is_published=True)
+            .with_counters()
+            .prefetch_related("images")
+        )
+        qs = get_popularity_queryset(qs, min_likes=home.popular_min_likes)
+        strip_items = list(qs[: home.content_strip_limit])
+        strip_heading = "Popular"
+    elif mode == HomePageContent.STRIP_TRENDING:
+        rows = (
+            TrendingItem.objects.filter(item__is_published=True)
+            .select_related("item", "item__category", "item__author", "item__author__profile")
+            .prefetch_related("item__images")
+            .order_by("-trend_score")[: home.content_strip_limit]
+        )
+        strip_items = [t.item for t in rows]
+        strip_heading = "In trend"
+
+    show_content_strip = mode != HomePageContent.STRIP_NONE and bool(strip_items)
+    editor_picks = _ordered_editor_picks(home)
+
+    return render(
+        request,
+        "pages/home.html",
+        {
+            "home": home,
+            "meta_description": home.meta_description or "",
+            "quick_links": quick_links,
+            "strip_items": strip_items,
+            "strip_heading": strip_heading,
+            "show_content_strip": show_content_strip,
+            "editor_picks": editor_picks,
+        },
+    )
 
 
 class PageView(View):

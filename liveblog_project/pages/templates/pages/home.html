@@ -1,63 +1,107 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load cache %}
-{% block title %}
-  brainstorm.org
+{% block title %}{{ home.browser_title }}{% endblock %}
+{% block meta_description %}
+  {% if meta_description %}
+    <meta name="description" content="{{ meta_description }}" />
+  {% endif %}
 {% endblock %}
 {% block content %}
-  <main class="site-main">
-    <section class="primary_section centered">
+  <main class="site-main home-page">
+    <section class="home-hero primary_section centered">
       <div class="container-main">
-        <div class="row">
-          <div class="col-md-12">
-            <h1 class="mb-4 text-muted">Hello Bitchez!</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum voluptas a veritatis tempora dolore perferendis recusandae fuga non autem, nisi tenetur vero ab doloribus perspiciatis voluptate, qui sapiente rem facilis. Minus ullam numquam, nisi magnam temporibus nam tempore exercitationem laboriosam dolorem sit, laborum alias culpa doloremque natus? Veniam est, perferendis molestiae ducimus, sunt cumque vero eligendi repellendus illum iste assumenda? Delectus molestias ullam facere, maiores error inventore? Neque, doloremque mollitia saepe perspiciatis laborum laboriosam blanditiis ratione hic nihil sint quae iste tempore, voluptates accusantium. Soluta corporis doloremque reiciendis consequatur accusantium? Hic optio eaque, voluptas dolorem facere possimus voluptatum modi voluptatibus suscipit, eos iure? Aliquam incidunt ut ipsum itaque possimus eos temporibus est iusto tempore! Itaque voluptatem natus molestiae optio explicabo. Quo velit error beatae vero, libero totam ex fugit reiciendis deserunt recusandae voluptas aspernatur suscipit eum repellendus voluptatibus nesciunt, nobis quaerat optio inventore ab sunt. Sed omnis maiores nam vel!</p>
+        <div class="home-hero-inner">
+          <h1 class="home-hero-h1 text-muted mb-3">{{ home.hero_h1 }}</h1>
+          {% if home.hero_lede %}
+            <p class="home-hero-lede text-muted mb-4">{{ home.hero_lede }}</p>
+          {% endif %}
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            {% if home.cta_primary_label and home.cta_primary_url %}
+              <a href="{{ home.cta_primary_url }}" class="cstm-btn custom-primary-btn">{{ home.cta_primary_label }}<i class="fa fa-angle-right ms-2" aria-hidden="true"></i></a>
+            {% endif %}
+            {% if home.cta_secondary_label and home.cta_secondary_url %}
+              <a href="{{ home.cta_secondary_url }}" class="cstm-btn home-hero-btn-secondary">{{ home.cta_secondary_label }}<i class="fa fa-angle-right ms-2" aria-hidden="true"></i></a>
+            {% endif %}
           </div>
+          {% if home.trust_line and home.trust_link_url %}
+            <p class="home-trust small text-muted mb-0">
+              <a href="{{ home.trust_link_url }}" class="text-muted text-decoration-underline">{{ home.trust_line }}</a>
+            </p>
+          {% endif %}
         </div>
       </div>
     </section>
 
-    <section class="cosmo_section centered">
-      <!-- Astronauts decorative block -->
-      {% cache 300 astronauts_cosmo %}
-      {% include 'includes/astronauts_cosmo.html' %}
-      {% endcache %}
-    </section>
-
-    <section class="primary_section centered">
-      <div class="container-main">
-        <div class="row">
-          <div class="col-md-12">
-            <h1 class="mb-4 text-muted">Hello</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum voluptas a veritatis tempora dolore perferendis recusandae fuga non autem, nisi tenetur vero ab doloribus perspiciatis voluptate, qui sapiente rem facilis. Minus ullam numquam, nisi magnam temporibus nam tempore exercitationem laboriosam dolorem sit, laborum alias culpa doloremque natus? Veniam est, perferendis molestiae ducimus, sunt cumque vero eligendi repellendus illum iste assumenda? Delectus molestias ullam facere, maiores error inventore? Neque, doloremque mollitia saepe perspiciatis laborum laboriosam blanditiis ratione hic nihil sint quae iste tempore, voluptates accusantium. Soluta corporis doloremque reiciendis consequatur accusantium? Hic optio eaque, voluptas dolorem facere possimus voluptatum modi voluptatibus suscipit, eos iure? Aliquam incidunt ut ipsum itaque possimus eos temporibus est iusto tempore! Itaque voluptatem natus molestiae optio explicabo. Quo velit error beatae vero, libero totam ex fugit reiciendis deserunt recusandae voluptas aspernatur suscipit eum repellendus voluptatibus nesciunt, nobis quaerat optio inventore ab sunt. Sed omnis maiores nam vel!</p>
+    {% if quick_links %}
+      <section class="home-quick-links primary_section centered">
+        <div class="container-main">
+          <div class="row g-2 g-md-3 justify-content-center home-quick-links-row">
+            {% for link in quick_links %}
+              <div class="col-6 col-md-4 col-lg-auto">
+                <a href="{{ link.url }}" class="home-quick-link card h-100 text-decoration-none text-center p-3 border">
+                  {% if link.icon_class %}
+                    <span class="home-quick-link-icon d-block mb-2 text-muted" aria-hidden="true"><i class="fa {{ link.icon_class }}"></i></span>
+                  {% endif %}
+                  <span class="small fw-semibold text-muted">{{ link.label }}</span>
+                </a>
+              </div>
+            {% endfor %}
           </div>
         </div>
-      </div>
-    </section>
-
-    {% if popular_items|length > 3 %}
-      <section class="cosmo_section">
-        <div class="d-flex w-100 justify-content-center align-items-center mb-5">
-          <h4 class="m-0 title-block">Popular items</h4>
-        </div>
-        {% cache 300 popular_items %}
-        {% include 'includes/popular_items.html' %}
-        {% endcache %}
-        {% comment %} <div class="w-100 d-flex justify-content-center align-items-center mt-5">
-          <a href="{% url 'smart_blog:items_list' %}" class="cstm-btn custom-primary-btn">See more<i class="fa fa-angle-right ms-2" aria-hidden="true"></i></a>
-        </div> {% endcomment %}
       </section>
     {% endif %}
 
-    <section class="primary_section centered">
-      <div class="container-main">
-        <div class="row">
-          <div class="col-md-12">
-            <h1 class="mb-4 text-muted">Hello</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum voluptas a veritatis tempora dolore perferendis recusandae fuga non autem, nisi tenetur vero ab doloribus perspiciatis voluptate, qui sapiente rem facilis. Minus ullam numquam, nisi magnam temporibus nam tempore exercitationem laboriosam dolorem sit, laborum alias culpa doloremque natus? Veniam est, perferendis molestiae ducimus, sunt cumque vero eligendi repellendus illum iste assumenda? Delectus molestias ullam facere, maiores error inventore? Neque, doloremque mollitia saepe perspiciatis laborum laboriosam blanditiis ratione hic nihil sint quae iste tempore, voluptates accusantium. Soluta corporis doloremque reiciendis consequatur accusantium? Hic optio eaque, voluptas dolorem facere possimus voluptatum modi voluptatibus suscipit, eos iure? Aliquam incidunt ut ipsum itaque possimus eos temporibus est iusto tempore! Itaque voluptatem natus molestiae optio explicabo. Quo velit error beatae vero, libero totam ex fugit reiciendis deserunt recusandae voluptas aspernatur suscipit eum repellendus voluptatibus nesciunt, nobis quaerat optio inventore ab sunt. Sed omnis maiores nam vel!</p>
-          </div>
+    {% if home.show_editor_picks and editor_picks and not home.editor_pick_order_after_strip %}
+      <section class="home-editor-picks cosmo_section">
+        <div class="d-flex w-100 justify-content-center align-items-center mb-4">
+          <h2 class="m-0 h4 title-block">Editor’s picks</h2>
         </div>
+        {% cache 600 home_editor_picks home.cache_bump %}
+          {% include 'includes/popular_items.html' with popular_items=editor_picks %}
+        {% endcache %}
+      </section>
+    {% endif %}
+
+    {% if show_content_strip %}
+      <section class="home-content-strip cosmo_section">
+        <div class="d-flex w-100 justify-content-center align-items-center mb-4">
+          <h2 class="m-0 h4 title-block">{{ strip_heading }}</h2>
+        </div>
+        {% cache 600 home_content_strip home.cache_bump %}
+          {% include 'includes/popular_items.html' with popular_items=strip_items %}
+        {% endcache %}
+      </section>
+    {% endif %}
+
+    {% if home.show_editor_picks and editor_picks and home.editor_pick_order_after_strip %}
+      <section class="home-editor-picks cosmo_section">
+        <div class="d-flex w-100 justify-content-center align-items-center mb-4">
+          <h2 class="m-0 h4 title-block">Editor’s picks</h2>
+        </div>
+        {% cache 600 home_editor_picks_after home.cache_bump %}
+          {% include 'includes/popular_items.html' with popular_items=editor_picks %}
+        {% endcache %}
+      </section>
+    {% endif %}
+
+    {% if home.show_decorative_astronauts %}
+      <section class="cosmo_section centered">
+        {% cache 600 home_astronauts home.cache_bump %}
+          {% include 'includes/astronauts_cosmo.html' %}
+        {% endcache %}
+      </section>
+    {% endif %}
+
+    {% comment %} <section class="home-footer-links primary_section centered py-4">
+      <div class="container-main">
+        <nav class="d-flex flex-wrap justify-content-center gap-3 small" aria-label="Site links">
+          <a href="{% url 'pages:faq' %}" class="text-muted text-decoration-none">FAQ</a>
+          <a href="{% url 'pages:sitemap_page' %}" class="text-muted text-decoration-none">Sitemap</a>
+          <a href="{% url 'pages:page' 'about' %}" class="text-muted text-decoration-none">About</a>
+          <a href="{% url 'pages:page' 'contacts' %}" class="text-muted text-decoration-none">Contacts</a>
+        </nav>
       </div>
-    </section>
+    </section> {% endcomment %}
   </main>
 {% endblock %}

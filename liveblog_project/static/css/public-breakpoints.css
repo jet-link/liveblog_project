@@ -107,7 +107,7 @@
 
 /* Home / pages: inner <main class="site-main"> — space before footer (header gap via first section in pages/responsive.css) */
 .main .site-main {
-    padding-bottom: var(--space-8, 32px);
+    /* padding-bottom: var(--space-8, 32px); */
     box-sizing: border-box;
 }
 

@@ -114,7 +114,7 @@ INSTALLED_APPS = [
     'admin_panel',
     'smart_blog.apps.SmartBlogConfig',
     'login',
-    'pages',
+    'pages.apps.PagesConfig',
     'backups',
 ]
 

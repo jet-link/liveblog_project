@@ -17,7 +17,7 @@ def _default_csp() -> str:
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline' https://cdn.ckeditor.com https://cdn.jsdelivr.net; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com data:; "
+        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
         "img-src 'self' data: https: blob:; "
         "connect-src 'self'; "
         "frame-src 'self' https://cdn.ckeditor.com blob:; "
@@ -25,6 +25,21 @@ def _default_csp() -> str:
         "form-action 'self'; "
         "upgrade-insecure-requests"
     )
+
+
+def _csp_without_upgrade_for_report_only(csp: str) -> str:
+    """
+    Browsers ignore `upgrade-insecure-requests` in Content-Security-Policy-Report-Only
+    and log a console warning. Strip it for report-only delivery.
+    """
+    if not csp or 'upgrade-insecure-requests' not in csp:
+        return csp
+    parts = [
+        p.strip()
+        for p in csp.split(';')
+        if p.strip() and p.strip().lower() != 'upgrade-insecure-requests'
+    ]
+    return '; '.join(parts)
 
 
 class SecurityHeadersMiddleware:
@@ -53,7 +68,9 @@ class SecurityHeadersMiddleware:
 
         if csp:
             if report_only:
-                response.headers['Content-Security-Policy-Report-Only'] = csp
+                response.headers['Content-Security-Policy-Report-Only'] = (
+                    _csp_without_upgrade_for_report_only(csp)
+                )
             else:
                 response.headers['Content-Security-Policy'] = csp
 

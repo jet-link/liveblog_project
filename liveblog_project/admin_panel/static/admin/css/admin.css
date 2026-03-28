@@ -868,6 +868,17 @@
   cursor: pointer;
 }
 
+/* Checkbox + label pairs (explicit id/for for a11y) */
+.admin-chart-legend-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-chart-legend .admin-chart-legend-pair .admin-checkbox-input {
+  margin: 0;
+}
+
 /* Toolbar */
 .admin-toolbar {
   display: flex;
@@ -899,6 +910,30 @@
   color: var(--admin-text-muted);
   cursor: pointer;
   line-height: 1;
+}
+
+.admin-form-group--checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Checkbox-only rows: default .admin-form-group has 30px mb; labels get 15px mb — stacks too large */
+.admin-form-group.admin-form-group--checkbox-row {
+  margin-bottom: 12px;
+}
+
+.admin-form .admin-form-group--checkbox-row .admin-checkbox-label {
+  margin-bottom: 0;
+}
+
+.admin-checkbox-input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin: 0;
+  cursor: pointer;
 }
 
 .admin-filter-checkboxes {
@@ -1561,6 +1596,15 @@ a.admin-link {
   flex-wrap: wrap;
 }
 
+/* Home page — quick link row: Save + Delete side by side */
+.home-quicklink-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
 /* .admin-modal-actions .admin-button { min-width: 100px; } */
 
 /* Dropdown */
@@ -2142,6 +2186,19 @@ a.admin-link {
   border-radius: var(--admin-radius);
   padding: 10px 12px;
   margin: 0;
+}
+
+.admin-backups-create-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+.admin-backups-checkbox-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .admin-backups-create-legend {

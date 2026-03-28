@@ -21,6 +21,7 @@ This document complements production settings in `liveblog_project/settings.py` 
 
 - **Content-Security-Policy**: built-in default in `SecurityHeadersMiddleware` (allows inline scripts used by the theme toggle in `base.html`, CKEditor, jsDelivr, Google Fonts). Override with **DJANGO_SECURITY_CSP** (full header value).
 - **DJANGO_SECURITY_CSP_REPORT_ONLY**: `true` / `false`. When unset: **Report-Only in DEBUG**, **enforced when DEBUG is False**.
+- In **Report-Only** mode, `upgrade-insecure-requests` is stripped automatically (browsers ignore it there and would otherwise print a console warning).
 - **Referrer-Policy** and **Permissions-Policy** are set by middleware (see code).
 
 If you also set these headers in nginx/Caddy, avoid contradicting values.

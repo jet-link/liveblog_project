@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from urllib.parse import urlparse, parse_qs
 
 from django.urls import reverse, resolve, Resolver404
-from smart_blog.models import Comment, Item, Like
+from smart_blog.models import Comment, Item, Like, TrendingItem
 from login.models import Profile
 from django.views.decorators.http import require_POST
 from django.templatetags.static import static
@@ -424,6 +424,16 @@ MAIN_COMMENTS_ANNOTATION = {
     )
 }
 
+
+def _trending_item_ids_for_items(items):
+    """Item pk values that currently have a TrendingItem row (for In trend badge)."""
+    ids = [i.pk for i in items if getattr(i, "pk", None)]
+    if not ids:
+        return []
+    return list(
+        TrendingItem.objects.filter(item_id__in=ids).values_list("item_id", flat=True)
+    )
+
 # detail profile view
 def profile_view(request, username):
     user_obj = User._base_manager.select_related("profile", "deleted_queue_entry").filter(username=username).first()
@@ -439,6 +449,8 @@ def profile_view(request, username):
     user_items_qs = (
         Item.objects
         .filter(is_published=True, author=user_obj)
+        .select_related("category")
+        .prefetch_related("images", "tags")
         .with_counters()
         .order_by('-published_date')
     )
@@ -452,12 +464,17 @@ def profile_view(request, username):
             item.bookmarks_count_human = count_convert(item.bookmarks_count)
             item.comments_count_human = count_convert(item.comments_count)
 
-    SECTION_LIMIT = 10
-    created_items = list(user_items_qs[:SECTION_LIMIT])
+    all_count = user_items_qs.count()
+    # Profile: first 9 cards when more than 9 published posts; otherwise show all (no "View all" needed).
+    if all_count > 9:
+        created_items = list(user_items_qs[:9])
+    else:
+        created_items = list(user_items_qs)
     apply_human_counts(created_items)
+    trending_item_ids = _trending_item_ids_for_items(created_items)
 
     counts = {
-        'all_count': user_items_qs.count(),
+        'all_count': all_count,
     }
     # ----------------------------
     # ПЕРСОНАЛЬНЫЕ ДАННЫЕ (CLEAN)
@@ -522,6 +539,7 @@ def profile_view(request, username):
         'show_profile_avatar_thumbs': has_uploaded_avatar,
         'user_obj': user_obj,
         'created_items': created_items,
+        'trending_item_ids': trending_item_ids,
         'is_owner': is_owner,
         'is_online': is_online,
         'trust_score': trust_score,
@@ -547,6 +565,8 @@ def profile_section_view(request, username, section):
     user_items_qs = (
         Item.objects
         .filter(is_published=True, author=user_obj)
+        .select_related("category")
+        .prefetch_related("images", "tags")
         .with_counters()
         .order_by('-published_date')
     )
@@ -575,6 +595,8 @@ def profile_section_view(request, username, section):
         item.bookmarks_count_human = count_convert(item.bookmarks_count)
         item.comments_count_human = count_convert(item.comments_count)
 
+    trending_item_ids = _trending_item_ids_for_items(list(page_obj))
+
     if not user_obj.is_active:
         if getattr(user_obj, "deleted_queue_entry", None):
             crumb_user_label = "Deleted user"
@@ -599,6 +621,7 @@ def profile_section_view(request, username, section):
         'breadcrumbs': breadcrumbs,
         'link_url': link_url,
         'listing_user': user_obj.username,
+        'trending_item_ids': trending_item_ids,
     }
     return render(request, 'accounts/profile_section.html', context)
 

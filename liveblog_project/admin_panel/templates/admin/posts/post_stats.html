@@ -10,9 +10,18 @@
 <section class="admin-activity-chart admin-post-stats-chart">
     <h2 class="admin-section-title">Activity (last 14 days)</h2>
     <div class="admin-chart-legend">
-        <label><input type="checkbox" id="chartPostViews" checked> Views</label>
-        <label><input type="checkbox" id="chartPostLikes" checked> Likes</label>
-        <label><input type="checkbox" id="chartPostComments" checked> Comments</label>
+        <span class="admin-chart-legend-pair">
+            <input type="checkbox" id="chartPostViews" class="admin-checkbox-input" checked>
+            <label for="chartPostViews" class="admin-checkbox-label">Views</label>
+        </span>
+        <span class="admin-chart-legend-pair">
+            <input type="checkbox" id="chartPostLikes" class="admin-checkbox-input" checked>
+            <label for="chartPostLikes" class="admin-checkbox-label">Likes</label>
+        </span>
+        <span class="admin-chart-legend-pair">
+            <input type="checkbox" id="chartPostComments" class="admin-checkbox-input" checked>
+            <label for="chartPostComments" class="admin-checkbox-label">Comments</label>
+        </span>
     </div>
     <div class="admin-card admin-chart-container">
         <canvas id="postStatsChart"></canvas>

@@ -2,8 +2,8 @@
     <div class="admin-tags-label" style="font-size:13px;font-weight:500;margin-bottom:6px;color:var(--admin-text);">{{ form.tags.label }}</div>
     <div class="admin-tags-wrap" data-field-name="{{ form.tags.html_name }}">
         {% for tag in form.tags.field.queryset %}
-        <label class="admin-tag-badge{% if tag.pk in selected_tag_ids %} admin-tag-badge-selected{% endif %}">
-            <input type="checkbox" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="admin-tag-checkbox"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
+        <label class="admin-tag-badge{% if tag.pk in selected_tag_ids %} admin-tag-badge-selected{% endif %}" for="id_admin_tag_cb_{{ tag.pk }}">
+            <input type="checkbox" id="id_admin_tag_cb_{{ tag.pk }}" name="{{ form.tags.html_name }}" value="{{ tag.pk }}" class="admin-tag-checkbox"{% if tag.pk in selected_tag_ids %} checked{% endif %}>
             {{ tag.tag_name }}
         </label>
         {% empty %}

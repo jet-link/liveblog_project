@@ -75,9 +75,18 @@
     <section class="admin-activity-chart">
         <h2 class="admin-section-title">Activity (last 14 days)</h2>
         <div class="admin-chart-legend">
-            <label><input type="checkbox" id="chartPosts" checked> Posts</label>
-            <label><input type="checkbox" id="chartComments" checked> Comments</label>
-            <label><input type="checkbox" id="chartUsers" checked> Users</label>
+            <span class="admin-chart-legend-pair">
+                <input type="checkbox" id="chartPosts" class="admin-checkbox-input" checked>
+                <label for="chartPosts" class="admin-checkbox-label">Posts</label>
+            </span>
+            <span class="admin-chart-legend-pair">
+                <input type="checkbox" id="chartComments" class="admin-checkbox-input" checked>
+                <label for="chartComments" class="admin-checkbox-label">Comments</label>
+            </span>
+            <span class="admin-chart-legend-pair">
+                <input type="checkbox" id="chartUsers" class="admin-checkbox-input" checked>
+                <label for="chartUsers" class="admin-checkbox-label">Users</label>
+            </span>
         </div>
         <div class="admin-card admin-chart-container">
             <canvas id="activityChart"></canvas>

@@ -423,6 +423,7 @@
 
 @media (max-width: 575px) {
     .topic-tile,
+    .profile-created-post-tile,
     .topic-hub-card {
         min-width: 0;
     }

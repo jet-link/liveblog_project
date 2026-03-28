@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -87,3 +88,136 @@ class ContactsPageContent(models.Model):
 
     def __str__(self):
         return 'Contacts page'
+
+
+class HomePageContent(models.Model):
+    """Singleton row (pk=1): public home page copy and layout flags."""
+
+    STRIP_POPULAR = "popular"
+    STRIP_TRENDING = "trending"
+    STRIP_NONE = "none"
+    STRIP_CHOICES = [
+        (STRIP_POPULAR, "Popular"),
+        (STRIP_TRENDING, "In trend"),
+        (STRIP_NONE, "No strip (hero + quick links only)"),
+    ]
+
+    browser_title = models.CharField(max_length=120, default="brainstorm.news")
+    meta_description = models.CharField(
+        max_length=320,
+        blank=True,
+        help_text="Meta description for search engines (plain text).",
+    )
+    hero_h1 = models.CharField(max_length=200, default="brainstorm.news")
+    hero_lede = models.TextField(blank=True)
+    cta_primary_label = models.CharField(max_length=120, blank=True)
+    cta_primary_url = models.CharField(max_length=500, blank=True)
+    cta_secondary_label = models.CharField(max_length=120, blank=True)
+    cta_secondary_url = models.CharField(max_length=500, blank=True)
+    trust_line = models.CharField(max_length=255, blank=True)
+    trust_link_url = models.CharField(max_length=500, blank=True)
+    show_quick_links = models.BooleanField(default=True)
+    show_decorative_astronauts = models.BooleanField(
+        default=False,
+        help_text="Show the optional astronauts decorative block.",
+    )
+    content_strip_mode = models.CharField(
+        max_length=16,
+        choices=STRIP_CHOICES,
+        default=STRIP_POPULAR,
+    )
+    content_strip_limit = models.PositiveSmallIntegerField(default=6)
+    popular_min_likes = models.PositiveSmallIntegerField(default=6)
+    show_editor_picks = models.BooleanField(default=False)
+    editor_pick_order_after_strip = models.BooleanField(
+        default=False,
+        help_text="If checked, editor picks appear below the main strip; otherwise above.",
+    )
+    editor_pick_1 = models.ForeignKey(
+        "smart_blog.Item",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    editor_pick_2 = models.ForeignKey(
+        "smart_blog.Item",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    editor_pick_3 = models.ForeignKey(
+        "smart_blog.Item",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    cache_bump = models.PositiveIntegerField(
+        default=0,
+        editable=False,
+        help_text="Bumped on each content save to invalidate template cache.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="home_page_edits",
+    )
+
+    class Meta:
+        verbose_name = "Home page content"
+        verbose_name_plural = "Home page content"
+
+    def __str__(self):
+        return "Home page"
+
+    def clean(self):
+        super().clean()
+        lim = self.content_strip_limit
+        if lim < 3 or lim > 12:
+            raise ValidationError({"content_strip_limit": "Must be between 3 and 12."})
+        if (self.cta_primary_label or "").strip() and not (self.cta_primary_url or "").strip():
+            raise ValidationError(
+                {"cta_primary_url": "URL is required when the primary button label is set."}
+            )
+        if (self.cta_secondary_label or "").strip() and not (self.cta_secondary_url or "").strip():
+            raise ValidationError(
+                {"cta_secondary_url": "URL is required when the secondary button label is set."}
+            )
+        if (self.trust_line or "").strip() and not (self.trust_link_url or "").strip():
+            raise ValidationError(
+                {"trust_link_url": "URL is required when the trust line is set."}
+            )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from django.db.models import F
+
+        HomePageContent.objects.filter(pk=self.pk).update(cache_bump=F("cache_bump") + 1)
+
+
+class HomeQuickLink(models.Model):
+    label = models.CharField(max_length=120)
+    url = models.CharField(
+        max_length=500,
+        help_text="Path (e.g. /search/) or full https URL.",
+    )
+    icon_class = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="Font Awesome 4 class, e.g. fa-search",
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order", "pk"]
+        verbose_name = "Home quick link"
+        verbose_name_plural = "Home quick links"
+
+    def __str__(self):
+        return self.label

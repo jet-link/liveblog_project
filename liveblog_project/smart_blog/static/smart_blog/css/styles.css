@@ -3191,7 +3191,7 @@ html[data-theme="dark"] .replies > .comment-block::before {
 }
 
 .form-wrapper {
-    padding: 25px;
+    padding: 10px;
     background: var(--bg-default);
     border-radius: 10px;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
@@ -4880,6 +4880,29 @@ html[data-theme="dark"] .trending-card--topic {
 
 html[data-theme="dark"] .trending-card--topic:hover {
     box-shadow: 0 0.4rem 1.25rem rgba(0, 0, 0, 0.45);
+}
+
+/* Profile created tiles: title row + meta spans; gap replaces margins (badges: global .trending-badge only) */
+.profile-created-post-tile__body {
+    gap: 6px;
+}
+
+.profile-created-post-tile__meta {
+    gap: 6px;
+    font-size: 0.75rem; /* ~0.7–0.8rem band */
+    line-height: 1.35;
+}
+
+.profile-created-post-tile__line {
+    display: block;
+    min-width: 0;
+}
+
+.profile-created-post-tile__stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.35rem;
 }
 
 /* Topic hub AJAX feed — match Liked/Marked card transition */

@@ -9,8 +9,9 @@
     <p class="admin-alert admin-alert-warning">This will replace current database and media. Restart server after restore.</p>
     <form method="post" class="admin-form">
         {% csrf_token %}
-        <div class="admin-form-group">
-            <label><input type="checkbox" name="backup_before_restore" value="yes" checked> Create safety backup before restore</label>
+        <div class="admin-form-group admin-form-group--checkbox-row">
+            <input type="checkbox" id="id_backup_before_restore" name="backup_before_restore" value="yes" class="admin-checkbox-input" checked>
+            <label for="id_backup_before_restore" class="admin-checkbox-label">Create safety backup before restore</label>
         </div>
         <div class="admin-form-group">
             <label for="id_confirm_text">Type RESTORE to confirm:</label>
