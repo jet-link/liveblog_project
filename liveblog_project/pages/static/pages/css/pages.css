@@ -244,6 +244,8 @@ h6 {
 }
 
 .hero-card {
+    display: flex;
+    flex-direction: column;
     flex: 0 0 calc((100vw - 10vw - 64px) / 3);
     height: 560px;
     scroll-snap-align: center;
@@ -261,19 +263,22 @@ h6 {
     font-size: .9rem;
 }
 
-.hero-card img {
+.hero-card > img {
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
-    height: 75%;
     object-fit: cover;
+    object-position: 50% 40%;
     transition: .3s ease;
 }
 
-.hero-card a:hover img {
+.hero-card:hover > img {
     transform: scale(1.03);
 }
 
 
 .hero-card-body {
+    flex: 0 0 auto;
     padding: 16px;
     color: #fff;
 }

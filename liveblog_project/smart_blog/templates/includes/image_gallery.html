@@ -13,7 +13,6 @@
           alt="{{ img.alt_text|default:item.title }}"
           width="{{ img.width|default:600 }}"
           height="{{ img.height|default:400 }}"
-          style="aspect-ratio: {{ img.width|default:600 }} / {{ img.height|default:400 }};"
           data-index="{{ forloop.counter0 }}"
         />
       </div>

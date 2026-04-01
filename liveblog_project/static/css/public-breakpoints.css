@@ -78,12 +78,19 @@
 .main .item-text.ck-content img,
 .main .item-text.ck-content figure img,
 .main .ck-content img,
-.main .post-body img,
-.main .item-gallery img,
-.main .gallery-img,
-.main .gallery-slide-img {
+.main .post-body img {
     max-width: 100%;
     height: auto;
+    display: block;
+}
+
+/* Post gallery: cells have fixed/min height — images must fill with object-fit */
+.main .item-gallery .gallery-img,
+.main .item-gallery .gallery-slide-img {
+    max-width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
     display: block;
 }
 
