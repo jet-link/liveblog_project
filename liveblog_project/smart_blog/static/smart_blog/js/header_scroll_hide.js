@@ -1,3 +1,8 @@
+/**
+ * Отключено: шапка статичная (см. styles.css .header-wrapper + base.html).
+ * Раньше: при скролле вниз добавлялся класс .header-wrapper--hidden (translateY).
+ */
+/*
 (function () {
     'use strict';
 
@@ -32,3 +37,4 @@
         { passive: true }
     );
 })();
+*/

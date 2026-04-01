@@ -1375,8 +1375,8 @@ html[data-theme="dark"] .block-quote {
 .auth-form-layout.content_block {
     padding-top: calc(var(--header-height, 72px) + 28px);
     margin-bottom: 48px;
-    min-height: calc(100vh - var(--header-height, 72px) - 96px);
-    min-height: calc(100svh - var(--header-height, 72px) - 96px);
+    min-height: calc(100vh - var(--header-height, 72px) - 200px);
+    min-height: calc(100svh - var(--header-height, 72px) - 200px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1385,7 +1385,7 @@ html[data-theme="dark"] .block-quote {
 }
 
 .auth-form-layout .edit-profile-field {
-    max-width: 420px;
+    max-width: 500px;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -1447,8 +1447,8 @@ html[data-theme="dark"] .block-quote {
 @media (max-width: 575px) {
     .auth-form-layout.content_block {
         padding-top: calc(var(--header-height, 72px) + 16px);
-        min-height: calc(100vh - var(--header-height, 72px) - 80px);
-        min-height: calc(100svh - var(--header-height, 72px) - 80px);
+        min-height: calc(100vh - var(--header-height, 72px) - 200px);
+        min-height: calc(100svh - var(--header-height, 72px) - 200px);
         margin-bottom: 40px;
     }
 

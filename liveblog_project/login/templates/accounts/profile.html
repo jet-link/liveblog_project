@@ -43,7 +43,7 @@
           <h6 class="text-muted m-0">Created posts</h6>
           <span class="primary_ fw-semibold">{{ all_count }}</span>
         </div>
-        {% include 'includes/profile_created_posts_grid.html' with items=created_items trending_item_ids=trending_item_ids listing_source='profile' listing_user=user_obj.username listing_section='created' %}
+        {% include 'includes/profile_created_posts_grid.html' with items=created_items trending_item_ids=trending_item_ids listing_source='profile' listing_user=user_obj.username %}
         {% if all_count|add:0 > 9 %}
           <div class="d-flex justify-content-start align-items-center mt-4 small">
             <a href="{{ profile_created_url }}" class="text-decoration-none text-muted d-flex gap-2">

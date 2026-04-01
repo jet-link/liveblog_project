@@ -4,7 +4,7 @@
       {% include 'includes/filtered_cards_columns.html' %}
     </div>
     {% if page_obj.has_next %}
-    <div class="filter-load-more-wrap d-flex justify-content-center align-items-center gap-3 my-4 filter-pagination-extra">
+    <div class="filter-load-more-wrap d-flex justify-content-center align-items-center gap-3 my-5 filter-pagination-extra">
       <button type="button" class="show-more-btn-toggle filter-load-more-btn" data-next-page="{{ page_obj.next_page_number }}">Load more</button>
       <span class="small text-muted filter-load-more-counter">{{ page_obj.end_index }} / {{ paginator.count }}</span>
     </div>

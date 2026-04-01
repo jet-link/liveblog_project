@@ -44,7 +44,7 @@
           {% endif %}
         </section>
 
-        <section class="sitemap-html-block" id="sitemap-categories" aria-labelledby="sitemap-heading-categories">
+        {% comment %} <section class="sitemap-html-block" id="sitemap-categories" aria-labelledby="sitemap-heading-categories">
           <h4 id="sitemap-heading-categories" class="sitemap-html-block-title text-muted">Posts by category</h4>
           {% if category_links %}
             <ul class="sitemap-html-list list-unstyled mb-0">
@@ -55,7 +55,7 @@
           {% else %}
             <p class="text-muted small mb-0">No categories yet.</p>
           {% endif %}
-        </section>
+        </section> {% endcomment %}
 
         <section class="sitemap-html-block" id="sitemap-tags" aria-labelledby="sitemap-heading-tags">
           <h4 id="sitemap-heading-tags" class="sitemap-html-block-title text-muted">Tags</h4>

@@ -12,11 +12,11 @@
           <a href="{% url 'smart_blog:for_you_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'for_you_list' %} active{% endif %}">For you</a>
           <a href="{% url 'smart_blog:trending_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'trending_list' %} active{% endif %}">In trend</a>
           <a href="{% url 'smart_blog:topics_list' %}" class="header-menu-item text-decoration-none text-muted{% if nav_name == 'topics_list' or nav_name == 'topic_detail' %} active{% endif %}">Topics</a>
-          <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">
+          {% comment %} <a href="#" class="header-menu-item text-decoration-none text-muted categories-modal-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="categoriesModalDialog">
             Categories
             <i class="fa fa-angle-down ms-1" aria-hidden="true"></i>
             <i class="fa fa-angle-up ms-1 hidden" aria-hidden="true"></i>
-          </a>
+          </a> {% endcomment %}
           {% endwith %}
         </div>
         <div class="d-flex align-items-center gap-2 header-actions">

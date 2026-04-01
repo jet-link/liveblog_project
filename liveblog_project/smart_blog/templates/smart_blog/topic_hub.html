@@ -12,7 +12,7 @@
     data-search-history-clear-url="{% url 'smart_blog:api_search_history_clear' %}"
     data-search-history-delete-pattern="{% url 'smart_blog:api_search_history_delete' pk=999999 %}"
   >
-    {% comment %} {% include 'includes/breadcrumbs.html' %} {% endcomment %}
+    {% include 'includes/breadcrumbs.html' %}
 
     <div class="mb-4">
       <h5 class="text-muted m-0">{{ category.name }}</h5>
@@ -32,13 +32,13 @@
         class="filter-reason-btn topic-sort-btn{% if topic_sort == 'liked' %} is-selected{% endif %}"
         data-sort="liked"
         data-topic-base="{{ topic_base }}"
-      >Most liked</button>
+      >Liked</button>
       <button
         type="button"
         class="filter-reason-btn topic-sort-btn{% if topic_sort == 'discussed' %} is-selected{% endif %}"
         data-sort="discussed"
         data-topic-base="{{ topic_base }}"
-      >Most discussed</button>
+      >Discussed</button>
     </div>
 
     <div id="filterCardsWrapper" class="filter-cards-container filter-cards-transition" data-page-type="topic" data-category-slug="{{ category.slug }}">

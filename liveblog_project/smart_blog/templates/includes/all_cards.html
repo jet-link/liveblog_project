@@ -57,8 +57,8 @@
             <div class="item_thumbnail">
               {% if item.images.first %}
                 <img src="{{ item.images.first.get_thumbnail_url }}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
-              {% else %}
-                <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" />
+              {% comment %} {% else %}
+                <img src="{% static 'img/no_image.jpg' %}" alt="thumbnail" class="thumb-sm" width="70" height="70" loading="lazy" decoding="async" /> {% endcomment %}
               {% endif %}
             </div>
           </div>
@@ -81,8 +81,12 @@
           <!-- Bottom row: continue link left, likes/bookmarks right -->
           <div class="d-flex justify-content-between align-items-center pt-3">
             <!-- item-link + data-item-id for JS (same as article id) -->
-            {% if listing_source == 'profile' and listing_user and listing_section %}
+            {% if listing_source == 'profile' and listing_user %}
+              {% if listing_section %}
               <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+              {% else %}
+              <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+              {% endif %}
             {% elif listing_source == 'items_list' and listing_source_url %}
               <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}" class="stretched-link text-decoration-none item-link small" data-item-id="{{ item.pk }}">Read<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
             {% elif listing_source == 'for_you' and listing_source_url %}

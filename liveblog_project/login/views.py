@@ -130,7 +130,7 @@ def _referer_breadcrumb_info(request, referer_url):
             section_title = sections.get(kwargs.get("section", ""), kwargs.get("section", "Section"))
             return f"{kwargs['username']} - {section_title}", referer_url
         elif url_name == "home":
-            return "brainstorm.org", referer_url
+            return "brainstorm.news", referer_url
         elif url_name == "comment_thread" and kwargs.get("pk"):
             comment = (
                 Comment.objects.filter(is_draft=False)
@@ -604,12 +604,12 @@ def profile_section_view(request, username, section):
             crumb_user_label = "Banned user"
     else:
         crumb_user_label = user_obj.username
+
+    link_url = reverse("login_app:profile-section", kwargs={"username": user_obj.username, "section": section})
     breadcrumbs = build_breadcrumbs(
         breadcrumb(crumb_user_label, reverse("login_app:profile", kwargs={"username": user_obj.username})),
         breadcrumb(section_title, None),
     )
-
-    link_url = reverse("login_app:profile-section", kwargs={"username": user_obj.username, "section": section})
     context = {
         'user_obj': user_obj,
         'items': page_obj,

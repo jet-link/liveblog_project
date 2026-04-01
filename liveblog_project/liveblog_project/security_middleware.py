@@ -19,7 +19,7 @@ def _default_csp() -> str:
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
         "img-src 'self' data: https: blob:; "
-        "connect-src 'self'; "
+        "connect-src 'self' https://cdn.ckeditor.com https://cdn.jsdelivr.net; "
         "frame-src 'self' https://cdn.ckeditor.com blob:; "
         "base-uri 'self'; "
         "form-action 'self'; "

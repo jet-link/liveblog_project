@@ -4,7 +4,7 @@
     --font-body: 'Inter', sans-serif;
     --font-heading: 'Space Grotesk', sans-serif;
 
-    /* Fixed header (см. .header-wrapper) — для отступа контента под шапку */
+    /* Высота шапки (лейаут/модалки); раньше использовалась под position:fixed — см. закомментированный .header-wrapper ниже */
     --header-height: 72px;
 
     /* Spacing & Layout (align with public-breakpoints scale where possible) */
@@ -871,7 +871,15 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     margin-top: 10px;
 }
 
-/* Фиксированный header — высота учитывается через --header-height (:root) для padding контента */
+/* ---------- Шапка в потоке документа (не fixed) + контейнер для .header-search-dropdown ----------
+   position: relative — чтобы dropdown (position:absolute; top:100%) был строго под блоком шапки.
+   Ниже закомментирован старый фиксированный header + скрытие при скролле (header_scroll_hide.js). */
+.header-wrapper {
+    position: relative;
+    z-index: 1050;
+}
+
+/*
 .header-wrapper {
     position: fixed;
     top: 0;
@@ -892,6 +900,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
         transition: none;
     }
 }
+*/
 
 .header {
     position: static;
@@ -1106,7 +1115,7 @@ html[data-theme="dark"] .paginator-page.paginator-current {
 
 .content_block {
     position: relative;
-    padding-top: max(200px, var(--main-pad-top, 128px));
+    padding-top: max(130px, var(--main-pad-top, 128px));
     margin-bottom: 120px;
 }
 
@@ -2354,9 +2363,9 @@ textarea {
     border: 1px solid var(--border-strong);
     background: var(--bg-default);
     color: var(--text-primary);
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-size: .725rem;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: .775rem;
     cursor: pointer;
     font-weight: 500;
     transition: .2s ease-in-out;
@@ -2518,7 +2527,7 @@ textarea {
 
 /* header */
 .bottom-menu-header {
-    padding: 20px 24px;
+    padding: 22px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2792,7 +2801,7 @@ html[data-theme="dark"] .item-images-file-trigger:hover {
 
 .replies {
     position: relative;
-    margin-left: 18px;
+    margin-left: 17px;
     padding-left: 0;
     margin-top: 4px;
 }
@@ -4884,7 +4893,7 @@ html[data-theme="dark"] .trending-card--topic:hover {
 
 /* Profile created tiles: title row + meta spans; gap replaces margins (badges: global .trending-badge only) */
 .profile-created-post-tile__body {
-    gap: 6px;
+    gap: 20px;
 }
 
 .profile-created-post-tile__meta {
@@ -4926,7 +4935,7 @@ html[data-theme="dark"] .trending-card--topic:hover {
     align-items: center;
     border: none;
     background: transparent;
-    padding: 0.25rem 0.4rem;
+    padding: .4rem .7rem;
     margin: 0;
     font: inherit;
     line-height: inherit;
@@ -4935,6 +4944,7 @@ html[data-theme="dark"] .trending-card--topic:hover {
     color: var(--text-muted) !important;
     border-radius: 6px;
     transition: color 0.15s ease, background-color 0.15s ease;
+    font-size: .875rem;
 }
 
 .btn-back-link:hover {

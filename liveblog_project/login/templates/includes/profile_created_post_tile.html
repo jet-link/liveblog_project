@@ -30,8 +30,12 @@
       {% endif %}
     </div>
   </div>
-  {% if listing_source == 'profile' and listing_user and listing_section %}
-    <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}" class="stretched-link" aria-label="{{ item.title }}"></a>
+  {% if listing_source == 'profile' and listing_user %}
+    {% if listing_section %}
+      <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}" class="stretched-link" aria-label="{{ item.title }}"></a>
+    {% else %}
+      <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}" class="stretched-link" aria-label="{{ item.title }}"></a>
+    {% endif %}
   {% else %}
     <a href="{{ item.get_absolute_url }}" class="stretched-link" aria-label="{{ item.title }}"></a>
   {% endif %}

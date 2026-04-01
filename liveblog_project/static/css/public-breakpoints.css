@@ -39,8 +39,9 @@
 
     --touch-target-min: 44px;
 
-    /* Единый зазор под фиксированную шапку и над футером (публичная часть) */
-    --main-pad-top: calc(var(--header-height, 72px) + 56px);
+    /* Зазор над основным контентом (шапка в потоке — не добавляем высоту header второй раз) */
+    --main-pad-top: var(--space-10, 40px);
+    /* Было под fixed header: calc(var(--header-height, 72px) + 56px); */
     --main-pad-bottom: 88px;
 
     /* Stacking: Bootstrap modals above mobile drawer (.bottom-side-menu 1600) and categories (1700) */

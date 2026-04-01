@@ -7,8 +7,9 @@
         padding: 64px 0;
     }
 
+    /* Было под fixed header: calc(var(--header-height, 72px) + 32px) */
     .site-main > .primary_section:first-child {
-        padding-top: calc(var(--header-height, 72px) + 32px);
+        padding-top: 48px;
     }
 
     /* Hero “Explore Beyond” / astronauts — taller on tablet+phone */
@@ -40,8 +41,9 @@
         padding: 48px 0;
     }
 
+    /* Было под fixed header: calc(var(--header-height, 72px) + 28px) */
     .site-main > .primary_section:first-child {
-        padding-top: calc(var(--header-height, 72px) + 28px);
+        padding-top: 40px;
     }
 
     .cosmo_section.centered {

@@ -661,18 +661,14 @@ def item_detail(request, slug):
     is_editable = timezone.now() <= editable_until
 
     source = request.GET.get("from")
-    source_user = request.GET.get("user")
+    source_user = (request.GET.get("user") or "").strip()
     source_section = request.GET.get("section")
     source_url = request.GET.get("source_url")
     source_query = request.GET.get("query")
     source_tag = request.GET.get("tag")
     source_tag_slug = request.GET.get("tag_slug")
     source_category_slug = (request.GET.get("category_slug") or "").strip()
-    section_titles = {
-        "created": "Created",
-        "liked": "Liked",
-        "bookmarked": "Bookmarked",
-    }
+    source_section = (source_section or "").strip().lower()
 
     safe_source_url = None
     if source_url and url_has_allowed_host_and_scheme(
@@ -682,10 +678,19 @@ def item_detail(request, slug):
     ):
         safe_source_url = source_url
 
-    if source == "profile" and source_user and source_section in section_titles:
+    if source == "profile" and source_user and source_section == "created":
+        section_list_url = reverse(
+            "login_app:profile-section",
+            kwargs={"username": source_user, "section": "created"},
+        )
         breadcrumbs = build_breadcrumbs(
             breadcrumb(source_user, reverse("login_app:profile", kwargs={"username": source_user})),
-            breadcrumb(section_titles[source_section], None),
+            breadcrumb("Created", section_list_url),
+            breadcrumb(item.title, None),
+        )
+    elif source == "profile" and source_user:
+        breadcrumbs = build_breadcrumbs(
+            breadcrumb(source_user, reverse("login_app:profile", kwargs={"username": source_user})),
             breadcrumb(item.title, None),
         )
     elif source == "items_list":
@@ -732,7 +737,7 @@ def item_detail(request, slug):
         )
     elif source == "home":
         breadcrumbs = build_breadcrumbs(
-            breadcrumb("brainstorm.org", safe_source_url or "/"),
+            breadcrumb("brainstorm.news", safe_source_url or "/"),
             breadcrumb(item.title, None),
         )
     else:

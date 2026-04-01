@@ -1,6 +1,6 @@
 /* smart_blog — listings, post detail, gallery, comments, modals, filters */
 
-/* Main content vertical rhythm (below fixed header + air before footer) */
+/* Main content vertical rhythm (шапка статичная; отступ — воздух перед футером) */
 @media (max-width: 991px) {
     .content_block {
         padding-top: var(--main-pad-top, 128px);
@@ -451,12 +451,15 @@
 @media (max-width: 991px) {
     .search-btn,
     .theme-toggle-btn {
-        min-width: var(--touch-target-min, 44px);
-        min-height: var(--touch-target-min, 44px);
+        /* min-width: var(--touch-target-min, 44px);
+        min-height: var(--touch-target-min, 44px); */
+        min-width: 35px;
+        min-height: 35px;
+        font-size: .775rem;
     }
 
     .bottom-burger {
-        min-width: 40px;
-        min-height: 40px;
+        min-width: 33px;
+        min-height: 33px;
     }
 }

@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
   <div class="container-main content_block auth-form-layout">
-    <main class="edit-profile-field form-wrapper mx-auto">
+    <main class="edit-profile-field mx-auto">
       <form method="post" action="{% url 'login_app:login' %}" novalidate data-validate="true">
         {% csrf_token %}
         <h5 class="mb-3 fw-normal primary_ text-uppercase">Sign in</h5>
