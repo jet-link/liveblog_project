@@ -4,7 +4,10 @@
     <div class="container-main">
       <nav class="nav header-nav d-flex align-items-center justify-content-between">
         <div class="bottom-left-nav header-brand">
-          <a href="/" class="brand-minimal">brainstorm.news</a>
+          <a href="/" class="brand-minimal" aria-label="brainstorm.news — home">
+            <span class="brand-minimal__full d-none d-lg-inline">brainstorm.news</span>
+            <span class="brand-minimal__short d-lg-none">bstorm.news</span>
+          </a>
         </div>
         <div class="header-menu d-flex align-items-center small">
           {% with nav_name=request.resolver_match.url_name|default:'' %}

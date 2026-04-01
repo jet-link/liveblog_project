@@ -1044,7 +1044,46 @@ html[data-theme="dark"] .paginator-page.paginator-current {
     text-decoration: none;
     font-size: 1rem;
     letter-spacing: 0.02em;
+    white-space: nowrap;
     /* transition: color 0.2s ease; */
+}
+
+.brand-minimal__short {
+    letter-spacing: 0.03em;
+}
+
+/* Item detail: guest “Sign in” hint — readable line breaks on narrow screens */
+.item-detail-signin-hint {
+    display: block;
+    max-width: 16rem;
+    line-height: 1.35;
+    text-align: right;
+    hyphens: none;
+}
+
+.item-detail-signin-hint__lead {
+    display: block;
+}
+
+.item-detail-signin-hint__link {
+    display: inline-block;
+    margin-top: 0.2rem;
+}
+
+@media (min-width: 576px) {
+    .item-detail-signin-hint {
+        max-width: none;
+        text-align: inherit;
+    }
+
+    .item-detail-signin-hint__lead {
+        display: inline;
+    }
+
+    .item-detail-signin-hint__link {
+        margin-top: 0;
+        margin-left: 0.25rem;
+    }
 }
 
 .header-actions {
@@ -1154,6 +1193,266 @@ article.item_block.card {
 article.item_block.card:hover {
     transform: translateY(-6px);
     box-shadow: var(--card-shadow-lg);
+}
+
+/* Listings (all_cards / filtered): rhythm 1× full + 2× half (cycle of 3; nth-child stable with pagination append) */
+.feed-cards-masonry {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 767px) {
+    .feed-cards-masonry {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .feed-cards-masonry > .item-card {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .feed-cards-masonry {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .feed-cards-masonry > .item-card:nth-child(3n + 1) {
+        grid-column: span 12;
+    }
+
+    .feed-cards-masonry > .item-card:nth-child(3n + 2),
+    .feed-cards-masonry > .item-card:nth-child(3n + 3) {
+        grid-column: span 6;
+    }
+
+    /* N≡2 (mod 3): one half-width slot left on the row → span full */
+    .feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) {
+        grid-column: 1 / -1;
+    }
+}
+
+.feed-cards-masonry .item_block.trending-card .card-body {
+    position: relative;
+}
+
+.feed-cards-masonry .item_block.trending-card {
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    border: 1px solid var(--border-default);
+}
+
+.feed-cards-masonry .item_block.trending-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-shadow-lg);
+}
+
+/* Full-width row: slightly wider image column (was col-md-5 in trending hero) */
+@media (min-width: 768px) {
+    .feed-cards-masonry > .item-card:nth-child(3n + 1) .trending-card__img-wrap.col-md-4 {
+        flex: 0 0 41.66666667% !important;
+        max-width: 41.66666667% !important;
+    }
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 1) .trending-card__img-wrap {
+    min-height: clamp(200px, 30vw, 300px);
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 2) .trending-card__img-wrap,
+.feed-cards-masonry > .item-card:nth-child(3n + 3) .trending-card__img-wrap {
+    min-height: clamp(168px, 22vw, 228px);
+}
+
+@media (min-width: 768px) {
+    .feed-cards-masonry > .item-card:nth-child(3n + 1) .trending-card__img-wrap {
+        max-height: 320px;
+    }
+
+    .feed-cards-masonry > .item-card:nth-child(3n + 2) .trending-card__img-wrap,
+    .feed-cards-masonry > .item-card:nth-child(3n + 3) .trending-card__img-wrap {
+        max-height: 228px;
+    }
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 1) .excerpt-html {
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 2) .excerpt-html,
+.feed-cards-masonry > .item-card:nth-child(3n + 3) .excerpt-html {
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 1) .item-feed-card__title {
+    font-size: clamp(1.15rem, 2.6vw, 1.55rem);
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+.feed-cards-masonry > .item-card:nth-child(3n + 2) .item-feed-card__title,
+.feed-cards-masonry > .item-card:nth-child(3n + 3) .item-feed-card__title {
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    font-weight: 600;
+    line-height: 1.28;
+}
+
+/* Full-width orphan (lone half in row): hero strip metrics */
+@media (min-width: 768px) {
+    .feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) .trending-card__img-wrap.col-md-4 {
+        flex: 0 0 41.66666667% !important;
+        max-width: 41.66666667% !important;
+    }
+}
+
+.feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) .trending-card__img-wrap {
+    min-height: clamp(200px, 30vw, 300px);
+}
+
+@media (min-width: 768px) {
+    .feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) .trending-card__img-wrap {
+        max-height: 320px;
+    }
+}
+
+.feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) .excerpt-html {
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+}
+
+.feed-cards-masonry > .item-card:last-child:nth-child(3n + 2) .item-feed-card__title {
+    font-size: clamp(1.15rem, 2.6vw, 1.55rem);
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+/* Multi-image mosaic (2–10 square thumbs) inside listing media column */
+.trending-card__img-link.item-feed-card__img-link--grid {
+    display: flex;
+    align-items: stretch;
+    min-height: 140px;
+}
+
+.item-feed-card__thumb-grid {
+    display: grid;
+    width: 100%;
+    min-height: 140px;
+    flex: 1;
+    gap: 3px;
+    background: var(--bg-muted);
+    align-content: stretch;
+}
+
+.item-feed-card__thumb-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    display: block;
+}
+
+.item-feed-card__thumb-grid--n2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+.item-feed-card__thumb-grid--n3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+}
+
+.item-feed-card__thumb-grid--n4 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.item-feed-card__thumb-grid--n5,
+.item-feed-card__thumb-grid--n6 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.item-feed-card__thumb-grid--n7,
+.item-feed-card__thumb-grid--n8 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.item-feed-card__thumb-grid--n9 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.item-feed-card__thumb-grid--n10 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.feed-cards-masonry .item-feed-card__footer {
+    border-color: var(--border-default) !important;
+}
+
+.feed-cards-masonry .item-feed-card__title {
+    color: var(--text-default);
+}
+
+html[data-theme="dark"] article.item_block.trending-card .item-feed-card__title {
+    color: var(--text-default) !important;
+}
+
+/* Profile tab rail: horizontal strip, uniform tiles (not 12-col masonry) */
+.profile-cards-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+    padding-bottom: 4px;
+}
+
+.profile-cards-scroll .feed-cards-masonry {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    margin-bottom: 0;
+    width: max-content;
+    min-height: 0;
+}
+
+.profile-cards-scroll .feed-cards-masonry > .item-card {
+    flex: 0 0 min(100%, 360px);
+    width: min(100vw - 2.5rem, 360px);
+    max-width: min(100vw - 2.5rem, 360px);
+}
+
+.profile-cards-scroll .feed-cards-masonry > .item-card .trending-card__img-wrap {
+    min-height: clamp(152px, 28vw, 190px) !important;
+    max-height: 200px !important;
+}
+
+@media (min-width: 768px) {
+    .profile-cards-scroll .feed-cards-masonry > .item-card .trending-card__img-wrap.col-md-4 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+    }
+}
+
+.profile-cards-scroll .feed-cards-masonry > .item-card .excerpt-html {
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+}
+
+.profile-cards-scroll .feed-cards-masonry > .item-card .item-feed-card__title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
 }
 
 /* Hot / Hero cards — horizontal layout */

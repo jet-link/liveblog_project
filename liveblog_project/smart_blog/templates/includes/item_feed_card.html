@@ -1,0 +1,193 @@
+{% load static %}
+{% load counters %}
+{% load user_status %}
+<span class="item-anchor" id="item-anchor-{{ item.pk }}"></span>
+<article id="item-{{ item.pk }}"
+         class="card border-0 overflow-hidden h-100 trending-card trending-card--feed item_block item-feed-card"
+         data-item-id="{{ item.pk }}">
+  <div class="row g-0 h-100 flex-wrap flex-md-nowrap">
+    <div class="trending-card__img-wrap col-12 col-md-4">
+      {% with img_count=item.images.count %}
+      <div class="trending-card__img-link h-100{% if img_count > 1 %} item-feed-card__img-link--grid{% endif %}">
+        {% if img_count == 0 %}
+          <div class="trending-card__placeholder" aria-hidden="true"></div>
+        {% elif img_count == 1 %}
+          <img src="{{ item.images.first.get_thumbnail_url }}"
+               alt=""
+               class="trending-card__img"
+               loading="lazy"
+               decoding="async" />
+        {% else %}
+          <div class="item-feed-card__thumb-grid item-feed-card__thumb-grid--n{% if img_count > 10 %}10{% else %}{{ img_count }}{% endif %}"
+               role="group"
+               aria-label="{{ img_count }} images">
+            {% for im in item.images.all %}
+              {% if forloop.counter <= 10 %}
+                <img src="{{ im.get_thumbnail_url }}"
+                     alt=""
+                     class="item-feed-card__thumb-cell"
+                     loading="lazy"
+                     decoding="async" />
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      {% endwith %}
+    </div>
+    <div class="col flex-grow-1 d-flex flex-column min-w-0">
+      <div class="card-body d-flex flex-column flex-grow-1 pt-3 pb-3">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-5">
+          <div class="d-flex align-items-center gap-2 min-w-0">
+            {% if item.author %}
+              {% if item.author.is_active %}
+                <div class="little-avatar{% if user == item.author %} avatar-ring{% endif %} flex-shrink-0">
+                  {% if item.author.profile.avatar_url or item.author.profile.avatar_file %}
+                    <img src="{{ item.author.profile.get_avatar }}"
+                         alt="{{ item.author }}"
+                         class="user-avatar clickable-avatar"
+                         width="30"
+                         height="30"
+                         loading="eager"
+                         decoding="async"
+                         data-full="{{ item.author.profile.get_avatar }}"
+                         data-username="{{ item.author.username }}"
+                         onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% else %}
+                    <img src="{% static 'img/no_avatar.svg' %}"
+                         alt="{{ item.author }}"
+                         class="user-avatar no_avatar"
+                         width="30"
+                         height="30"
+                         loading="eager"
+                         decoding="async"
+                         data-username="{{ item.author.username }}"
+                         onerror="this.onerror=null;this.classList.add('avatar-load-failed');" />
+                  {% endif %}
+                </div>
+                <small class="d-inline-block text-truncate text-primary-emphasis fw-semibold text-muted">{{ item.author }}</small>
+              {% else %}
+                <div class="little-avatar flex-shrink-0">
+                  <img src="{% static 'img/user-deleted.webp' %}"
+                       alt="{% user_status_display item.author %}"
+                       class="user-avatar"
+                       width="30"
+                       height="30"
+                       loading="eager"
+                       decoding="async" />
+                </div>
+                <small class="d-inline-block text-truncate text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
+              {% endif %}
+            {% else %}
+              <div class="little-avatar flex-shrink-0">
+                <img src="{% static 'img/user-deleted.webp' %}"
+                     alt="{% user_status_display item.author %}"
+                     class="user-avatar"
+                     width="30"
+                     height="30"
+                     loading="eager"
+                     decoding="async" />
+              </div>
+              <small class="d-inline-block text-truncate text-primary-emphasis fw-semibold text-muted">{% user_status_display item.author %}</small>
+            {% endif %}
+          </div>
+
+          {% if item.category %}
+            <span class="item-category-badge flex-shrink-0">{{ item.category.name }}</span>
+          {% else %}
+            <small class="primary_ fw-semibold flex-shrink-0">No category</small>
+          {% endif %}
+        </div>
+
+        <h3 class="item-feed-card__title mb-2">{{ item.title }}</h3>
+
+        <div class="small d-inline-flex align-items-center gap-2 flex-wrap text-muted mb-2">
+          <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+          <small>{{ item.human_published }}</small>
+        </div>
+
+        <p class="card-text flex-grow-1 text-muted small mb-3 mb-md-2 excerpt-html item-feed-card__excerpt">{{ item.short_text }}</p>
+
+        {% comment %} {% if item.tags.all %}
+          <div class="card-tags-block d-flex align-items-center flex-wrap gap-1 mt-auto pt-1">
+            <i class="fa fa-tags me-2 text-muted flex-shrink-0" aria-hidden="true"></i>
+            {% for tag in item.tags.all|slice:":5" %}
+              <span class="badge text-bg-secondary text-decoration-none">{{ tag.tag_name }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="card-tags-block d-inline-flex text-muted mt-auto pt-1">
+            <small class="fw-semibold"><i class="fa fa-tags me-2" aria-hidden="true"></i>No tags</small>
+          </div>
+        {% endif %} {% endcomment %}
+
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mt-3 pt-2 border-top item-feed-card__footer">
+          {% if listing_source == 'profile' and listing_user %}
+            {% if listing_section %}
+              <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}&amp;section={{ listing_section }}"
+                 class="stretched-link text-decoration-none item-link small"
+                 data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            {% else %}
+              <a href="{{ item.get_absolute_url }}?from=profile&amp;user={{ listing_user|urlencode }}"
+                 class="stretched-link text-decoration-none item-link small"
+                 data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+            {% endif %}
+          {% elif listing_source == 'items_list' and listing_source_url %}
+            <a href="{{ item.get_absolute_url }}?from=items_list&amp;source_url={{ listing_source_url|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'for_you' and listing_source_url %}
+            <a href="{{ item.get_absolute_url }}?from=for_you&amp;source_url={{ listing_source_url|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'popular' and listing_source_url %}
+            <a href="{{ item.get_absolute_url }}?from=for_you&amp;source_url={{ listing_source_url|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'search' and listing_source_url and listing_query %}
+            <a href="{{ item.get_absolute_url }}?from=search&amp;source_url={{ listing_source_url|urlencode }}&amp;query={{ listing_query|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'tag' and listing_source_url and listing_tag %}
+            <a href="{{ item.get_absolute_url }}?from=tag&amp;source_url={{ listing_source_url|urlencode }}&amp;tag={{ listing_tag|urlencode }}&amp;tag_slug={{ listing_tag_slug|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'topic' and listing_source_url and listing_category %}
+            <a href="{{ item.get_absolute_url }}?from=topic&amp;source_url={{ listing_source_url|urlencode }}&amp;category={{ listing_category|urlencode }}&amp;category_slug={{ listing_category_slug|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% elif listing_source == 'category' and listing_source_url and listing_category %}
+            <a href="{{ item.get_absolute_url }}?from=topic&amp;source_url={{ listing_source_url|urlencode }}&amp;category={{ listing_category|urlencode }}&amp;category_slug={{ listing_category_slug|urlencode }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% else %}
+            <a href="{{ item.get_absolute_url }}"
+               class="stretched-link text-decoration-none item-link small"
+               data-item-id="{{ item.pk }}">Read more<i class="fa fa-angle-right reading-angle ms-2" aria-hidden="true"></i></a>
+          {% endif %}
+
+          <div class="d-flex align-items-center VLB position-relative z-2">
+            <div class="item-stats text-muted d-inline-flex align-items-center">
+              <div class="stat">
+                <span id="views-count-{{ item.pk }}">{{ item.views_count|human }}</span>
+                <i class="fa fa-eye text-muted"></i>
+              </div>
+              <div class="stat">
+                <span id="likes-count-{{ item.pk }}">{{ item.likes_count|human }}</span>
+                <i class="fa fa-heart text-muted"></i>
+              </div>
+              <div class="stat">
+                <span id="bookmark-count-{{ item.pk }}">{{ item.bookmarks_count|human }}</span>
+                <i class="fa fa-bookmark text-muted"></i>
+              </div>
+              <div class="stat">
+                <span id="reposts-count-{{ item.pk }}">{{ item.reposts_count|human }}</span>
+                <i class="fa fa-retweet text-muted"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

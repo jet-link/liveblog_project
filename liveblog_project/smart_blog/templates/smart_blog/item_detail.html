@@ -142,7 +142,10 @@
             <span class="text-muted manipulate expired_edit_delete" aria-label="Delete item" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove expired"><i class="fa fa-trash-o"></i></span>
           {% endif %}
         {% else %}
-          <small class="text-muted">To perform any actions, please <a href="{% url 'login_app:login' %}" class="text-decoration-none primary_ fw-semibold">Sign in</a></small>
+          <small class="text-muted item-detail-signin-hint">
+            <span class="item-detail-signin-hint__lead">To perform any actions, please</span>
+            <a href="{% url 'login_app:login' %}" class="item-detail-signin-hint__link text-decoration-none primary_ fw-semibold">Sign in</a>
+          </small>
         {% endif %}
       </div>
     </div>

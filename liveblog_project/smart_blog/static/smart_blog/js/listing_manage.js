@@ -164,8 +164,8 @@
             const currentContainer = currentSection.querySelector('[data-scroll-container]');
             const freshContainer = freshSection.querySelector('[data-scroll-container]');
             if (currentContainer && freshContainer) {
-                const currentRow = currentContainer.querySelector('.row');
-                const freshRow = freshContainer.querySelector('.row');
+                const currentRow = currentContainer.querySelector('.row') || currentContainer.querySelector('.feed-cards-masonry');
+                const freshRow = freshContainer.querySelector('.row') || freshContainer.querySelector('.feed-cards-masonry');
                 if (currentRow && freshRow) {
                     currentRow.innerHTML = freshRow.innerHTML;
                 }
@@ -336,7 +336,7 @@
                 ? section
                 : section?.querySelector?.('[data-scroll-container]');
             if (sectionId && container) {
-                const row = container.querySelector('.row');
+                const row = container.querySelector('.row') || container.querySelector('.feed-cards-masonry');
                 const card = container.querySelector('.item-card');
                 if (card) {
                     const styles = row ? window.getComputedStyle(row) : null;
